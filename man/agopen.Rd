@@ -62,10 +62,19 @@ agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
   routines are used to compute the layout locations for the graph.
   Otherwise the graph is returned without layout information.
 
-  If the \code{subGList} parameter is used, every element in that list
-  must be a \code{graph} that is a proper subset of the actual
-  \code{graph} parameter.  These subgraphs are then noted to the
-  underlying Graphviz software to be plotted as a cluster.
+  The \code{subGList} parameter is a list describing any subgraphs,
+  where each element represents a subgraph and is itself a list with up
+  to three elements.  The first element, \code{graph} is required and
+  contains the actual \code{graph} object for the subgraph.  The second
+  element, \code{cluster} is a logical value indicating if this is a
+  \code{cluster} or a \code{subgraph} (a value of \code{TRUE} indicates
+  a cluster, which is also the default value if this element is not
+  specified).  In Graphviz, subgraphs are more of an organizational
+  mechanism, whereas clusters are laid out separately from the main
+  graph and then later inserted.  The last element of the list,
+  \code{attrs} is used if there are any attributes for this subgraph.
+  This is a named vector where the names are the attributes and the
+  elements are the values for those attributes.
 
   For a description of \code{attrs}, \code{nodeAttrs} and
   \code{edgeAttrs}, see the \code{\link{Ragraph}} man page.
