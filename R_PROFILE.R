@@ -1,1 +1,2 @@
+require(methods)
 require(graph)

@@ -115,13 +115,13 @@ setClass("AgEdge", representation(splines="list",
                                   ep="xyPoint",
                                   head="character",
                                   tail="character",
-                                  label="AgTextLabel"))
+                                  txtLabel="AgTextLabel"))
 
-if (is.null(getGeneric("label")))
-    setGeneric("label", function(object)
-               standardGeneric("label"))
-setMethod("label", "AgEdge", function(object)
-          object@label)
+if (is.null(getGeneric("txtLabel")))
+    setGeneric("txtLabel", function(object)
+               standardGeneric("txtLabel"))
+setMethod("txtLabel", "AgEdge", function(object)
+          object@txtLabel)
 
 if (is.null(getGeneric("splines")))
     setGeneric("splines", function(object)
@@ -342,7 +342,7 @@ setMethod("labelWidth","AgTextLabel", function(object)
                          lty=lty, lwd=lwd)
               }
 
-              curLabel <- label(x)
+              curLabel <- txtLabel(x)
               if (!is.null(curLabel)) {
                   ## This edge has a label, need to display it
                   ## !! For now, just plot text at X/Y
