@@ -1,7 +1,12 @@
   agopen <- function(graph, name, kind="AGRAPH", layout=TRUE,
                    layoutType=c("dot","neato","twopi")[1],
                    attrs=NULL) {
-    outK <- switch(kind,
+
+      ## graph must be fully connected if twopi
+      if ((layoutType=="twopi")&&(length(connComp(graph)) != 1))
+          stop("Graph must be fully connected to perform a twopi layout")
+
+      outK <- switch(kind,
                    "AGRAPH"=0,
                    "AGDIGRAPH"=1,
                    "AGRAPHSTRICT"=2,
