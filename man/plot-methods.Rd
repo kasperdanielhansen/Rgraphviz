@@ -59,6 +59,10 @@
   http://www.research.att.com/~erg/graphviz/info/attrs.html.  All
   attribute values should be entered as character strings (even if the
   requested value is to be otherwise).
+
+  Currently only global settings are implemented for nodes and edges,
+  this will change in the near future such that these attributes can
+  be set per edge/node.
   
   ****Details about things like the various layout methods, etc etc ****
 }
