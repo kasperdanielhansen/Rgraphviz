@@ -98,8 +98,9 @@ they are showed separately.
 plot(rEG, recipEdges="distinct")
 @
 
-The function \Rfunction{removedEdges} can be used to return a numerical vector detailing
-which edges (if any) would be removed by the combining of edges.
+The function \Rfunction{removedEdges} can be used to return a
+numerical vector detailing which edges (if any) would be removed by
+the combining of edges.
 
 <<removedEdges>>=
 a <- removedEdges(g1)
@@ -108,11 +109,11 @@ a
 
 \section{SubGraphs}
 
-Rgraphviz supports the ability to define specific clustering of
-nodes.  This will instruct the layout algorithm to attempt to keep the
-clustered nodes close together.  To do this, one must first generate
-the desired set (one or more) of subgraphs with the \Robject{graph}
-object.
+\Rpackage{Rgraphviz} supports the ability to define specific
+clustering of nodes.  This will instruct the layout algorithm to
+attempt to keep the clustered nodes close together.  To do this, one
+must first generate the desired set (one or more) of subgraphs with
+the \Robject{graph} object.
 
 <<getSubgraphs>>=
 sg1 <- subGraph(c("a","d","j","i"), g1)
@@ -149,7 +150,7 @@ need to be able to do this to correctly assign attributes (see
 node and \verb+y+ is the head node.  The method \Rfunction{edgeNames} can be
 used to obtain a vector of all edge names, and takes the argument
 \Rfunction{recipEdges} so that the output correctly matches which
-edges will be used by \Rpackage{Rgraphviz}.  
+edges will be used by \Rpackage{Rgraphviz}.
 
 <<edgeNames>>=
 edgeNames(g1)
@@ -165,10 +166,10 @@ which are given explicit options using Rgraphviz - such as colors of
 nodes and edges, which node to center on for twopi plots, node labels,
 edge labels, edge weights, arrow heads and tails, etc.  A list of all
 available attributes is accessible online at:
-http://www.research.att.com/~erg/graphviz/info/attrs.html".  (Note
+\url{http://www.research.att.com/~erg/graphviz/info/attrs.html}.  Note
 that there are some differences between default values and also some
 attributes will not have an effect in Rgraphviz.  Please see the man
-page for \Rfunction{graphvizAttributes} for more details)
+page for \Rfunction{graphvizAttributes} for more details.
 
 Attributes can be set both globally (for the entire graph, for all
 edges, all nodes, etc) as well as on a per-node and per-edge basis.
@@ -340,7 +341,7 @@ edges$"a~b"
 @
 
 You can see that the \Robject{attrs} slot now has a 'color' element to
-it.  
+it.
 
 <<plotListGraph1, fig=TRUE>>=
   vv <- agopen(name="test1", nodes=nodes, edges=edges,
@@ -349,13 +350,14 @@ it.
 @
 
 Note that the name argument is required by Graphviz but is not
-currently used for anything in \Rpackage{Rgraphviz}.  The edgeMode
-argument is required in this case because Graphviz needs to know if
-this graph is directed or not and \Rpackage{Rgraphviz} can't
-necessarily determine the status of the graph from the node and edge
-lists.  One could suggest to look at the arrowhead/tails (or lack
-thereof) and derive it that way, but the arrowhead/tails are
-completely independent from the edgemode of the graph:
+currently used for anything in \Rpackage{Rgraphviz}.  The
+\Robject{edgeMode} argument is required in this case because Graphviz
+needs to know if this graph is directed or not and
+\Rpackage{Rgraphviz} can't necessarily determine the status of the
+graph from the node and edge lists.  One could suggest to look at the
+arrowhead/tails (or lack thereof) and derive it that way, but the
+arrowhead/tails are completely independent from the edgemode of the
+graph:
 
 <<addArrows, fig=TRUE>>=
 edges$"a~e"@attrs$arrowhead <- "open"
@@ -363,7 +365,7 @@ edges$"a~h"@attrs$arrowhead <- "open"
 edges$"a~h"@attrs$arrowtail <- "open"
 vv <- agopen(name="test1", nodes=nodes, edges=edges,
                edgeMode="undirected")
-plot(vv) 
+plot(vv)
 @
 
 Here we've added our own arrowheads to the a~e and a~h edges as well
@@ -403,7 +405,7 @@ function for some nodes but the standard function for others, the list
 passed in to \Robject{drawNode} can have the custom functions in the
 elements corresponding to those nodes desired to have special display
 and \Rfunction{drawAgNode} in the elements corresponding to the nodes
-where standard display is desired. 
+where standard display is desired.
 
 One function included with the \Rpackage{Rgraphviz} package that can
 be used for such alternate node drawing is \Rfunction{pieGlyph}.  This
@@ -416,49 +418,52 @@ expression levels of the samples in the exprSet for that probe.
 
 <<pieChart, fig=TRUE>>=
 
-require("Biobase") || stop("Biobase needed for this example")
-data(eset)
+if( require("Biobase") ) {
+    data(eset)
 
-exprs <- exprs(eset)[100:109,]
-probes <- rownames(exprs)
+    exprs <- exprs(eset)[100:109,]
+    probes <- rownames(exprs)
 
-## Construct a graph for these nodes
-set.seed(123)
-pieGraph <- randomGraph(probes, 1:4, .2)
+    ## Construct a graph for these nodes
+    set.seed(123)
+    pieGraph <- randomGraph(probes, 1:4, .2)
 
-## Do a layout of the graph, but don't plot it yet
-pgLayout <- agopen(pieGraph, "foo")
+    ## Do a layout of the graph, but don't plot it yet
+    pgLayout <- agopen(pieGraph, "foo")
 
-counts <-  apply(exprs, 1, function(x) {
-              table(cut(x, breaks=c(-Inf, 100, 500, Inf)))
-           })
+    counts <-  apply(exprs, 1, function(x) {
+        table(cut(x, breaks=c(-Inf, 100, 500, Inf)))
+    })
 
-## Need to construct a list of drawing functions for the Rgraphviz plot
-plotPieChart <- function(curPlot, counts) {
-    buildDrawing <- function(x) {
-	force(x)
-	y <- x*100+1
-	function(node, ur, attrs=list()) {
-            nodeCenter <- getNodeCenter(node)
-            pieGlyph(y, xpos=getX(nodeCenter),
-                     ypos=getY(nodeCenter),
-                     radius=getNodeRW(node),
-                     col=c("blue", "green", "red"))
-	}
+    ## Need to construct a list of drawing functions for the Rgraphviz plot
+    plotPieChart <- function(curPlot, counts) {
+        buildDrawing <- function(x) {
+            force(x)
+            y <- x*100+1
+            function(node, ur, attrs=list()) {
+                nodeCenter <- getNodeCenter(node)
+                pieGlyph(y, xpos=getX(nodeCenter),
+                         ypos=getY(nodeCenter),
+                         radius=getNodeRW(node),
+                         col=c("blue", "green", "red"))
+            }
+        }
+        drawing <- vector(mode="list", length=length(probes))
+        for (i in 1:length(drawing)) {
+            drawing[[i]] <- buildDrawing(counts[,i])
+        }
+
+        plot(curPlot, drawNode=drawing, main="Example Pie Chart Plot")
+        legend(310, 100, legend=c("No Data", "0-100", "101-500", "500+"),
+               fill=c("white", "blue", "green", "red"))
     }
-    drawing <- vector(mode="list", length=length(probes))
-    for (i in 1:length(drawing)) {
-	drawing[[i]] <- buildDrawing(counts[,i])
-    }
-
-    plot(curPlot, drawNode=drawing, main="Example Pie Chart Plot")
-    legend(310, 100, legend=c("No Data", "0-100", "101-500", "500+"),
-           fill=c("white", "blue", "green", "red"))
+    plotPieChart(pgLayout, counts)
+} else {
+  cat("This example is missing since you do not have Biobase")
 }
-plotPieChart(pgLayout, counts)
 @
 
-To perform this plot, we constructed a complete function, although
+To construct this plot, we constructed a complete function, although
 this is not necessary - one can take any path they desire to build the
 list of drawing functions.  Also note that in this plot the nodes do
 not have labels as it would look confusing, but those could be easily
