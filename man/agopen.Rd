@@ -8,7 +8,8 @@
 }
 \usage{
 agopen(graph, name, nodeLabels=nodes(graph), kind = "AGRAPH", layout = TRUE,
-       layoutType=c("dot","neato","twopi")[1], attrs=NULL)
+       layoutType=c("dot","neato","twopi")[1], attrs=NULL,
+       subGList, edgeLabels)
 }
 \arguments{
   \item{graph}{An object of class \code{graphNEL}}
@@ -18,6 +19,8 @@ agopen(graph, name, nodeLabels=nodes(graph), kind = "AGRAPH", layout = TRUE,
   \item{layout}{Whether to layout the graph or not}
   \item{layoutType}{Defines the layout engine.  Defaults to dot}
   \item{attrs}{A list of graphviz attributes}
+  \item{subGList}{A list describing subgraphs for the graph parameter}
+  \item{edgeLabels}{A list describing labels for the edges}
 }
 \details{
   \code{graph} is from the package \link{graph}.
@@ -39,6 +42,17 @@ agopen(graph, name, nodeLabels=nodes(graph), kind = "AGRAPH", layout = TRUE,
   will correspond to graph-wide, node-wide or edge-wide attributes
   to be set, with the name of the element corresponding to the attribute
   name and the value of the element being the value.
+
+  If the \code{subGList} parameter is used, every element in that list
+  must be a \code{graph} that is a proper subset of the actual
+  \code{graph} parameter.  These subgraphs are then noted to the
+  underlying Graphviz software to be plotted as a cluster.
+
+  The \code{edgeLabels} parameter, if supplied, specifies custom labels
+  for edges.  The format of the list is that each element specifies a
+  \code{from} node, and then within those elements will be named
+  character vectors, where the names of the vector elements are the
+  \code{to} nodes.  The values of the vector represent the edge labels.
 }
 \value{
   An object of class \code{Ragraph}
