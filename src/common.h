@@ -18,7 +18,6 @@
 #endif
 
 #include <math.h>
-/*#include <gvconfig.h>*/
 #include <render.h>
 #include <graph.h>
 #include <dotprocs.h>
@@ -28,6 +27,8 @@
 #include <gvrender.h>
 
 static GVC_t *gvc;
+
+extern char *Info[];
 
 #define AGRAPH_T(x) ((agraph_t *)DATAPTR(x))
 #define STR(SE) CHAR(STRING_ELT(SE,0))
