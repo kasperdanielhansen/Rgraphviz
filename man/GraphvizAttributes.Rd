@@ -17,8 +17,7 @@
   \bold{General Graph Attributes:}
   \describe{
     \item{\code{bgcolor}:}{Color for the entire canvas.  This is used
-      only in R.  The default is to use \code{par(
-	\dQuote{bg})}}
+      only in R.  The default is to use \code{par(\dQuote{bg})}}
     \item{\code{center}:}{Drawing is centered in the output canvas.
       This is a boolean value with a default of \code{FALSE}.}
     \item{\code{fontcolor}:}{Color used for text, defaulting to
@@ -204,7 +203,7 @@
     \item{\code{sep}:}{Fraction to increase polygons for purposes of
       determining overlap.  This is a double value with a default of \code{0.01}.}
     \item{\code{splines}:}{Draw edges as splines.  This is a boolean
-      value with a default of \code{FALSE}.}
+      value with a default of \code{TRUE}.}
     \item{\code{voro_margin}:}{Factor to scale up drawing to allow
       margin for expansion in Voronoi technique.  This is a double value
     with a default of \code{0.05} and a minimum value of \code{0.0}} 
@@ -255,7 +254,7 @@
       closest point of the spline.  Default is \code{FALSE}.}
     \item{\code{dir}:}{Edge type drawing, which ends should get the
       arrowhead.  R only(?).  For directed graphs, this defaults to
-      \code{forward} and undirected graphs default to \code{none}.
+      \code{forward} and undirected graphs default to \code{both}.
       Other possible values are \code{both} (arrows in both
       directions) and \code{back} (Arrow on the tail only)}
     \item{\code{fontcolor}:}{The color used for text.  R only.  The
@@ -354,7 +353,7 @@
     \item{\code{color}:}{Basic drawing color for the node, corresponding
       to the outside edge of the node.  The interior of the node is
       specified with the \code{fillcolor} attribute.  R only.
-      Defaults to \code{par(bg)}.}
+      Defaults to \code{par(col)}.}
     \item{\code{distortion}:}{Distortion factor for
       \code{shape=polygon}, positive values cause top to be larger then
       bottom, negative is opposite.  This is a double value with a
