@@ -7,6 +7,8 @@
 
 #define MINGRAPHVIZVER "1.9.20030423.0415"
 
+#define ENABLE_CODEGENS 1
+
 #include <Rinternals.h>
 #include <Rdefines.h>
 #include <R_ext/RConverters.h>
@@ -23,6 +25,9 @@
 #include <neatoprocs.h>
 #include <adjust.h>
 
+#include <gvrender.h>
+
+static GVC_t *gvc;
 
 #define AGRAPH_T(x) ((agraph_t *)DATAPTR(x))
 #define STR(SE) CHAR(STRING_ELT(SE,0))
