@@ -122,7 +122,6 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                       ## Get the radii of the nodes.  For now we're just
                       ## implementing circles and ellipses
                       rad <- unlist(lapply(nodes(g), getNodeRW))
-                      print(rad)
                       RWidths <- rad
                       heights <- unlist(lapply(nodes(g), getNodeHeight))
 
@@ -189,16 +188,20 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
 
 #### Other functions
 drawCircleNodes <- function(nodeX, nodeY, ur, rad, nodeCols) {
-    outLim <- max(getY(ur), getX(ur))
+    outX <- getX(ur)
+    outY <- getY(ur)
+    outLim <- max(outY, outX)
     pin <- par("pin")
     if (pin[1] == pin[2]) {
+        ## Here we have a square plotting region
+        ## probably unecessary check
         conv <- outLim/pin[1]
     }
-    else if (pin[1] > pin[2]) {
-        conv <- getX(ur)/pin[1]
+    else if (outLim == outX) {
+        conv <- outX/pin[1]
     }
     else {
-        conv <- getY(ur)/pin[2]
+        conv <- outY/pin[2]
     }
     rad <- rad/conv
 
