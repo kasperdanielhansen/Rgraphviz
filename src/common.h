@@ -2,7 +2,7 @@
 #define __COMMON_H_INCLUDED
 
 extern char *Info[] = {
-	    "Rgraph",              /* Program */
+	    "Rgraphviz",              /* Program */
 	    "1.0",            /* Version */
 	    "10/21/02"                /* Build Date */
 };
