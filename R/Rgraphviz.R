@@ -3,10 +3,6 @@
                    layoutType=c("dot","neato","twopi")[1],
                    attrs=NULL) {
 
-      ## graph must be fully connected if twopi
-##      if ((layoutType=="twopi")&&(isConnected(graph) == FALSE))
-##          stop("Graph must be fully connected to perform a twopi layout")
-
       outK <- switch(kind,
                    "AGRAPH"=0,
                    "AGDIGRAPH"=1,
