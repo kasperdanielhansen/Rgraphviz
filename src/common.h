@@ -5,7 +5,7 @@
 #define NEATOLAYOUT 1
 #define TWOPILAYOUT 2
 
-#define MINGRAPHVIZVER "1.9.20030401.0515"
+#define MINGRAPHVIZVER "1.9.20030423.0415"
 
 #include <Rinternals.h>
 #include <Rdefines.h>

@@ -1,9 +1,9 @@
 Package: Rgraphviz
 Title: Access for libgraph library
 Description: Interface with the libgraph library from the graphviz package to plot graphs in R.
-Version: 0.0.51
+Version: 0.0.52
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>
 Maintainer: Jeff Gentry <jgentry@jimmy.harvard.edu>
 Depends: R (>= 1.7.0), graph
-SystemRequirements: Graphviz (>= 1.9.20030401.0515)
+SystemRequirements: Graphviz (>= 1.9.20030423.0415)
 License: LGPL
