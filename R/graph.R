@@ -21,7 +21,8 @@
 
 
     setMethod("plot", "graphNEL",
-              function(x, y, ..., nodeLabels, centerNode){
+              function(x, y, ..., nodeLabels, centerNode,
+                       nodeCols="white", textCols="black"){
                   if (missing(y))
                       y <- "dot"
 
@@ -80,10 +81,10 @@
                            type="n",main=NULL,xlab="",ylab="",xaxt="n",
                            yaxt="n",bty="n",...)
                       symbols(nodeX, nodeY, circles=rad, inches=FALSE,
-                              bg="white",add=TRUE)
+                              bg=nodeCols,add=TRUE)
                       ## Plot the edges
                       q <- lapply(AgEdge(g), lines)
-                      text(nodeX,nodeY, nodeLabels)
+                      text(nodeX,nodeY, nodeLabels, col=textCols)
                   }
                   else {
                       stop("No nodes in graph")
