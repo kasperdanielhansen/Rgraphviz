@@ -67,7 +67,6 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
 \author{Jeff Gentry}
 \seealso{\code{\link{Ragraph}}, \code{\link{BezierCurve}}, \code{\link{xyPoint}}}
 \examples{
-\dontrun{
   set.seed(123)
   V <- letters[14:22]
   g1 <- randomEGraph(V, .2)
@@ -84,6 +83,5 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
   head(e1)
   tail(e1)
   txtLabel(e1)
-}
 }
 \keyword{classes}
