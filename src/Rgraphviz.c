@@ -146,6 +146,7 @@ SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
     }
     agwrite(g, dotFile);
 
+    fclose(dotFile);
     return(R_NilValue);
 }
     
