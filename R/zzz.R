@@ -12,4 +12,7 @@
     library.dynam( "Rgraphviz", pkg, lib )
     .Call("Rgraphviz_init")
     .initRagraph(where)
+    .initEdgePoints(where)
+    .initControlPoints(where)
+    .initXYPoint(where)
 }

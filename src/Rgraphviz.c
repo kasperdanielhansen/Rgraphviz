@@ -68,15 +68,13 @@ SEXP Rgraphviz_graph2ps(SEXP graph, SEXP outFile) {
 }
 
 
-SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
-		      SEXP weightList) {
+SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP eList) {
     Agraph_t *g;
     Agnode_t *head, *tail;
     Agedge_t *curEdge;
-    SEXP graphRef, elmt, names, curWeight, weightVals, weightNames,
-	obj, klass;
+    SEXP graphRef, elmt, obj, klass;
     int ag_k = 0;
-    int i,j;
+    int i, curNode;
 
     if (!isInteger(kind))
 	error("kind must be an integer value");
@@ -86,47 +84,38 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
     if (!isString(name))
 	error("name must be a string");
 
-    if (!isNewList(nelist))
+    if (!isNewList(eList))
 	error("nelist must be a list");
-
-    if (!isNewList(weightList))
-	error("weightListmust be a list");
-
-    if (length(weightList) != length(nelist))
-	error("Weights must be the same length as nelist");
 
     aginit();
     g = agopen(STR(name), ag_k);
 
-    PROTECT(names = getAttrib(nelist, R_NamesSymbol));
-
     /* Get the nodes created */
-    for (i = 0; i < length(names); i++) {
-	agnode(g, CHAR(STRING_ELT(names,i)));
+    for (i = 0; i < length(nodes); i++) {
+	agnode(g, CHAR(STRING_ELT(nodes,i)));
     }
 
     /* now fill in the edges */
-    for (i = 0; i < length(nelist); i++) {
-	PROTECT(elmt = AS_CHARACTER(VECTOR_ELT(nelist, i)));
-	head = agfindnode(g, CHAR(STRING_ELT(names,i)));
+    for (i = 0; i < length(eList); i++) {
+	PROTECT(elmt = VECTOR_ELT(eList, i));
+	curNode = INTEGER(GET_SLOT(elmt, 
+				   Rf_install("bNode")))[0];
+	head = agfindnode(g, CHAR(STRING_ELT(nodes,curNode-1)));
 	if (head == NULL)
 	    error("Missing head node");
 	/* Get weights for these edges */
-	curWeight = VECTOR_ELT(weightList,i);
-	PROTECT(weightNames = getAttrib(curWeight, R_NamesSymbol));
-	PROTECT(weightVals = AS_INTEGER(curWeight));
-	for (j = 0; j < length(elmt); j++) {
-	    tail = agfindnode(g,CHAR(STRING_ELT(elmt,j)));
-	    if (tail == NULL)
-		error("Missing tail node");
-	    if (agfindedge(g,head,tail) == NULL) {  
-		curEdge = agedge(g, tail, head);
-		curEdge->u.weight = INTEGER(curWeight)[j];
-	    }  
-	}
-	UNPROTECT(3);
+	curNode = INTEGER(GET_SLOT(elmt, 
+				   Rf_install("eNode")))[0]; 
+	tail = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
+	if (tail == NULL)
+	    error("Missing tail node");
+	if (agfindedge(g,head,tail) == NULL) {  
+	    curEdge = agedge(g, tail, head);
+	    curEdge->u.weight = INTEGER(GET_SLOT(elmt,
+						 Rf_install("weight")))[0];
+	}  
+	UNPROTECT(1);
     }
-    UNPROTECT(1);
 
     PROTECT(graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 				 R_NilValue));
@@ -139,6 +128,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
     
     SET_SLOT(obj, Rf_install("agraph"), graphRef);
     SET_SLOT(obj, Rf_install("laidout"), R_scalarLogical(FALSE));
+    SET_SLOT(obj, Rf_install("numEdges"), R_scalarInteger(length(eList)));
 
     UNPROTECT(2);
 
@@ -148,7 +138,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
 SEXP Rgraphviz_doDotLayout(SEXP graph) {
     Agraph_t *g;
     Rboolean laidout;
-    SEXP slotTmp, pos;
+    SEXP slotTmp, pos, cPoints;
 
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == FALSE) {
@@ -158,6 +148,9 @@ SEXP Rgraphviz_doDotLayout(SEXP graph) {
 	
 	g = dotLayout(g);
 	PROTECT(pos = getNodeLocs(g));
+	PROTECT(cPoints= 
+		getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
+						Rf_install("numEdges")))[0]));
 	
 	PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 					     R_NilValue));
@@ -165,7 +158,8 @@ SEXP Rgraphviz_doDotLayout(SEXP graph) {
 	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 	SET_SLOT(graph,Rf_install("nodeLocs"),pos);
 	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
-	UNPROTECT(2);
+	SET_SLOT(graph,Rf_install("edgePoints"), cPoints);
+	UNPROTECT(3);
     }
     return(graph);
 }
@@ -185,6 +179,65 @@ SEXP getNodeLocs(Agraph_t *g) {
     }
     UNPROTECT(1);
     return(pos);
+}
+
+SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
+    SEXP outList, curCP, curEP, pntList, pntSet, curXY;
+    SEXP epClass, cpClass, xyClass;
+    Agnode_t *node;
+    Agedge_t *edge;
+    bezier bez;
+    int nodes, numEl;
+    int i,k,l,pntLstEl;
+    int curEle = 0;
+
+    epClass = MAKE_CLASS("edgePoints");
+    cpClass = MAKE_CLASS("controlPoints");
+    xyClass = MAKE_CLASS("xyPoint");
+
+    PROTECT(outList = allocVector(VECSXP, numEdges));
+
+    nodes = agnnodes(g);
+    node = agfstnode(g);
+    for (i = 0; i < nodes; i++) {
+	edge = agfstout(g, node);
+	while (edge != NULL) {
+	    PROTECT(curEP = duplicate(NEW_OBJECT(epClass)));
+	    bez = edge->u.spl->list[0];
+	    PROTECT(pntList = allocVector(VECSXP, 
+					  ((bez.size-1)/3)));
+	    pntLstEl = 0;
+
+	    /* There are really (bez.size-1)/3 sets of control */
+	    /* points, with the first set containing teh first 4 */
+	    /* points, and then every other set starting with the */
+	    /* last point from the previous set and then the next 3 */
+	    for (k = 1; k < bez.size; k += 3) {
+		PROTECT(curCP = duplicate(NEW_OBJECT(cpClass)));
+		PROTECT(pntSet = allocVector(VECSXP, 4));
+		for (l = -1; l < 3; l++) {
+		    PROTECT(curXY = duplicate(NEW_OBJECT(xyClass)));
+		    SET_SLOT(curXY, Rf_install("x"), 
+			     R_scalarInteger(bez.list[k+l].x));
+		    SET_SLOT(curXY, Rf_install("y"), 
+			     R_scalarInteger(bez.list[k+l].y));
+		    SET_ELEMENT(pntSet, l+1, curXY);
+		    UNPROTECT(1);
+		}
+		SET_SLOT(curCP, Rf_install("cPoints"), pntSet);
+		SET_ELEMENT(pntList, pntLstEl++, curCP);
+		UNPROTECT(2);
+	    }	    
+	    SET_SLOT(curEP, Rf_install("splines"), pntList);
+	    SET_ELEMENT(outList, curEle++, curEP);
+	    UNPROTECT(2);
+	    edge = agnxtout(g, edge);
+	}
+	node = agnxtnode(g, node);
+    }
+    UNPROTECT(1);
+
+    return(outList);
 }
 
 Agraph_t *dotLayout(Agraph_t *g) {
