@@ -1,10 +1,10 @@
 AC_INIT(src/Rgraphviz.c)
 AC_PREREQ(2.13)
-AC_REVISION($Revision: 1.6 $)
+AC_REVISION($Revision: 1.7 $)
 # AC_CONFIG_SRCDIR(src/Rgraphviz.c)
 
-AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config)
-if test -n "${DOTNEATO_CONFIG}"; then
+AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config, "NO_PROG")
+if test ${DOTNEATO_CONFIG} != "NO_PROG"; then
 	PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
 	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
 
@@ -19,6 +19,9 @@ if test -n "${DOTNEATO_CONFIG}"; then
 		GVIZ_DEFS="-DGRAPHVIZ_1_12"
 	   fi
 	fi
+else
+   AC_MSG_RESULT(failed)
+   AC_MSG_ERROR(please specify a valid path to 'dotneato-config' with --with-graphviz=DIR)
 fi
 
 AC_SUBST(GVIZ_DEFS)
