@@ -605,6 +605,12 @@ if test -n "$ac_init_help"; then
 
   cat <<\EOF
 
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+ --with-graphviz=DIR root directory of graphviz installation
+defaults to /usr/local
+
 EOF
 fi
 
@@ -785,7 +791,7 @@ if test -z "$CONFIG_SITE"; then
 fi
 for ac_site_file in $CONFIG_SITE; do
   if test -r "$ac_site_file"; then
-    { echo "$as_me:788: loading site script $ac_site_file" >&5
+    { echo "$as_me:794: loading site script $ac_site_file" >&5
 echo "$as_me: loading site script $ac_site_file" >&6;}
     cat "$ac_site_file" >&5
     . "$ac_site_file"
@@ -796,7 +802,7 @@ if test -r "$cache_file"; then
   # Some versions of bash will fail to source /dev/null (special
   # files actually), so we avoid doing that.
   if test -f "$cache_file"; then
-    { echo "$as_me:799: loading cache $cache_file" >&5
+    { echo "$as_me:805: loading cache $cache_file" >&5
 echo "$as_me: loading cache $cache_file" >&6;}
     case $cache_file in
       [\\/]* | ?:[\\/]* ) . $cache_file;;
@@ -804,7 +810,7 @@ echo "$as_me: loading cache $cache_file" >&6;}
     esac
   fi
 else
-  { echo "$as_me:807: creating cache $cache_file" >&5
+  { echo "$as_me:813: creating cache $cache_file" >&5
 echo "$as_me: creating cache $cache_file" >&6;}
   >$cache_file
 fi
@@ -820,21 +826,21 @@ for ac_var in `(set) 2>&1 |
   eval ac_new_val="\$ac_env_${ac_var}_value"
   case $ac_old_set,$ac_new_set in
     set,)
-      { echo "$as_me:823: error: \`$ac_var' was set to \`$ac_old_val' in the previous run" >&5
+      { echo "$as_me:829: error: \`$ac_var' was set to \`$ac_old_val' in the previous run" >&5
 echo "$as_me: error: \`$ac_var' was set to \`$ac_old_val' in the previous run" >&2;}
       ac_cache_corrupted=: ;;
     ,set)
-      { echo "$as_me:827: error: \`$ac_var' was not set in the previous run" >&5
+      { echo "$as_me:833: error: \`$ac_var' was not set in the previous run" >&5
 echo "$as_me: error: \`$ac_var' was not set in the previous run" >&2;}
       ac_cache_corrupted=: ;;
     ,);;
     *)
       if test "x$ac_old_val" != "x$ac_new_val"; then
-        { echo "$as_me:833: error: \`$ac_var' has changed since the previous run:" >&5
+        { echo "$as_me:839: error: \`$ac_var' has changed since the previous run:" >&5
 echo "$as_me: error: \`$ac_var' has changed since the previous run:" >&2;}
-        { echo "$as_me:835:   former value:  $ac_old_val" >&5
+        { echo "$as_me:841:   former value:  $ac_old_val" >&5
 echo "$as_me:   former value:  $ac_old_val" >&2;}
-        { echo "$as_me:837:   current value: $ac_new_val" >&5
+        { echo "$as_me:843:   current value: $ac_new_val" >&5
 echo "$as_me:   current value: $ac_new_val" >&2;}
         ac_cache_corrupted=:
       fi;;
@@ -853,9 +859,9 @@ echo "$as_me:   current value: $ac_new_val" >&2;}
   fi
 done
 if $ac_cache_corrupted; then
-  { echo "$as_me:856: error: changes in the environment can compromise the build" >&5
+  { echo "$as_me:862: error: changes in the environment can compromise the build" >&5
 echo "$as_me: error: changes in the environment can compromise the build" >&2;}
-  { { echo "$as_me:858: error: run \`make distclean' and/or \`rm $cache_file' and start over" >&5
+  { { echo "$as_me:864: error: run \`make distclean' and/or \`rm $cache_file' and start over" >&5
 echo "$as_me: error: run \`make distclean' and/or \`rm $cache_file' and start over" >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -875,10 +881,10 @@ esac
 echo "#! $SHELL" >conftest.sh
 echo  "exit 0"   >>conftest.sh
 chmod +x conftest.sh
-if { (echo "$as_me:878: PATH=\".;.\"; conftest.sh") >&5
+if { (echo "$as_me:884: PATH=\".;.\"; conftest.sh") >&5
   (PATH=".;."; conftest.sh) 2>&5
   ac_status=$?
-  echo "$as_me:881: \$? = $ac_status" >&5
+  echo "$as_me:887: \$? = $ac_status" >&5
   (exit $ac_status); }; then
   ac_path_separator=';'
 else
@@ -889,11 +895,25 @@ rm -f conftest.sh
 
 # AC_CONFIG_SRCDIR(src/Rgraphviz.c)
 
-echo "$as_me:892: checking for graphviz" >&5
+echo "$as_me:898: checking for graphviz" >&5
 echo $ECHO_N "checking for graphviz... $ECHO_C" >&6
-# Extract the first word of "dotneato-config", so it can be a program name with args.
+
+# Check whether --with-graphviz or --without-graphviz was given.
+if test "${with_graphviz+set}" = set; then
+  withval="$with_graphviz"
+  if test x"$withval" != no ; then
+	echo "$as_me:905: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+	DOTNEATO_CONFIG="$withval"
+ else
+	echo "$as_me:909: result: no" >&5
+echo "${ECHO_T}no" >&6
+	DOTNEATO_CONFIG="not found"
+ fi
+else
+  # Extract the first word of "dotneato-config", so it can be a program name with args.
 set dummy dotneato-config; ac_word=$2
-echo "$as_me:896: checking for $ac_word" >&5
+echo "$as_me:916: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
 if test "${ac_cv_path_DOTNEATO_CONFIG+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -910,7 +930,7 @@ for ac_dir in $ac_dummy; do
   test -z "$ac_dir" && ac_dir=.
   if $as_executable_p "$ac_dir/$ac_word"; then
    ac_cv_path_DOTNEATO_CONFIG="$ac_dir/$ac_word"
-   echo "$as_me:913: found $ac_dir/$ac_word" >&5
+   echo "$as_me:933: found $ac_dir/$ac_word" >&5
    break
 fi
 done
@@ -922,12 +942,14 @@ fi
 DOTNEATO_CONFIG=$ac_cv_path_DOTNEATO_CONFIG
 
 if test -n "$DOTNEATO_CONFIG"; then
-  echo "$as_me:925: result: $DOTNEATO_CONFIG" >&5
+  echo "$as_me:945: result: $DOTNEATO_CONFIG" >&5
 echo "${ECHO_T}$DOTNEATO_CONFIG" >&6
 else
-  echo "$as_me:928: result: no" >&5
+  echo "$as_me:948: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
+
+fi;
 
 if test ${DOTNEATO_CONFIG} != "not found"; then
 	PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
@@ -945,9 +967,9 @@ if test ${DOTNEATO_CONFIG} != "not found"; then
 	   fi
 	fi
 else
-   echo "$as_me:948: result: failed" >&5
+     echo "$as_me:970: result: failed" >&5
 echo "${ECHO_T}failed" >&6
-   { { echo "$as_me:950: error: please specify a valid path to 'dotneato-config' with --with-graphviz=DIR" >&5
+     { { echo "$as_me:972: error: please specify a valid path to 'dotneato-config' with --with-graphviz=DIR" >&5
 echo "$as_me: error: please specify a valid path to 'dotneato-config' with --with-graphviz=DIR" >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -1062,7 +1084,7 @@ rm -f confdef2opt.sed
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:1065: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:1087: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -1229,7 +1251,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:1232: error: ambiguous option: $1
+    { { echo "$as_me:1254: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -1248,7 +1270,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:1251: error: unrecognized option: $1
+  -*) { { echo "$as_me:1273: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -1284,7 +1306,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "src/Makevars" ) CONFIG_FILES="$CONFIG_FILES src/Makevars" ;;
-  *) { { echo "$as_me:1287: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:1309: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -1477,7 +1499,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:1480: creating $ac_file" >&5
+    { echo "$as_me:1502: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -1495,7 +1517,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:1498: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:1520: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -1508,7 +1530,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:1511: error: cannot find input file: $f" >&5
+           { { echo "$as_me:1533: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
