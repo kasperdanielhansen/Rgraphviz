@@ -257,3 +257,4 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 setMethod("edgeNames", "Ragraph", function(object) {
     sapply(AgEdge(object), function(x) paste(tail(x), head(x), sep="~"))
 })
+
