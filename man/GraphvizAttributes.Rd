@@ -393,8 +393,10 @@
     \item{\code{regular}:}{Force the polygon to be regular.  Defaults to
     \code{FALSE}.} 
     \item{\code{shape}:}{The shape of the node.  Current acceptable
-      values are \code{circle} and \code{ellipse}.  The \code{circle}
-      shape is the default.}
+      values are \code{circle}, \code{rectangle}, \code{rect},
+      \code{box} and \code{ellipse}.  The \code{circle} shape is the
+      default.  Note that \code{box}, \code{rect} and \code{rectangle}
+      all correspond to the same actual shape.}
     \item{\code{sides}:}{Number of sides if \code{shape=polygon}.  This
       is an integer value with a default value of \code{4} and a minimum
     value of \code{0}.}
