@@ -440,7 +440,7 @@ if( require("Biobase") ) {
         buildDrawing <- function(x) {
             force(x)
             y <- x*100+1
-            function(node, ur, attrs=list()) {
+            function(node, ur, attrs=list(), radConv=1) {
                 nodeCenter <- getNodeCenter(node)
                 pieGlyph(y, xpos=getX(nodeCenter),
                          ypos=getY(nodeCenter),

@@ -1,11 +1,11 @@
 agopen <- function(graph,  name, nodes, edges, kind=NULL,
-                   layout=TRUE, layoutType=c("dot","neato","twopi")[1],
+                   layout=TRUE, layoutType=c("dot","neato","twopi"),
                    attrs=list(),
                    nodeAttrs=list(), edgeAttrs=list(),
                    subGList=list(), edgeMode=edgemode(graph),
                    recipEdges=c("combined", "distinct")) {
 
-
+    layoutType <- match.arg(layoutType)
     recipEdges <- match.arg(recipEdges)
     attrs <- getDefaultAttrs(attrs, layoutType)
     checkAttrs(attrs)
@@ -16,13 +16,13 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     if (missing(nodes)) {
         if (missing(graph))
             stop("Must supply either parameter 'graph' or 'nodes'")
-        nodes <- buildNodeList(graph, nodeAttrs, subGList)
+        nodes <- buildNodeList(graph, nodeAttrs, subGList, attrs$node)
     }
     if (missing(edges)) {
         if (missing(graph))
             stop("Must supply either parameter 'graph' or 'edges'")
-        edges <- buildEdgeList(graph, edgeAttrs, subGList,
-                               recipEdges=recipEdges)
+        edges <- buildEdgeList(graph, recipEdges, edgeAttrs,  subGList,
+                               attrs$edge)
     }
 
     if (length(subGList) > 0)
@@ -118,36 +118,31 @@ graphvizVersion <- function() {
     z
 }
 
-buildNodeList <- function(graph, nodeAttrs=list(), subGList=list()) {
+buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
+                          defAttrs=list()) {
+
     pNodes <- list()
 
     nodeNames <- as.character(nodes(graph))
+
+    ## Make sure all the vectors are in the same order as the node
+    ## names.
+    nodeAttrs <- lapply(nodeAttrs, function(x) {
+        out <- x[nodeNames];
+        out[!is.na(out)]
+    })
 
     if (length(nodeNames) > 0) {
         pNodes <- lapply(nodeNames, function(x) {
             new("pNode",name=x, attrs=list(label=x))})
         names(pNodes) <- nodeNames
 
-        attrNames <- names(nodeAttrs)
-        for (i in 1:length(nodeNames)) {
-            ## See if this node is in a subgraph
-            if (length(subGList) > 0) {
-                subGs <- which(unlist(lapply(subGList, function(x,y){y %in% nodes(x)},
-                                             nodeNames[i])))
-                if (length(subGs) == 1)
-                    pNodes[[i]]@subG <- subGs ## FIXME: Need replace method
-                else if (length(subGs) > 1)
-                    stop("Node ", nodeNames[i], " in multiple subgraphs")
-            }
-        }
+        pNodes <- assignAttrs(nodeAttrs, pNodes, defAttrs)
 
-        for (j in seq(along=nodeAttrs)) {
-            names <- names(nodeAttrs[[j]])
-            for (k in seq(along=nodeAttrs[[j]])) {
-                pNodes[[ names[k] ]]@attrs[[ attrNames[j] ]] <-
-                    as.character(nodeAttrs[[j]][k])
-            }
-        }
+        ## See if this node is in a subgraph
+        if (length(subGList) > 0)
+            pNodes <- assignSubGs(subGList, pNodes, nodeNames)
+
     }
 
     pNodes
@@ -155,7 +150,7 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList=list()) {
 
 
 buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
-                          edgeAttrs=list(), subGList=list()) {
+                          edgeAttrs=list(), subGList=list(), defAttrs=list()) {
     if (numEdges(graph) == 0)
         return(list())
 
@@ -214,8 +209,8 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 
     if (recipEdges == "combined") {
         removedEdges <- removedEdges(graph)
-        edgeNames <- edgeNames[-removedEdges]
         if (length(removedEdges) > 0) {
+            edgeNames <- edgeNames[-removedEdges]
             if (edgemode == "directed") {
                 ## Add in the arrowtails if this was a directed graph
                 for (i in 1:length(removedEdges)) {
@@ -230,34 +225,79 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
         }
     }
 
-
-    subGEdgeNames <- lapply(subGList, buildSubGEdgeNames)
-
-    attrNames <- names(edgeAttrs)
-    for (j in seq(along=edgeAttrs)) {
-        names <- names(edgeAttrs[[j]])
-
-        for (k in seq(along=edgeAttrs[[j]])) {
-            if (! names[k] %in% edgeNames)
-                next
-            pEdges[[ names[k] ]]@attrs[[ attrNames[j] ]] <-
-                as.character(edgeAttrs[[j]][k])
-        }
-    }
+    pEdges <- assignAttrs(edgeAttrs, pEdges, defAttrs)
 
     if (length(subGList) > 0) {
-        for (i in 1:length(edgeNames)) {
-            ## See if this edge is in a subgraph
-            subGs <- which(unlist(lapply(subGEdgeNames, function(x,y)
-                                     {y %in% x}, edgeNames[i])))
-            if (length(subGs) == 1)
-                pEdges[[i]]@subG <- subGs
-            else if (length(subGs) == 2)
-                stop("Edge ", edgeNames[i], " is in multiple subgraphs")
-        }
+        subGEdgeNames <- lapply(subGList, buildSubGEdgeNames)
+        pEdges <- assignSubGs(subGEdgeNames, pEdges, edgeNames)
     }
 
     pEdges
+}
+
+assignAttrs <- function(attrList, objList, defAttrs) {
+    if (length(attrList) == 0)
+        return(objList)
+
+    attrNames <- names(attrList)
+    defAttrs <- defAttrs[attrNames]
+    ## If there's no default, the requested attr won't work
+    ## anyways, and this can currently only cause problems,
+    ## so weed them out
+    defAttrs <- defAttrs[!is.na(names(defAttrs))]
+
+    ## Create a list containing all of the default values
+    attrs <- lapply(defAttrs, function(x, y) {
+        out <- as.character(rep(x, length(y)))
+        names(out) <- y
+        out
+    }, names(objList))
+    names(attrs) <- names(defAttrs)
+
+    ## Now that the defaults are had, need to overlay the custom
+    ## values
+    attrs <- mapply(function(x, y) {
+        newNames <- names(y)
+        x[newNames] <- as.character(y)
+        x
+    }, attrs, attrList)
+
+    ## FIXME: After playing around with various
+    ## permutations of XXXapply, can't seem to get this
+    ## to work w/o the for loops
+    nK <- seq(along=attrs[,1])
+    for (j in seq(along=attrNames)) {
+        for (k in nK) {
+            objList[[k]]@attrs[[ attrNames[j] ]] <- attrs[k,j]
+        }
+    }
+
+    objList
+}
+
+assignSubGs <- function(subGList, objList, objNames) {
+
+    subGs <- sapply(subGList,
+                    function(x, y) {y %in% x}, objNames)
+
+    whichSubGs <- apply(subGs, 1, function(x) {
+        out <- which(x)
+        if (length(out) == 0)
+            0
+        else
+            out})
+
+    if (is.list(whichSubGs)) {
+        bad <- which(sapply(whichSubGs, length) > 1)
+        stop(objNames[bad], " is in multiple subgraphs")
+    }
+    else {
+        ## FIXME: Why does this need as.integer and not the nodes?
+        objList <- mapply(function(x,y) { x@subG <- as.integer(y); x},
+                         objList, whichSubGs)
+    }
+
+    objList
 }
 
 removedEdges <- function(graph) {

@@ -9,9 +9,9 @@
   for plotting.
 }
 \usage{
-buildNodeList(graph, nodeAttrs = list(), subGList=list())
+buildNodeList(graph, nodeAttrs = list(), subGList=list(), defAttrs=list())
 buildEdgeList(graph, recipEdges=c("combined", "distinct"),
-              edgeAttrs = list(), subGList=list())
+              edgeAttrs = list(), subGList=list(), defAttrs=list())
 }
 \arguments{
   \item{graph}{An object of class \code{graph}}
@@ -19,6 +19,7 @@ buildEdgeList(graph, recipEdges=c("combined", "distinct"),
   \item{edgeAttrs}{A list of attributes for specific edges}
   \item{subGList}{A list of any subgraphs to be used in Graphviz}
   \item{recipEdges}{How to deal with reciprocated edges}
+  \item{defAttrs}{A list of attributes used to specify defaults}
 }
 \details{
   These functions will take either the nodes or the edges of the
@@ -51,6 +52,10 @@ buildEdgeList(graph, recipEdges=c("combined", "distinct"),
   subgraphs that one wants to use for this plot.  The \code{buildXXXList}
   functions will determine if a particular node or edge is in one of the
   subgraphs and note that in the object.
+
+  The \code{defAttrs} list is a list used to specify any default values
+  that one wishes to use.  The element names corresponde to the
+  attribute and the value is the default for that particular attribute.
 }
 \value{
   A list of class \code{pNode} or \code{pEdge} objects.
