@@ -1,6 +1,7 @@
 \name{pNode-class}
 \docType{class}
 \alias{pNode-class}
+\alias{pNode}
 \alias{name,pNode-method}
 \title{Class "pNode": A class to plot nodes}
 \description{This class is used to transfer information to Graphviz

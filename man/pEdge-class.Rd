@@ -1,6 +1,7 @@
 \name{pEdge-class}
 \docType{class}
 \alias{pEdge-class}
+\alias{pEdge}
 \alias{from}
 \alias{to}
 \alias{from,pEdge-method}
