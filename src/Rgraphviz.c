@@ -78,6 +78,10 @@ SEXP Rgraphviz_init(void) {
     /* Stifle graphviz warning messages, only return errors */
     agseterr(AGERR);
 
+#ifdef GRAPHVIZ_1_12
+    gvc = gvNEWcontext(Info, "");
+#endif
+
     return(R_NilValue);
 }
 
@@ -237,6 +241,11 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	}
 	UNPROTECT(3);
     }
+
+#ifdef GRAPHVIZ_1_12
+    gvc->g = g;
+    GD_gvc(g) = gvc;
+#endif
 
     return(buildRagraph(g));    
 }

@@ -1,0 +1,28 @@
+AC_INIT(src/Rgraphviz.c)
+AC_PREREQ(2.13)
+AC_REVISION($Revision: 1.6 $)
+# AC_CONFIG_SRCDIR(src/Rgraphviz.c)
+
+AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config)
+if test -n "${DOTNEATO_CONFIG}"; then
+	PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
+	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
+
+	MAJOR=`dotneato-config --version`
+	MAJOR=`echo [${MAJOR}] | cut -f1 -d"."`
+	
+	MINOR=`dotneato-config --version`
+	MINOR=`echo [${MINOR}] | cut -f2 -d"."`
+
+	if test ${MAJOR} -eq "1"; then
+	   if test ${MINOR} -eq "12"; then
+		GVIZ_DEFS="-DGRAPHVIZ_1_12"
+	   fi
+	fi
+fi
+
+AC_SUBST(GVIZ_DEFS)
+AC_SUBST(PKG_CPPFLAGS)
+AC_SUBST(PKG_LIBS)
+AC_OUTPUT(src/Makevars)
+	
