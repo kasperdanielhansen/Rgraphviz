@@ -67,7 +67,7 @@
                   else {
                       stop("No nodes in graph")
                   }
-                  return(list(nodeLocs=nodeLocs, edges=AgEdge(g),
+                  invisible(list(nodeLocs=nodeLocs, edges=AgEdge(g),
                               nodeLabels=nodeLabels))
               }, where=where)
 }
