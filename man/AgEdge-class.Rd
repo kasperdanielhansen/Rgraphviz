@@ -11,6 +11,7 @@
 \alias{numSplines}
 \alias{head}
 \alias{tail}
+\alias{color,AgEdge-method}
 \alias{endArrow,AgEdge-method}
 \alias{ep,AgEdge-method}
 \alias{getSpline,AgEdge-method}
