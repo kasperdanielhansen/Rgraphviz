@@ -310,7 +310,7 @@ setMethod("labelWidth","AgTextLabel", function(object)
     setMethod("lines", "BezierCurve", function(x,...,col=par("col"),
                                                lty=par("lty")) {
         z <- bezierPoints(x)
-        lines(z[,1],z[,2],col=col,lty=lty,...)
+        lines(z[,1],z[,2],col=col,lty=lty)
     })
 
     setMethod("lines","AgEdge",
