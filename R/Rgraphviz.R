@@ -2,8 +2,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
                    layout=TRUE, layoutType=c("dot","neato","twopi"),
                    attrs=list(),
                    nodeAttrs=list(), edgeAttrs=list(),
-                   subGList=list(),subGAttrs=list(),
-                   edgeMode=edgemode(graph),
+                   subGList=list(), edgeMode=edgemode(graph),
                    recipEdges=c("combined", "distinct")) {
 
     layoutType <- match.arg(layoutType)
@@ -26,10 +25,6 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
                                attrs$edge)
     }
 
-    subGs <- names(subGList)
-    if (length(subGs) != length(subGList))
-        stop("Elements in the subGList must be named")
-
     if (is.null(kind)) {
         ## Determine kind from the graph object
         outK <- switch(edgeMode,
@@ -50,8 +45,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     g <- .Call("Rgraphviz_agopen", as.character(name),
                as.integer(outK), as.list(nodes),
                as.list(edges), as.list(attrs),
-               as.character(subGs), as.list(subGAttrs),
-               PACKAGE="Rgraphviz")
+               as.list(subGList), PACKAGE="Rgraphviz")
     g@layoutType <- layoutType
     g@edgemode <- edgeMode
 

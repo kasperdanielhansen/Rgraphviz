@@ -144,18 +144,19 @@ SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
     
 
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
-		     SEXP edges, SEXP attrs, SEXP subGs, SEXP subGAttrs) {
+		     SEXP edges, SEXP attrs, SEXP subGs) {
     /* Will create a new Agraph_t* object in graphviz and then */
     /* a Ragraph S4 object around it, returning it to R */
     Agraph_t *g, *tmpGraph;
     Agraph_t **sgs;
     Agnode_t *head, *tail, *tmp;
     Agedge_t *curEdge;
+    char *subGName;
     int ag_k = 0;
     int i,j, attrPos;
-    int curSubG;
+    int whichSubG;
     SEXP pNode, curPN, pEdge, curPE;
-    SEXP attrNames, curAttrs;
+    SEXP attrNames, curAttrs, curSubG, curSubGEle;
 
     pNode = MAKE_CLASS("pNode");
     pEdge = MAKE_CLASS("pEdge");
@@ -183,27 +184,33 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	error("Out of memory while allocating subgraphs");
 
     if (length(subGs) > 0) { 
-	PROTECT(attrNames = getAttrib(subGAttrs, R_NamesSymbol));
-
 	/* Create any subgraphs, if necessary */	
 	for (i = 0; i < length(subGs); i++) {
-	    sgs[i] = agsubg(g, CHAR(STRING_ELT(subGs, i)));
+	    curSubG = VECTOR_ELT(subGs, i);
 
-	    for (j = 0; j < length(subGAttrs); j++) {
-		PROTECT(curAttrs = VECTOR_ELT(subGAttrs, j));
-		attrPos = getVectorPos(curAttrs, CHAR(STRING_ELT(subGs,i)));
-		if (attrPos >= 0 ) {
-		    /* There's a hit, assign this attribute to */
-		    /* the subgraph */
-		    PROTECT(curAttrs = coerceVector(curAttrs, STRSXP));
+	    /* First see if this is a cluster or not */
+	    curSubGEle = getListElement(curSubG, "cluster");
+	    subGName = (char *)malloc(100 * sizeof(char));
+	    if ((curSubGEle == R_NilValue)||
+		(LOGICAL(curSubGEle)[0] == TRUE))
+		sprintf(subGName, "%s%d", "cluster_", i);
+	    else
+		sprintf(subGName, "%d", i);
+
+	    sgs[i] = agsubg(g, subGName);
+
+	    free(subGName);
+
+	    /* Now assign attrs */
+	    curSubGEle = getListElement(curSubG, "attrs");
+	    if (curSubGEle != R_NilValue) {
+		attrNames = getAttrib(curSubGEle, R_NamesSymbol);
+		for (j = 0; j < length(curSubGEle); j++) {
 		    agset(sgs[i], CHAR(STRING_ELT(attrNames, j)),
-			  CHAR(STRING_ELT(curAttrs, attrPos)));
-		    UNPROTECT(1);
+			  CHAR(STRING_ELT(curSubGEle, j)));
 		}
-		UNPROTECT(1);
 	    }
 	}
-	UNPROTECT(1);
     }
 
     /* Get the nodes created */
@@ -212,12 +219,12 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 
 	/* Need to check the node # against the subG vector */
 	/* And assign it to the proper graph, not necessarily 'g' */
-	curSubG = INTEGER(GET_SLOT(curPN, Rf_install("subG")))[0];
-	if (curSubG > 0) {
+	whichSubG = INTEGER(GET_SLOT(curPN, Rf_install("subG")))[0];
+	if (whichSubG > 0) {
 	    /* Point tmpGraph to the appropriate current graph */
 	    /* Remember that in R they're numbered 1->X and in */
 	    /* C it is 0-(X-1) */
-	    tmpGraph = sgs[curSubG-1];
+	    tmpGraph = sgs[whichSubG-1];
 	}
 	else 
 	    tmpGraph = g;
@@ -239,9 +246,9 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     for (i = 0; i < length(edges); i++) {
 	PROTECT(curPE = VECTOR_ELT(edges, i));
 
-	curSubG = INTEGER(GET_SLOT(curPE, Rf_install("subG")))[0];
-  	if (curSubG > 0) {
-	    tmpGraph = sgs[curSubG-1];
+	whichSubG = INTEGER(GET_SLOT(curPE, Rf_install("subG")))[0];
+  	if (whichSubG > 0) {
+	    tmpGraph = sgs[whichSubG-1];
 	}
 	else { 
 	    tmpGraph = g;
@@ -472,7 +479,7 @@ SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
 	SET_VECTOR_ELT(pNodes, i, curPN);
 	
 	for (j = 0; j < nSubG; j++) {
-	    curSubG = VECTOR_ELT(subGList, j);
+	    curSubG = getListElement(VECTOR_ELT(subGList, j), "graph");
 	    subGNodes = GET_SLOT(curSubG, Rf_install("nodes"));
 
 	    for (k = 0; k < length(subGNodes); k++) {
@@ -645,24 +652,19 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 	    SET_VECTOR_ELT(peList, curEle, curPE);
 	    curEle++;
 	    for (i = 0; i < nSubG; i++) {
-		curSubG = VECTOR_ELT(subGList, i);
-
+		curSubG = getListElement(VECTOR_ELT(subGList, i), "graph");
 		subGEdgeL = GET_SLOT(curSubG, Rf_install("edgeL"));
-
 		elt = getListElement(subGEdgeL, STR(curFrom));
 		if (elt == R_NilValue)
 		    continue;
-
 		/* Extract out the edges */
 		subGEdges = VECTOR_ELT(elt, 0);
-
 		for (j = 0; j < length(subGEdges); j++) {
 		    if (INTEGER(subGEdges)[j] == INTEGER(curTo)[y])
 			break;
 		}
 		if (j == length(subGEdges))
 		    continue;
-
 		/* If we get here, then this edge is in subG 'i' */
 		SET_SLOT(curPE, Rf_install("subG"), R_scalarInteger(i+1));
 
