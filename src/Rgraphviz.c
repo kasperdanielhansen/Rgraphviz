@@ -78,6 +78,8 @@ SEXP Rgraphviz_init(void) {
     /* Stifle graphviz warning messages, only return errors */
     agseterr(AGERR);
 
+    gvc = gvNEWcontext(Info, "");
+
     return(R_NilValue);
 }
 
@@ -140,6 +142,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     int ag_k = 0;
     int i,j;
     int curSubG;
+
     SEXP pNode, curPN, pEdge, curPE;
     SEXP attrNames, curAttrs;
 
@@ -236,6 +239,9 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	}
 	UNPROTECT(3);
     }
+
+    gvc->g = g;
+    GD_gvc(g) = gvc;
 
     return(buildRagraph(g));    
 }
@@ -342,7 +348,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
     SEXP curLab, labClass;
     int i, nodes;
     char *tmpString;
-    
+
     if (g == NULL)
 	error("getNodeLayouts passed a NULL graph");
 
@@ -378,17 +384,17 @@ SEXP getNodeLayouts(Agraph_t *g) {
 	SET_SLOT(curNL, Rf_install("shape"),
 		 R_scalarString(agget(node, "shape")));
 
-	
+
 	PROTECT(curLab = NEW_OBJECT(labClass));
-	if (node->u.label->line != NULL) {
+	if (node->u.label->u.txt.line != NULL) {
 	    SET_SLOT(curLab, Rf_install("labelText"),
-		     R_scalarString(node->u.label->line->str));
-	    snprintf(tmpString, 2, "%c",node->u.label->line->just);
+		     R_scalarString(node->u.label->u.txt.line->str));
+	    snprintf(tmpString, 2, "%c",node->u.label->u.txt.line->just);
 	    SET_SLOT(curLab, Rf_install("labelJust"),
 		     R_scalarString(tmpString));
 	    
 	    SET_SLOT(curLab, Rf_install("labelWidth"),
-		     R_scalarInteger(node->u.label->line->width));
+		     R_scalarInteger(node->u.label->u.txt.line->width));
 	    
 	    /* Get the X/Y location of the label */
 	    PROTECT(curXY = NEW_OBJECT(xyClass));
@@ -504,7 +510,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 	    if (edge->u.label != NULL) {
 		PROTECT(curLab = NEW_OBJECT(labClass));
 		SET_SLOT(curLab, Rf_install("labelText"),
-			 R_scalarString(edge->u.label->line->str));
+			 R_scalarString(edge->u.label->u.txt.line->str));
 		/* Get the X/Y location of the label */
 		PROTECT(curXY = NEW_OBJECT(xyClass));
 		SET_SLOT(curXY, Rf_install("x"),
@@ -514,12 +520,12 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
 		UNPROTECT(1);
 			 
-		snprintf(tmpString, 2, "%c",edge->u.label->line->just);
+		snprintf(tmpString, 2, "%c",edge->u.label->u.txt.line->just);
 		SET_SLOT(curLab, Rf_install("labelJust"),
 			 R_scalarString(tmpString));
 
 		SET_SLOT(curLab, Rf_install("labelWidth"),
-			 R_scalarInteger(edge->u.label->line->width));
+			 R_scalarInteger(edge->u.label->u.txt.line->width));
 
 		SET_SLOT(curLab, Rf_install("labelColor"),
 			 R_scalarString(node->u.label->fontcolor));
@@ -577,7 +583,6 @@ Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
 		   STR(VECTOR_ELT(elmt,i)));
     }
     UNPROTECT(2);
-
 
     return(g);
 }
