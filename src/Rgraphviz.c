@@ -95,10 +95,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
 	error("name must be a string");
 
     aginit();
-    /* We don't actually want to do the layout with the directed */
-    /* flag as it messes up the R edge drawing.  But we do need */
-    /* to know later on if the graph is directed or not */
-    g = agopen(STR(name), AGRAPH);
+    g = agopen(STR(name), ag_k);
 
     /* Set default attributes */
     /* !!!! This is somewhat temporary until we allow */
@@ -273,6 +270,26 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		UNPROTECT(2);
 	    }	    
 	    SET_SLOT(curEP, Rf_install("splines"), pntList);
+	    SET_SLOT(curEP, Rf_install("startArrow"),
+		     R_scalarLogical(bez.sflag)); 
+	    SET_SLOT(curEP, Rf_install("endArrow"),
+		     R_scalarLogical(bez.eflag));
+	    /* get the sp and ep */
+	    PROTECT(curXY = NEW_OBJECT(xyClass));
+	    SET_SLOT(curXY, Rf_install("x"),
+		     R_scalarInteger(bez.sp.x));
+	    SET_SLOT(curXY, Rf_install("y"),
+		     R_scalarInteger(bez.sp.y));
+	    SET_SLOT(curEP, Rf_install("sp"), curXY);
+	    UNPROTECT(1);
+	    PROTECT(curXY = NEW_OBJECT(xyClass));
+	    SET_SLOT(curXY, Rf_install("x"),
+		     R_scalarInteger(bez.ep.x));
+	    SET_SLOT(curXY, Rf_install("y"),
+		     R_scalarInteger(bez.ep.y));
+	    SET_SLOT(curEP, Rf_install("ep"), curXY);
+	    UNPROTECT(1);	    
+	
 	    SET_ELEMENT(outList, curEle++, curEP);
 	    UNPROTECT(2);
 	    edge = agnxtout(g, edge);

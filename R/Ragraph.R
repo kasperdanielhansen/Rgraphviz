@@ -134,13 +134,40 @@
         setGeneric("edgePoints", function(object)
                    standardGeneric("edgePoints"), where=where)
     ## !!! Will want to include edgeID here
-    setClass("edgePoints", representation(splines="list"))
+    setClass("edgePoints", representation(splines="list",
+                                          startArrow="logical",
+                                          endArrow="logical",
+                                          sp="xyPoint",
+                                          ep="xyPoint"))
 
     if (is.null(getGeneric("splines")))
         setGeneric("splines", function(object)
                    standardGeneric("splines"), where=where)
     setMethod("splines", "edgePoints", function(object)
               object@splines, where=where)
+
+    if (is.null(getGeneric("startArrow")))
+        setGeneric("startArrow", function(object)
+                  standardGeneric("startArrow"), where=where)
+    setMethod("startArrow", "edgePoints", function(object)
+              object@startArrow, where=where)
+    if (is.null(getGeneric("endArrow")))
+        setGeneric("endArrow", function(object)
+                  standardGeneric("endArrow"), where=where)
+    setMethod("endArrow", "edgePoints", function(object)
+              object@endArrow, where=where)
+
+    if (is.null(getGeneric("sp")))
+        setGeneric("sp", function(object)
+                   standardGeneric("sp"), where=where)
+    setMethod("sp", "edgePoints", function(object)
+              object@sp, where=where)
+    if (is.null(getGeneric("ep")))
+        setGeneric("ep", function(object)
+                   standardGeneric("ep"), where=where)
+    setMethod("ep", "edgePoints", function(object)
+              object@ep, where=where)
+
 
     if (is.null(getGeneric("numSplines")))
         setGeneric("numSplines", function(object)
@@ -174,12 +201,26 @@
 
 arrows.edgePoints <- function(x,...) {
     z <- splines(x)
-    zLen <- length(z)
-    if (zLen > 1) {
-        ## Multiple splines, draw the others normally
-        lapply(z[1:(zLen-1)],lines)
+    lapply(z, lines)
+
+    ## Now need to draw the appropriate arrows
+    if (startArrow(x)) {
+        ## Draw end arrow
+        ## get the first point of the first splie
+        curP <-cPoints(z[[1]])[[1]]
+        ## get the edge's ep
+        curSP <- sp(x)
+        arrows(getX(curP), getY(curP), getX(curSP), getY(curSP))
     }
-    arrows.BezierCurve(z[[zLen]])
+    if (endArrow(x)) {
+        ## Draw start arrow
+        ## get the last point of the last spline
+        epPoints <- cPoints(z[[length(z)]])
+        curP <- epPoints[[length(epPoints)]]
+        ## get the edge's sp
+        curEP <- ep(x)
+        arrows(getX(curP), getY(curP), getX(curEP), getY(curEP))
+    }
 }
 
 .initBezierCurve <- function(where) {
