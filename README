@@ -2,14 +2,18 @@ Installing Rgraphviz:
 
 The Rgraphviz package requires a bit of extra work beyond 
 simply installing the package itself to run properly.  The user
-must first have installed the GraphViz software provided by AT&T
-(which must be at least version 1.9.20030401.0515).  To do this:
+must first have installed the GraphViz software provided by AT&T.
+For users of the release version of Rgraphviz from Bioconductor 1.3,
+this must be Graphviz version 1.10.  For users of Rgraphviz for
+Bioconductor 1.4 (or the devel versions leading up to the 1.4 release)
+this must be Graphviz version 1.12.
+
+To do this:
 
 - Go to http://www.graphviz.org/pub/graphviz/
-- Download GraphViz (it is recommended to take 'graphviz-current',
-  which will be the latest version).  NOTE: Please download the source
+- Download GraphViz.  NOTE: Please download the source
   and build using the sources instead of using RPMs or other prepackaged
-  methods.  For instance, to use graphviz-current, get graphviz-current.tar.gz.
+  methods.  
 - Unpack the distribution
 - In the GraphViz directory, run './configure', 'make' and finally
   'make install'.  If you have special configuration needs, specify
