@@ -34,17 +34,17 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
     \item{\code{splines}:}{Object of class \code{"list"} A list of
       \code{BezierCurve} objects}
     \item{\code{startArrow}:}{Object of class \code{"logical"} If there
-      is an arrow at the start of the edge}
+      is an arrow at the start of the edge.}
     \item{\code{endArrow}:}{Object of class \code{"logical"} If there is
-    an error at the end of the edge}
+    an error at the end of the edge.}
     \item{\code{sp}:}{Object of class \code{"xyPoint"} The starting
-      point of the edge}
+      point of the edge.}
     \item{\code{ep}:}{Object of class \code{"xyPoint"} The end point of
-      the edge}
-    \item{code{head}:}{Object of class \code{"character"} The head node
-      for this edge}
-    \item{code{tail}:}{Object of class \code{"character"} The tail node
-      for this edge}
+      the edge.}
+    \item{\code{head}:}{Object of class \code{"character"} The head node
+      for this edge.}
+    \item{\code{tail}:}{Object of class \code{"character"} The tail node
+      for this edge.}
   }
 }
 
@@ -67,6 +67,22 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
 \author{Jeff Gentry}
 \seealso{\code{\link{Ragraph}}, \code{\link{BezierCurve}}, \code{\link{xyPoint}}}
 \examples{
-##---- Should be DIRECTLY executable !! ----
+  set.seed(123)
+  V <- letters[14:22]
+  g1 <- randomEGraph(V, .2)
+  z <- agopen(g1,"foo",layoutType="neato")
+  edges <- z@AgEdge
+  e1 <- edges[[1]]
+  splines(e1)
+  startArrow(e1)
+  endArrow(e1)
+  sp(e1)
+  ep(e1)
+  numSplines(e1)
+  getSpline(e1,1)
+  head(e1)
+  tail(e1)
+  txtLabel(e1)
+
 }
 \keyword{classes}
