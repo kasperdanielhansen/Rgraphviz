@@ -33,6 +33,9 @@ R_scalarString(const char *v)
 }
 
 SEXP getListElement(SEXP list, char *str) {
+    /* Given a R list and acharacter string, will return the */
+    /* element of the list which has the name that corresponds to the */
+    /*   string */
     SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol);
     int i;
 
@@ -80,6 +83,7 @@ SEXP Rgraphviz_init(void) {
 }
 
 SEXP Rgraphviz_fin(SEXP s) { 
+    /* Finalizer for the external reference */
     Agraph_t *g;
 
     CHECK_Rgraphviz_graph(s);
@@ -90,19 +94,23 @@ SEXP Rgraphviz_fin(SEXP s) {
 }
 
 SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
+    /* Used to set attributes for the graph/nodes/edges */
     Agraph_t *g;
     int i;
     Rboolean laidout;
     SEXP slotTmp, elmt, attrNames;
 
+    /* If the graph is already laid out, it makes no sense to set
+       attrs */
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == TRUE)
 	error("graph is already laid out");
+
     PROTECT(slotTmp = GET_SLOT(graph, Rf_install("agraph")));
     CHECK_Rgraphviz_graph(slotTmp);
     g = R_ExternalPtrAddr(slotTmp);
     
-    /* Currently only handling graph-wide attributes */
+    /* Set the graph level attributes */
     PROTECT(elmt = getListElement(attrs, "graph"));
     /* Now elmt is a list of attributes to set */
     PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
@@ -111,7 +119,7 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     }
     
     UNPROTECT(2);
-    /* Now do node-wide ... NEED TO DO THIS BETTER */
+    /* Now do node-wide */
     PROTECT(elmt = getListElement(attrs, "node"));
     PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
     for (i = 0; i < length(elmt); i++) {
@@ -148,14 +156,17 @@ SEXP Rgraphviz_agread(SEXP filename) {
 }
 
 SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
+    /* Takes an R graph and writes it out in DOT format to a file */
     Agraph_t *g;
     FILE *dotFile;
     SEXP slotTmp;
 
+    /* extract the Agraph_t* external reference from the R object */
     slotTmp = GET_SLOT(graph, Rf_install("agraph"));
     CHECK_Rgraphviz_graph(slotTmp);
     g = R_ExternalPtrAddr(slotTmp);
 
+    /* output the Agraph_t */
     dotFile = fopen(STR(filename),"w");
     if (dotFile == NULL) {
 	error("Error opening file");
@@ -171,6 +182,8 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 		      SEXP nodeLabels, SEXP edgeLabels, SEXP from,
 		      SEXP to, SEXP weights, SEXP edgeSubs,
 		      SEXP nodeSubs, SEXP subGs) {
+    /* Will create a new Agraph_t* object in graphviz and then */
+    /* a Ragraph S4 object around it, returning it to R */
     Agraph_t *g, *tmpGraph;
     Agraph_t **sgs;
     Agnode_t *head, *tail, *tmp;
@@ -343,6 +356,8 @@ SEXP buildRagraph(Agraph_t *g) {
 
 
 SEXP getBoundBox(Agraph_t *g) {
+    /* Determine the graphviz determiend bounding box and */
+    /* assign it to the appropriate Ragraph structure */
     SEXP bbClass, xyClass, curBB, LLXY, URXY;
 
     xyClass = MAKE_CLASS("xyPoint");
@@ -545,10 +560,6 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
 
     /*** NODE ATTRS ***/
     agnodeattr(g,"label",NODENAME_ESC);
-/*    agnodeattr(g, "height", "0.25");
-     agnodeattr(g, "width", "6");
-     agnodeattr(g, "fixedsize", "true");
-*/
 
     /*** EDGE ATTRS ***/
     /* Arrow direction */
