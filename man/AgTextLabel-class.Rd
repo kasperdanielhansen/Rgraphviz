@@ -9,8 +9,8 @@
 \alias{labelLoc,AgTextLabel-method}
 \alias{labelJust,AgTextLabel-method}
 \alias{labelWidth,AgTextLabel-method}
-\title{Class "AgTextLabel": Represents a textlabel_t}
-\description{ This class is used to represent a 'textlabel_t' object in
+\title{Class "AgTextLabel": Represents a graphviz text label}
+\description{ This class is used to represent the textlabel object in
   C from the Graphviz library}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("AgTextLabel", ...)}.
