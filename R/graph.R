@@ -45,6 +45,7 @@
                       ## Get the radii of the nodes.  For now we're just
                       ## implementing circles
                       rad <- unlist(lapply(nodes(g), getNodeRW))
+                      print(rad)
 
                       ## Get the upper right X,Y point of the bounding
                       ## box for the graph

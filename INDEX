@@ -1,14 +1,14 @@
-AgEdge-class            Class "AgEdge": A class to describe an edge for
-                        a Ragraph object
+AgEdge-class            Class "AgEdge": A class to describe an edge
+                        for a Ragraph object
+agopen                  A function to obtain a libgraph object
 BezierCurve-class       Class "BezierCurve": A class to describe a
                         Bezier curve
+boundingBox-class       Class "boundingBox": A class to describe the
+                        bounding box of a Ragraph
+layoutGraph             A function to layout graph locations
 NodePosition-class      Class "NodePosition": A class to describe the
                         location and size of a node
 Ragraph-class           Class "Ragraph": A class to handle libgraph
                         representations
-agopen                  A function to obtain a libgraph object
-boundingBox-class       Class "boundingBox": A class to describe the
-                        bounding box of a Ragraph
-layoutGraph             A function to layout graph locations
 xyPoint-class           Class "xyPoint": A class to represent a X/Y
                         coordinate.
