@@ -1,0 +1,68 @@
+%
+% NOTE -- ONLY EDIT Rgraphviz.Rnw!!!
+% Biobase.tex file will get overwritten.
+%
+%\VignetteIndexEntry{HOWTO Rendering}
+%\VignetteDepends{Rgraphviz, graph}
+%\VignetteKeywords{Tools}
+%\VignettePackage{Rgraphviz}
+
+\documentclass{article}
+\usepackage{hyperref}
+\author{Jeff Gentry}
+\begin{document}
+\title{HowTo Render A Graph Using Rgraphviz}
+\maketitle
+
+\section{Overview}
+This article will demonstrate how to easily render a graph from R into
+a postscript document using the \verb+Rgraphviz+ package.  To do this,
+first we need to generate a R graph using the \verb+graph+ package:
+
+<<createGraph>>=
+library(Rgraphviz)
+set.seed(123)
+V <- letters[1:10]
+M <- 1:4
+g1 <- randomGraph(V, M, .2)
+g1
+@
+
+\section{A look at graph2ps}
+
+At this point, the graph can be written out to a postscript file using
+the \em{graph2ps} function.  \em{graph2ps} has the following
+set of arguments:
+
+\begin{verbatim}
+graph2ps(graph,name,kind=0,fileName="graph.ps")
+
+graph:    A graph object.
+name:     The name of the graph.
+kind:     The type of graph (see below)
+filename: The name of the file to output to.
+\end{verbatim}
+
+The {\tt kind} parameter is an integer value with the following
+meanings:
+	0: An undirected graph
+	1: A directed graph
+	2: A strict undirected graph
+	3: A strict directed graph.
+Note that strict graphs do not allow self arcs or multi-edges.
+
+\section{Rending your graph}
+
+Once you have decided what style (directed/undirected/etc) you wish
+your graph to be rendered as, you can now create the postscript file.
+Note that here we are using a temporary file to output to.
+ 
+<<render>>=
+outFile <- tempfile()
+graph2ps(g1,"A Random Graph",kind=0,file=outFile)
+@
+
+From here, the output file that you choose can be displayed or printed
+using your preferred methods.
+
+\end{document}
