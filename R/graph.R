@@ -10,12 +10,12 @@ agopen <- function(graph, name, kind=0) {
     return(g)
 }
 
-doLayout <- function(g) {
+dotLayout <- function(g) {
     g <- .Call("Rgraphviz_doLayout", g)
     return(g)
 }
 
-emitGraph <- function(g, fileName="graph.out") {
+emitGraph <- function(g, fileName="graph.ps") {
     .Call("Rgraphviz_emitGraph", g, as.character(fileName))
 }
 
