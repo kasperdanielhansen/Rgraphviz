@@ -168,7 +168,10 @@ drawAgNode <- function(node, ur) {
 
 drawTxtLabel <- function(txtLabel, xLoc, yLoc, width) {
     if ((!is.null(txtLabel))&&(length(labelText(txtLabel)) > 0)) {
+
+        txt <- labelText(txtLabel)
         loc <- labelLoc(txtLabel)
+
         if (missing(xLoc)) {
             justMod <- switch(labelJust(txtLabel),
                               "l" = 0,
@@ -214,11 +217,11 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc, width) {
             width <- width * .8
             count <- 0
             while (strW > width) {
-                x <- strwidth(curFontsize, "inches", cex)
+                x <- strwidth(txt, "inches", cex)
                 if (x == strW) {
                     count <- count + 1
                     if (count == 5) {
-                        warning("Label ", curFontsize,
+                        warning("Label ", txt,
                                 " is too large for node")
                         return()
                     }
@@ -229,7 +232,7 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc, width) {
             }
         }
 
-        text(xLoc, yLoc, curFontsize,
+        text(xLoc, yLoc, txt,
              col=labelColor(txtLabel), cex=cex)
     }
 }
