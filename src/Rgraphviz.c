@@ -39,6 +39,9 @@ SEXP getListElement(SEXP list, char *str) {
     SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol);
     int i;
 
+    if (names == R_NilValue)
+	error("Attribute vectors must have names");
+
     for (i = 0; i < length(list); i++) {
 	if (strcmp(CHAR(STRING_ELT(names,i)), str) == 0) {
 	    elmt = VECTOR_ELT(list, i);
@@ -288,7 +291,7 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 	PROTECT(attrsSlot = GET_SLOT(curObj, Rf_install("attrs")));
 	for (j = 0; j < length(attrList); j++) {
 	    PROTECT(curSTR = allocVector(STRSXP, 1));
-    
+
 	    PROTECT(curAttrs = coerceVector(VECTOR_ELT(attrList, j), STRSXP));
 	    PROTECT(attrPos = getListElement(curAttrs, CHAR(STRING_ELT(objNames, i))));
 	    if (attrPos == R_NilValue) {
@@ -421,11 +424,10 @@ SEXP Rgraphviz_bezier(SEXP Rpnts, SEXP Rn, SEXP Rt) {
 }
 
 
-SEXP Rgraphviz_buildNodeList(SEXP graph, SEXP nodeAttrs,
+SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
 			     SEXP subGList, SEXP defAttrs) {
     SEXP pNodes;
     SEXP pnClass, curPN;
-    SEXP nodes;
     SEXP attrs, attrNames, tmpStr;
     SEXP curSubG, subGNodes;
     int i, j, k, nSubG;
@@ -434,7 +436,6 @@ SEXP Rgraphviz_buildNodeList(SEXP graph, SEXP nodeAttrs,
 
     pnClass = MAKE_CLASS("pNode");
 
-    nodes = GET_SLOT(graph, Rf_install("nodes"));
     PROTECT(pNodes = allocVector(VECSXP, length(nodes)));
 
     PROTECT(attrNames = allocVector(STRSXP, 1));
@@ -485,11 +486,10 @@ SEXP Rgraphviz_buildNodeList(SEXP graph, SEXP nodeAttrs,
 }
 
 
-SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
+SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 			     SEXP edgeNames, SEXP removedEdges, 
 			     SEXP edgeAttrs, SEXP defAttrs) {
     int x, y, curEle = 0;
-    SEXP edgeL, edgeMode;
     SEXP from;
     SEXP peList;
     SEXP peClass, curPE;
@@ -505,13 +505,10 @@ SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
     int i, j, nSubG;
     int nEdges = length(edgeNames);
 
-    edgeL = GET_SLOT(graph, Rf_install("edgeL"));
     
     if (length(edgeL) == 0)
 	return(allocVector(VECSXP, 0));
     
-    edgeMode = GET_SLOT(graph, Rf_install("edgemode"));
-
     peClass = MAKE_CLASS("pEdge");
 
     PROTECT(peList = allocVector(VECSXP, nEdges -

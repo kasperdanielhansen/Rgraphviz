@@ -117,8 +117,8 @@ getDefaultAttrs <- function(curAttrs=list(),
 #        if (is.null(curAttrs$edge$constraint))
 #            curAttrs$edge$constraint <- FALSE
 
-#        if (is.null(curAttrs$edge$minlen))
-#            curAttrs$edge$minlen <- "1"
+        if (is.null(curAttrs$edge$minlen))
+            curAttrs$edge$minlen <- "1"
     }
 
     if (layoutType == "neato")
