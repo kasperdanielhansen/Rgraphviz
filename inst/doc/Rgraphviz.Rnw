@@ -3,7 +3,7 @@
 % Biobase.tex file will get overwritten.
 %
 %\VignetteIndexEntry{HOWTO Rendering}
-%\VignetteDepends{Rgraphviz, graph}
+%\VignetteDepends{Rgraphviz, graph, Biobase}
 %\VignetteKeywords{tools, graphs}
 %\VignettePackage{Rgraphviz}
 
@@ -41,7 +41,7 @@ method:
 
 <<plotDot, fig=TRUE, echo=FALSE>>=
     z <- plot(g1)
-@       
+@
 
 The \Rpackage{Rgraphviz} package allows you to specify varying layout
 engines, such as "dot" (the default), "neato", and "twopi".  This can
@@ -51,7 +51,7 @@ be done using the call to \Rfunction{plot}:
 z <- plot(g1, "neato")
 @
 
-The "twopi" layout method requires a graph to be fully connected.  
+The "twopi" layout method requires a graph to be fully connected.
 To determine if your graph is fully connected:
 
 <<connected>>=
@@ -175,7 +175,7 @@ eAttrs <- list()
 
 By default, nodes use the node name as their label and edges do not
 have a label.  However, both can have custom labels supplied via
-attributes.  
+attributes.
 
 <<labels, fig=TRUE>>=
 nAttrs$label <- c(a="lab1", b="lab2", g="lab3")
@@ -193,7 +193,7 @@ There are many areas where color can be specified to the plotted
 graph.  Edges can be drawn in a non-default color, as can nodes.
 Nodes can also have a specific \Robject{fillcolor} defined, detailing
 what color the interior of the node should be.  The color used for the
-labels can also be specified with the \Robject{fontcolor} attribute.  
+labels can also be specified with the \Robject{fontcolor} attribute.
 
 <<colors, fig=TRUE>>=
 ## Specify node drawing color
@@ -215,6 +215,92 @@ eAttrs
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 @
 
+\section{Plotting with non-standard nodes}
+
+The \Rpackage{Rgraphviz} package provides for non-standard node drawing.  Note
+that these nodes are shaped the same as standard nodes, but are able
+to provide for richer information in the actual display.
+
+To do this, lay out the graph using the shape desired - then, when
+plotting the laid out graph, one can use the \Robject{drawNode}
+argument to \Rfunction{plot} to define how the nodes are drawn.  This
+argument can be either of length one (in which case all nodes are
+drawn with it) or a list of length equal to the number of nodes in the
+graph (in which case the first element of the list is used to draw the
+first node, etc).  To work correctly, the function will take two
+arguments - the first \Robject{node} is an object of class
+\Robject{AgNode}, which describes the node's location and other
+information and the second parameter, \Robject{ur} is of class
+\Robject{XYPoint} and describes the upper right hand point of the
+bounding box (where the lower left is 0,0).  The default function for
+node drawing on all nodes is \Rfunction{drawAgNode}, so if one wants
+to use a custom function for some nodes but the standard function for
+others, the list passed in to \Robject{drawNode} can have the custom
+functions in the elements corresponding to those nodes desired to have
+special display and \Rfunction{drawAgNode} in the elements
+corresponding to the nodes where standard display is desired.
+
+One function included with the \Rpackage{Rgraphviz} package that can
+be used for such alternate node drawing is \Rfunction{pieGlyph}.  This
+allows users to put arbitrary pie charts in as circular nodes.  As an
+example, we will take the \Robject{eset} dataset from the
+\Rpackage{Biobase} package and will create a graph where each node
+corresponds to one of a set of Affymetrix probes represented in that
+exprSet and draw each node with a pie chart representing the
+expression levels of the samples in the exprSet for that probe.
+
+<<pieChart, fig=TRUE>>=
+require("Biobase") || stop("Biobase needed for this example")
+data(eset)
+
+exprs <- exprs(eset)[100:109,]
+probes <- rownames(exprs)
+
+## Construct a graph for these nodes
+set.seed(123)
+pieGraph <- randomGraph(probes, 1:4, .2)
+
+## Do a layout of the graph, but don't plot it yet
+pgLayout <- agopen(pieGraph, "foo")
+
+counts <-  apply(exprs, 1, function(x) {
+              table(cut(x, breaks=c(-Inf, 100, 500, Inf)))
+           })
+
+## Need to construct a list of drawing functions for the Rgraphviz plot
+plotPieChart <- function(curPlot, counts) {
+    buildDrawing <- function(x) {
+	force(x)
+	y <- x*100+1
+	function(node, ur) {
+            nodeCenter <- getNodeCenter(node)
+            pieGlyph(y, xpos=getX(nodeCenter),
+                     ypos=getY(nodeCenter),
+                     radius=getNodeRW(node),
+                     col=c("blue", "green", "red"))
+	}
+    }
+    drawing <- vector(mode="list", length=length(probes))
+    for (i in 1:length(drawing)) {
+	drawing[[i]] <- buildDrawing(counts[,i])
+    }
+
+    plot(curPlot, drawNode=drawing, main="Example Pie Chart Plot")
+    legend(0, 65, legend=c("No Data", "0-100", "101-500", "500+"),
+           fill=c("white", "blue", "green", "red"))
+}
+plotPieChart(pgLayout, counts)
+@
+
+To perform this plot, we constructed a complete function, although
+this is not necessary - one can take any path they desire to build the
+list of drawing functions.  Also note that in this plot the nodes do
+not have labels as it would look confusing, but those could be easily
+added with a line such as \Robject{drawTxtLabel(txtLabel(node),
+getX(nodeCenter), getY(nodeCenter))} in the \Rfunction{buildDrawing}
+sub-function above.  The \Rfunction{drawAgNode} should be used as a
+guide for basic activities such as this.
+
 \section{Example Graphs}
 
 Here are some other examples of graphs that can be drawn:
@@ -224,25 +310,25 @@ Unix history, using "dot" and "neato" layouts ...
 <<unixHistory,fig=TRUE>>=
 z <- new("graphNEL", nodes=c("5th Edition","6th Edition","Interdata",
 "7th Edition", "V7M", "8th Edition", "1 BSD", "2 BSD", "2.8 BSD",
-"32V", "3 BSD", "4 BSD", "4.1 BSD", "4.2 BSD", "PWB 1.0", "USG 1.0", 
-"CB Unix 1", "CB Unix 2", "CB Unix 3", "USG 2.0", "USG 3.0", 
-"PWB 2.0", "Unix/TS 1.0", "Unix/TS 3.0", "Unix/TS++",  
+"32V", "3 BSD", "4 BSD", "4.1 BSD", "4.2 BSD", "PWB 1.0", "USG 1.0",
+"CB Unix 1", "CB Unix 2", "CB Unix 3", "USG 2.0", "USG 3.0",
+"PWB 2.0", "Unix/TS 1.0", "Unix/TS 3.0", "Unix/TS++",
 "TS 4.0", "System V.0", "System V.2", "LSX", "Mini Unix",
-"Wollongong", "Ultrix-11", "Xenix", "UniPlus+", "9th Edition", 
+"Wollongong", "Ultrix-11", "Xenix", "UniPlus+", "9th Edition",
 "2.9 BSD", "Ultrix-32", "PDP-11 Sys V", "System V.3","4.3 BSD",
 "PWB 1.2"), edgeL=list(
-"5th Edition"=list(edges=c(2,15)), 
+"5th Edition"=list(edges=c(2,15)),
 "6th Edition"=list(edges=c(29,7,30,31,3)),
-"Interdata"=list(edges=c(24,22,4)), 
+"Interdata"=list(edges=c(24,22,4)),
 "7th Edition"=list(edges=c(6,10,5,32,33,34)), "V7M"=list(edges=32),
-"8th Edition"=list(edges=35), "1 BSD"=list(edges=8), 
+"8th Edition"=list(edges=35), "1 BSD"=list(edges=8),
 "2 BSD"=list(edges=9), "2.8 BSD"=list(edges=c(32,36)),
 "32V"=list(edges=11), "3 BSD"=list(edges=12), "4 BSD"=list(edges=13),
 "4.1 BSD"=list(edges=c(14,9,6)), "4.2 BSD"=list(edges=c(40,37)),
 "PWB 1.0"=list(edges=c(41, 16)), "PWB 1.2"=list(edges=22),
 "USG 1.0"=list(edges=c(17, 20)), "CB Unix 1"=list(edges=18),
 "CB Unix 2"=list(edges=19), "CB Unix 3"=list(edges=c(25,38)),
-"USG 2.0"=list(edges=21), "USG 3.0"=list(edges=24), 
+"USG 2.0"=list(edges=21), "USG 3.0"=list(edges=24),
 "PWB 2.0"=list(edges=24), "Unix/TS 1.0"=list(edges=24),
 "Unix/TS 3.0"=list(edges=26), "Unix/TS++"=list(edges=26),
 "TS 4.0"=list(edges=27),
@@ -250,7 +336,7 @@ z <- new("graphNEL", nodes=c("5th Edition","6th Edition","Interdata",
 LSX=character(),  "Mini Unix"=character(), "Wollongong"=character(),
 "Ultrix-11"=character(), "Xenix"=character(), "UniPlus+"=character(),
 "9th Edition"=character(), "2.9 BSD"=character(),
-"Ultrix-32"=character(), "PDP-11 Sys V"=character(), 
+"Ultrix-32"=character(), "PDP-11 Sys V"=character(),
 "System V.3"=character(), "4.3 BSD"=character()),
 edgemode="directed")
 a <- plot(z)
