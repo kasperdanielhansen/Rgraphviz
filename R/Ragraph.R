@@ -258,7 +258,7 @@
                                    function(x){paste(getPoints(x),
                                                      collapse=",")})),
                      collapse=" ")
-        out <- past(out,"\n")
+        out <- paste(out,"\n")
         cat(out)
     }, where=where)
 }

@@ -1,4 +1,4 @@
-agopen <- function(graph, name, kind="AGRAPH", layout=TRUE,
+  agopen <- function(graph, name, kind="AGRAPH", layout=TRUE,
                    layoutType=c("dot","neato","twopi")[1],
                    attrs=NULL) {
     outK <- switch(kind,
@@ -36,7 +36,7 @@ agset <- function(graph, attrs) {
     if (!is(graph,"Ragraph"))
         stop("Object is not of class Ragraph")
 
-    g <- .Call("Rgraphviz_agset", as.list(attrs))
+    g <- .Call("Rgraphviz_agset", graph, as.list(attrs))
     return(g)
 }
 
@@ -55,6 +55,7 @@ layoutGraph <- function(graph, layoutType=c("dot","neato","twopi")[1]) {
 
     if (laidout(graph) == FALSE) {
         z <- .Call("Rgraphviz_doLayout", graph, as.integer(type));
+        print("test2")
         return(z)
     }
     else {
