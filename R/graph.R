@@ -6,11 +6,20 @@ agopen <- function(graph, name, kind=0, layout=TRUE) {
     weights <- edgeWeights(graph)
 
     g <- .Call("Rgraphviz_agopen", as.character(name), as.integer(kind),
-               as.list(edges), as.list(weights), layout)
-    return(g)
+               as.list(edges), as.list(weights))
+
+    if (layout)
+        return(layoutGraph(g))
+    else
+        return(g)
 }
 
 layoutGraph <- function(graph) {
+    if (inherits(graph,"graphNEL"))
+        stop("Please use function agopen() for graphNEL objects")
+    if (!inherits(graph,"Ragraph"))
+        stop("Object is not of class Ragraph")
+
     if (laidout(graph) == FALSE) {
         z <- .Call("Rgraphviz_doDotLayout", graph);
         return(z)

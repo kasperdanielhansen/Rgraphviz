@@ -1,5 +1,20 @@
 #include "common.h"
 
+SEXP R_scalarInteger(int v)
+{
+  SEXP  ans = allocVector(INTSXP, 1);
+  INTEGER(ans)[0] = v;
+  return(ans);
+}
+
+SEXP
+R_scalarLogical(Rboolean v)
+{
+  SEXP  ans = allocVector(LGLSXP, 1);
+  LOGICAL(ans)[0] = v;
+  return(ans);
+}
+
 static SEXP Rgraphviz_graph_type_tag;
 
 #define CHECK_Rgraphviz_graph(s) do { \
@@ -24,18 +39,16 @@ SEXP Rgraphviz_fin(SEXP s) {
 }
 
 SEXP Rgraphviz_graph2ps(SEXP graph, SEXP outFile) {
-    Rgraph_t *R;
     Agraph_t *g;
+    SEXP slotTmp;
     FILE* of;
 
-    CHECK_Rgraphviz_graph(graph);
-    R = R_ExternalPtrAddr(graph);
-
+    slotTmp = GET_SLOT(graph, install("agraph"));
+    CHECK_Rgraphviz_graph(slotTmp);
+    g = R_ExternalPtrAddr(slotTmp);
+	
     if (!isString(outFile))
 	error("outFile must be a file name");
-
-    R = doDotLayout(R);
-    g = R->g;
 
     of = fopen(STR(outFile),"w");
     if (of == NULL) 
@@ -51,44 +64,17 @@ SEXP Rgraphviz_graph2ps(SEXP graph, SEXP outFile) {
     dot_cleanup(g);
     fclose(of);
     emit_reset(g);
-    return(R);
-}
-
-SEXP Rgraphviz_getNodeLocs(SEXP graph) {
-    Rgraph_t *R;
-    Agraph_t *g;
-    Agnode_t *node;
-    SEXP pos;
-    int i,j, nodes;
-    double *x;
-
-    CHECK_Rgraphviz_graph(graph);
-    
-    R = R_ExternalPtrAddr(graph);
-
-    R = doDotLayout(R);  
-    g = R->g;
-
-    nodes = agnnodes(g);
-    node = agfstnode(g);
-    PROTECT(pos = allocMatrix(REALSXP, nodes, 2));
-    for (i = 0; i < nodes; i++) {
-	REAL(pos)[i] = node->u.coord.x;
-	REAL(pos)[i + nodes] = node->u.coord.y;
-	node = agnxtnode(g,node);
-    }
-    UNPROTECT(1);
-    return(pos);
+    return(R_NilValue);
 }
 
 
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
-		   SEXP weightList) {
-    Rgraph_t *R;
+		      SEXP weightList) {
     Agraph_t *g;
     Agnode_t *head, *tail;
     Agedge_t *curEdge;
-    SEXP graphRef, elmt, names, curWeight, weightVals, weightNames;
+    SEXP graphRef, elmt, names, curWeight, weightVals, weightNames,
+	obj, klass;
     int ag_k = 0;
     int i,j;
 
@@ -141,25 +127,67 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
 	UNPROTECT(3);
     }
     UNPROTECT(1);
-    R = (Rgraph_t *)R_alloc(1, sizeof(Rgraph_t));
-    R->g = g;
-    R->layout = 0;
-    PROTECT(graphRef = R_MakeExternalPtr(R,Rgraphviz_graph_type_tag,
+
+    PROTECT(graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 				 R_NilValue));
     R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin);
-    UNPROTECT(1);
-    return(graphRef);
+
+    klass = MAKE_CLASS("Ragraph");
+    /*XX  the call to duplicate is needed until 1.6.2 is released
+      because of a bug in the NEW() mechanism in < 1.6.2! */
+    PROTECT(obj = duplicate(NEW_OBJECT(klass)));
+    
+    SET_SLOT(obj, Rf_install("agraph"), graphRef);
+    SET_SLOT(obj, Rf_install("laidout"), R_scalarLogical(FALSE));
+
+    UNPROTECT(2);
+
+    return(obj);
 }
 
-
-Rgraph_t *doDotLayout(Rgraph_t *R) {
+SEXP Rgraphviz_doDotLayout(SEXP graph) {
     Agraph_t *g;
+    Rboolean laidout;
+    SEXP slotTmp, pos;
 
-    if (R->layout) 
-	return(R);
-    else
-	g = R->g;
+    laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
+    if (laidout == FALSE) {
+	slotTmp = GET_SLOT(graph, install("agraph"));
+	CHECK_Rgraphviz_graph(slotTmp);
+	g = R_ExternalPtrAddr(slotTmp);
+	
+	g = dotLayout(g);
+	PROTECT(pos = getNodeLocs(g));
+	
+	PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
+					     R_NilValue));
+	R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin);
+	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
+	SET_SLOT(graph,Rf_install("nodeLocs"),pos);
+	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
+	UNPROTECT(2);
+    }
+    return(graph);
+}
 
+SEXP getNodeLocs(Agraph_t *g) {
+    Agnode_t *node;
+    SEXP pos;
+    int i, nodes;
+
+    nodes = agnnodes(g);
+    node = agfstnode(g);
+    PROTECT(pos = allocMatrix(REALSXP, nodes, 2));
+    for (i = 0; i < nodes; i++) {
+	REAL(pos)[i] = node->u.coord.x;
+	REAL(pos)[i + nodes] = node->u.coord.y;
+	node = agnxtnode(g,node);
+    }
+    UNPROTECT(1);
+    return(pos);
+}
+
+Agraph_t *dotLayout(Agraph_t *g) {
     graph_init(g);    
 
     g->u.drawing->engine = DOT;
@@ -170,10 +198,9 @@ Rgraph_t *doDotLayout(Rgraph_t *R) {
     dot_sameports(g);
     dot_splines(g);
     dotneato_postprocess(g, dot_nodesize);
-    R->layout = 1;
-    return(R);
-}
 
+    return(g);
+}
 
 SEXP Rgraphviz_getDotfile(SEXP graph) {
     /* !! Currently writes to stdout */
@@ -217,3 +244,5 @@ SEXP Rgraphviz_emitGraph(SEXP graph, SEXP outFile) {
     emit_reset(g);
     return(R_NilValue);
 }
+
+

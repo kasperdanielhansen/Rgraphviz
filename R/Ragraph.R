@@ -35,4 +35,5 @@
             cat("has not")
         cat(" been laid out using GraphViz\n")
     }, where=where)
+}
 
