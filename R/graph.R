@@ -1,30 +1,28 @@
 ### Methods for the graph classes in package graph
 
-if (is.null(getGeneric("graph2graphviz")))
-    setGeneric("graph2graphviz", function(object,...)
-               standardGeneric("graph2graphviz"))
 
-setMethod("graph2graphviz", "graph", function(object) {
+graph2graphviz <- function(object) {
+    if( ! is(object, "graph") )
+        stop("need a graph object")
     ## Return a 3 column numeric matrix (from, to, weight)
     fromTo <- edgeMatrix(object, duplicates=TRUE)
     colnames(fromTo) <- NULL
     weights <- unlist(edgeWeights(object))
 
     gvMtrx <- rbind(fromTo, weights)
-    ## Make sure we the matrix is all numeric
+    ## Make sure the matrix is numeric
     if (!is.numeric(gvMtrx))
-        stop("Invalid graph object, produces non-numeric values")
+        stop("non-numeric values in the edge matrix")
     if (any(is.na(gvMtrx)))
-        stop("Invalid graph object, contains NA values")
+        stop("NAs in the edge matrix")
 
     gvMtrx
-})
+}
 
-if (is.null(getGeneric("weightLabels")))
-    setGeneric("weightLabels", function(object, ...)
-               standardGeneric("weightLabels"))
 
-setMethod("weightLabels", "graph", function(object) {
+weightLabels <- function(object) {
+    if( ! is(object, "graph") )
+        stop("need a graph object")
     ## Will return the edge weights of a graph in a format
     ## that is appropriate for use with the edge labels in
     ## a plotted graph
@@ -43,7 +41,7 @@ setMethod("weightLabels", "graph", function(object) {
         x}, nodes)
 
     labels
-})
+}
 
 .initRgraphvizPlotMethods <- function() {
 
