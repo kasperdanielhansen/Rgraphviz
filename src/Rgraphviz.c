@@ -161,7 +161,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     g = agopen(STR(name), ag_k);
 
     /* Allocate space in the subgraph array */
-    sgs = (Agraph_t **)malloc(length(subGs) * sizeof(Agraph_t *));
+    sgs = (Agraph_t **)R_alloc(length(subGs), sizeof(Agraph_t *));
 
     if (length(subGs) > 0) { 
 	/* Create any subgraphs, if necessary */	
@@ -349,8 +349,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
     labClass = MAKE_CLASS("AgTextLabel");
 
     /* tmpString is used to convert a char to a char* w/ labels */
-    tmpString = (char *)malloc(2 * sizeof(char));
-
+    tmpString = (char *)R_alloc(2, sizeof(char));
 
     nodes = agnnodes(g);
     node = agfstnode(g);
@@ -428,7 +427,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     labClass = MAKE_CLASS("AgTextLabel");
 
     /* tmpString is used to convert a char to a char* w/ labels */
-    tmpString = (char *)malloc(2 * sizeof(char));
+    tmpString = (char *)R_alloc(2, sizeof(char));
 
     PROTECT(outList = allocVector(VECSXP, numEdges));
 
@@ -531,7 +530,6 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     }
     UNPROTECT(1);
 
-    free(tmpString);
     return(outList);
 }
 

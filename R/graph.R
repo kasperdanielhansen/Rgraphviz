@@ -235,7 +235,3 @@ drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
     invisible(symbols(nodeX, nodeY, circles=rad, inches=max(rad),
                       fg=fg, bg=bg,add=TRUE))
 }
-
-
-##    pieGlyph(rep(1,8), nodeX, nodeY, col=rainbow(8), radius=rad)
-##    rad/conv
