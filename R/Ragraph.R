@@ -296,33 +296,34 @@ setMethod("bLines", "BezierCurve", function(x,...,col=par("col"),
                                                 arrowhead="none") {
     z <- bezierPoints(x)
 
-        numSegs <- nrow(z)
-        lines(z[2:(numSegs-1),1], z[2:(numSegs-1),2],
-              col=col, lty=lty, lwd=lwd)
+    numSegs <- nrow(z)
+    lines(z[2:(numSegs-1),1], z[2:(numSegs-1),2],
+          col=col, lty=lty, lwd=lwd)
 
-        tailStart <- z[2,]
-        tailEnd <- z[1,]
-        switch(arrowtail,
-               "none"=lines(c(tailStart[1], tailEnd[1]),
+    tailStart <- z[2,]
+    tailEnd <- z[1,]
+    switch(arrowtail,
+           "none"=lines(c(tailStart[1], tailEnd[1]),
                             c(tailStart[2], tailEnd[2]), col=col, lty=lty,
-                            lwd=lwd),
-               "open"=arrows(tailStart[1], tailStart[2], tailEnd[1],
+           lwd=lwd),
+           "open"=arrows(tailStart[1], tailStart[2], tailEnd[1],
                              tailEnd[2], col=col, length=len, lty=lty,
-                             lwd=lwd),
-               stop("Unsupported arrowtail type: ", arrowtail))
+           lwd=lwd),
+           stop("Unsupported arrowtail type: ", arrowtail))
 
-        headStart <- z[numSegs-1,]
-        headEnd <- z[numSegs,]
-        switch(arrowhead,
-               "none"=lines(c(headStart[1], headEnd[1]),
-                            c(headStart[2], headEnd[2]), col=col, lty=lty,
-                            lwd=lwd),
-               "open"=arrows(headStart[1], headStart[2], headEnd[1],
-                             headEnd[2], col=col, length=len, lty=lty,
-                             lwd=lwd),
-               stop("Unsupported arrowhead type: ", arrowhead))
+    headStart <- z[numSegs-1,]
+    headEnd <- z[numSegs,]
 
-    })
+    switch(arrowhead,
+           "none"=lines(c(headStart[1], headEnd[1]),
+           c(headStart[2], headEnd[2]), col=col, lty=lty,
+           lwd=lwd),
+           "open"=arrows(headStart[1], headStart[2], headEnd[1],
+           headEnd[2], col=col, length=len, lty=lty,
+           lwd=lwd),
+           stop("Unsupported arrowhead type: ", arrowhead))
+
+})
 
 
 ### CLass xyPoint
