@@ -4,6 +4,6 @@ Description: Interface with the libgraph library from the graphviz package to pr
 Version: 0.0.19
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>
 Maintainer: Jeff Gentry <jgentry@jimmy.harvard.edu>
-Depends: R (>= 1.7.0)
+Depends: R (>= 1.7.0), graph
 SystemRequirements: Graphviz (>= 1.9.20030401.0515)
 License: LGPL
