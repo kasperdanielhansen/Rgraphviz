@@ -550,8 +550,8 @@ SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
 
 	for (y = 0; y < length(curTo); y++) {
 	    PROTECT(toName = STRING_ELT(from, INTEGER(curTo)[y]-1));
-	    edgeName = (char *)malloc((length(curFrom)+
-				       length(toName) + 2) *
+	    edgeName = (char *)malloc((strlen(STR(curFrom))+
+				       strlen(CHAR(toName)) + 2) *
 				      sizeof(char));
 	    sprintf(edgeName, "%s~%s", STR(curFrom), CHAR(toName));
 	    /* See if this edge is a removed edge */
@@ -566,8 +566,8 @@ SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
 		if (strcmp(STR(edgeMode), "directed") == 0) {
 		    /* Find the recip and add 'open' to tail */
 
-		    recipName = (char *)malloc((length(curFrom)+
-						length(toName) + 2) *
+		    recipName = (char *)malloc((strlen(STR(curFrom))+
+						strlen(CHAR(toName)) + 2) *
 					       sizeof(char));
 		    sprintf(recipName, "%s~%s", CHAR(toName), STR(curFrom));
 		    for (i = 0; i < curEle; i++) {
