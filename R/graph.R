@@ -169,10 +169,10 @@ drawAgNode <- function(node, ur) {
            "circle"=drawCircleNode(nodeX, nodeY, ur, rw, fg, bg),
            "ellipse"=ellipse(nodeX, nodeY, height=height, width=rw*2,
            fg=fg, bg=bg),
-           "box",
-           "rect",
+           "box"=,
+           "rect"=,
            "rectangle"=rect(nodeX-lw, nodeY-(height/2), nodeX+rw,
-                            nodeY+(height/2), col=bg, bofder=fg),
+                            nodeY+(height/2), col=bg, border=fg),
            stop("Unimplemented shape"))
 
     drawTxtLabel(txtLabel(node), nodeX, nodeY)
