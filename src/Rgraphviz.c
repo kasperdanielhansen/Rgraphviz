@@ -333,10 +333,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 
 
 Agraph_t *dotLayout(Agraph_t *g) {
-    graph_init(g);    
-
-    g->u.drawing->engine = DOT;
-    dot_init_node_edge(g);
+    dot_init_graph(g);
     dot_rank(g);
     dot_mincross(g);
     dot_position(g);
@@ -380,8 +377,7 @@ Agraph_t *twopiLayout(Agraph_t *g) {
     Agnode_t* ctr;
     
     twopi_init_graph(g); 
-    ctr = agfstnode(g);
-    twopi_init_graph(g);
+    ctr = agfstnode(g);   
     circleLayout(g,ctr);
     adjustNodes(g);
     spline_edges(g);
