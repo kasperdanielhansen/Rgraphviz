@@ -59,9 +59,10 @@ int getVectorPos(SEXP vector, char *str) {
     int i;
 
     PROTECT(names = getAttrib(vector, R_NamesSymbol));
-    for (i = 0; i < length(vector); i++)
+    for (i = 0; i < length(vector); i++) {
 	if (strcmp(CHAR(STRING_ELT(names,i)),str) == 0)
 	    break;
+    }
     
     UNPROTECT(1);
 
@@ -143,7 +144,7 @@ SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
     
 
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
-		     SEXP edges, SEXP attrs, SEXP subGs) {
+		     SEXP edges, SEXP attrs, SEXP subGs, SEXP subGAttrs) {
     /* Will create a new Agraph_t* object in graphviz and then */
     /* a Ragraph S4 object around it, returning it to R */
     Agraph_t *g, *tmpGraph;
@@ -151,9 +152,9 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     Agnode_t *head, *tail, *tmp;
     Agedge_t *curEdge;
     int ag_k = 0;
-    int i,j;
+    int i,j, attrPos;
     int curSubG;
-
+    char *curStr;
     SEXP pNode, curPN, pEdge, curPE;
     SEXP attrNames, curAttrs;
 
@@ -174,20 +175,41 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     aginit();
     g = agopen(STR(name), ag_k);
 
+    /* Set default attributes */
+    g = setDefaultAttrs(g,attrs);
+
     /* Allocate space in the subgraph array */
     sgs = (Agraph_t **)R_alloc(length(subGs), sizeof(Agraph_t *));
     if ((length(subGs) > 0) && (sgs == NULL))
 	error("Out of memory while allocating subgraphs");
 
     if (length(subGs) > 0) { 
+	PROTECT(attrNames = getAttrib(subGAttrs, R_NamesSymbol));
+
 	/* Create any subgraphs, if necessary */	
 	for (i = 0; i < length(subGs); i++) {
-	    sgs[i] = agsubg(g,CHAR(STRING_ELT(subGs,i)));
-	}
-    }
+	    curStr = (char *)malloc(100 * sizeof(char));
+	    sprintf(curStr, "%s_%d\n", "cluster", i);
+	    sgs[i] = agsubg(g, curStr);
+	    free(curStr);
+	    
+	    for (j = 0; j < length(subGAttrs); j++) {
+		PROTECT(curAttrs = VECTOR_ELT(subGAttrs, j));
+		attrPos = getVectorPos(curAttrs, CHAR(STRING_ELT(subGs,i)));
+		if (attrPos >= 0 ) {
+		    /* There's a hit, assign this attribute to */
+		    /* the subgraph */
+		    PROTECT(curAttrs = coerceVector(curAttrs, STRSXP));
 
-    /* Set default attributes */
-    g = setDefaultAttrs(g,attrs);
+		    agset(sgs[i], CHAR(STRING_ELT(attrNames, j)),
+			  STR(VECTOR_ELT(curAttrs, attrPos)));
+		    UNPROTECT(1);
+		}
+		UNPROTECT(1);
+	    }
+	}
+	UNPROTECT(1);
+    }
 
     /* Get the nodes created */
     for (i = 0; i < length(nodes); i++) {
@@ -551,6 +573,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 				       strlen(CHAR(toName)) + 2) *
 				      sizeof(char));
 	    sprintf(edgeName, "%s~%s", STR(curFrom), CHAR(toName));
+
 	    /* See if this edge is a removed edge */
 	    for (i = 0; i < length(removedEdges); i++) {
 		if (strcmp(CHAR(STRING_ELT(edgeNames, 
@@ -558,6 +581,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 			   edgeName) == 0)
 		    break; 
 	    }
+
 	    if (i < length(removedEdges)) {
 		/* This edge is to be removed */
 		if (strcmp(STR(edgeMode), "directed") == 0) {
@@ -567,18 +591,23 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 						strlen(CHAR(toName)) + 2) *
 					       sizeof(char));
 		    sprintf(recipName, "%s~%s", CHAR(toName), STR(curFrom));
-		    for (i = 0; i < curEle; i++) {
-			if (strcmp(CHAR(STRING_ELT(goodEdgeNames, i)),
+
+		    for (j = 0; j < curEle; j++) {
+			if (strcmp(CHAR(STRING_ELT(goodEdgeNames, j)),
 				   recipName) == 0)
 			    break;
 		    }
 		    free(recipName);
 
-		    PROTECT(recipPE = VECTOR_ELT(peList, i));
+		    PROTECT(recipPE = VECTOR_ELT(peList, j));
 
 		    recipAttrs = GET_SLOT(recipPE, Rf_install("attrs"));
 		    recipAttrNames = getAttrib(recipAttrs,
 					       R_NamesSymbol);
+		    /* We need to add this to the current set of
+		       recipAttrs, so create a new list which is one
+		       element longer and copy everything over, adding
+		       the new element */
 		    PROTECT(newRecipAttrs = allocVector(VECSXP,
 							length(recipAttrs)+1));
 		    PROTECT(newRecipAttrNames = allocVector(STRSXP,
@@ -933,7 +962,8 @@ Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     /* Now elmt is a list of attributes to set */
     PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
     for (i = 0; i < length(elmt); i++) {
-	agraphattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
+	agraphattr(g, CHAR(STRING_ELT(attrNames,i)),
+		   STR(coerceVector(VECTOR_ELT(elmt,i), STRSXP)));
     }
     
     UNPROTECT(2);
@@ -942,7 +972,8 @@ Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     PROTECT(elmt = getListElement(attrs, "node"));
     PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
     for (i = 0; i < length(elmt); i++) {
-	agnodeattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
+	agnodeattr(g, CHAR(STRING_ELT(attrNames,i)),
+		   STR(coerceVector(VECTOR_ELT(elmt,i), STRSXP)));
     }
     UNPROTECT(2);
 
@@ -951,10 +982,9 @@ Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
     for (i = 0; i < length(elmt); i++) {
 	agedgeattr(g, CHAR(STRING_ELT(attrNames,i)),
-		   STR(VECTOR_ELT(elmt,i)));
+		   STR(coerceVector(VECTOR_ELT(elmt,i), STRSXP)));
    }
     UNPROTECT(2);
-
     return(g);
 }
 

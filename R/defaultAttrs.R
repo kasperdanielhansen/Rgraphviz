@@ -37,6 +37,8 @@ getDefaultAttrs <- function(curAttrs=list(),
         curAttrs$graph$overlap <- ""
     if (is.null(curAttrs$graph$splines))
         curAttrs$graph$splines <- TRUE
+    if (is.null(curAttrs$graph$rank))
+        curAttrs$graph$rank <- "same"
 
     ## Use the 'fin' value for the Graphviz size, if there's no
     ## plot device open right now, then use a sensible default
@@ -61,6 +63,8 @@ getDefaultAttrs <- function(curAttrs=list(),
         curAttrs$cluster$bgcolor <- bg
     if (is.null(curAttrs$cluster$color))
         curAttrs$cluster$color <- col
+    if (is.null(curAttrs$cluster$rank))
+        curAttrs$cluster$rank <- "same"
 
     ## node attributes
     if (is.null(curAttrs$node$shape))
