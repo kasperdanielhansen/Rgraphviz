@@ -21,7 +21,7 @@
 
 
     setMethod("plot", "graphNEL",
-              function(x, y, ..., nodeLabels, center){
+              function(x, y, ..., nodeLabels, centerNode){
                   if (missing(y))
                       y <- "dot"
 
@@ -43,9 +43,9 @@
 
                   ## First make sure that center exists in
                   ## nodeLabels
-                  if (!missing(center)) {
-                      if (center %in% nodeLabels) {
-                          attrs$graph$center <- center
+                  if (!missing(centerNode)) {
+                      if (centerNode %in% nodeLabels) {
+                          attrs$graph$center <- centerNode
                       }
                       else
                           stop("Invalid center supplied, must be a node in the graph")
