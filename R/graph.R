@@ -10,7 +10,7 @@
                   if (missing(y))
                       y <- "dot"
 
-                      recipEdges <- match.arg(recipEdges)
+                  recipEdges <- match.arg(recipEdges)
 
 
                   ## Need to call plot.new before getting the default
@@ -29,7 +29,7 @@
                       if (interactive())
                           x11(width=wd, height=ht)
                       else
-                          postscript(width=wd, height=ht)
+                          postscript()
                   }
 
                   plot.new()
@@ -62,7 +62,7 @@
                       if (interactive())
                           x11(width=sz[1], height=sz[2])
                       else
-                          postscript(width=sz[1], height=sz[2])
+                          postscript()
 
                       plot.new()
                   }
