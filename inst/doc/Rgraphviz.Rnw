@@ -16,7 +16,7 @@
 
 \section{Overview}
 This article will demonstrate how to easily render a graph from R into
-a postscript document using the \verb+Rgraphviz+ package.  To do this,
+various formats using the \verb+Rgraphviz+ package.  To do this,
 first we need to generate a R graph using the \verb+graph+ package:
 
 <<createGraph>>=
@@ -28,9 +28,26 @@ g1 <- randomGraph(V, M, .2)
 g1
 @
 
-\section{A look at graph2ps}
+\section{Plotting in R}
 
-At this point, the graph can be written out to a postscript file using
+It is quite simple to generate a R plot window to display your graph.
+Once you have your graph object, the function \em{plotGraph} can be
+used.  The arguments for \em{plotGraph} are as follows:
+
+\begin{verbatim}
+plotGraph(graph, name="graph")
+
+graph:  A graph object
+name:   Name of the graph.  Currently does nothing.
+\end{verbatim}
+
+<<plotGraph, fig=TRUE>>=
+plotGraph(g1)
+@
+
+\section{Generating Postscript}
+
+Your graph can also be written out to a postscript file using
 the \em{graph2ps} function.  \em{graph2ps} has the following
 set of arguments:
 
@@ -50,8 +67,6 @@ meanings:
 	2: A strict undirected graph
 	3: A strict directed graph.
 Note that strict graphs do not allow self arcs or multi-edges.
-
-\section{Rending your graph}
 
 Once you have decided what style (directed/undirected/etc) you wish
 your graph to be rendered as, you can now create the postscript file.
