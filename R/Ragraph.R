@@ -1,3 +1,4 @@
+require(graph) || stop("Rgraphviz requires package graph")
 
 ### Class Ragraph
 setGeneric("Ragraph", function(object)

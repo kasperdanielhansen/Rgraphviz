@@ -4,8 +4,8 @@
                    attrs=NULL) {
 
       ## graph must be fully connected if twopi
-      if ((layoutType=="twopi")&&(isConnected(graph) == FALSE))
-          stop("Graph must be fully connected to perform a twopi layout")
+##      if ((layoutType=="twopi")&&(isConnected(graph) == FALSE))
+##          stop("Graph must be fully connected to perform a twopi layout")
 
       outK <- switch(kind,
                    "AGRAPH"=0,
@@ -80,7 +80,6 @@ layoutGraph <- function(graph, layoutType=c("dot","neato","twopi")[1]) {
 
     if (laidout(graph) == FALSE) {
         z <- .Call("Rgraphviz_doLayout", graph, as.integer(type));
-        print("Done layout, back in R")
         return(z)
     }
     else {
