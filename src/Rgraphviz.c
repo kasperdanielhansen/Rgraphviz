@@ -540,17 +540,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
 	
 	curTo = coerceVector(VECTOR_ELT(VECTOR_ELT(edgeL, x), 0),
 			     INTSXP);
-
-	/* Make sure this graph actually has weights in its edgeL */
-	/* I've run into a few that do not.  If not, fill in a */
-	/* vector with all 1s. */
-	if (length(VECTOR_ELT(edgeL, x)) > 1)
-	    PROTECT(curWeights = VECTOR_ELT(VECTOR_ELT(edgeL, x), 1));
-	else {
-	    PROTECT(curWeights = allocVector(REALSXP, length(curTo)));
-	    for (i = 0; i < length(curTo); i++)
-		REAL(curWeights)[i] = 1;
-	}
+	curWeights = VECTOR_ELT(VECTOR_ELT(edgeL, x), 1);
 
 	for (y = 0; y < length(curTo); y++) {
 	    PROTECT(toName = STRING_ELT(from, INTEGER(curTo)[y]-1));
@@ -658,7 +648,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
 	    free(edgeName);
 	    UNPROTECT(4);
 	}
-	UNPROTECT(2);
+	UNPROTECT(1);
     }
     setAttrib(peList, R_NamesSymbol, goodEdgeNames);
     peList = assignAttrs(edgeAttrs, peList, defAttrs);

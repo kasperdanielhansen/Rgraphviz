@@ -16,6 +16,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {"assignAttrs", (DL_FUNC)&assignAttrs,3},
     {"Rgraphviz_bezier", (DL_FUNC)&Rgraphviz_bezier, 3},
     {"Rgraphviz_buildNodeList", (DL_FUNC)&Rgraphviz_buildNodeList, 4},
+    {"Rgraphviz_buildEdgeList", (DL_FUNC)&Rgraphviz_buildEdgeList, 6},
     {NULL, NULL, 0},
 };
 
