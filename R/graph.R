@@ -98,6 +98,7 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                       ## Get the radii of the nodes.  For now we're just
                       ## implementing circles and ellipses
                       rad <- unlist(lapply(nodes(g), getNodeRW))
+                      RWidths <- rad
                       heights <- unlist(lapply(nodes(g), getNodeHeight))
 
                       ## Get the upper right X,Y point of the bounding
@@ -143,8 +144,7 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
 
                   invisible(list(nodeLocs=nodeLocs,
                                  nodeHeights=heights,
-                                 nodeRads=rep(rad,
-                                 length(nodes)),
+                                 nodeRwidths=RWidths,
                                  edges=AgEdge(g),
                                  nodeLabels=nodeLabels))
               })
