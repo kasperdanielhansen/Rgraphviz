@@ -8,6 +8,7 @@
 \alias{checkCenterNode}
 \alias{checkRankDir}
 \alias{getCols}
+\alias{repEdgeLabels}
 \title{ Plot a graph object - methods}
 \description{
   A plot method for \code{graph} objects.
@@ -58,7 +59,34 @@
   The \code{edgeLabels} list format is such that each list element
   corresponds to a tail ('from') node.  Contained in that element will
   be a named vector, with the elements being the labels and the names of
-  the elements corresponding to the head ('to') node.
+  the elements corresponding to the head ('to') node.  The user can
+  specify nothing for this parameter, in which case no labels are used,
+  they can specify a single value - in which case that is used as the
+  label for *all* edges, or they can fill in a list of this specified
+  format, in which case all listed edges will have the appropriate
+  label.
+
+  Likewise with the \code{nodeLabels} paramater.  If nothing is
+  specified, the system will use the node names as their labels.
+  Alternatively the user can specify a single value which will be used
+  as the label for all nodes or a character vector where each value is
+  the label for the corresponding node.
+
+  Users can specify colors for nodes, node labels and edges.  In all
+  three cases there is a paramter \code{defXXXCol} where XXX is one of
+  \code{Node}, \code{Text} or \code{Edge} and specifies the color that
+  will be used as the default for that class of object.  If the user
+  does not specify a default color, an appropriate value based on
+  \code{par} will be chosen.  If a user wishes to specify a color on a
+  specific node, label, or edge beyond that of the default they can use
+  the \code{XXXCols} paramter where again XXX is one of \code{node},
+  \code{text} or \code{edge} - in that case \code{nodeCols} and
+  \code{textCols} are simple named vectors, whereby if there is a node
+  that corresponds to one of the names in the vector, the value for that
+  element will be used for that node's color.  Likewise, one can specify
+  edge colors by using a list of lists where if there is an element
+  node1$node2 and an edge from node1 to node2 then the value of
+  node1$node2[[1]] is used for that edge's color.
   
   The \code{attrs} list requires a particular format.  It must be of
   length 3 with names \code{graph}, \code{node}, and \code{edge}.  Each
