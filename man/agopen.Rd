@@ -23,7 +23,7 @@ agopen(graph, name, nodeLabels=nodes(graph), kind = "AGRAPH", layout = TRUE,
   \item{edgeLabels}{A list describing labels for the edges}
 }
 \details{
-  \code{graph} is from the package \link{graph}.
+  \code{graph} is from the package \code{\link{graph-class}}.
 
   The kind parameter works as follows:
   AGRAPH - An undirected graph
