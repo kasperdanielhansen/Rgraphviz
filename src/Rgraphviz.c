@@ -158,8 +158,8 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     SEXP pNode, curPN, pEdge, curPE;
     SEXP attrNames, curAttrs, curSubG, curSubGEle;
 
-    pNode = MAKE_CLASS("pNode");
-    pEdge = MAKE_CLASS("pEdge");
+    PROTECT(pNode = MAKE_CLASS("pNode"));
+    PROTECT(pEdge = MAKE_CLASS("pEdge"));
     
     if (!isInteger(kind))
 	error("kind must be an integer value");
@@ -279,7 +279,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     gvc->g = g;
     GD_gvc(g) = gvc;
 #endif
-
+    UNPROTECT(2);
     return(buildRagraph(g));    
 }
 
@@ -458,7 +458,7 @@ SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
 
     nSubG = length(subGList);
 
-    pnClass = MAKE_CLASS("pNode");
+    PROTECT(pnClass = MAKE_CLASS("pNode"));
 
     PROTECT(pNodes = allocVector(VECSXP, length(nodes)));
 
@@ -498,14 +498,12 @@ SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
 	UNPROTECT(3);
     }
 
-    UNPROTECT(1);
-
     setAttrib(pNodes, R_NamesSymbol, nodes);
 
     /* Put any attributes associated with this node list in */
     pNodes = assignAttrs(nodeAttrs, pNodes, defAttrs);
 
-    UNPROTECT(1);
+    UNPROTECT(3);
     return(pNodes);
 }
 
@@ -532,7 +530,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
     if (length(edgeL) == 0)
 	return(allocVector(VECSXP, 0));
     
-    peClass = MAKE_CLASS("pEdge");
+    PROTECT(peClass = MAKE_CLASS("pEdge"));
 
     PROTECT(peList = allocVector(VECSXP, nEdges -
 				 length(removedEdges)));
@@ -679,7 +677,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
     setAttrib(peList, R_NamesSymbol, goodEdgeNames);
     peList = assignAttrs(edgeAttrs, peList, defAttrs);
 
-    UNPROTECT(5);
+    UNPROTECT(6);
     return(peList);
 }
 
@@ -690,14 +688,14 @@ SEXP buildRagraph(Agraph_t *g) {
 				 R_NilValue));
     R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin);
 
-    klass = MAKE_CLASS("Ragraph");
+    klass = PROTECT(MAKE_CLASS("Ragraph"));
     PROTECT(obj = NEW_OBJECT(klass));
     
     SET_SLOT(obj, Rf_install("agraph"), graphRef);
     SET_SLOT(obj, Rf_install("laidout"), R_scalarLogical(FALSE));
     SET_SLOT(obj, Rf_install("numEdges"), R_scalarInteger(agnedges(g)));
 
-    UNPROTECT(2);
+    UNPROTECT(3);
 
     return(obj);
 }
