@@ -51,6 +51,7 @@ Objects can be created by calls to the function \code{agopen}.
 \seealso{\code{\link{agopen}}}
 
 \examples{
+set.seed(123)
 V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
