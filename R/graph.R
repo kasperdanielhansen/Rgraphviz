@@ -4,19 +4,13 @@ if (is.null(getGeneric("graph2graphviz")))
     setGeneric("graph2graphviz", function(object,...)
                standardGeneric("graph2graphviz"))
 
-setMethod("graph2graphviz", "graphNEL", function(object) {
+setMethod("graph2graphviz", "graph", function(object) {
     ## Return a 3 column numeric matrix (from, to, weight)
-    nodeNames <- nodes(object)
-    ed <- edges(object)
-    elem <- sapply(ed, length)
-    from <- rep(names(elem), elem)
-    from <- as.integer(match(from, nodeNames))
+    fromTo <- edgeMatrix(object, duplicates=TRUE)
+    colnames(fromTo) <- NULL
+    weights <- unlist(edgeWeights(object))
 
-    to <- unlist(ed)
-    to <- as.integer(match(to, nodeNames))
-
-    weights <- as.integer(unlist(edgeWeights(object)))
-    gvMtrx <- matrix(c(from, to, weights), ncol=3)
+    gvMtrx <- rbind(fromTo, weights)
     ## Make sure we don't have any NAs in the matrix
     if (!is.numeric(gvMtrx))
         stop("Invalid graph object, produces non-numeric values")
@@ -27,10 +21,10 @@ if (is.null(getGeneric("weightLabels")))
     setGeneric("weightLabels", function(object, ...)
                standardGeneric("weightLabels"))
 
-setMethod("weightLabels", "graphNEL", function(object) {
+setMethod("weightLabels", "graph", function(object) {
     ## Will return the edge weights of a graph in a format
     ## that is appropriate for use with the edge labels in
-    ## a plotted graphNEL
+    ## a plotted graph
 
     weights <- edgeWeights(object)
 
@@ -50,8 +44,8 @@ setMethod("weightLabels", "graphNEL", function(object) {
 
 .initRgraphvizPlotMethods <- function() {
 
-    setMethod("plot", "graphNEL",
-              function(x, y, ..., nodeLabels, edgeLabels,
+    setMethod("plot", "graph",
+              function(x, y, ..., nodeLabels=nodes, edgeLabels = list(),
                        nodeShape="circle",
                        defNodeCol=par("bg"), nodeCols=character(),
                        defTextCol=par("fg"), textCols=character(),
@@ -73,12 +67,29 @@ setMethod("weightLabels", "graphNEL", function(object) {
                                    "AGRAPH")
                   nodes <- nodes(x)
                   edges <- edges(x)
-                  if(missing(nodeLabels))
-                      nodeLabels <- nodes
+
+                  ## We allow for users to pass in either 1
+                  ## label which is used for all nodes, or a vector
+                  ## with length equal to the length of nodes,
+                  ## specifying the labels in order.
+                  nNL <- length(nodeLabels)
+
+                  if (nNL == 1)
+                      nodeLabels <- rep(nodeLabels, length(nodes))
                   else
                       if (length(nodeLabels) != length(nodes))
                           stop(paste("nodeLabels must be the same",
                                      "length as the number of nodes"))
+
+                  if ((is.list(edgeLabels))&&(length(edgeLabels) == length(nodes))) {
+                      if (!all(unlist(lapply(edgeLabels,is.character))))
+                          stop("edgeLabel list can only contain character vectors")
+                  }
+                  else if (length(edgeLabels) > 1)
+                      stop("edgeLabels must be either ",
+                           "empty, length one, or a list with the length of nodes")
+                  else if (length(edgeLabels) == 1)
+                      edgeLabels <- repEdgeLabels(edgeLabels, x)
 
                   ## Make sure there is an attrs list, and if one was
                   ## provided, sanity check that list
@@ -346,3 +357,24 @@ getCols <- function(defCol, cols, names) {
     nC
 }
 
+repEdgeLabels <- function(label, graph) {
+    ## Will take a single label and generate an edgeLabel list
+    ## that uses that label in ever spot
+
+    if (length(label) != 1)
+        stop("repEdgeLabels only for single labels")
+
+    edges <- edges(graph)
+    if (length(edges) > 0) {
+        for (i in 1:length(edges)) {
+            cur <- edges[[i]]
+            if (length(cur) > 0) {
+                new <- rep(label,length(cur))
+                names(new) <- cur
+                edges[[i]] <- new
+            }
+        }
+    }
+
+    edges
+}

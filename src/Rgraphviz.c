@@ -487,7 +487,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		SET_SLOT(curLab, Rf_install("labelWidth"),
 			 R_scalarInteger(edge->u.label->line->width));
 
-		SET_SLOT(curEP, Rf_install("label"), curLab);
+		SET_SLOT(curEP, Rf_install("txtLabel"), curLab);
 		UNPROTECT(1);
 	    }
 

@@ -200,6 +200,37 @@ color will be used for the edge.
   plot(g1,nodeCols=nodeCols,textCols=textCols, edgeCols=edgeCols)
 @
 
+\section{The Attributes List}
+
+There are many visualization options in Graphviz that can be set beyond those
+which are given explicit options using Rgraphviz.  The user can
+manually specify values for any of these by specificing an attribute
+list which will get passed down to Graphviz.  An example of an
+attribute that users would commonly want to specify is "dir" which
+notes the direction of a directed edge - for instance the default is
+"forward", but one could set "backwards", "none" (ie it is visually
+undirected) or even "both" (so one can represent an edge in each
+direction between two nodes using only one actual edge and not two).
+A list of all available attributes is accessible online at:
+http://www.research.att.com/~erg/graphviz/info/attrs.html. (note that
+not all of these will have a visible effect in Rgraphviz)
+
+To manually specify attributes, one must first create an attributes
+list, which is a list of length three with the names "graph", "node",
+and "edge" (corresponding to graph attributes, node attributes and
+edge attributes respectively).  Each one of these list elements is
+itself a list of the appropriate attributes.  For instance, to define
+the "dir" attribute to be "both" as mentioned above:
+
+<<createAttrs>>=
+attrs <- vector(length=3, mode="list")
+names(attrs) <- c("graph", "node", "edge")
+attrs$edge$dir <- "both"
+attrs
+@
+
+
+
 \section{Example Graphs}
 
 Here are some other examples of graphs that can be drawn:

@@ -44,7 +44,7 @@
           ## 'cluster', so create proper names for the subgrpahs
           subGs <- paste("cluster_",1:length(subGList),sep="")
 
-          edgeFromTo <- edgeMtrx[,1:2]
+          edgeFromTo <- edgeMtrx[1:2,]
           for (i in 1:length(subGList)) {
               subNodes <- nodes(subGList[[i]])
               ## Calculate which nodes belong to which subgraph
@@ -92,8 +92,8 @@
       g <- .Call("Rgraphviz_agopen", as.character(name),
                  as.integer(outK), as.vector(nodes),
                  as.character(nodeLabels), as.list(edgeLabels),
-                 as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
-                 as.integer(edgeMtrx[,3]), as.integer(get("edgeSubs",env=arrEnv)),
+                 as.integer(edgeMtrx[1,]), as.integer(edgeMtrx[2,]),
+                 as.double(edgeMtrx[3,]), as.integer(get("edgeSubs",env=arrEnv)),
                  as.integer(get("nodeSubs",env=arrEnv)),
                  as.character(subGs), as.list(attrs))
 
