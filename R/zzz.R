@@ -3,5 +3,6 @@
     .Call("Rgraphviz_init")
 
     require(graph) || stop ("Rgraphviz requires package graph.")
+    .initgraphMethods()
 }
 
