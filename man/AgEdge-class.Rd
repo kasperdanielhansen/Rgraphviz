@@ -21,6 +21,7 @@
 \alias{startArrow,AgEdge-method}
 \alias{tail,AgEdge-method}
 \alias{txtLabel,AgEdge-method}
+\alias{txtLabel}
 \title{Class "AgEdge": A class to describe an edge for a Ragraph object}
 \description{  This class is used to represent edges for the
   \code{Ragraph} class.  One can retrieve various pieces of information
@@ -60,6 +61,7 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
     \item{lines}{Draws the edge}
     \item{head}{Gets the head slot}
     \item{tail}{Gets the tail slot}
+    \item{txtLabel}{Returns any label for this edge}
   }
 }
 \author{Jeff Gentry}
