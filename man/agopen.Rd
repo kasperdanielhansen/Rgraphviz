@@ -7,17 +7,18 @@
   graph represented by the \code{Ragraph} can be laidout in various formats.
 }
 \usage{
-agopen(graph, name, kind = "AGRAPH", layout = TRUE,
+agopen(graph, name, nodeLabels, kind = "AGRAPH", layout = TRUE,
        layoutType=c("dot","neato","twopi")[1], attrs=NULL)
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
   \item{graph}{An object of class \code{graphNEL}}
   \item{name}{The name of the graph}
+  \item{nodeLabels}{Labels for the nodes}
   \item{kind}{The type of graph}
   \item{layout}{Whether to layout the graph or not}
   \item{layoutType}{Defines the layout engine.  Defaults to dot}
-  \item{attrs}{Currently unused}
+  \item{attrs}{A list of graphviz attributes}
 }
 \details{
   \code{graph} is from the package \link{graph}.
@@ -32,7 +33,13 @@ agopen(graph, name, kind = "AGRAPH", layout = TRUE,
 
   If \code{layout} is set to \code{TRUE}, then the \code{libgraph}
   routines are used to compute the layout locations for the graph.
-  Otherwise the graph is returned without layout information.  
+  Otherwise the graph is returned without layout information.
+
+  The \code{attrs} argument takes a list, with three sublists -
+  \code{graph}, \code{node}, and \code{edge}.  Each of these sublists
+  will correspond to graph-wide, node-wide or edge-wide attributes
+  to be set, with the name of the element corresponding to the attribute
+  name and the value of the element being the value.
 }
 \value{
   An object of class \code{Ragraph}
