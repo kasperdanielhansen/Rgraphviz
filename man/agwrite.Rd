@@ -1,0 +1,22 @@
+\name{agwrite}
+\alias{agwrite}
+\title{A function to write a Ragraph object to a file}
+\description{
+  This function will take a \code{Ragraph} object and write it out in
+  DOT format to a file.
+}
+\usage{
+agwrite(graph, filename)
+}
+\arguments{
+  \item{graph}{An object of class \code{Ragraph}}
+  \item{filename}{ The output filename}
+}
+\details{
+  This function is a wrapper to the agwrite() call in Graphviz.
+}
+\author{Jeff Gentry}
+\seealso{\code{\link{agopen}}, \code{\link{agread}}}
+\examples{
+}
+\keyword{utilities}
