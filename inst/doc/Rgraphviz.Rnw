@@ -175,14 +175,13 @@ Attributes can be set both globally (for the entire graph, for all
 edges, all nodes, etc) as well as on a per-node and per-edge basis.
 Global attributes are set via a list and passed in as the
 \Robject{attrs} argument to \Rfunction{plot}.  A default set of global
-attributes are used if nothing else is provided, using the function
-\Rfunction{getDefaultAttrs} - users are encouraged to work off of the
-return of this function instead of creating their own from scratch as
-then attributes which they don't want to change from the defaults will
-still be kept intact.  The \Rfunction{getDefaultAttrs} function takes
-as a parameter the layout type to be used (dot, neato or twopi) but
-defaults to dot.  The \Robject{attrs} list is a four element list
-with element names of 'graph', 'cluster', 'edge' and 'node'.  Within
+attributes are used for global values which are not specified (by
+using the \Rfunction{getDefaultAttrs} function).  The
+\Rfunction{getDefaultAttrs} function will take a partial global
+attribute list (see below for a description) and/or the layout type to
+be used (dot, neato, or twopi) and will generate an attribute list to
+be used with defaults for values that the user did not specify.  The
+list has four elements: 'graph', 'cluster', 'edge' and 'node'.  Within
 each element is another list, where the names correspond to attributes
 and the values correspond to the value to use globally on that
 attribute.  An example of this structure can be seen with the default
@@ -191,6 +190,20 @@ list provided by \Rfunction{getDefaultAttrs}:
 <<defAttrs>>=
 defAttrs <- getDefaultAttrs()
 defAttrs
+@
+
+To manually set some attributes, but not others, pass in a list with
+the specific attributes that you desire.  In the following example, we
+will be setting two attributes (\Robject{label} and
+\Robject{fillcolor} for nodes, one for edges (\Robject{color}) and one
+for the graph itself (\Robject{rankdir}).  We could also have called
+\Rfunction{getDefaultAttrs} with the same list that we are passing
+as the \Robject{attrs} argument, but there is no need here.
+
+<<defAttrs2, fig=TRUE>>=
+ plot(g1, attrs=list(node=list(label="foo", fillcolor="lightgreen"),
+	             edge=list(color="cyan"),
+                     graph=list(rankdir="LR")))
 @
 
 Users can also set attributes per-node and per-edge.  In this case, if
@@ -227,7 +240,7 @@ have a label.  However, both can have custom labels supplied via
 attributes.
 
 <<labels, fig=TRUE>>=
-nAttrs$label <- c(a="lab1", b="lab2", g="lab3")
+nAttrs$label <- c(a="lab1", b="lab2", g="lab3", d="lab4")
 nAttrs
 
 eAttrs$label <- c("a~h"="test", "c~h"="test2")
@@ -292,15 +305,18 @@ plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 
 The \Rpackage{Rgraphviz} package allows you to specify different
 shapes for your nodes.  Currently, the only shapes allowed are
-\Robject{circle} (the default), \Robject{ellipse} and \Robject{box}.
+\Robject{circle} (the default), \Robject{ellipse}, \Robject{plaintext}
+and \Robject{box} (Note that \Robject{plaintext} is simply a
+\Robject{box} that is not displayed for purposes of layout).
 As with previous attributes, the shape can be set globally or for
 specific nodes.  Here is the same graph from the previous example,
 with the default shape as \Robject{ellipse} and with two nodes
-specified as being \Robject{box} and two as \Robject{circle}:
+specified as being \Robject{box}, one as a \Robject{circle} and one as
+a \Robject{plaintext} node:
 
 <<nodeShapes, fig=TRUE>>=
 defAttrs$node$shape <- "ellipse"
-nAttrs$shape <- c(e="box", g="circle", j="box", d="circle")
+nAttrs$shape <- c(e="box", g="circle", j="box", d="plaintext")
 plot(g1, attrs=defAttrs, nodeAttrs=nAttrs)
 @
 
@@ -328,44 +344,26 @@ edges[[1]]
 @
 
 You can now see the contents of the first \Robject{pNode} and first
-\Robject{pEdge} objects in their respective lists.  Now, to
-demonstrate some simple attribute examples such as node and edge
-color, perhaps we'd like to have the "c" node be blue and the between
-"a" and "b" to be colored green, we can set it up as such:
+\Robject{pEdge} objects in their respective lists.  These two
+functions can also utilize the attribute lists that were passed into
+\Rfunction{agopen}.  Note that if we are using default attributes,
+that for the \Rfunction{buildNodeList} and \Rfunction{buildEdgeList}
+functions we only want to pass in defaults for node and edges, respectively.
 
-<<colorLists>>=
-nodes$"c"@attrs$fillcolor <- "blue"
-nodes$"c"
-edges$"a~b"@attrs$color <- "green"
-edges$"a~b"
+<<buildwithAttrs>>=
+  nodes <- buildNodeList(g1, nodeAttrs=nAttrs, defAttrs=defAttrs$node)
+  edges <- buildEdgeList(g1, edgeAttrs=eAttrs, defAttrs=defAttrs$edge)
+  nodes[[1]]
+  edges[[1]]
 @
 
-You can see that the \Robject{attrs} slot now has a 'color' element to
-it.
+Notice the difference between the objects in the second example as
+compared with the first, containing the specified attributes.  Now we
+can plot this graph, which should look identical to the previous plot:
 
-<<plotListGraph1, fig=TRUE>>=
-  vv <- agopen(name="test1", nodes=nodes, edges=edges,
-               edgeMode="undirected")
+<<plotbuild, fig=TRUE>>=
+  vv <- agopen(name="foo", nodes=nodes, edges=edges, edgeMode="undirected")
   plot(vv)
-@
-
-Note that the name argument is required by Graphviz but is not
-currently used for anything in \Rpackage{Rgraphviz}.  The
-\Robject{edgeMode} argument is required in this case because Graphviz
-needs to know if this graph is directed or not and
-\Rpackage{Rgraphviz} can't necessarily determine the status of the
-graph from the node and edge lists.  One could suggest to look at the
-arrowhead/tails (or lack thereof) and derive it that way, but the
-arrowhead/tails are completely independent from the edgemode of the
-graph:
-
-<<addArrows, fig=TRUE>>=
-edges$"a~e"@attrs$arrowhead <- "open"
-edges$"a~h"@attrs$arrowhead <- "open"
-edges$"a~h"@attrs$arrowtail <- "open"
-vv <- agopen(name="test1", nodes=nodes, edges=edges,
-               edgeMode="undirected")
-plot(vv)
 @
 
 Here we've added our own arrowheads to the a~e and a~h edges as well
@@ -375,6 +373,29 @@ will view these edges as undirected.  This same technique can be used
 in the case where a directed graph has reciprocated edges and one
 wants to combine those edges into single edges with arrows in both
 directions.
+
+Next we will use a completely different graph, one of the graphs as
+part of the \Robject{graphExamples} dataset in the \Rpackage{graph}
+package and provide another demonstration of working with attributes
+to customize your plot.
+
+<<graph17, fig=TRUE>>=
+data(graphExamples)
+z <- graphExamples[[17]]
+nNodes <- length(nodes(z))
+ 
+nA <- list()
+nA$fixedSize<-rep(FALSE, nNodes)
+nA$height <- nA$width <- rep("1", nNodes)
+nA$label <- rep("foo", nNodes)
+nA$color <- rep("green", nNodes)
+nA$fillcolor <- rep("orange", nNodes)
+nA$shape <- rep("circle", nNodes)
+nA$fontcolor <- rep("blue", nNodes)
+nA$fontsize <- rep(14, nNodes)
+nA <- lapply(nA, function(x) { names(x) <- nodes(z); x})
+plot(z, nodeAttrs=nA)
+@
 
 \section{Plotting with non-standard nodes}
 
@@ -534,6 +555,7 @@ And finally using "neato":
 
 <<dgNeato, fig=TRUE>>=
   plot(dG, "neato")
-@
+@ 
+
 
 \end{document}
