@@ -58,9 +58,10 @@
 
                   ## twopi layout requires the graph to be fully
                   ## connected
+                  gc()
                   g = agopen(x, "ABC", agKind, layout=TRUE,
                              layoutType=y, attrs=attrs)
-
+                  gc()
                   if (length(nodeLabels) > 0) {
                       nodeLocs <- getNodeLocs(g)
 
@@ -93,14 +94,9 @@
                       }
                       rad <- rad/conv
 
-                      ## !!! gc() here seems to help stability
-                      gc()
-
                       plot(NA,NA,xlim=c(0,getX(ur)), ylim=c(0,getY(ur)),
                            type="n",main=NULL,xlab="",ylab="",xaxt="n",
                            yaxt="n",bty="n",...)
-
-                      gc()
 
                       symbols(nodeX, nodeY, circles=rad, inches=max(rad),
                               bg=nodeCols,add=TRUE)
