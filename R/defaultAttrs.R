@@ -65,6 +65,8 @@ getDefaultAttrs <- function(curAttrs=list(),
         curAttrs$node$color <- col
     if (is.null(curAttrs$node$fontcolor))
         curAttrs$node$fontcolor <- fg
+    if (is.null(curAttrs$node$fontsize))
+        curAttrs$node$fontsize <- "14"
 
 
     ## edge attrs
@@ -82,6 +84,11 @@ getDefaultAttrs <- function(curAttrs=list(),
         curAttrs$edge$arrowhead <- "none"
     if (is.null(curAttrs$edge$arrowtail))
         curAttrs$edge$arrowtail <- "none"
+    if (is.null(curAttrs$edge$fontsize))
+        curAttrs$edge$fontsize <- "14"
+    if (is.null(curAttrs$edge$labelfontsize))
+        curAttrs$edge$labelfontsize <- "11"
+
 
     curAttrs
 }
