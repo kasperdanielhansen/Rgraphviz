@@ -216,7 +216,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 	SET_SLOT(curXY,Rf_install("y"),R_scalarInteger(node->u.coord.y));
 	SET_SLOT(curNL,Rf_install("center"),curXY);
 	SET_SLOT(curNL,Rf_install("height"),R_scalarInteger(node->u.ht));
-	SET_SLOT(curNL,Rf_install("rWidth"),R_scalarInteger(node->u.rw));
+	SET_SLOT(curNL,Rf_install("rWidth"),R_scalarReal(node->u.rw));
 	SET_SLOT(curNL,Rf_install("lWidth"),R_scalarInteger(node->u.lw));
 	SET_ELEMENT(outLst, i, curNL);
 	node = agnxtnode(g,node);
