@@ -11,7 +11,7 @@ agopen <- function(graph, name, kind=0) {
 }
 
 libgraph2ps <- function(graph, fileName="graph.ps") {
-    .Call("Rgraphviz_graph2ps",graph,as.character(fileName))
+    x <- .Call("Rgraphviz_graph2ps",graph,as.character(fileName))
 }
 
 graph2ps <- function(graph, name, kind=0, fileName="graph.ps") {
@@ -20,6 +20,9 @@ graph2ps <- function(graph, name, kind=0, fileName="graph.ps") {
 }
 
 plotGraph <- function(graph, name="graph") {
+    ## Really should go into 'graph' package, as a plot method for
+    ## the graph class.
+
     ## Get 'kind' from graph object
     g <- agopen(graph, name)
 
