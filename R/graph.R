@@ -11,9 +11,12 @@ setMethod("graph2graphviz", "graph", function(object) {
     weights <- unlist(edgeWeights(object))
 
     gvMtrx <- rbind(fromTo, weights)
-    ## Make sure we don't have any NAs in the matrix
+    ## Make sure we the matrix is all numeric
     if (!is.numeric(gvMtrx))
         stop("Invalid graph object, produces non-numeric values")
+    if (any(is.na(gvMtrx)))
+        stop("Invalid graph object, contains NA values")
+
     gvMtrx
 })
 
