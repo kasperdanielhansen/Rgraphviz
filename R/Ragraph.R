@@ -180,6 +180,8 @@
 
     setMethod("show", "AgEdge", function(object) {
         z <- splines(object)
+        out <- paste("An edge with",numSplines(object),"BezierCurve objects:")
+        cat(out,"\n")
         for (i in seq(along=z))
             show(z[[i]])
     }, where=where)
@@ -256,7 +258,8 @@
                                    function(x){paste(getPoints(x),
                                                      collapse=",")})),
                      collapse=" ")
-        print(out)
+        out <- past(out,"\n")
+        cat(out)
     }, where=where)
 }
 
