@@ -6,6 +6,8 @@
 \alias{labelJust}
 \alias{labelWidth}
 \alias{labelColor}
+\alias{labelFontsize}
+\alias{labelFontsize,AgTextLabel-method}
 \alias{labelColor,AgTextLabel-method}
 \alias{labelText,AgTextLabel-method}
 \alias{labelLoc,AgTextLabel-method}
@@ -30,6 +32,8 @@ Objects can be created by calls of the form \code{new("AgTextLabel", ...)}.
       of the label}
     \item{\code{labelColor}:}{Object of class \code{"character"} The
       color to print the label} 
+    \item{\code{labelFontsize}:}{Object of class \code{"numeric"} The
+      font size for the label}
   }
 }
 \section{Methods}{
@@ -39,6 +43,7 @@ Objects can be created by calls of the form \code{new("AgTextLabel", ...)}.
     \item{labelJust}{Retrieves the labelJust slot}
     \item{labelWidth}{Retrieves the labelWidth slot}
     \item{labelColor}{Retrieves the labelColor slot}
+    \item{labelFontsize}{Retrieves the labelFontsize slot}
   }
 }
 \author{Jeff Gentry}
