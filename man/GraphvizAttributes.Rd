@@ -106,7 +106,10 @@
       defaults to \code{8}} 
     \item{\code{size}:}{Maximum width and height of drawing, in inches.
       Specified using the notation \code{val,val} where each val is a
-      double.  The default of this attribute is \code{6,6}.} 
+      double.  If not specified and there is a current output device,
+      the graph is scaled to fit into that device.  If \code{size} is
+      not specified and there is no current output device, a plot region
+      of the default size will be opened and the graph scaled to match that.} 
     \item{\code{start}:}{Parameter used to determine the initial layout
       of nodes.  By default, nodes are randomly placed in a
       square whose sides have length (number of nodes).  The same seed

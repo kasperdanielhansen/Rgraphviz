@@ -7,7 +7,9 @@
 \description{
   The following describes the different layout methods that can be used
   within Rgraphviz.  Each layout method has its own particular
-  advantages and disadvantages and can have its own quirks.
+  advantages and disadvantages and can have its own quirks.  Currently
+  Rgraphviz supports three different layout methods: \code{dot},
+  \code{twopi} and \code{neato}.
 }
 \section{The dot layout}{
   The \code{dot} algorithm produces a ranked layout of a graph
@@ -41,6 +43,23 @@
   with respect to changes in the input graph. One last adjustment can
   invalidate all previous changes and make a very bad drawing.
 }
+\section{The neato layout}{
+  \code{neato} is a program that makes layouts of undirected graphs
+  following the filter model of \code{dot}. Its layout heuristic
+  creates virtual physical models and runs an iterative solver to find
+  low energy configurations.  An ideal spring is placed between every
+  pair of nodes such that its length is set to the shortest path distance
+  between the endpoints. The springs push the nodes so their geometric
+  distance in the layout approximates their path distance in the
+  graph.
+
+  In \code{neato}, the edge weight is the strength of the
+  corresponding spring.
+  
+  As with \code{dot}, fine-tuning should be approached cautiously, as
+  often small changes can have a drastic effect and create a poor
+  looking layout.
+}
 \section{The twopi layout}{
   The radial layout algorithm represented by \code{twopi} is conceptually the
   simplest. It takes a node specified as the center of the
@@ -64,24 +83,14 @@
   provides a good quality layout.  It often might not be obvious what
   that node will be, as it will vary from graph to graph, so some
   experimentation might be required.
+ 
+  As with \code{dot} and \code{neato}, fine-tuning should be approached
+  cautiously, as often small changes can have a drastic effect and create a poor
+  looking layout.  The \code{root} node of the layout, as mentioned
+  before, can have a profound effect on the outcome of the layout and
+  care should be taken to select an appropriate one.
 }
-\section{The neato layout}{
-  \code{neato} is a program that makes layouts of undirected graphs
-  following the filter model of \code{dot}. Its layout heuristic
-  creates virtual physical models and runs an iterative solver to find
-  low energy configurations.  An ideal spring is placed between every
-  pair of nodes such that its length is set to the shortest path distance
-  between the endpoints. The springs push the nodes so their geometric
-  distance in the layout approximates their path distance in the
-  graph.
 
-  In \code{neato}, the edge weight is the strength of the
-  corresponding spring.
-  
-  As with \code{dot}, fine-tuning should be approached cautiously, as
-  often small changes can have a drastic effect and create a poor
-  looking layout.
-}
 \author{Jeff Gentry}
 \references{\url{http://www.research.att.com/sw/tools/graphviz/dotguide.pdf},
   \url{http://www.research.att.com/sw/tools/graphviz/neatoguide.pdf},

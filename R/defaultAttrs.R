@@ -33,8 +33,6 @@ getDefaultAttrs <- function(curAttrs=list(),
         curAttrs$graph$fontcolor <- fg
     if (is.null(curAttrs$graph$ratio))
         curAttrs$graph$ratio <- "fill"
-    if (is.null(curAttrs$graph$size))
-        curAttrs$graph$size <- "6,6"
     if (is.null(curAttrs$graph$overlap))
         curAttrs$graph$overlap <- ""
     if (is.null(curAttrs$graph$splines))

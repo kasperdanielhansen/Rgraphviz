@@ -12,59 +12,21 @@
 
                   recipEdges <- match.arg(recipEdges)
 
-
-                  ## Need to call plot.new before getting the default
-                  ## attributes as it uses par("pin") and must be
-                  ## on the proper plotting frame if the user is using
-                  ## layout.
-
-                  if (! is.null(attrs$graph$size)) {
-                      splitSize <- strsplit(attrs$graph$size,",")[[1]]
-                      if (length(splitSize) != 2)
-                          stop("Invalid graph size attribute: ",
-                               attrs$graph$size)
-                      wd <- as.numeric(splitSize[1])
-                      ht <- as.numeric(splitSize[2])
-
-                      if (interactive())
-                          x11(width=wd, height=ht)
-                  }
-
-                  plot.new()
-
                   g <- agopen(x, "ABC", layout=TRUE, layoutType=y,
                               attrs=attrs, nodeAttrs=nodeAttrs,
                               edgeAttrs=edgeAttrs, subGList=subGList,
                               recipEdges=recipEdges)
 
-                  invisible(plot(g,attrs=attrs, xlab=xlab,
-                                 ylab=ylab, main=main, sub=sub,
-                                 newPlot=FALSE))
+                  invisible(plot(g, xlab=xlab,
+                                 ylab=ylab, main=main, sub=sub))
               })
 
 
     setMethod("plot", "Ragraph",
-              function(x, y, ...,
-                       attrs=list(), xlab="", ylab="", main=NULL, sub=NULL,
-                       drawNode=drawAgNode,
-                       newPlot=TRUE){
-
-                  recipEdges=c("combined", "distinct")
-                  ## If this is a new plot, we need to call 'plot.new'
-                  ## Otherwise we should not because we were most
-                  ## likely called from something like plot.graph
-                  ## which has already called (and can't avoid)
-                  ## calling plot.new().
-                  if (newPlot) {
-                      sz <- getGraphSize(x)
-                      if (interactive())
-                          x11(width=sz[1], height=sz[2])
-
-                      plot.new()
-                  }
-
-                  attrs <- getDefaultAttrs(attrs, layoutType(x))
-                  checkAttrs(attrs)
+              function(x, y, ..., xlab="", ylab="", main=NULL, sub=NULL,
+                       drawNode=drawAgNode, nodeAttrs=list(),
+                       edgeAttrs=list()) {
+                  plot.new()
 
                   nNodes <- length(AgNode(x))
 
@@ -97,12 +59,12 @@
                       title(main=main, xlab=xlab, ylab=ylab, sub=sub)
 
                       if (length(drawNode) == 1)
-                         lapply(AgNode(x), drawNode, ur)
+                         lapply(AgNode(x), drawNode, ur, nodeAttrs)
                       else if (length(drawNode) == nNodes) {
                           nodes <- AgNode(x)
                           for (i in 1:nNodes) {
                               curDrawFun <- drawNode[[i]]
-                              curDrawFun(nodes[[i]], ur)
+                              curDrawFun(nodes[[i]], ur, nodeAttrs)
                           }                      }
                       else
                           stop("Length of the drawNode parameter",
@@ -113,15 +75,15 @@
 
                       ## Plot the edges
                       q <- lapply(AgEdge(x), function(x, rad,
-                                                      edgemode, ur) {
+                                                      edgemode, ur,
+                                                      attrs) {
                           ## See if there's a specified edgeCol for this
                           if (!is(x,"AgEdge"))
                               stop(paste("Class:",class("AgEdge")))
                           rad <- convertRadius(rad, ur)
-                          tail <- tail(x)
-                          head <- head(x)
-                          lines(x, len=(rad / 3), edgemode=edgemode)
-                      }, rad, edgemode(x), ur)
+                          lines(x, len=(rad / 3), edgemode=edgemode,
+                                attrs=attrs)
+                      }, rad, edgemode(x), ur, edgeAttrs)
                   }
                   else {
                       stop("No nodes in graph")
@@ -132,7 +94,9 @@
 }
 
 
-drawAgNode <- function(node, ur) {
+drawAgNode <- function(node, ur, attrs=list()) {
+    nodeName <- name(node)
+
     ## First get X/Y
     nodeCenter <- getNodeCenter(node)
     nodeX <- getX(nodeCenter)
@@ -144,10 +108,21 @@ drawAgNode <- function(node, ur) {
 
     rad <- convertRadius(rw, ur)
 
-    fg <- color(node)
-    bg <- fillcolor(node)
+    attrNames <- names(attrs)
+    if (("color" %in% attrNames)&&(nodeName %in% names(attrs$color)))
+        fg <- as.character(attrs$color[nodeName])
+    else
+        fg <- color(node)
 
-    shape <- shape(node)
+    if (("fillcolor" %in% attrNames)&&(nodeName %in% names(attrs$fillcolor)))
+        bg <- as.character(attrs$fillcolor[nodeName])
+    else
+        bg <- fillcolor(node)
+
+    if (("shape" %in% attrNames)&&(nodeName %in% names(attrs$shape)))
+        shape <- as.character(attrs$shape[nodeName])
+    else
+        shape <- shape(node)
 
     switch(shape,
            "circle"=drawCircleNode(nodeX, nodeY, ur, rad, fg, bg),
@@ -159,17 +134,28 @@ drawAgNode <- function(node, ur) {
                             nodeY+(height/2), col=bg, border=fg),
            stop("Unimplemented node shape"))
 
-    drawTxtLabel(txtLabel(node), nodeX, nodeY, width=rad*2)
+    drawTxtLabel(txtLabel(node), nodeX, nodeY, width=rad*2, nodeName, attrs)
 }
 
-drawTxtLabel <- function(txtLabel, xLoc, yLoc, width) {
+drawTxtLabel <- function(txtLabel, xLoc, yLoc, width, objName,
+                         objAttrs=list()) {
     if ((!is.null(txtLabel))&&(length(labelText(txtLabel)) > 0)) {
+        attrNames <- names(objAttrs)
 
-        txt <- labelText(txtLabel)
+        if (("label" %in% attrNames)&&(objName %in% names(objAttrs$label)))
+            txt <- as.character(objAttrs$label[objName])
+        else
+            txt <- labelText(txtLabel)
+
         loc <- labelLoc(txtLabel)
 
+        if (("labeljust" %in% attrNames)&&(objName %in% names(objAttrs$labeljust)))
+            labelJust <- as.character(objAttrs$labeljust[objName])
+        else
+            labelJust <- labelJust(txtLabel)
+
         if (missing(xLoc)) {
-            justMod <- switch(labelJust(txtLabel),
+            justMod <- switch(labelJust,
                               "l" = 0,
                               "n" = -0.5,
                               "r" = -1)
@@ -182,7 +168,12 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc, width) {
         ## Get the font size that Graphviz believes this to be
         op <- par()
 
-        curFontsize <- labelFontsize(txtLabel)
+        if (("labelfontsize" %in% attrNames)&&
+            (objName %in% names(objAttrs$labelfontsize)))
+            curFontsize <- as.numeric(objAttrs$labelfontsize[objName])
+        else
+            curFontsize <- labelFontsize(txtLabel)
+
         if (length(curFontsize) > 0) {
             on.exit(par(ps=op$ps), add=TRUE)
             par(ps=curFontsize)
@@ -228,8 +219,13 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc, width) {
             }
         }
 
-        text(xLoc, yLoc, txt,
-             col=labelColor(txtLabel), cex=cex)
+        if (("labelfontcolor" %in% attrNames)&&
+            (objName %in% names(objAttrs$labelfontcolor)))
+            labelColor <- objAttrs$labelfontcolor[objName]
+        else
+            labelColor <- labelColor(txtLabel)
+
+        text(xLoc, yLoc, txt, col=labelColor, cex=cex)
     }
 }
 
@@ -264,3 +260,4 @@ getGraphSize <- function(graph) {
     splitSize <- strsplit(sizeStr, ",")[[1]]
     return(as.numeric(splitSize))
 }
+

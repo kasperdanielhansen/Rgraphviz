@@ -14,7 +14,7 @@
     sub=sub, recipEdges=c("combined", "distinct"))}
 
   \code{'Ragraph': plot(x, y, ..., xlab="", ylab="", main=NULL,
-    sub=sub, drawNode=drawAgNode, newPlot=TRUE)}
+    sub=sub, drawNode=drawAgNode, nodeAttrs=list(), edgeAttrs=list())}
 }
 \section{arguments}{
   \item{x}{The \code{graph} object to plot}
@@ -32,11 +32,6 @@
   \item{sub}{Subtitle for the plot}
   \item{drawNode}{Function to draw the nodes.  The default is
     \code{\link{drawAgNode}}}
-  \item{newPlot}{Whether or not this is a new plot.  When
-    \code{plot.Ragraph} is called from \code{plot.graph}, the plotting
-    device has already been setup and should not be reinitialized.
-    However, when \code{plot.Ragraph} is being called directly this is
-    not the case}
   \item{recipEdges}{Determines how to draw reciprocating edges.  See
     \code{\link{agopen}}} 
   \item{...}{General commands to be sent to plot}
@@ -79,7 +74,7 @@
   of these elements themselves are lists - such that an element of
   \code{graph} corresponds to a graph element.  A full listing of
   attributes and their possible settings is available at
-  http://www.research.att.com/~erg/graphviz/info/attrs.html.  All
+  \code{http://www.research.att.com/~erg/graphviz/info/attrs.html}.  All
   attribute values should be entered as character strings (even if the
   requested value is to be otherwise).
 

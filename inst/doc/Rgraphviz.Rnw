@@ -382,7 +382,7 @@ plotPieChart <- function(curPlot, counts) {
     buildDrawing <- function(x) {
 	force(x)
 	y <- x*100+1
-	function(node, ur) {
+	function(node, ur, attrs=list()) {
             nodeCenter <- getNodeCenter(node)
             pieGlyph(y, xpos=getX(nodeCenter),
                      ypos=getY(nodeCenter),
