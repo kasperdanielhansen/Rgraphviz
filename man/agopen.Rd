@@ -7,7 +7,7 @@
   graph represented by the \code{Ragraph} can be laidout in various formats.
 }
 \usage{
-agopen(graph, name, nodeLabels, kind = "AGRAPH", layout = TRUE,
+agopen(graph, name, nodeLabels=nodes(graph), kind = "AGRAPH", layout = TRUE,
        layoutType=c("dot","neato","twopi")[1], attrs=NULL)
 }
 %- maybe also `usage' for other objects documented here.
