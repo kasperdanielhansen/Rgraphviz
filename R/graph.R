@@ -334,15 +334,6 @@ checkNodeShape <- function(nodeShape) {
                    paste(validShapes, collapse=", ")))
 }
 
-checkCenterNode <- function(centerNode, nodeLabels) {
-    if ((centerNode %in% nodeLabels)&&
-        (length(centerNode) == 1)){
-        return(TRUE)
-    }
-    else
-        stop("Invalid center supplied, must be a single node in the graph")
-}
-
 checkRankDir <- function(rankDir) {
     if (!(rankDir %in% c("TB","LR")))
         stop("Invalid rankDir parameter, must be 'TB' or 'LR'!")
