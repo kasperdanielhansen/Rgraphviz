@@ -406,6 +406,9 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
     agraphattr(g, "model", "");
 
     /*** NODE ATTRS ***/
+    agnodeattr(g, "height", "0.71");
+    agnodeattr(g, "width", "2.83");
+    agnodeattr(g, "fixedsize", "true");
 
     /*** EDGE ATTRS ***/
     /* Arrow direction */

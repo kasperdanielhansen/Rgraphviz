@@ -1,4 +1,5 @@
-  agopen <- function(graph, name, nodeLabels, kind="AGRAPH", layout=TRUE,
+  agopen <- function(graph, name, nodeLabels=nodes(graph),
+                     kind="AGRAPH", layout=TRUE,
                    layoutType=c("dot","neato","twopi")[1],
                    attrs=NULL) {
 
