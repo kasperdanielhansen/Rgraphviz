@@ -162,6 +162,8 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 
     /* Allocate space in the subgraph array */
     sgs = (Agraph_t **)R_alloc(length(subGs), sizeof(Agraph_t *));
+    if ((length(subGs) > 0) && (sgs == NULL))
+	error("Out of memory while allocating subgraphs");
 
     if (length(subGs) > 0) { 
 	/* Create any subgraphs, if necessary */	
@@ -350,6 +352,8 @@ SEXP getNodeLayouts(Agraph_t *g) {
 
     /* tmpString is used to convert a char to a char* w/ labels */
     tmpString = (char *)R_alloc(2, sizeof(char));
+    if (tmpString == NULL)
+	error("Allocation error in getNodeLayouts");
 
     nodes = agnnodes(g);
     node = agfstnode(g);
@@ -428,6 +432,8 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 
     /* tmpString is used to convert a char to a char* w/ labels */
     tmpString = (char *)R_alloc(2, sizeof(char));
+    if (tmpString == NULL)
+	error("Allocation error in getEdgeLocs");
 
     PROTECT(outList = allocVector(VECSXP, numEdges));
 
