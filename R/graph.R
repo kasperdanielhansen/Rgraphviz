@@ -2,11 +2,12 @@ agopen <- function(graph, name, kind=0, layout=TRUE) {
     ### !!! 'kind' is really a set of defined values.  Need to figure
     ### this out
 
-    edges <- edges(graph)
+    edges <- uniqueEdges(graph)
+    nodes <- nodes(graph)
     weights <- edgeWeights(graph)
 
     g <- .Call("Rgraphviz_agopen", as.character(name), as.integer(kind),
-               as.list(edges), as.list(weights))
+               as.vector(nodes), as.list(edges), as.list(weights))
 
     if (layout)
         return(layoutGraph(g))
@@ -33,7 +34,6 @@ libgraph2ps <- function(graph, fileName="graph.ps") {
     if (laidout(graph) == FALSE)
         graph <- layoutGraph(graph)
     x <- .Call("Rgraphviz_graph2ps",graph,as.character(fileName))
-    return(graph)
 }
 
 graph2ps <- function(graph, name, kind=0, fileName="graph.ps") {
@@ -42,7 +42,7 @@ graph2ps <- function(graph, name, kind=0, fileName="graph.ps") {
                 "Ragraph"=graph
                 )
 
-    return(libgraph2ps(g,fileName))
+    libgraph2ps(g,fileName)
 }
 
 plotGraph <- function(graph, name="graph") {
@@ -66,16 +66,17 @@ plotGraph <- function(graph, name="graph") {
 
         symbols(x,y,circles=rad, inches=FALSE)
         points(x,y, pch=names, cex=2)
-        for (i in 1:length(names)) {
-            curEdges <- edges[[i]]
-            z <- getLineDiffs(curEdges, i, names, x, y, rad[i])
-            lapply(curEdges, plotEdge, i, curEdges, names, x, y, z)
-        }
+        q <- lapply(edgePoints(g), plotEdge)
     }
     else {
         stop("No nodes in graph")
     }
-    return(g)
+}
+
+plotEdge <- function(edgePnt) {
+    z <- splines(edgePnt)
+    lapply(z,function(x){q <- bezierPoints(x); lines(q[,1],q[,2])})
+    return(NULL)
 }
 
 getLineDiffs <- function(edges, i, names, x, y, rad) {
@@ -99,27 +100,11 @@ getLineDiffs <- function(edges, i, names, x, y, rad) {
     return(list(x1=x1,y1=y1))
 }
 
-plotEdge <- function(edge, i, edges, names, x, y, z) {
-
-    ## x1 & y1 are diffs from the tail's x/y coords.
-    ## -x1 & -y1 are diffs from the head's x/y coords
-    if (is.null(z)) {
-        x1 <- rep(0, length(x))
-        y1 <- rep(0, length(y))
+bezier <- function(pnts, n, t) {
+    n <- n-1
+    x <- 0
+    for (k in 0:n) {
+        x <- x + (pnts[[k+1]] * choose(n,k) * (t^k) * ((1-t)^(n-k)))
     }
-    else {
-        x1 <- z$x1
-        y1 <- z$y1
-    }
-
-    dimPos <- which(names == edge)
-    diffPos <- which(edges == edge)
-    ## Code == 2 leaves directional arrowheads
-    ## The way this is implemented *currently*, if the link
-    ## is undirectional, the line will be drawn in both directions
-    ## leaving arrowheads on both sides as desired.
-    arrows(x[i]+x1[diffPos], y[i]+y1[diffPos],
-           x[dimPos]-x1[diffPos], y[dimPos]-y1[diffPos],code=2)
+    return(x)
 }
-
-
