@@ -230,6 +230,8 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     for (i = 0; i < length(from); i++) {
 	curNode = INTEGER(from)[i];
 	tail = agfindnode(g, CHAR(STRING_ELT(nodes, curNode-1)));
+
+	/* Get the set of edge labels for this node */
 	PROTECT(curEdgeLabels = 
 		getListElement(edgeLabels, CHAR(STRING_ELT(nodes, 
 							   curNode-1))));

@@ -16,6 +16,13 @@
 
       if (missing(edgeLabels))
           edgeLabels <- list()
+      else {
+          if (!is.list(edgeLabels))
+              stop("edgeLabels must be a list")
+
+          if (!all(unlist(lapply(edgeLabels,is.character))))
+              stop("edgeLabel list can only contain character vectors")
+      }
 
       subGs <- vector(mode="character")
 
