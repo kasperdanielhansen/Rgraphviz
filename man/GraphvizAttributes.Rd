@@ -16,12 +16,12 @@
 \section{Graph Attributes}{
   \bold{General Graph Attributes:}
   \describe{
-    \item{\code{bgcolor}:}{Color for the entire canvas.  This is used
-      only in R.  The default is to use \code{par(\dQuote{bg})}}
+    \item{\code{bgcolor}:}{Color for the entire canvas.  The default is
+      to use \code{transparent}} 
     \item{\code{center}:}{Drawing is centered in the output canvas.
       This is a boolean value with a default of \code{FALSE}.}
     \item{\code{fontcolor}:}{Color used for text, defaulting to
-      \code{par(\dQuote{fg})}.  R only}
+      \code{black}.}
     \item{\code{fontname}:}{Font used for text.  Default is Times Roman.}
     \item{\code{fontpath}:}{Directory used to search for fonts}
     \item{\code{fontsize}:}{Font size, in points, for text.  This
@@ -106,7 +106,7 @@
       defaults to \code{8}} 
     \item{\code{size}:}{Maximum width and height of drawing, in inches.
       Specified using the notation \code{val,val} where each val is a
-      double.  The default of this attribute is \code{par(\dQuote(pin))}.} 
+      double.  The default of this attribute is \code{6,6}.} 
     \item{\code{start}:}{Parameter used to determine the initial layout
       of nodes.  By default, nodes are randomly placed in a
       square whose sides have length (number of nodes).  The same seed
@@ -247,8 +247,8 @@
     \item{\code{arrowtail}:}{Style of arrow on the tail node of an edge,
       see \code{arrowhead}.  For directed edges that with bidirectional
       arrows, \code{open} is used.  R only(?)}
-    \item{\code{color}:}{The color of the edge.  R only.  Defaults to
-      \code{par(col)}.} 
+    \item{\code{color}:}{The color of the edge.  Defaults to
+      \code{black}.} 
     \item{\code{decorate}:}{If TRUE, attach edge label to edge by a
       2-segment polyline, underlining the label, then going to the
       closest point of the spline.  Default is \code{FALSE}.}
@@ -257,8 +257,8 @@
       \code{forward} and undirected graphs default to \code{both}.
       Other possible values are \code{both} (arrows in both
       directions) and \code{back} (Arrow on the tail only)}
-    \item{\code{fontcolor}:}{The color used for text.  R only.  The
-      default value is \code{par(fg)} in R}
+    \item{\code{fontcolor}:}{The color used for text.  The
+      default value is \code{black} in R}
     \item{\code{fontname}:}{Font used for text.  Defaults to Times Roman}
     \item{\code{fontsize}:}{Font size, used for text.  Defaults to
       \code{14.0} with a minimum value of \code{1.0}}
@@ -281,8 +281,8 @@
     \item{\code{labeldistance}:}{Multiplicative scaling factor adjusting
       the distance that the label is from the node.  This is a double
       value with a default of \code{1.0} and a minimum value of \code{0.0}.}
-    \item{\code{labelfontcolor}:}{Color used for the edge labels.  R
-      only.  This defaults to \code{par(fg)}}
+    \item{\code{labelfontcolor}:}{Color used for the edge labels.  This
+      defaults to \code{black}} 
     \item{\code{labelfontname}:}{Font used for the edge labels.  See
       \code{fontname}} 
     \item{\code{labelfontsize}:}{Size used for the edge labels.  See
@@ -352,19 +352,19 @@
   \describe{
     \item{\code{color}:}{Basic drawing color for the node, corresponding
       to the outside edge of the node.  The interior of the node is
-      specified with the \code{fillcolor} attribute.  R only.
-      Defaults to \code{par(col)}.}
+      specified with the \code{fillcolor} attribute. Defaults to
+      \code{black}.} 
     \item{\code{distortion}:}{Distortion factor for
       \code{shape=polygon}, positive values cause top to be larger then
       bottom, negative is opposite.  This is a double value with a
       default of \code{0.0} and a minimum value of \code{-100.0}}
-    \item{\code{fillcolor}:}{Background color of the node.  R only.
-      This defaults to \code{par(bg)}.}
+    \item{\code{fillcolor}:}{Background color of the node.  This
+      defaults to \code{black}.} 
     \item{\code{fixedsize}:}{Use only \code{width} and \code{height}
       attributes, do not expand for the width of the label.  This
       defaults to \code{TRUE}.}
-    \item{\code{fontcolor}:}{Color used for text.  R only.  This
-      defaults to \code{par(fg)}.}
+    \item{\code{fontcolor}:}{Color used for text.  This
+      defaults to \code{black}.}
     \item{\code{fontname}:}{Font used for text.  The default of this is
       Times Roman.}
     \item{\code{fontsize}:}{Size of font for the text.  This defaults to

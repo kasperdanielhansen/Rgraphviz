@@ -448,7 +448,7 @@ edgeL=list("run"=list(edges=c(2,3,4)),"intr"=list(edges=c(1,3)),
 "swap"=list(edges=c(6,9)),
 "runswap"=list(edges=c(7,8,10)), "new"=list(edges=c(7,9))))
 
-curAttrs <- getDefaultAttrs(layoutType="twopi")
+curAttrs <- list(graph=list())
 curAttrs$graph$root <- "runmem"
 a <- plot(z, "twopi", attrs=curAttrs)
 @
