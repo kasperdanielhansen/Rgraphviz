@@ -77,6 +77,7 @@
                       else {
                           if (!(rankDir %in% c("TB","LR")))
                              stop("Invalid rankDir parameter, must be 'TB' or 'LR'!")
+                      }
                       attrs$graph$rankdir <- rankDir
                   }
 
