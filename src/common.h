@@ -1,15 +1,11 @@
 #ifndef __COMMON_H_INCLUDED
 #define __COMMON_H_INCLUDED
 
-extern char *Info[] = {
-	    "Rgraphviz",              /* Program */
-	    "1.0",            /* Version */
-	    "10/21/02"                /* Build Date */
-};
-
 #define DOTLAYOUT 0
 #define NEATOLAYOUT 1
 #define TWOPILAYOUT 2
+
+#define MINGRAPHVIZVER "1.9.20030401.0515"
 
 #include <Rinternals.h>
 #include <Rdefines.h>
@@ -42,6 +38,7 @@ SEXP getBoundBox(Agraph_t *);
 SEXP getEdgeLocs(Agraph_t *,int);
 SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP getNodeLayouts(Agraph_t *);
+void checkGraphvizVers(void);
 Agraph_t *dotLayout(Agraph_t *);
 Agraph_t *neatoLayout(Agraph_t *);
 Agraph_t *twopiLayout(Agraph_t *);

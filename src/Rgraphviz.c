@@ -43,6 +43,7 @@ static SEXP Rgraphviz_graph_type_tag;
 
 SEXP Rgraphviz_init(void) {
     Rgraphviz_graph_type_tag = install("RGRAPH_TYPE_TAG");
+    checkGraphvizVers();
     return(R_NilValue);
 }
 
@@ -329,6 +330,21 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     UNPROTECT(1);
 
     return(outList);
+}
+
+void checkGraphvizVers(void) {
+    char *out;
+    int ret;
+
+    /* Compare the current version, Info[2] w/ MINGRAPHVIZVER */
+    /* Throw an error if it isn't at least equal to min ver */
+    ret = strcmp(Info[1], MINGRAPHVIZVER);
+    if (ret < 0) {
+	out = (char *)R_alloc(100+strlen(MINGRAPHVIZVER),sizeof(char));
+	sprintf(out,
+		"Your graphviz installation is out of date, please use version %s or newer", MINGRAPHVIZVER);
+	error(out);
+    }
 }
 
 
