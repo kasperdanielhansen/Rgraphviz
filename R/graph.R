@@ -44,11 +44,12 @@
                   ## First make sure that center exists in
                   ## nodeLabels
                   if (!missing(centerNode)) {
-                      if (centerNode %in% nodeLabels) {
+                      if ((centerNode %in% nodeLabels)&&
+                          (length(centerNode) == 1)){
                           attrs$graph$center <- centerNode
                       }
                       else
-                          stop("Invalid center supplied, must be a node in the graph")
+                          stop("Invalid center supplied, must be a single node in the graph")
                   }
 
                   ## twopi layout requires the graph to be fully
