@@ -11,6 +11,8 @@
 \alias{numSplines}
 \alias{head}
 \alias{tail}
+\alias{arrowsize}
+\alias{arrowsize,AgEdge-method}
 \alias{color,AgEdge-method}
 \alias{endArrow,AgEdge-method}
 \alias{ep,AgEdge-method}
@@ -54,6 +56,8 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
       style of arrowhead for this edge.}
     \item{\code{arrowtail}:}{Object of class \code{"character"} The
       style of arrowtail for this edge.}
+    \item{\code{arrowsize}:}{Object of class \code{"character"} A scale
+      factor for the length of the arrow heads & tails}
   }
 }
 
@@ -73,6 +77,7 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
     \item{txtLabel}{Returns any label for this edge}
     \item{arrowhead}{Retrieves the \code{arrowhead} slot.}
     \item{arrowtail}{Retrieves the \code{arrowtail} slot.}
+    \item{arrowsize}{Retrieves the \code{arrowsize} slot.}
   }
 }
 \author{Jeff Gentry}

@@ -124,6 +124,13 @@ drawAgNode <- function(node, ur, attrs=list()) {
     else
         shape <- shape(node)
 
+
+    if (("style" %in% attrNames)&&(nodeName %in% names(attrs$style)))
+        style <- as.character(attrs$style[nodeName])
+    else
+        style <- style(node)
+
+
     switch(shape,
            "circle"=drawCircleNode(nodeX, nodeY, ur, rad, fg, bg),
            "ellipse"=ellipse(nodeX, nodeY, height=height, width=rw*2,
@@ -132,9 +139,7 @@ drawAgNode <- function(node, ur, attrs=list()) {
            "rect"=,
            "rectangle"=rect(nodeX-lw, nodeY-(height/2), nodeX+rw,
                             nodeY+(height/2), col=bg, border=fg),
-           "plaintext"= {if (("style" %in% attrNames)&&
-                             (nodeName %in% names(attrs$style))&&
-                             (attrs$style[[nodeName]]=="filled"))
+           "plaintext"= {if (style == "filled")
                              rect(nodeX-lw, nodeY-(height/2),
                                   nodeX+rw, nodeY+(height/2),
                                   col=bg, border=FALSE)},
