@@ -16,7 +16,7 @@
 \code{plot(x, y, ..., nodeLabels, centerNode, nodeShape,
     defNodeCol=par("bg"), nodeCols=character(), defTextCol=par("fg"),
     textCols=character(), defEdgeCol=par("col"), edgeCols=list(),
-    rankDir, fixedSize=TRUE)}
+    rankDir, fixedSize=TRUE, subGList)}
 }
 \section{arguments}{
   \item{x}{The \code{graph} object to plot}
@@ -47,6 +47,9 @@
     either \code{TB} for Top-to-Bottom or \code{LR} for Left-to-Right.
     The default value is \code{TB}.  This argument is only useful for
     \code{dot} layouts.}
+  \item{subGList}{A list of subgraphs taken from the primary
+    \code{graph} object to be plotted.  If provided, these subgraphs
+    will be clustered visually.  If not provided, no clusters will be used.}
   \item{...}{General commands to be sent to plot}
 }
 \section{details}{
