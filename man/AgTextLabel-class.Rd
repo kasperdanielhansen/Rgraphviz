@@ -44,6 +44,13 @@ Objects can be created by calls of the form \code{new("AgTextLabel", ...)}.
 \author{Jeff Gentry}
 \seealso{\code{\link{AgEdge-class}}, \code{\link{AgNode-class}}}
 \examples{
-
+V <- letters[1:10]
+M <- 1:4
+g1 <- randomGraph(V, M, .2)
+z <- agopen(g1,"foo")
+x <- AgEdge(z)  ## list of AgEdge objects
+x[[1]]  ## AgEdge
+a <- txtLabel(x[[1]])
+a ## txtLabel object
 }
 \keyword{classes}

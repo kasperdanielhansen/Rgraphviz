@@ -42,12 +42,15 @@ Objects can be created by calls of the form \code{new("pEdge", ...)}.
   A value of \code{0} implies that the edge is not a member of any subgraph.
 }
 \author{R. Gentleman and Jeff Gentry}
-\note{ ~~further notes~~ }
-
- ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{\code{\link{pNode}}, \code{\link{agopen}}}
+\seealso{\code{\link{pNode}}, \code{\link{agopen}},
+  \code{\link{buildEdgeList}}}
 \examples{
-##---- Should be DIRECTLY executable !! ----
+   set.seed(123)
+   V <- letters[1:10]
+   M <- 1:4
+   g1 <- randomGraph(V, M, .2)
+
+   z <- buildEdgeList(g1)
+   z[[1]]   ## Object of type pEdge
 }
 \keyword{classes}
