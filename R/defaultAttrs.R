@@ -1,5 +1,4 @@
-getDefaultAttrs <- function(layoutType=c("dot","neato","twopi")[1],
-                            edgemode=c("undirected","directed")[1]) {
+getDefaultAttrs <- function(layoutType=c("dot","neato","twopi")[1]) {
     defAttr <- list(graph=list(), cluster=list(),
                     node=list(), edge=list())
 
@@ -32,10 +31,7 @@ getDefaultAttrs <- function(layoutType=c("dot","neato","twopi")[1],
 
     ## edge attrs
     defAttr$edge$color <- par("col")
-    defAttr$edge$dir <- switch(edgemode,
-                               "undirected"="none",
-                               "directed"="forward",
-                               stop("Invalid edgemode"))
+    defAttr$edge$dir <- "both"
 
     defAttr
 }

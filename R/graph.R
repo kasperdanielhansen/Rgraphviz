@@ -1,25 +1,5 @@
 ### Methods for the graph classes in package graph
 
-
-graph2graphviz <- function(object) {
-    if( ! is(object, "graph") )
-        stop("need a graph object")
-    ## Return a 3 column numeric matrix (from, to, weight)
-    fromTo <- edgeMatrix(object, duplicates=TRUE)
-    colnames(fromTo) <- NULL
-    weights <- unlist(edgeWeights(object))
-
-    gvMtrx <- rbind(fromTo, weights)
-    ## Make sure the matrix is numeric
-    if (!is.numeric(gvMtrx))
-        stop("non-numeric values in the edge matrix")
-    if (any(is.na(gvMtrx)))
-        stop("NAs in the edge matrix")
-
-    gvMtrx
-}
-
-
 weightLabels <- function(object) {
     if( ! is(object, "graph") )
         stop("need a graph object")
@@ -64,13 +44,10 @@ weightLabels <- function(object) {
                   plot.new()
 
                   if (missing(attrs))
-                      attrs <- getDefaultAttrs(y, edgemode(x))
-                  else
-                      checkAttrs(attrs)
+                      attrs <- getDefaultAttrs(y)
 
-                  g <- agopen(x, "ABC", nodeLabels, layout=TRUE,
-                              layoutType=y, attrs=attrs, subGList=subGList,
-                              edgeLabels=edgeLabels)
+                  g <- agopen(x, "ABC", layout=TRUE, layoutType=y,
+                              attrs=attrs, subGList=subGList)
 
                   invisible(plot(g,attrs=attrs, xlab=xlab,
                                  ylab=ylab, nodeCols=nodeCols,
@@ -95,8 +72,7 @@ weightLabels <- function(object) {
                       plot.new()
 
                   if (missing(attrs))
-                      attrs <- getDefaultAttrs(layoutType(x),
-                                               edgemode(x))
+                      attrs <- getDefaultAttrs(layoutType(x))
                   checkAttrs(attrs)
 
                   nNodes <- length(nodes(x))
@@ -109,9 +85,9 @@ weightLabels <- function(object) {
 
                       ## Get the radii of the nodes.  For now we're just
                       ## implementing circles and ellipses
-                      rad <- unlist(lapply(nodes(x), getNodeRW))
+                      rad <- unlist(lapply(nodePos(x), getNodeRW))
                       RWidths <- rad
-                      heights <- unlist(lapply(nodes(x), getNodeHeight))
+                      heights <- unlist(lapply(nodePos(x), getNodeHeight))
 
                       ## Get the upper right X,Y point of the bounding
                       ## box for the graph
@@ -130,10 +106,11 @@ weightLabels <- function(object) {
                           ylab <- ""
 
                       ## Setup the node and text color vectors
+                      nodeNames <- getNodeNames(x)
                       nC <- getCols(attrs$node$fillcolor, nodeCols,
-                                    nodeNames(x))
+                                    nodeNames)
                       tC <- getCols(attrs$graph$fontcolor, textCols,
-                                    nodeNames(x))
+                                    nodeNames)
 
 
                       ## !! Currently hardcoding log & asp,
@@ -152,7 +129,7 @@ weightLabels <- function(object) {
                                     rad*2, heights, nC)
                                     )
 
-
+                      nodeLabels <- getNodeLabels(x)
                       ## Plot the edges
                       q <- lapply(AgEdge(x), function(x, edgeCols,
                                                       defEdgeCol, rad) {
@@ -167,7 +144,8 @@ weightLabels <- function(object) {
                           lines(x, col=col, len=(rad / 3))
                       }, edgeCols, attrs$edge$color, rad)
 
-                      text(nodeX,nodeY, nodeLabels(x), col=tC)
+
+                      text(nodeX,nodeY, nodeLabels, col=tC)
                   }
                   else {
                       stop("No nodes in graph")
@@ -177,7 +155,7 @@ weightLabels <- function(object) {
                                  nodeHeights=heights,
                                  nodeRwidths=RWidths,
                                  edges=AgEdge(x),
-                                 nodeLabels=nodeLabels(x)))
+                                 nodeLabels=nodeLabels))
               })
 }
 
