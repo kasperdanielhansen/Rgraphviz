@@ -132,7 +132,7 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                           col <- as.character(edgeCols[[tail]][[head]])
                           if (length(col)==0)
                               col <- defEdgeCol
-                          lines(x, col=col, len=(rad / 4))
+                          lines(x, col=col, len=(rad / 3))
                       }, edgeCols, defEdgeCol, rad)
 
                       text(nodeX,nodeY, nodeLabels, col=tC)
