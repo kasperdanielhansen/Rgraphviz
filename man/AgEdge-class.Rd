@@ -3,8 +3,6 @@
 \alias{AgEdge-class}
 \alias{AgEdge}
 \alias{splines}
-\alias{startArrow}
-\alias{endArrow}
 \alias{sp}
 \alias{ep}
 \alias{getSpline}
@@ -14,14 +12,12 @@
 \alias{arrowsize}
 \alias{arrowsize,AgEdge-method}
 \alias{color,AgEdge-method}
-\alias{endArrow,AgEdge-method}
 \alias{ep,AgEdge-method}
 \alias{getSpline,AgEdge-method}
 \alias{head,AgEdge-method}
 \alias{numSplines,AgEdge-method}
 \alias{sp,AgEdge-method}
 \alias{splines,AgEdge-method}
-\alias{startArrow,AgEdge-method}
 \alias{tail,AgEdge-method}
 \alias{txtLabel,AgEdge-method}
 \alias{txtLabel}
@@ -40,11 +36,7 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
   \describe{
     \item{\code{splines}:}{Object of class \code{"list"} A list of
       \code{BezierCurve} objects}
-    \item{\code{startArrow}:}{Object of class \code{"logical"} If there
-      is an arrow at the start of the edge.}
-    \item{\code{endArrow}:}{Object of class \code{"logical"} If there is
-    an error at the end of the edge.}
-    \item{\code{sp}:}{Object of class \code{"xyPoint"} The starting
+   \item{\code{sp}:}{Object of class \code{"xyPoint"} The starting
       point of the edge.}
     \item{\code{ep}:}{Object of class \code{"xyPoint"} The end point of
       the edge.}
@@ -64,8 +56,6 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
 \section{Methods}{
   \describe{
     \item{splines}{Returns the \code{splines} slot}
-    \item{startArrow}{Returns the \code{startArrow} slot}
-    \item{endArrow}{Returns the \code{endArrow} slot}
     \item{sp}{Returns the \code{sp} slot}
     \item{ep}{Returns the \code{ep} slot}
     \item{numSplines}{Returns the number of splines}
