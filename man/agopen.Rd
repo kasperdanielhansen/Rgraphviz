@@ -11,7 +11,7 @@ agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
        layoutType=c("dot","neato","twopi")[1],
        attrs=getDefaultAttrs(layoutType),
        nodeAttrs=list(), edgeAttrs=list(),
-       subGList, edgeMode=edgemode(graph),
+       subGList=list(), edgeMode=edgemode(graph),
        recipEdges=c("combined", "distinct"))
 }
 \arguments{
