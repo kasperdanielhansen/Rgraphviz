@@ -78,8 +78,6 @@ SEXP Rgraphviz_init(void) {
     /* Stifle graphviz warning messages, only return errors */
     agseterr(AGERR);
 
-    gvc = gvNEWcontext(Info, "");
-
     return(R_NilValue);
 }
 
@@ -239,11 +237,6 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	}
 	UNPROTECT(3);
     }
-
-    gvc->g = g;
-/* Don't think this is needed anymore, definitely doens't */
-/* work against Graphviz 1.13 */
-/*    GD_gvc(g) = gvc; */
 
     return(buildRagraph(g));    
 }
