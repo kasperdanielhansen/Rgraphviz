@@ -64,13 +64,13 @@ SEXP Rgraphviz_fin(SEXP s) {
 
     CHECK_Rgraphviz_graph(s);
     g = R_ExternalPtrAddr(s);
-/*    agclose(g); */
+    agclose(g); 
     R_ClearExternalPtr(s);
     return(R_NilValue);
 }
 
 SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
-    Agraph_t *g,*h;
+    Agraph_t *g;
     int i;
     Rboolean laidout;
     SEXP slotTmp, elmt, attrNames;
@@ -101,12 +101,9 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     }
     UNPROTECT(2);
 
-    PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
-					R_NilValue));
-/*    R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin); */
      SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 
-    UNPROTECT(2);
+    UNPROTECT(1);
     return(graph);
 }
 
@@ -237,15 +234,12 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	PROTECT(cPoints= 
 		getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
 						Rf_install("numEdges")))[0]));
-	PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
-					    R_NilValue));
-/*	R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin); */
 	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 	SET_SLOT(graph,Rf_install("nodes"),nLayout);
 	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
 	SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
 	SET_SLOT(graph,Rf_install("boundBox"), bb);
-	UNPROTECT(5);
+	UNPROTECT(4);
     }
     return(graph);
 }
@@ -255,7 +249,7 @@ SEXP buildRagraph(Agraph_t *g) {
 
     PROTECT(graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 				 R_NilValue));
-/*    R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin); */
+    R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin);
 
     klass = MAKE_CLASS("Ragraph");
     PROTECT(obj = NEW_OBJECT(klass));
