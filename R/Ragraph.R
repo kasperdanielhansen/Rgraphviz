@@ -172,7 +172,7 @@ setMethod("txtLabel", "AgNode", function(object)
 if (is.null(getGeneric("AgEdge")))
     setGeneric("AgEdge", function(object)
                standardGeneric("AgEdge"))
-## !!! Will want to include edgeID here
+
 setClass("AgEdge", representation(splines="list",
                                   sp="xyPoint",
                                   ep="xyPoint",
@@ -314,8 +314,8 @@ setMethod("bLines", "BezierCurve", function(x,...,col=par("col"),
     headStart <- z[numSegs-1,]
     headEnd <- z[numSegs,]
 
-    if ((headStart[1] == headEnd[1])&&(headStart[2] == headEnd[2]))
-        print("uh oh")
+##    if ((headStart[1] == headEnd[1])&&(headStart[2] == headEnd[2]))
+##        print("uh oh")
 
     switch(arrowhead,
            "none"=lines(c(headStart[1], headEnd[1]),

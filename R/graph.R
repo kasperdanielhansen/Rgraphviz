@@ -26,7 +26,10 @@
                       wd <- as.numeric(splitSize[1])
                       ht <- as.numeric(splitSize[2])
 
-                      x11(width=wd, height=ht)
+                      if (interactive())
+                          x11(width=wd, height=ht)
+                      else
+                          postscript(width=wd, height=ht)
                   }
 
                   plot.new()
@@ -56,7 +59,11 @@
                   ## calling plot.new().
                   if (newPlot) {
                       sz <- getGraphSize(x)
-                      x11(width=sz[1], height=sz[2])
+                      if (interactive())
+                          x11(width=sz[1], height=sz[2])
+                      else
+                          postscript(width=sz[1], height=sz[2])
+
                       plot.new()
                   }
 
