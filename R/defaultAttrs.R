@@ -22,15 +22,19 @@ getDefaultAttrs <- function(curAttrs=list(),
         }
     }
 
+    bg <- "transparent"
+    fg <- "black"
+    col <- "black"
+
     ## Define the graph attributes
     if (is.null(curAttrs$graph$bgcolor))
-        curAttrs$graph$bgcolor <- par("bg")
+        curAttrs$graph$bgcolor <- bg
     if (is.null(curAttrs$graph$fontcolor))
-        curAttrs$graph$fontcolor <- par("fg")
+        curAttrs$graph$fontcolor <- fg
     if (is.null(curAttrs$graph$ratio))
         curAttrs$graph$ratio <- "fill"
     if (is.null(curAttrs$graph$size))
-        curAttrs$graph$size <- paste(par("pin"),collapse=", ")
+        curAttrs$graph$size <- "6,6"
     if (is.null(curAttrs$graph$overlap))
         curAttrs$graph$overlap <- ""
     if (is.null(curAttrs$graph$splines))
@@ -43,18 +47,12 @@ getDefaultAttrs <- function(curAttrs=list(),
         if (is.null(curAttrs$graph$rankdir))
             curAttrs$graph$rankdir <- "TB"
     }
-    else {
-        if (layoutType == "neato") {
-        }
-
-        ## Not-dot attributes
-    }
 
     ## Now do cluster attributes
     if (is.null(curAttrs$cluster$bgcolor))
-        curAttrs$cluster$bgcolor <- par("bg")
+        curAttrs$cluster$bgcolor <- bg
     if (is.null(curAttrs$cluster$color))
-        curAttrs$cluster$color <- par("col")
+        curAttrs$cluster$color <- col
 
     ## node attributes
     if (is.null(curAttrs$node$shape))
@@ -62,18 +60,18 @@ getDefaultAttrs <- function(curAttrs=list(),
     if (is.null(curAttrs$node$fixedsize))
         curAttrs$node$fixedsize <- TRUE
     if (is.null(curAttrs$node$fillcolor))
-        curAttrs$node$fillcolor <- par("bg")
+        curAttrs$node$fillcolor <- bg
     if (is.null(curAttrs$node$label))
         curAttrs$node$label <- ""
     if (is.null(curAttrs$node$color))
-        curAttrs$node$color <- par("col")
+        curAttrs$node$color <- col
     if (is.null(curAttrs$node$fontcolor))
-        curAttrs$node$fontcolor <- par("fg")
+        curAttrs$node$fontcolor <- fg
 
 
     ## edge attrs
     if (is.null(curAttrs$edge$color))
-        curAttrs$edge$color <- par("col")
+        curAttrs$edge$color <- col
     if (is.null(curAttrs$edge$dir))
         curAttrs$edge$dir <- "both"
     if (is.null(curAttrs$edge$weight))
@@ -81,7 +79,7 @@ getDefaultAttrs <- function(curAttrs=list(),
     if (is.null(curAttrs$edge$label))
         curAttrs$edge$label <- ""
     if (is.null(curAttrs$edge$fontcolor))
-        curAttrs$edge$fontcolor <- par("fg")
+        curAttrs$edge$fontcolor <- fg
     if (is.null(curAttrs$edge$arrowhead))
         curAttrs$edge$arrowhead <- "none"
     if (is.null(curAttrs$edge$arrowtail))
