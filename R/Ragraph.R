@@ -308,16 +308,16 @@ setMethod("labelWidth","AgTextLabel", function(object)
     ## initializes methods for generics that exist in R-base
 
     setMethod("lines", "BezierCurve", function(x,...,col=par("col"),
-                                               lty=par("lty")) {
+                                               lty=par("lty"), lwd=par("lwd")) {
         z <- bezierPoints(x)
-        lines(z[,1],z[,2],col=col,lty=lty)
+        lines(z[,1],z[,2],col=col,lty=lty,lwd=lwd)
     })
 
     setMethod("lines","AgEdge",
           function(x,...,col=par("col"),len=0.25,lty=par("lty"),
                    lwd=par("lwd")) {
               z <- splines(x)
-              lapply(z,lines,col=col,lty=lty,...)
+              lapply(z,lines,col=col,lty=lty,lwd=lwd,...)
 
               ## Now need to draw the appropriate arrows, if any
               if (startArrow(x)) {
