@@ -2,6 +2,7 @@
 \docType{class}
 \alias{AgEdge-class}
 \alias{AgEdge}
+\alias{AgEdge<-}
 \alias{splines}
 \alias{sp}
 \alias{ep}

@@ -10,12 +10,14 @@
 \alias{show,Ragraph-method}
 \alias{edgeNames,Ragraph-method}
 \alias{AgEdge,Ragraph-method}
+\alias{AgEdge<-,Ragraph-method}
 \alias{agraph,Ragraph-method}
 \alias{boundBox,Ragraph-method}
 \alias{laidout,Ragraph-method}
 \alias{layoutType,Ragraph-method}
 \alias{edgemode,Ragraph-method}
 \alias{AgNode,Ragraph-method}
+\alias{AgNode<-,Ragraph-method}
 \alias{getNodeLW,Ragraph-method}
 \alias{getNodeRW,Ragraph-method}
 \alias{getNodeHeight,Ragraph-method}

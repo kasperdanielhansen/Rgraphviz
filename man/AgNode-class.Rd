@@ -2,6 +2,7 @@
 \docType{class}
 \alias{AgNode-class}
 \alias{AgNode}
+\alias{AgNode<-}
 \alias{color}
 \alias{fillcolor}
 \alias{name}
