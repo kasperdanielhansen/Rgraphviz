@@ -21,8 +21,8 @@ extern char *Info[] = {
 #include <graph.h>
 #include <dotprocs.h>
 #include <neatoprocs.h>
-#include <adjust.h>
-
+/*#include <adjust.h>
+*/
 #define AGRAPH_T(x) ((agraph_t *)DATAPTR(x))
 #define STR(SE) CHAR(STRING_ELT(SE,0))
 
