@@ -7,7 +7,6 @@ extern char *Info[] = {
 	    "10/21/02"                /* Build Date */
 };
 
-
 #include <Rinternals.h>
 #include <Rdefines.h>
 #include <R_ext/RConverters.h>
@@ -25,5 +24,20 @@ extern char *Info[] = {
 */
 #define AGRAPH_T(x) ((agraph_t *)DATAPTR(x))
 #define STR(SE) CHAR(STRING_ELT(SE,0))
+
+typedef struct {
+    Agraph_t *g;
+    int layout;
+} Rgraph_t;
+	
+
+SEXP Rgraphviz_init(void);
+SEXP Rgraphviz_fin(SEXP);
+SEXP Rgraphviz_graph2ps(SEXP, SEXP);
+SEXP Rgraphviz_getNodeLocs(SEXP);
+SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP);
+Rgraph_t *doDotLayout(Rgraph_t*);
+
+
 
 #endif
