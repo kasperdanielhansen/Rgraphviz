@@ -71,8 +71,8 @@ getDefaultAttrs <- function(curAttrs=list(),
 #        curAttrs$node$style <- "solid"
 #    if (is.null(curAttrs$node$distortion))
 #        curAttrs$node$distortion <- "0.0"
-#    if (is.null(curAttrs$node$height))
-#        curAttrs$node$height <- "0.5"
+    if (is.null(curAttrs$node$height))
+        curAttrs$node$height <- "0.5"
 #    if (is.null(curAttrs$node$layer))
 #        curAttrs$node$layer <- ""
 #    if (is.null(curAttrs$node$regular))
@@ -81,8 +81,8 @@ getDefaultAttrs <- function(curAttrs=list(),
 #        curAttrs$node$sides <- "4"
 #    if (is.null(curAttrs$node$skew))
 #        curAttrs$node$skew <- "0.0"
-#    if (is.null(curAttrs$node$width))
-#        curAttrs$node$width <- "0.75"
+    if (is.null(curAttrs$node$width))
+        curAttrs$node$width <- "0.75"
 
 
     ## edge attrs
