@@ -64,7 +64,7 @@ SEXP Rgraphviz_fin(SEXP s) {
 
     CHECK_Rgraphviz_graph(s);
     g = R_ExternalPtrAddr(s);
-    agclose(g);
+/*    agclose(g); */
     R_ClearExternalPtr(s);
     return(R_NilValue);
 }
