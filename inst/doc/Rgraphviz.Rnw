@@ -50,4 +50,26 @@ be done using the call to plot:
 z <- plot(g1, "neato")
 @
 
+The "twopi" layout method requires a graph to be fully connected.  
+To determine if your graph is fully connected:
+
+<<connected>>=
+isConnected(g1)
+@
+
+A working "twopi" layout can be seen with this graph:
+<<workingTwopi>>=
+set.seed(123)
+V <- letters[14:22]
+g2 <- randomEGraph(V, .2)
+isConnected(g2)
+z <- plot(g2,"twopi")
+@
+
+And finally, to demonstrate how the differing layout methods work on
+this second graph:
+<<g2Examples>>=
+z <- plot(g2,"dot")
+z <- plot(g2,"neato")
+@
 \end{document}

@@ -3,7 +3,7 @@
                    attrs=NULL) {
 
       ## graph must be fully connected if twopi
-      if ((layoutType=="twopi")&&(length(connComp(graph)) != 1))
+      if ((layoutType=="twopi")&&(isConnected(graph) == FALSE))
           stop("Graph must be fully connected to perform a twopi layout")
 
       outK <- switch(kind,

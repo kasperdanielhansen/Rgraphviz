@@ -170,15 +170,18 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	if (!isInteger(layoutType))
 	    error("layoutType must be an integer value");
 	else {
+	    /* Note that we're using the standard dotneato */
+	    /* layout commands for layouts and not the ones */
+	    /* provided below.  This is a test */
 	    switch(INTEGER(layoutType)[0]) {
 	    case DOTLAYOUT:
-		g = dotLayout(g);
+		dot_layout(g);
 		break;
 	    case NEATOLAYOUT:
-		g = neatoLayout(g);
+		neato_layout(g);
 		break;
 	    case TWOPILAYOUT:
-		g = twopiLayout(g);
+		twopi_layout(g);
 		break;
 	    default:
 		error("Invalid layout type\n");
@@ -347,6 +350,43 @@ void checkGraphvizVers(void) {
     }
 }
 
+Agraph_t *setDefaultAttrs(Agraph_t *g) {
+    /* While attributes have default values already,  */
+    /* if we want to dynamically set them, we need */
+    /* to have defined defaults manually */
+
+    /* Note that not all defaults are exactly as in normal graphviz */
+
+    /*** GRAPH ATTRS ***/
+    /* Neato overlap type */
+    agraphattr(g, "overlap", "");
+    agraphattr(g, "splines", "true");
+    agraphattr(g, "model", "");
+
+    /*** NODE ATTRS ***/
+    agnodeattr(g,"shape","circle");
+    agnodeattr(g,"fixedsize","true");
+    /* We're handling the labels ourselves */
+    agnodeattr(g, "label","");
+
+    /*** EDGE ATTRS ***/
+    /* Arrow direction */
+    if (AG_IS_DIRECTED(g)) 
+	agedgeattr(g, "dir", "forward");
+    else
+	agedgeattr(g, "dir", "none");
+    agedgeattr(g, "weight", "1.0");
+
+
+    /* Neato spline type */
+
+    return(g);
+}
+
+/***************************************************************/
+/* These layout commands are probably unecessary in the future */
+/* But keeping them around for now just in case                */
+/***************************************************************/
 
 Agraph_t *dotLayout(Agraph_t *g) {
     dot_init_graph(g);
@@ -391,45 +431,13 @@ Agraph_t *neatoLayout(Agraph_t *g) {
 
 Agraph_t *twopiLayout(Agraph_t *g) {
     Agnode_t* ctr;
-    
+
     twopi_init_graph(g); 
     ctr = agfstnode(g);   
     circleLayout(g,ctr);
     adjustNodes(g);
     spline_edges(g);
     dotneato_postprocess(g,twopi_nodesize);
-    return(g);
-}
-
-Agraph_t *setDefaultAttrs(Agraph_t *g) {
-    /* While attributes have default values already,  */
-    /* if we want to dynamically set them, we need */
-    /* to have defined defaults manually */
-
-    /* Note that not all defaults are exactly as in normal graphviz */
-
-    /*** GRAPH ATTRS ***/
-    /* Neato overlap type */
-    agraphattr(g, "overlap", "");
-    agraphattr(g, "splines", "true");
-    agraphattr(g, "model", "");
-
-    /*** NODE ATTRS ***/
-    agnodeattr(g,"shape","circle");
-    agnodeattr(g,"fixedsize","true");
-    /* We're handling the labels ourselves */
-    agnodeattr(g, "label","");
-
-    /*** EDGE ATTRS ***/
-    /* Arrow direction */
-    if (AG_IS_DIRECTED(g)) 
-	agedgeattr(g, "dir", "forward");
-    else
-	agedgeattr(g, "dir", "none");
-    agedgeattr(g, "weight", "1.0");
-
-
-    /* Neato spline type */
 
     return(g);
 }
