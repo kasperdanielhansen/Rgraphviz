@@ -16,13 +16,16 @@
 
         weights <- as.integer(unlist(edgeWeights(object)))
         gvMtrx <- matrix(c(from, to, weights), ncol=3)
+        ## Make sure we don't have any NAs in the matrix
+        if (!is.numeric(gvMtrx))
+            stop("Invalid graph object, produces non-numeric values")
         gvMtrx
     }, where=where)
 
 
     setMethod("plot", "graphNEL",
               function(x, y, ..., nodeLabels, centerNode,
-                       nodeCols="white", textCols="black"){
+                       nodeCols=par("bg"), textCols=par("fg"), edgeCols=par("col")){
                   if (missing(y))
                       y <- "dot"
 
@@ -82,8 +85,22 @@
                            yaxt="n",bty="n",...)
                       symbols(nodeX, nodeY, circles=rad, inches=FALSE,
                               bg=nodeCols,add=TRUE)
+
                       ## Plot the edges
-                      q <- lapply(AgEdge(g), lines)
+                      ## Need to manually handle the color cycling
+                      colEnv <- new.env()
+                      colNum <- 1
+                      assign("colNum",colNum, colEnv)
+                      q <- lapply(AgEdge(g), function(x,cols, colEnv) {
+                          colNum <- get("colNum",colEnv)
+                          lines(x, col=edgeCols[colNum])
+                          if (colNum == length(edgeCols))
+                              colNum <- 1
+                          else
+                              colNum <- colNum + 1
+                          assign("colNum",colNum,colEnv)
+                      }, edgeCols, colEnv)
+
                       text(nodeX,nodeY, nodeLabels, col=textCols)
                   }
                   else {
