@@ -5,7 +5,6 @@ BezierCurve-class       Class "BezierCurve": A class to describe a
                         Bezier curve
 boundingBox-class       Class "boundingBox": A class to describe the
                         bounding box of a Ragraph
-graphExamples           A List Of Example Graphs
 layoutGraph             A function to layout graph locations
 NodePosition-class      Class "NodePosition": A class to describe the
                         location and size of a node
