@@ -1,4 +1,4 @@
-Package: Rgraph
+Package: Rgraphviz
 Title: Access for libgraph library
 Version: 0.1
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>
