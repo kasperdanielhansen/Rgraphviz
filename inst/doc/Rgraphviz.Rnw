@@ -125,10 +125,11 @@ sg3
 @
 
 To plot using the subgraphs, one must use the \Rfunction{subGList}
-argument which accepts a list of every subgraph.
+argument which accepts a list of every subgraph.  The subgraphs in the
+list must be named.
 
 <<subGplot, fig=TRUE>>=
-plot(g1, subGList=list(sg1, sg2, sg3))
+plot(g1, subGList=list(sg1=sg1, sg2=sg2, sg3=sg3))
 @
 
 To demonstrate the differences that will appear with different
@@ -137,7 +138,7 @@ subgraph patterns, another example is provided:
 <<subGPlot2, fig=TRUE>>=
 sg1 <- subGraph(c("a","c","d","e","j"), g1)
 sg2 <- subGraph(c("f","h","i"), g1)
-plot(g1, subGList=list(sg1, sg2))
+plot(g1, subGList=list(sg1=sg1, sg2=sg2))
 @
 
 \subsection{A Note About Edge Names}
@@ -320,6 +321,11 @@ nAttrs$shape <- c(e="box", g="circle", j="box", d="plaintext")
 plot(g1, attrs=defAttrs, nodeAttrs=nAttrs)
 @
 
+\section{Attributes for subgraphs}
+
+Subgraphs have their attributes set via the argument
+\Robject{subGAttrs}, which operates identically to \Robject{nodeAttrs}
+except that the name of the appropriate subgraph is used and not a node.
 
 \section{Setting attributes via node and edge lists}
 

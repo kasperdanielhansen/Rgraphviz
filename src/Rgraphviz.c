@@ -188,10 +188,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 
 	/* Create any subgraphs, if necessary */	
 	for (i = 0; i < length(subGs); i++) {
-	    curStr = (char *)malloc(100 * sizeof(char));
-	    sprintf(curStr, "%s_%d\n", "cluster", i);
-	    sgs[i] = agsubg(g, curStr);
-	    free(curStr);
+	    sgs[i] = agsubg(g, CHAR(STRING_ELT(subGs, i)));
 	    
 	    for (j = 0; j < length(subGAttrs); j++) {
 		PROTECT(curAttrs = VECTOR_ELT(subGAttrs, j));
