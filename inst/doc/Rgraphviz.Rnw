@@ -38,9 +38,14 @@ It is quite simple to generate a R plot window to display your graph.
 Once you have your graph object, simply use the \Rfunction{plot}
 method:
 
-<<plotDot, fig=TRUE>>=
-z <- plot(g1)
-@
+\begin{figure}[htbp]
+  \centering
+  <<plotDot, fig=TRUE, echo=FALSE>>=
+    z <- plot(g1)
+  @
+  \caption{Example graph, laid out with dot}
+  \label{fig:g1dot}
+\end{figure}
 
 The \Rpackage{Rgraphviz} package allows you to specify varying layout
 engines, such as "dot" (the default), "neato", and "twopi".  This can
@@ -73,7 +78,7 @@ and if no 'centerNode' is specified the system will attempt to
 determine a suitable default:
 
 <<twopiCenter, fig=TRUE>>=
-z <- plot(g2,"twopi",centerNode="n")
+z <- plot(g2,"twopi",centerNode="r")
 @
 
 And finally, to demonstrate how the differing layout methods work on
@@ -88,32 +93,30 @@ z <- plot(g2,"neato")
 \section{Adding Some Color}
 
 Many aspects of the plotted graph can be colorized to help highlight
-certain features.  Nodes, edges and text labels can all be colorized
-in the same manner as most other plotting commands.  To specify node
-colors, "nodeCols" is used for \Rfunction{plot}.  Likewise,
-\Rfunction{edgeCols} and \Rfunction{textCols} are used for edge and
-text colors respectively.  In all three cases one can pass in a single
-value (causing all of the appropriate objects to receive that color),
-or a vector of colors can be passed in, which will be cycled in the
-same manner as other plotting functions.
+certain features.  Nodes, node labels and edges can all have special
+coloring within a plot.  In all three cases there is a default color
+provided by the system, and a user can specifically note deviations
+from that default.  The default colors are defined by the arguments
+"defNodeCol", "defTextCol" and "defEdgeCol".  Any color can be
+specified to any of these, although suitable defaults are chosen if
+nothing is specified.  
 
-Adding node color:
-<<nodeColor, fig=TRUE>>=
-gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
-      a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1)),
-      edgemode="directed")
+Specifying deviations from the default color is also easy.  The
+respective arguments here are "nodeCols", "textCols" and "edgeCols".
+In the former two cases, the system takes a named vector - and any
+element whose name matches the name of a node will have the specified
+color used for that node.  Edges are a bit more complex, and are
+represented as a list of node names (the tail nodes), each of which
+contain a list of node names (the head nodes) which contain a color.
+For every edge, if an element in the list exist x$tail$head, that
+color will be used for the edge.
 
-plot(gR, nodeCols=c("yellow","orange","green"))
-@
-
-Adding edge color:
-<<edgeColor, fig=TRUE>>=
-plot(gR, edgeCols=c("red","blue","purple"))
-@
-
-Adding text color:
-<<textColor,fig=TRUE>>=
-plot(gR, textCols=c("red","blue","green","black"))
+<<colorExamples, fig=TRUE>>=
+  nodeCols <- c("red","blue","green")
+  names(nodeCols) <- c("c","d","i")
+  textCols <- c("yellow","orange","violet")
+  names(textCols) <- c("a","b","d")
+  plot(g1,nodeCols=nodeCols,textCols=textCols)
 @
 
 \section{Example Graphs}
