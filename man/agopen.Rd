@@ -10,7 +10,6 @@
 agopen(graph, name, nodeLabels=nodes(graph), kind = "AGRAPH", layout = TRUE,
        layoutType=c("dot","neato","twopi")[1], attrs=NULL)
 }
-%- maybe also `usage' for other objects documented here.
 \arguments{
   \item{graph}{An object of class \code{graphNEL}}
   \item{name}{The name of the graph}
