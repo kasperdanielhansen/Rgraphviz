@@ -7,6 +7,7 @@
 
       checkAttrs(attrs)
 
+      ##FIXME: briefly explain what each type is
       if (is.null(kind)) {
           ## Determine kind from the graph object
           outK <- switch(edgemode(graph),
@@ -123,6 +124,7 @@
 
       ## all attrs must be character strings going into C,
       ## graphviz wants all attrs to be char*
+      ## FIXME: so shouldn't we do that in C?
       attrs <- lapply(attrs, function(x){lapply(x,as.character)})
 
       g <- .Call("Rgraphviz_agopen", as.character(name),
@@ -145,6 +147,7 @@
           return(g)
   }
 
+
 agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
                    layout=TRUE) {
     ## First check that the file exists
@@ -162,6 +165,7 @@ agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
 agwrite <- function(graph, filename) {
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename))
 }
+
 
 layoutGraph <- function(graph, layoutType=c("dot","neato","twopi")[1]) {
     if (inherits(graph,"graphNEL"))
