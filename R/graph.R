@@ -31,6 +31,9 @@
                                    "undirected"="AGRAPH",
                                    "directed"="AGDIGRAPH",
                                    "AGRAPH")
+
+                  ## twopi layout requires the graph to be fully
+                  ## connected
                   g = agopen(x, "ABC", agKind, layout=TRUE, layoutType=y)
                   edges <- edges(x)
                   if(missing(nodeLabels) )
