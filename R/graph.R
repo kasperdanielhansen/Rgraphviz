@@ -1,11 +1,9 @@
 setMethod("plot", "graph",
-  function(x, y, ...,
+  function(x, y, ..., name="",
            subGList=list(),
            attrs=list(),
            nodeAttrs=list(),
            edgeAttrs=list(),
-           xlab="", ylab="",
-           main=NULL, sub=NULL,
            recipEdges=c("combined", "distinct")){
     if (!validGraph(x))
       stop("The graph to be plotted is not a valid graph structure")
@@ -14,59 +12,51 @@ setMethod("plot", "graph",
 
     recipEdges <- match.arg(recipEdges)
 
-    g <- agopen(x, "ABC", layout=TRUE, layoutType=y,
+    g <- agopen(x, name=name, layout=TRUE, layoutType=y, 
                 attrs=attrs, nodeAttrs=nodeAttrs,
                 edgeAttrs=edgeAttrs, subGList=subGList,
                 recipEdges=recipEdges)
 
-    invisible(plot(g,
-                   xlab=xlab, ylab=ylab,
-                   main=main, sub=sub))
+    invisible(plot(g, ...))
   })
 
 
 setMethod("plot", "Ragraph",
   function(x, y, ...,
-           xlab="", ylab="",
-           main=NULL, sub=NULL,
-           drawNode=drawAgNode) {
-           ## nodeAttrs=list(),
-           ## edgeAttrs=list()) {
+           main=NULL, cex.main=NULL, col.main="black",
+           sub=NULL, cex.sub=NULL, col.sub="black", 
+           drawNode=drawAgNode, xlab, ylab) {
 
     plot.new()
-
-    ## Some plots can get clipped and shouldn't be.
-    ## Change the clip setting to clip to the figure
-    ## region (should it be the device region?  I
-    ## don't think so, but perhaps).  As far as I
-    ## can tell, this doesn't cause any problems
-    ## with bounding box issues and the like.
-    op <- par(no.readonly=TRUE)
-    par(xpd=TRUE)
-    on.exit(par(op), add=TRUE)
+    
+    ## eliminate all plot borders
+    old.mai=par(mai=0.01+c(0.83*(!is.null(sub)), 0, 0.83*(!is.null(main)), 0))
+    on.exit(par(mai=old.mai), add=TRUE)
     
     ## Get the upper right X,Y point of the bounding
     ## box for the graph
     ur <- upRight(boundBox(x))
     
-    ## Set up the plot region, plot the edges, then
-    ## nodes and finally the node labels.  We need
+    ## Set up the plot region.  We need
     ## to emulate what happens in 'plot.default' as
     ## we called plot.new() above, and for the same
     ## reasons as doing that, calling 'plot' now
     ## will mung up the thing if people are using
     ## 'layout' with this.
-    
+
     ## !! Currently hardcoding log & asp,
     ## !! probably want to change that over time.
     plot.window(xlim=c(0,getX(ur)),
                 ylim=c(0,getY(ur)),
                 log="", asp=NA, ...)
-    xy <- xy.coords(NA, NA, xlab, ylab, "")
+    xy <- xy.coords(NA, NA)
     ## !! Also still hardcoding 'type'
     plot.xy(xy, type="n", ...)
-    
-    title(main=main, xlab=xlab, ylab=ylab, sub=sub)
+
+    if(!missing(xlab) && !missing(ylab))
+      stop("Arguments 'xlab' and 'ylab' are not handled.")
+    if(!is.null(sub)||!is.null(main))
+      title(main, sub, cex.main=cex.main, col.main=col.main, cex.sub=cex.sub, col.sub=col.sub)
 
     ## -----------------------------------------------------------------------
     ## determine whether node labels fit into nodes and set "cex" accordingly
@@ -83,9 +73,11 @@ setMethod("plot", "Ragraph",
       return(rv)
     } )
     cex <- min(nodeDims / strDims)
-    if(is.finite(cex))
-      par(cex=cex)
-  
+    if(is.finite(cex)) {
+      old.cex <- par(cex=cex)
+      on.exit(par(cex=old.cex), add=TRUE)
+    }
+    
     ## -----------
     ## draw
     ## -----------
