@@ -79,6 +79,15 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     for (i = 0; i < length(elmt); i++) {
 	agraphattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
     }
+    
+    UNPROTECT(1);
+    /* Now do node-wide ... NEED TO DO THIS BETTER */
+    PROTECT(elmt = getListElement(attrs, "node"));
+    attrNames = getAttrib(elmt, R_NamesSymbol);
+    for (i = 0; i < length(elmt); i++) {
+	agnodeattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
+    }
+    UNPROTECT(1);
 
     PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 					R_NilValue));
@@ -89,7 +98,7 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     slotTmp = GET_SLOT(graph, Rf_install("agraph"));
     h = R_ExternalPtrAddr(slotTmp);
 
-    UNPROTECT(2);
+    UNPROTECT(1);
     return(graph);
 }
 
@@ -106,10 +115,11 @@ SEXP Rgraphviz_agread(SEXP filename) {
     return(buildRagraph(g));
 }
 
-SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
+SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
+		      SEXP nodeLabels, SEXP from,
 		      SEXP to, SEXP weights) {
     Agraph_t *g;
-    Agnode_t *head, *tail;
+    Agnode_t *head, *tail, *tmp;
     Agedge_t *curEdge;
     int ag_k = 0;
     int i, curNode;
@@ -134,18 +144,22 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
 
     /* Get the nodes created */
     for (i = 0; i < length(nodes); i++) {
-	agnode(g, CHAR(STRING_ELT(nodes,i)));
+/*	tmp = agnode(g, CHAR(STRING_ELT(nodes,i))); */
+	tmp = agnode(g, CHAR(STRING_ELT(nodeLabels,i)));
+/*	agset(tmp, "label", CHAR(STRING_ELT(nodeLabels,i)));
+	printf("Setting label to |%s|\n", CHAR(STRING_ELT(nodeLabels,i)));
+*/
     }
 
     /* now fill in the edges */
     for (i = 0; i < length(from); i++) {
 	curNode = INTEGER(from)[i];
-	tail = agfindnode(g, CHAR(STRING_ELT(nodes,curNode-1)));
+	tail = agfindnode(g, CHAR(STRING_ELT(nodeLabels,curNode-1)));
 	if (tail == NULL)
 	    error("Missing tail node");
 	/* Get weights for these edges */
 	curNode = INTEGER(to)[i];
-	head = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
+	head = agfindnode(g,CHAR(STRING_ELT(nodeLabels,curNode-1)));
 	if (head == NULL)
 	    error("Missing head node");
 	
@@ -273,7 +287,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 	SET_SLOT(curXY,Rf_install("x"),R_scalarInteger(node->u.coord.x));
 	SET_SLOT(curXY,Rf_install("y"),R_scalarInteger(node->u.coord.y));
 	SET_SLOT(curNL,Rf_install("center"),curXY);
-	SET_SLOT(curNL,Rf_install("height"),R_scalarReal(node->u.height));
+	SET_SLOT(curNL,Rf_install("height"),R_scalarInteger(node->u.ht));
 	SET_SLOT(curNL,Rf_install("rWidth"),R_scalarInteger(node->u.rw));
 	SET_SLOT(curNL,Rf_install("lWidth"),R_scalarInteger(node->u.lw));
 	SET_ELEMENT(outLst, i, curNL);
@@ -390,10 +404,11 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
     agraphattr(g, "overlap", "");
     agraphattr(g, "splines", "true");
     agraphattr(g, "model", "");
+    agraphattr(g, "rotate", "90");
 
     /*** NODE ATTRS ***/
-    agnodeattr(g,"shape","circle");
-    agnodeattr(g,"fixedsize","true");
+/*    agnodeattr(g,"shape","circle"); */
+    /*   agnodeattr(g,"fixedsize","true"); */
 
     /*** EDGE ATTRS ***/
     /* Arrow direction */

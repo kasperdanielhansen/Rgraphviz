@@ -1,4 +1,4 @@
-  agopen <- function(graph, name, kind="AGRAPH", layout=TRUE,
+  agopen <- function(graph, name, nodeLabels, kind="AGRAPH", layout=TRUE,
                    layoutType=c("dot","neato","twopi")[1],
                    attrs=NULL) {
 
@@ -19,6 +19,7 @@
 
     g <- .Call("Rgraphviz_agopen", as.character(name),
                as.integer(outK), as.vector(nodes),
+               as.character(nodeLabels),
                as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
                as.integer(edgeMtrx[,3]))
 
