@@ -38,6 +38,16 @@ getDefaultAttrs <- function(curAttrs=list(),
     if (is.null(curAttrs$graph$splines))
         curAttrs$graph$splines <- TRUE
 
+    ## Use the 'fin' value for the Graphviz size, if there's no
+    ## plot device open right now, then use a sensible default
+    ## instead of letting Graphviz choose whatever it wants.  This
+    ## helps prevent visual distortion when scaling down the image.
+    if ((.Device != "null device")&&(is.null(curAttrs$graph$size))) {
+        fin <- par("fin")
+        curAttrs$graph$size <- paste(fin[1],fin[2],sep=",")
+    }
+    else
+        curAttrs$graph$size <- "6.99,6.99"
 
 
     ## Now do layout specific graph attributes

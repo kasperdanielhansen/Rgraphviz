@@ -28,6 +28,15 @@
                        edgeAttrs=list()) {
                   plot.new()
 
+                  ## Some plots can get clipped and shouldn't be.
+                  ## Change the clip setting to clip to the figure
+                  ## region (should it be the device region?  I
+                  ## don't think so, but perhaps).  As far as I
+                  ## can tell, this doesn't cause any problems
+                  ## with bounding box issues and the like.
+                  op <- par(xpd=TRUE)
+                  on.exit(par(op), add=TRUE)
+
                   nNodes <- length(AgNode(x))
 
                   if (nNodes > 0) {
@@ -270,9 +279,31 @@ drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
                       fg=fg, bg=bg,add=TRUE))
 }
 
-getGraphSize <- function(graph) {
-    sizeStr <- getGraphAttr(graph, "size")
-    splitSize <- strsplit(sizeStr, ",")[[1]]
-    return(as.numeric(splitSize))
+identifyGraph <- function(plotGraph, ...) {
+
+    ## Get the information for the nodes (x, y, labels)
+    xy <- getNodeXY(plotGraph)
+    nodes <- sapply(AgNode(plotGraph), name)
+
+    ## Now get the edges
+    edges <- AgEdge(plotGraph)
+    edgeNames <- sapply(edges, function(x) paste(tail(x),
+                                                 head(x), sep="~"))
+
+    edgeLabels <- character()
+    vals <- matrix(nrow = 0, ncol = 2)
+
+    for (i in 1:length(edges)) {
+        for (j in 1:numSplines(edges[[i]])) {
+            cur <- bezierPoints(getSpline(edges[[i]], j))
+            edgeLabels <- c(edgeLabels, rep(edgeNames[i], nrow(cur)))
+            vals <- rbind(vals, cur)
+        }
+    }
+
+    labels <- c(nodes, edgeLabels)
+    sel <- identify(c(xy$x, vals[,1]), c(xy$y, vals[,2]), labels, ...)
+
+    list(points=sel, labels=labels)
 }
 
