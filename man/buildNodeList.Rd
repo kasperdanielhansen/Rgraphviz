@@ -57,4 +57,4 @@ buildEdgeList(graph, edgeAttrs = list(), subGList=list())
    z <- buildEdgeList(g1)
    x <- buildNodeList(g1)
 }
-\keyword{utilities}
+\keyword{graphs}

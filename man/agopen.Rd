@@ -66,5 +66,5 @@ z <- agopen(g1,"foo")
 z
 z <- agopen(g1,"foo",layoutType="neato")
 }
-\keyword{utilities}
+\keyword{graphs}
 

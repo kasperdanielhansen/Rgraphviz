@@ -33,4 +33,4 @@ checkAttrs(attrs)
   z <- getDefaultAttrs()
   checkAttrs(z)
 }
-\keyword{utilities}
+\keyword{graphs}
