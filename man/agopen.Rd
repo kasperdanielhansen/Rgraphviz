@@ -8,7 +8,7 @@
 }
 \usage{
 agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
-       layoutType=c("dot","neato","twopi")[1],
+       layoutType=c("dot","neato","twopi"),
        attrs=list(),
        nodeAttrs=list(), edgeAttrs=list(),
        subGList=list(), edgeMode=edgemode(graph),

@@ -58,32 +58,36 @@
 
                       title(main=main, xlab=xlab, ylab=ylab, sub=sub)
 
+                      radConv <- getRadiusDiv(ur)
+
                       if (length(drawNode) == 1)
-                         lapply(AgNode(x), drawNode, ur, nodeAttrs)
+                         lapply(AgNode(x), drawNode, ur, nodeAttrs, radConv)
                       else if (length(drawNode) == nNodes) {
                           nodes <- AgNode(x)
                           for (i in 1:nNodes) {
                               curDrawFun <- drawNode[[i]]
-                              curDrawFun(nodes[[i]], ur, nodeAttrs)
-                          }                      }
+                              curDrawFun(nodes[[i]], ur, nodeAttrs, radConv)
+                          }
+                      }
                       else
                           stop("Length of the drawNode parameter",
                                " must be either length 1 or the",
                                " number of nodes.")
 
-                      rad <- min(unlist(lapply(AgNode(x), getNodeRW)))
-
+                      ## Use the smallest node radius as a means
+                      ## to scale the size of the arrowheads in
+                      ## directed graphs
+                      arrowLen <- min(sapply(AgNode(x), getNodeRW)) / (radConv*3)
                       ## Plot the edges
-                      q <- lapply(AgEdge(x), function(x, rad,
+                      q <- lapply(AgEdge(x), function(x, arrowLen,
                                                       edgemode, ur,
                                                       attrs) {
                           ## See if there's a specified edgeCol for this
                           if (!is(x,"AgEdge"))
                               stop(paste("Class:",class("AgEdge")))
-                          rad <- convertRadius(rad, ur)
-                          lines(x, len=(rad / 3), edgemode=edgemode,
+                          lines(x, len=arrowLen, edgemode=edgemode,
                                 attrs=attrs)
-                      }, rad, edgemode(x), ur, edgeAttrs)
+                      }, arrowLen, edgemode(x), ur, edgeAttrs)
                   }
                   else {
                       stop("No nodes in graph")
@@ -94,7 +98,7 @@
 }
 
 
-drawAgNode <- function(node, ur, attrs=list()) {
+drawAgNode <- function(node, ur, attrs=list(), conv=1) {
     nodeName <- name(node)
 
     ## First get X/Y
@@ -106,7 +110,7 @@ drawAgNode <- function(node, ur, attrs=list()) {
     lw <- getNodeLW(node)
     height <- getNodeHeight(node)
 
-    rad <- convertRadius(rw, ur)
+    rad <- rw / conv
 
     attrNames <- names(attrs)
     if (("color" %in% attrNames)&&(nodeName %in% names(attrs$color)))
@@ -240,7 +244,7 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc, width, objName,
     }
 }
 
-convertRadius <- function(rad, ur) {
+getRadiusDiv <- function(ur) {
     outX <- getX(ur)
     outY <- getY(ur)
     outLim <- max(outY, outX)
@@ -258,7 +262,7 @@ convertRadius <- function(rad, ur) {
         conv <- outY/pin[2]
     }
 
-    rad/conv
+    conv
 }
 
 drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
