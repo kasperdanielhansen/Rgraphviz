@@ -1285,7 +1285,6 @@ fi;
 if test "${DOTNEATO_CONFIG}" != "not found"; then
 	echo "$as_me:$LINENO: result: ${DOTNEATO_CONFIG}" >&5
 echo "${ECHO_T}${DOTNEATO_CONFIG}" >&6
-	PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
 	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
 
 	MAJOR=`${DOTNEATO_CONFIG} --version`
