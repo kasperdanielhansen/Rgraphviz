@@ -9,7 +9,7 @@ setMethod("imageMap",
   if(any(par("mai")!=0))
     warning("If par('mai') are not all 0, the result of this function (imageMap) may not be useful.")
     
-  nn = sapply(AgNode(lg), function(x) x@name)
+  nn = sapply(AgNode(object), function(x) x@name)
 
   checkTags = function(x, tagname) {
     if(is.null(names(x))) {
