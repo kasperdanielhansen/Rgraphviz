@@ -67,12 +67,6 @@ setMethod("labelFontsize", "AgTextLabel", function(object)
           object@labelFontsize)
 
 
-
-getNodeLocs <- function(object) {
-    .Deprecated("getNodeXY")
-    getNodeXY(object)
-}
-
 getNodeNames <- function(object) {
     if (!is(object, "Ragraph"))
         stop("Need a Ragraph object")
