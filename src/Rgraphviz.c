@@ -1,5 +1,11 @@
 #include "common.h"
 
+SEXP R_scalarReal(float v) {
+    SEXP ans = allocVector(REALSXP,1);
+    REAL(ans)[0] = v;
+    return(ans);
+}
+
 SEXP R_scalarInteger(int v)
 {
   SEXP  ans = allocVector(INTSXP, 1);
@@ -142,7 +148,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP eList) {
 SEXP Rgraphviz_doDotLayout(SEXP graph) {
     Agraph_t *g;
     Rboolean laidout;
-    SEXP slotTmp, nLayout, cPoints;
+    SEXP slotTmp, nLayout, cPoints, bb;
 
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == FALSE) {
@@ -152,10 +158,10 @@ SEXP Rgraphviz_doDotLayout(SEXP graph) {
 	
 	g = dotLayout(g);
 	PROTECT(nLayout = getNodeLayouts(g));
+	PROTECT(bb = getBoundBox(g));
 	PROTECT(cPoints= 
 		getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
 						Rf_install("numEdges")))[0]));
-	
 	PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 					     R_NilValue));
 	R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin);
@@ -163,9 +169,32 @@ SEXP Rgraphviz_doDotLayout(SEXP graph) {
 	SET_SLOT(graph,Rf_install("nodes"),nLayout);
 	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
 	SET_SLOT(graph,Rf_install("edgePoints"), cPoints);
-	UNPROTECT(3);
+	SET_SLOT(graph,Rf_install("boundBox"), bb);
+	UNPROTECT(4);
     }
     return(graph);
+}
+
+SEXP getBoundBox(Agraph_t *g) {
+    SEXP bbClass, xyClass, curBB, LLXY, URXY;
+
+    xyClass = MAKE_CLASS("xyPoint");
+    bbClass = MAKE_CLASS("boundingBox");
+
+    PROTECT(curBB = NEW_OBJECT(bbClass));
+    PROTECT(LLXY = NEW_OBJECT(xyClass));
+    PROTECT(URXY = NEW_OBJECT(xyClass));
+
+    SET_SLOT(LLXY,Rf_install("x"),R_scalarInteger(g->u.bb.LL.x));
+    SET_SLOT(LLXY,Rf_install("y"),R_scalarInteger(g->u.bb.LL.y));
+    SET_SLOT(URXY,Rf_install("x"),R_scalarInteger(g->u.bb.UR.x));
+    SET_SLOT(URXY,Rf_install("y"),R_scalarInteger(g->u.bb.UR.y));
+
+    SET_SLOT(curBB,Rf_install("botLeft"), LLXY);
+    SET_SLOT(curBB,Rf_install("upRight"), URXY);
+
+    UNPROTECT(3);
+    return(curBB);
 }
 
 SEXP getNodeLayouts(Agraph_t *g) {
@@ -180,7 +209,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
     node = agfstnode(g);
     PROTECT(outLst = allocVector(VECSXP, nodes));
 
-    for (i = 0; i < nodes; i++) {
+    for (i = 0; i < nodes; i++) {	
 	PROTECT(curNL = NEW_OBJECT(nlClass));
 	PROTECT(curXY = NEW_OBJECT(xyClass));
 	SET_SLOT(curXY,Rf_install("x"),R_scalarInteger(node->u.coord.x));
@@ -256,6 +285,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     return(outList);
 }
 
+
 Agraph_t *dotLayout(Agraph_t *g) {
     graph_init(g);    
 
@@ -269,49 +299,6 @@ Agraph_t *dotLayout(Agraph_t *g) {
     dotneato_postprocess(g, dot_nodesize);
 
     return(g);
-}
-
-SEXP Rgraphviz_getDotfile(SEXP graph) {
-    /* !! Currently writes to stdout */
-    Agraph_t *g;
-
-    CHECK_Rgraphviz_graph(graph);
-    g = R_ExternalPtrAddr(graph);
-
-    graph_init(g);
-    aginit();
-
-    attach_attrs(g);
-    agwrite(g,stdout);
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_emitGraph(SEXP graph, SEXP outFile) {
-    Agraph_t *g;
-    FILE* of;
-
-    CHECK_Rgraphviz_graph(graph);
-    g = R_ExternalPtrAddr(graph);
-    if (!isString(outFile))
-	error("outFile must be a file name");
-
-    of = fopen(STR(outFile),"w");
-    if (of == NULL) 
-	error("Error opening file");
-
-    graph_init(g);  
-
-    Output_lang = POSTSCRIPT;
-    Output_file = of;
-    CodeGen = &PS_CodeGen;
-
-    dotneato_set_margins(g);
-    Rprintf("Now outputting graph to %s\n", STR(outFile));
-    emit_graph(g,0);  
-    dot_cleanup(g);
-    fclose(of);
-    emit_reset(g);
-    return(R_NilValue);
 }
 
 

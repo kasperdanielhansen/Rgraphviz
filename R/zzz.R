@@ -11,9 +11,4 @@
     require(graph)
     library.dynam( "Rgraphviz", pkg, lib )
     .Call("Rgraphviz_init")
-    .initRagraph(where)
-    .initEdgePoints(where)
-    .initNodeLayout(where)
-    .initControlPoints(where)
-    .initXYPoint(where)
 }

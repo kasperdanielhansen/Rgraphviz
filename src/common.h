@@ -29,6 +29,7 @@ SEXP Rgraphviz_init(void);
 SEXP Rgraphviz_fin(SEXP);
 SEXP Rgraphviz_graph2ps(SEXP, SEXP);
 SEXP Rgraphviz_doDotLayout(SEXP);
+SEXP getBoundBox(Agraph_t *);
 SEXP getEdgeLocs(Agraph_t *,int);
 SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP);
 SEXP getNodeLayouts(Agraph_t *);
