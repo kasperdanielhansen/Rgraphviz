@@ -2,6 +2,12 @@
 \docType{methods}
 \alias{plot.graphNEL}
 \alias{plot.graph}
+\alias{drawEllipseNodes}
+\alias{drawCircleNodes}
+\alias{checkNodeShape}
+\alias{checkCenterNode}
+\alias{checkRankDir}
+\alias{getCols}
 \title{ Plot a graph object - methods}
 \description{
   A plot method for \code{graph} objects.
@@ -57,3 +63,4 @@
 \section{seealso}{\code{\link{graphNEL-class}}, \code{\link{graph-class}},
   \code{\link{graph2graphviz}}}
 \keyword{graphs}
+\keyword{methods}
