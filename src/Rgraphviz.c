@@ -154,7 +154,6 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     int ag_k = 0;
     int i,j, attrPos;
     int curSubG;
-    char *curStr;
     SEXP pNode, curPN, pEdge, curPE;
     SEXP attrNames, curAttrs;
 
@@ -189,7 +188,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	/* Create any subgraphs, if necessary */	
 	for (i = 0; i < length(subGs); i++) {
 	    sgs[i] = agsubg(g, CHAR(STRING_ELT(subGs, i)));
-	    
+
 	    for (j = 0; j < length(subGAttrs); j++) {
 		PROTECT(curAttrs = VECTOR_ELT(subGAttrs, j));
 		attrPos = getVectorPos(curAttrs, CHAR(STRING_ELT(subGs,i)));
@@ -197,9 +196,8 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 		    /* There's a hit, assign this attribute to */
 		    /* the subgraph */
 		    PROTECT(curAttrs = coerceVector(curAttrs, STRSXP));
-
 		    agset(sgs[i], CHAR(STRING_ELT(attrNames, j)),
-			  STR(VECTOR_ELT(curAttrs, attrPos)));
+			  CHAR(STRING_ELT(curAttrs, attrPos)));
 		    UNPROTECT(1);
 		}
 		UNPROTECT(1);
@@ -370,7 +368,6 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     Agraph_t *g;
     Rboolean laidout;
     SEXP slotTmp, nLayout, cPoints, bb;
-
     
     /* First make sure that hte graph is not already laid out */
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
