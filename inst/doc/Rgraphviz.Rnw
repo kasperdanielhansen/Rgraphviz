@@ -38,13 +38,9 @@ It is quite simple to generate a R plot window to display your graph.
 Once you have your graph object, simply use the \Rfunction{plot}
 method:
 
-\begin{figure}[htbp]
-  \centering
-  <<plotDot, fig=TRUE, echo=FALSE>>=
+<<plotDot, fig=TRUE, echo=FALSE>>=
     z <- plot(g1)
-  \caption{Example graph, laid out with dot}
-  \label{fig:g1dot}
-\end{figure}
+@	
 
 The \Rpackage{Rgraphviz} package allows you to specify varying layout
 engines, such as "dot" (the default), "neato", and "twopi".  This can
