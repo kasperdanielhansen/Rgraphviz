@@ -95,7 +95,8 @@
       'size' attribute is set and the graph can not be drawn on a single
       page, then the drawing is compressed to fit in the given size.  If
       'auto', the 'page' attribute is set and the graph cannot be drawn
-      on a single page, then 'size' is set to an "ideal" value.}
+      on a single page, then 'size' is set to an \dQuote{ideal} value.  The
+      default for this attribute is \dQuote{fill}}
     \item{\code{rotate}:}{If 90, set drawing orientation to landscape.
       This attribute accepts integer values and defaults to \code{0}}
     \item{\code{samplepoints}:}{If the input graph defines the
@@ -106,7 +107,7 @@
       defaults to \code{8}} 
     \item{\code{size}:}{Maximum width and height of drawing, in inches.
       Specified using the notation \code{val,val} where each val is a
-      double.} 
+      double.  The default of this attribute is \code{par(\dQuote(pin))}.} 
     \item{\code{start}:}{Parameter used to determine the initial layout
       of nodes.  By default, nodes are randomly placed in a
       square whose sides have length (number of nodes).  The same seed
@@ -362,7 +363,7 @@
       This defaults to \code{par(bg)}.}
     \item{\code{fixedsize}:}{Use only \code{width} and \code{height}
       attributes, do not expand for the width of the label.  This
-      defaults to \code{FALSE}.}
+      defaults to \code{TRUE}.}
     \item{\code{fontcolor}:}{Color used for text.  R only.  This
       defaults to \code{par(fg)}.}
     \item{\code{fontname}:}{Font used for text.  The default of this is

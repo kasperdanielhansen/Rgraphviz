@@ -6,22 +6,57 @@ setGeneric("Ragraph", function(object)
 
 setClass("Ragraph", representation(agraph="externalptr",
                                    laidout="logical",
+                                   layoutType="character",
+                                   nodeLabels="character",
+                                   edgeLabels="list",
+                                   edgemode="character",
                                    nodes="list",
+                                   nodeNames="character",
                                    AgEdge="list",
                                    boundBox="boundingBox"
                                    ))
 
-    if (is.null(getGeneric("agraph")))
+if (is.null(getGeneric("agraph")))
     setGeneric("agraph", function(object)
                standardGeneric("agraph"))
 setMethod("agraph", "Ragraph", function(object)
           object@agraph)
+
+if (is.null(getGeneric("edgemode")))
+    setGeneric("edgemode", function(object)
+               standardGeneric("edgemode"))
+setMethod("edgemode", "Ragraph", function(object)
+          object@edgemode)
 
 if (is.null(getGeneric("laidout")))
     setGeneric("laidout", function(object)
                standardGeneric("laidout"))
 setMethod("laidout", "Ragraph", function(object)
           object@laidout)
+
+if (is.null(getGeneric("layoutType")))
+    setGeneric("layoutType", function(object)
+               standardGeneric("layoutType"))
+setMethod("layoutType", "Ragraph", function(object)
+          object@layoutType)
+
+if (is.null(getGeneric("nodeLabels")))
+    setGeneric("nodeLabels", function(object)
+               standardGeneric("nodeLabels"))
+setMethod("nodeLabels", "Ragraph", function(object)
+          object@nodeLabels)
+
+if (is.null(getGeneric("edgeLabels")))
+    setGeneric("edgeLabels", function(object)
+               standardGeneric("edgeLabels"))
+setMethod("edgeLabels", "Ragraph", function(object)
+          object@edgeLabels)
+
+if (is.null(getGeneric("nodeNames")))
+    setGeneric("nodeNames", function(object)
+               standardGeneric("nodeNames"))
+setMethod("nodeNames", "Ragraph", function(object)
+          object@nodeNames)
 
 if (is.null(getGeneric("boundBox")))
     setGeneric("boundBox", function(object)

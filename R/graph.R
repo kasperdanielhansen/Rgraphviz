@@ -46,129 +46,45 @@ weightLabels <- function(object) {
 .initRgraphvizPlotMethods <- function() {
 
     setMethod("plot", "graph",
-              function(x, y, ..., nodeLabels=nodes, edgeLabels = list(),
-                       nodeShape="circle",
-                       defNodeCol=par("bg"), nodeCols=character(),
-                       defTextCol=par("fg"), textCols=character(),
-                       defEdgeCol=par("col"),edgeCols=list(),
-                       fixedNodeSize=TRUE, subGList, attrs, xlab,
-                       ylab){
-
+              function(x, y, ..., nodeLabels=nodes(x),
+                       edgeLabels = list(),
+                       nodeCols=character(),
+                       textCols=character(),
+                       edgeCols=list(),
+                       subGList=list(), attrs, xlab="", ylab=""){
                   if (!validGraph(x))
-                  stop("The graph to be plotted is not a valid graph structure")
-
+                      stop("The graph to be plotted is not a valid graph structure")
                   if (missing(y))
                       y <- "dot"
 
-                  nodes <- nodes(x)
-                  edges <- edges(x)
-
-                  ## We allow for users to pass in either 1
-                  ## label which is used for all nodes, or a vector
-                  ## with length equal to the length of nodes,
-                  ## specifying the labels in order.
-                  nNL <- length(nodeLabels)
-
-                  if (nNL == 1)
-                      nodeLabels <- rep(nodeLabels, length(nodes))
-                  else
-                      if (length(nodeLabels) != length(nodes))
-                          stop(paste("nodeLabels must be the same",
-                                     "length as the number of nodes"))
-
-                  if ((is.list(edgeLabels))&&(length(edgeLabels) == length(nodes))) {
-                      if (!all(unlist(lapply(edgeLabels,is.character))))
-                          stop("edgeLabel list can only contain character vectors")
-                  }
-                  else if (length(edgeLabels) > 1)
-                      stop("edgeLabels must be either ",
-                           "empty, length one, or a list with the length of nodes")
-                  else if (length(edgeLabels) == 1)
-                      edgeLabels <- repEdgeLabels(edgeLabels, x)
-
-                  ## Make sure there is an attrs list, and if one was
-                  ## provided, sanity check that list
-                  if (missing(attrs)) {
-                      attrs <- vector(length=3,mode="list")
-                      names(attrs) <- c("graph","node","edge")
-                  }
-                  else {
-                      if (length(attrs) != 3)
-                          stop("attrs must be of length 3")
-                      if (!all(names(attrs) %in%
-                               c("graph","node","edge")))
-                          stop(paste("Names of attrs must be 'graph',",
-                                     "'node', and 'edge'"))
-                  }
-
                   ## Need to call plot.new before getting the default
-                  ## size attribute as it uses par("pin") and must be
+                  ## attributes as it uses par("pin") and must be
                   ## on the proper plotting frame if the user is using
                   ## layout.
                   plot.new()
 
-                  if (missing(xlab))
-                      xlab <- ""
-                  if (missing(ylab))
-                      ylab <- ""
+                  if (missing(attrs))
+                      attrs <- getDefaultAttrs(y, edgemode(x))
+                  else
+                      checkAttrs(attrs)
 
-                  ## Need to set some Rgraphviz induced defaults,
-                  ## as there might be some situations where we want
-                  ## different defaults then graphviz
-                  ## !! Should look at removing these in all cases
-                  if (! nodeShape %in% c("circle","ellipse"))
-                      stop("nodeShape must be circle or ellipse")
-                  attrs$node$shape <- nodeShape
-
-                  ## If the user hasn't explicitly defined a 'size'
-                  ## attribute, set it to match the size of the plotting
-                  ## region.  Also, set the ratio such that graphviz
-                  ## will use the entire plotting region by default.
-                  if (is.null(attrs$graph$size))
-                      attrs$graph$size <- paste(par("pin"),collapse=", ")
-                  if (is.null(attrs$graph$ratio))
-                      attrs$graph$ratio <- "fill"
-
-                  if (is.null(attrs$edge$dir)) {
-                      if (edgemode(x) == "undirected")
-                          attrs$edge$dir <- "none"
-                      else
-                          attrs$edge$dir <- "forward"
-                  }
-
-                  ## Sanity check attr values.  This is going to C
-                  ## very soon (and currently isn't all that good anyways)
-                  checkAttrs(attrs,nodeLabels)
-
-                  ## Setup the node and text color vectors
-                  nC <- getCols(defNodeCol, nodeCols, nodes)
-                  tC <- getCols(defTextCol, textCols, nodes)
-
-                  nL <- nodeLabels
-                  if (fixedNodeSize)
-                      nL <- rep(nL[match(max(nchar(nL)), nchar(nL))],
-                                length(nodes))
-
-                  ## If there was no subgraph list supplied, create an
-                  ## empty one.
-                  if (missing(subGList))
-                      subGList <- list()
-
-                  g <- agopen(x, "ABC", nL, layout=TRUE,
+                  g <- agopen(x, "ABC", nodeLabels, layout=TRUE,
                               layoutType=y, attrs=attrs, subGList=subGList,
                               edgeLabels=edgeLabels)
-                  invisible(plot(g,attrs=attrs, nodeLabels=nodeLabels, xlab=xlab,
-                                 ylab=ylab, nodeCols=nC, textCols=tC,
+
+                  invisible(plot(g,attrs=attrs, xlab=xlab,
+                                 ylab=ylab, nodeCols=nodeCols,
+                                 textCols=textCols,
                                  edgeCols=edgeCols,
-                                 defEdgeCol=defEdgeCol, newPlot=FALSE))
+                                 newPlot=FALSE))
               })
 
 
-        setMethod("plot", "Ragraph",
-              function(x, y, ..., attrs, nodeLabels, xlab, ylab,
+    setMethod("plot", "Ragraph",
+              function(x, y, ...,
+                       attrs, xlab="", ylab="",
                        nodeCols=character(), textCols=character(),
-                       edgeCols=list() , defEdgeCol=par("col"),
-                       newPlot=TRUE){
+                       edgeCols=list(), newPlot=TRUE){
 
                   ## If this is a new plot, we need to call 'plot.new'
                   ## Otherwise we should not because we were most
@@ -178,23 +94,10 @@ weightLabels <- function(object) {
                   if (newPlot)
                       plot.new()
 
-                  ## Make sure there is an attrs list, and if one was
-                  ## provided, sanity check that list
-                  if (missing(attrs)) {
-                      attrs <- vector(length=3,mode="list")
-                      names(attrs) <- c("graph","node","edge")
-                  }
-                  else {
-                      if (length(attrs) != 3)
-                          stop("attrs must be of length 3")
-                      if (!all(names(attrs) %in%
-                               c("graph","node","edge")))
-                          stop(paste("Names of attrs must be 'graph',",
-                                     "'node', and 'edge'"))
-                  }
-                  if (is.null(attrs$node$shape))
-                      attrs$node$shape <- "circle"
-
+                  if (missing(attrs))
+                      attrs <- getDefaultAttrs(layoutType(x),
+                                               edgemode(x))
+                  checkAttrs(attrs)
 
                   nNodes <- length(nodes(x))
 
@@ -226,8 +129,12 @@ weightLabels <- function(object) {
                       if (missing(ylab))
                           ylab <- ""
 
-                      if (missing(nodeLabels))
-                          nodeLabels <- 1:nNodes
+                      ## Setup the node and text color vectors
+                      nC <- getCols(attrs$node$fillcolor, nodeCols,
+                                    nodeNames(x))
+                      tC <- getCols(attrs$graph$fontcolor, textCols,
+                                    nodeNames(x))
+
 
                       ## !! Currently hardcoding log & asp,
                       ## !! probably want to change that over time.
@@ -240,9 +147,9 @@ weightLabels <- function(object) {
 
                       rad <- switch(attrs$node$shape,
                                     circle=drawCircleNodes(nodeX, nodeY, ur,
-                                    rad, nodeCols),
+                                    rad, nC),
                                     ellipse=drawEllipseNodes(nodeX, nodeY,
-                                    rad*2, heights, nodeCols)
+                                    rad*2, heights, nC)
                                     )
 
 
@@ -258,9 +165,9 @@ weightLabels <- function(object) {
                           if (length(col)==0)
                               col <- defEdgeCol
                           lines(x, col=col, len=(rad / 3))
-                      }, edgeCols, defEdgeCol, rad)
+                      }, edgeCols, attrs$edge$color, rad)
 
-                      text(nodeX,nodeY, nodeLabels, col=textCols)
+                      text(nodeX,nodeY, nodeLabels(x), col=tC)
                   }
                   else {
                       stop("No nodes in graph")
@@ -270,7 +177,7 @@ weightLabels <- function(object) {
                                  nodeHeights=heights,
                                  nodeRwidths=RWidths,
                                  edges=AgEdge(x),
-                                 nodeLabels=nodeLabels))
+                                 nodeLabels=nodeLabels(x)))
               })
 }
 
@@ -309,16 +216,6 @@ drawEllipseNodes <- function(nodeX, nodeY, heights, widths, nodeCols)
     return(min(widths)/72)
 }
 
-checkAttrs <- function(attrs, nodeLabels) {
-    if (!is.null(attrs$graph$rankdir))
-        checkRankDir(attrs$graph$rankdir)
-    if (!is.null(attrs$graph$center))
-        checkCenterNode(attrs$graph$center,nodeLabels)
-
-
-    if (!is.null(attrs$node$shape))
-        checkNodeShape(attrs$node$shape)
-}
 
 checkNodeShape <- function(nodeShape) {
     validShapes <- c("ellipse", "circle")
@@ -327,13 +224,6 @@ checkNodeShape <- function(nodeShape) {
     else
         stop(paste("Invalid node shape supplied, must be one of:",
                    paste(validShapes, collapse=", ")))
-}
-
-checkRankDir <- function(rankDir) {
-    if (!(rankDir %in% c("TB","LR")))
-        stop("Invalid rankDir parameter, must be 'TB' or 'LR'!")
-    else
-        return(TRUE)
 }
 
 getCols <- function(defCol, cols, names) {
