@@ -85,7 +85,7 @@ weightLabels <- function(object) {
                       attrs <- getDefaultAttrs(layoutType(x))
                   checkAttrs(attrs)
 
-                  nNodes <- length(nodes(x))
+                  nNodes <- length(AgNode(x))
 
                   if (nNodes > 0) {
                       ## Get the upper right X,Y point of the bounding

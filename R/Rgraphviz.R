@@ -42,8 +42,6 @@ agopen <- function(graph, name, kind=NULL, layout=TRUE,
                  as.character(subGs))
       g@layoutType <- layoutType
       g@edgemode <- edgemode(graph)
-      g@nodes <- nodes
-      g@edges <- edges
 
       if (layout)
           return(layoutGraph(g))
@@ -194,15 +192,8 @@ buildEdgeList <- function(graph, edgeAttrs=list(), subGList) {
         ## Since we're using the arrowhead/arrowtail
         ## to specify if arrows are beign drawn or not,
         ## the default relies on the edgemode
-        if (is.null(curAttrs$arrowtail))
-            curAttrs$arrowtail <- "none"
-        if (is.null(curAttrs$arrowhead)) {
-            if (edgemode == "directed") {
-                curAttrs$arrowhead <- "normal"
-            } else {
-                curAttrs$arrowhead <- "none"
-            }
-        }
+        if ((is.null(curAttrs$arrowhead))&&(edgemode == "directed"))
+            curAttrs$arrowhead <- "open"
 
         ## FIXME: Need replace method
         pEdges[[i]]@attrs <- curAttrs
