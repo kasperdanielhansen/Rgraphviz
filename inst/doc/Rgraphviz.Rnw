@@ -209,6 +209,22 @@ eAttrs
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 @
 
+\subsection{Using Edge Weights For Labels}
+
+A common desire for edge weights is to use the edge weights of the
+edges for the labels on a plotted graph.  This can easily be done with
+just a couple of extra steps, utilizing the \Rfunction{edgeNames}
+function and \Rfunction{unlist} to format the output of
+\Rfunction{edgeWeights} appropriately for the attribute list.
+
+<<edgeWeightLabels, fig=TRUE>>=
+ew <- edgeWeights(g1)
+lw <- unlist(unlist(ew))
+names(lw) <- edgeNames(g)
+eAttrs$label <- lw
+plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
+@
+
 \section{Adding Some Color}
 
 There are many areas where color can be specified to the plotted
