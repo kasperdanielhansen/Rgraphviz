@@ -40,15 +40,13 @@
   This function is typically used with the following sequence
   of steps:
   \enumerate{
-    \item Create a graph layout with \code{link{agopen}}
+    \item Create a graph layout with \code{\link{agopen}}
     \item Plot it into a bitmap device, e.g. \code{\link{jpeg}}
     or \code{\link{png}}. 
-    \item Open an HTML file for writing, e.g. using the
-    function \code{\link[prada::openHTMLpage]{openHTMLpage}}.
+    \item Write HTML header.
     \item Call the \code{\link{imageMap}} function.
-    \item Optionally, write further text into the HTML file.
-    \item Close the HTML file, e.g. using the
-    function \code{\link[prada::closeHTMLpage]{closeHTMLpage}}.
+    \item Optionally, write further text into the HTML connection.
+    \item Close HTML file.
   }
 }
 
@@ -81,17 +79,17 @@ if(capabilities()["png"] && interactive()) {
   png(fpng, width=width, height=height)
   par(mai=rep(0,4))
   plot(g)
-  dev.off()
 
   ## Write an HTML file with the image map
-  con = file(fthml, open="wt")
+  con = file(fhtml, open="wt")
   writeLines("<html><head><title>Click Me</title></head><body>\n", con)
 
   imageMap(lg, con, fpng, tags=list(HREF=url, TITLE=tooltip), width=width, height=height)
 
   writeLines("</body></html>", con)
+  dev.off()
   close(con)
-  cat("Now have a look at file ", fhtml, ".html with your browser.\n", sep="")
+  cat("Now have a look at file", fhtml, "with your browser.\n")
 }
 }
 
