@@ -7,7 +7,7 @@
   graph represented by the \code{Ragraph} can be laidout in various formats.
 }
 \usage{
-agopen(graph, name, nodeLabels=nodes(graph), kind = "AGRAPH", layout = TRUE,
+agopen(graph, name, nodeLabels=nodes(graph), kind = NULL, layout = TRUE,
        layoutType=c("dot","neato","twopi")[1], attrs=NULL,
        subGList, edgeLabels)
 }
@@ -26,11 +26,14 @@ agopen(graph, name, nodeLabels=nodes(graph), kind = "AGRAPH", layout = TRUE,
   \code{graph} is from the package \code{\link{graph-class}}.
 
   The kind parameter works as follows:
-  AGRAPH - An undirected graph
-  AGDIGRAPH - A directed graph
-  AGRAPHSTRICT - A strict undirected graph
-  AGDIGRAPHSTRICT - A strict directed graph
-
+  \describe{
+    \item{NULL:}{Determine the direction of the graph from the \code{graph}
+      object.  This is the default and the recommended method.} 
+    \item{AGRAPH:}{An undirected graph}
+    \item{AGDIGRAPH:}{A directed graph}
+    \item{AGRAPHSTRICT:}{A strict undirected graph}
+    \item{AGDIGRAPHSTRICT:}{A strict directed graph}
+  }
   Strict graphs do not allow self arcs or multi-edges.
 
   If \code{layout} is set to \code{TRUE}, then the \code{libgraph}
