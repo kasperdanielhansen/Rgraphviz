@@ -109,7 +109,8 @@
       double.} 
     \item{\code{start}:}{Parameter used to determine the initial layout
       of nodes.  By default, nodes are randomly placed in a
-      square whose sides have length (#nodes).  The same seed is always
+      square whose sides have length (number of nodes).  The same seed
+      is always
       used for the random number generator, so the initial placement is
       repeatable.  If 'start' converts to an integer, this is used as a
       seed value for the RNG.  If 'start' is "regular", the nodes are
@@ -144,7 +145,7 @@
     the default being the latter.}
     \item{\code{remincross}:}{If \code{TRUE} and there are multiple
       clusters, run cross minimization a second time.  Default is \code{FALSE}}
-    \item{\code{searchsize}:}{During network simplex, maximum # of edges
+    \item{\code{searchsize}:}{During network simplex, maximum number of edges
       with negative cut values to search when looking for one with
       minimum cut value.  This is an integer value with a default of \code{30}}
     \item{\code{showboxes}:}{Debugging feature for postscript output, R
@@ -165,7 +166,8 @@
     of \code{2}.}
     \item{\code{epsilon}:}{Terminating condition.  If length squared of
       all energy gradients are less than epsilon, the algorithm stops.
-      This is a double value with a default of \code{.0001 * # nodes}.}
+      This is a double value with a default of \code{.0001 times the
+	number of nodes}.} 
     \item{\code{maxiter}:}{Sets the number of iterations used.  This is
       an integer value with the default of \code{MAXINT}.}
     \item{\code{model}:}{If \code{circuit}, use circuit resistance model
