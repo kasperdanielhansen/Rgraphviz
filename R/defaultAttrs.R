@@ -7,6 +7,9 @@ getDefaultAttrs <- function(layoutType=c("dot","neato","twopi")[1]) {
     defAttr$graph$fontcolor <- par("fg")
     defAttr$graph$ratio <- "fill"
     defAttr$graph$size <- paste(par("pin"),collapse=", ")
+    defAttr$graph$overlap <- ""
+    defAttr$graph$splines <- TRUE
+    defAttr$graph$model <- ""
 
     ## Now do layout specific graph attributes
     if (layoutType == "dot") {
@@ -27,11 +30,16 @@ getDefaultAttrs <- function(layoutType=c("dot","neato","twopi")[1]) {
     defAttr$node$shape <- "circle"
     defAttr$node$fixedsize <- TRUE
     defAttr$node$fillcolor <- par("bg")
-    defAttr$node$color <- defAttr$node$fillcolor
+    defAttr$node$label <- ""
+    defAttr$node$color <- par("col")
+    defAttr$node$fontcolor <- par("fg")
 
     ## edge attrs
     defAttr$edge$color <- par("col")
     defAttr$edge$dir <- "both"
+    defAttr$edge$weight <- 1.0
+    defAttr$edge$label <- ""
+    defAttr$edge$fontcolor <- par("fg")
 
     defAttr
 }

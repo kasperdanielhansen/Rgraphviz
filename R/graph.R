@@ -1,4 +1,21 @@
 ### Methods for the graph classes in package graph
+graph2graphviz <- function(object) {
+    if( ! is(object, "graph") )
+        stop("need a graph object")
+    ## Return a 3 column numeric matrix (from, to, weight)
+    fromTo <- edgeMatrix(object, duplicates=TRUE)
+    colnames(fromTo) <- NULL
+    weights <- unlist(edgeWeights(object))
+
+    gvMtrx <- rbind(fromTo, weights)
+    ## Make sure the matrix is numeric
+    if (!is.numeric(gvMtrx))
+        stop("non-numeric values in the edge matrix")
+    if (any(is.na(gvMtrx)))
+        stop("NAs in the edge matrix")
+
+    gvMtrx
+}
 
 weightLabels <- function(object) {
     if( ! is(object, "graph") )
@@ -26,12 +43,10 @@ weightLabels <- function(object) {
 .initRgraphvizPlotMethods <- function() {
 
     setMethod("plot", "graph",
-              function(x, y, ..., nodeLabels=nodes(x),
-                       edgeLabels = list(),
-                       nodeCols=character(),
-                       textCols=character(),
-                       edgeCols=list(),
-                       subGList=list(), attrs, xlab="", ylab=""){
+              function(x, y, ..., subGList=list(),
+                       attrs=getDefaultAttrs(y),
+                       nodeAttrs=list(), edgeAttrs=list(),
+                       xlab="", ylab=""){
                   if (!validGraph(x))
                       stop("The graph to be plotted is not a valid graph structure")
                   if (missing(y))
@@ -43,17 +58,12 @@ weightLabels <- function(object) {
                   ## layout.
                   plot.new()
 
-                  if (missing(attrs))
-                      attrs <- getDefaultAttrs(y)
-
                   g <- agopen(x, "ABC", layout=TRUE, layoutType=y,
-                              attrs=attrs, subGList=subGList)
+                              attrs=attrs, nodeAttrs=nodeAttrs,
+                              edgeAttrs=edgeAttrs, subGList=subGList)
 
                   invisible(plot(g,attrs=attrs, xlab=xlab,
-                                 ylab=ylab, nodeCols=nodeCols,
-                                 textCols=textCols,
-                                 edgeCols=edgeCols,
-                                 newPlot=FALSE))
+                                 ylab=ylab, newPlot=FALSE))
               })
 
 
@@ -78,17 +88,6 @@ weightLabels <- function(object) {
                   nNodes <- length(nodes(x))
 
                   if (nNodes > 0) {
-                      nodeLocs <- getNodeLocs(x)
-
-                      nodeX <- nodeLocs[["x"]]
-                      nodeY <- nodeLocs[["y"]]
-
-                      ## Get the radii of the nodes.  For now we're just
-                      ## implementing circles and ellipses
-                      rad <- unlist(lapply(nodePos(x), getNodeRW))
-                      RWidths <- rad
-                      heights <- unlist(lapply(nodePos(x), getNodeHeight))
-
                       ## Get the upper right X,Y point of the bounding
                       ## box for the graph
                       ur <- upRight(boundBox(x))
@@ -105,14 +104,6 @@ weightLabels <- function(object) {
                       if (missing(ylab))
                           ylab <- ""
 
-                      ## Setup the node and text color vectors
-                      nodeNames <- getNodeNames(x)
-                      nC <- getCols(attrs$node$fillcolor, nodeCols,
-                                    nodeNames)
-                      tC <- getCols(attrs$graph$fontcolor, textCols,
-                                    nodeNames)
-
-
                       ## !! Currently hardcoding log & asp,
                       ## !! probably want to change that over time.
                       plot.window(xlim=c(0,getX(ur)),
@@ -122,17 +113,12 @@ weightLabels <- function(object) {
                       ## !! Also still hardcoding 'type'
                       plot.xy(xy, type="n", ...)
 
-                      rad <- switch(attrs$node$shape,
-                                    circle=drawCircleNodes(nodeX, nodeY, ur,
-                                    rad, nC),
-                                    ellipse=drawEllipseNodes(nodeX, nodeY,
-                                    rad*2, heights, nC)
-                                    )
+                      rad <- min(unlist(lapply(AgNode(x), drawAgNode, ur)))
 
-                      nodeLabels <- getNodeLabels(x)
                       ## Plot the edges
                       q <- lapply(AgEdge(x), function(x, edgeCols,
-                                                      defEdgeCol, rad) {
+                                                      defEdgeCol, rad,
+                                                      edgemode) {
                           ## See if there's a specified edgeCol for this
                           if (!is(x,"AgEdge"))
                               stop(paste("Class:",class("AgEdge")))
@@ -141,26 +127,59 @@ weightLabels <- function(object) {
                           col <- as.character(edgeCols[[tail]][[head]])
                           if (length(col)==0)
                               col <- defEdgeCol
-                          lines(x, col=col, len=(rad / 3))
-                      }, edgeCols, attrs$edge$color, rad)
-
-
-                      text(nodeX,nodeY, nodeLabels, col=tC)
+                          lines(x, col=col, len=(rad / 3),
+                                edgemode=edgemode)
+                      }, edgeCols, attrs$edge$color, rad, edgemode(x))
                   }
                   else {
                       stop("No nodes in graph")
                   }
 
-                  invisible(list(nodeLocs=nodeLocs,
-                                 nodeHeights=heights,
-                                 nodeRwidths=RWidths,
-                                 edges=AgEdge(x),
-                                 nodeLabels=nodeLabels))
+                  invisible(x)
               })
 }
 
-#### Other functions
-drawCircleNodes <- function(nodeX, nodeY, ur, rad, nodeCols) {
+drawAgNode <- function(node, ur) {
+
+    ## First get X/Y
+    nodeCenter <- getNodeCenter(node)
+    nodeX <- getX(nodeCenter)
+    nodeY <- getY(nodeCenter)
+
+    rad <- getNodeRW(node)
+    height <- getNodeHeight(node)
+
+    fg <- color(node)
+    bg <- fillcolor(node)
+
+    shape <- shape(node)
+
+    out <- switch(shape,
+                  "circle"=drawCircleNode(nodeX, nodeY, ur, rad, fg, bg),
+                  "ellipse"=ellipse(nodeX, nodeY, height=height, width=rad*2,
+                  fg=fg, bg=bg),
+                  stop("Unimplemented shape"))
+
+    drawTxtLabel(txtLabel(node))
+    out
+}
+
+drawTxtLabel <- function(txtLabel) {
+    if (!is.null(txtLabel)) {
+        loc <- labelLoc(txtLabel)
+        justMod <- switch(labelJust(txtLabel),
+                          "l" = 0,
+                          "n" = -0.5,
+                          "r" = -1)
+
+        xLoc <- getX(loc) + (justMod * labelWidth(txtLabel))
+
+        text(xLoc, getY(loc), labelText(txtLabel))
+    }
+}
+
+
+drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
     outX <- getX(ur)
     outY <- getY(ur)
     outLim <- max(outY, outX)
@@ -176,59 +195,11 @@ drawCircleNodes <- function(nodeX, nodeY, ur, rad, nodeCols) {
     else {
         conv <- outY/pin[2]
     }
+
     rad <- rad/conv
 
     symbols(nodeX, nodeY, circles=rad, inches=max(rad),
-            bg=nodeCols,add=TRUE)
-
-    return(min(rad))
+            fg=fg, bg=bg,add=TRUE)
+    rad
 }
 
-drawEllipseNodes <- function(nodeX, nodeY, heights, widths, nodeCols)
-{
-    ##!!! GET RID OF FOR LOOP
-    for (i in 1:length(nodeX)) {
-        ellipse(nodeX[i], nodeY[i], heights[i],
-                widths[i],bg=nodeCols[i])
-    }
-    return(min(widths)/72)
-}
-
-
-checkNodeShape <- function(nodeShape) {
-    validShapes <- c("ellipse", "circle")
-    if (nodeShape %in% validShapes)
-        return(TRUE)
-    else
-        stop(paste("Invalid node shape supplied, must be one of:",
-                   paste(validShapes, collapse=", ")))
-}
-
-getCols <- function(defCol, cols, names) {
-    nC <- rep(defCol,length(names))
-    names(nC) <- names
-    nC[match(names(cols),names(nC))] <- cols
-    nC
-}
-
-repEdgeLabels <- function(label, graph) {
-    ## Will take a single label and generate an edgeLabel list
-    ## that uses that label in ever spot
-
-    if (length(label) != 1)
-        stop("repEdgeLabels only for single labels")
-
-    edges <- edges(graph)
-    if (length(edges) > 0) {
-        for (i in 1:length(edges)) {
-            cur <- edges[[i]]
-            if (length(cur) > 0) {
-                new <- rep(label,length(cur))
-                names(new) <- cur
-                edges[[i]] <- new
-            }
-        }
-    }
-
-    edges
-}

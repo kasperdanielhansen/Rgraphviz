@@ -8,7 +8,7 @@ setClass("Ragraph", representation(agraph="externalptr",
                                    laidout="logical",
                                    layoutType="character",
                                    edgemode="character",
-                                   nodePos="list",
+                                   AgNode="list",
                                    AgEdge="list",
                                    boundBox="boundingBox",
                                    nodes="list",
@@ -51,6 +51,12 @@ if (is.null(getGeneric("AgEdge")))
 setMethod("AgEdge", "Ragraph", function(object)
           object@AgEdge)
 
+if (is.null(getGeneric("AgNode")))
+    setGeneric("AgNode", function(object)
+               standardGeneric("AgNode"))
+setMethod("AgNode", "Ragraph", function(object)
+          object@AgNode)
+
 if (is.null(getGeneric("nodes")))
     setGeneric("nodes", function(object)
                standardGeneric("nodes"))
@@ -64,7 +70,7 @@ getNodeLocs <- function(object) {
 
     out <- vector(mode="list",length=2)
     names(out) <- c("x","y")
-    xys <- lapply(object@nodePos,getNodeCenter)
+    xys <- lapply(object@AgNode,getNodeCenter)
     out[[1]] <- unlist(lapply(xys,getX))
     out[[2]] <- unlist(lapply(xys,getY))
     out
@@ -73,13 +79,13 @@ getNodeLocs <- function(object) {
 getNodeNames <- function(object) {
     if (!is(object, "Ragraph"))
         stop("Need a Ragraph object")
-    unlist(lapply(object@nodes, name))
+    unlist(lapply(object@AgNode, name))
 }
 
 getNodeLabels <- function(object) {
     if (!is(object, "Ragraph"))
         stop("Need a Ragraph object")
-    unlist(lapply(object@nodes, label))
+    unlist(lapply(object@AgNode, label))
 }
 
 ### Class boundingBox
@@ -102,38 +108,73 @@ if (is.null(getGeneric("upRight")))
 setMethod("upRight", "boundingBox", function(object)
           object@upRight)
 
-### Class NodePosition
+### Class AgNode
 
-if (is.null(getGeneric("NodePosition")))
-    setGeneric("NodePosition", function(object)
-               standardGeneric("NodePosition"))
-setClass("NodePosition", representation(center="xyPoint",
-                                        height="integer",
-                                        rWidth="integer",
-                                        lWidth="integer"))
+if (is.null(getGeneric("AgNode")))
+    setGeneric("AgNode", function(object)
+               standardGeneric("AgNode"))
+setClass("AgNode", representation(center="xyPoint",
+                                  name="character",
+                                  txtlabel="AgTextLabel",
+                                  height="integer",
+                                  rWidth="integer",
+                                  lWidth="integer",
+                                  color="character",
+                                  fillcolor="character",
+                                  shape="character"))
+
+if (is.null(getGeneric("shape")))
+    setGeneric("shape", function(object)
+               standardGeneric("shape"))
+setMethod("shape", "AgNode", function(object)
+          object@shape)
+
+if (is.null(getGeneric("color")))
+    setGeneric("color", function(object)
+               standardGeneric("color"))
+setMethod("color","AgNode", function(object)
+          object@color)
+
+if (is.null(getGeneric("fillcolor")))
+    setGeneric("fillcolor", function(object)
+               standardGeneric("fillcolor"))
+setMethod("fillcolor", "AgNode", function(object)
+          object@fillcolor)
+
 if (is.null(getGeneric("getNodeCenter")))
     setGeneric("getNodeCenter", function(object)
                standardGeneric("getNodeCenter"))
-setMethod("getNodeCenter", "NodePosition", function(object)
+setMethod("getNodeCenter", "AgNode", function(object)
           object@center)
 
 if (is.null(getGeneric("getNodeHeight")))
     setGeneric("getNodeHeight", function(object)
                standardGeneric("getNodeHeight"))
-setMethod("getNodeHeight", "NodePosition", function(object)
+setMethod("getNodeHeight", "AgNode", function(object)
           object@height)
 
 if (is.null(getGeneric("getNodeRW")))
     setGeneric("getNodeRW", function(object)
                standardGeneric("getNodeRW"))
-setMethod("getNodeRW", "NodePosition", function(object)
+setMethod("getNodeRW", "AgNode", function(object)
           object@rWidth)
 
 if (is.null(getGeneric("getNodeLW")))
     setGeneric("getNodeLW", function(object)
                standardGeneric("getNodeLW"))
-setMethod("getNodeLW", "NodePosition", function(object)
+setMethod("getNodeLW", "AgNode", function(object)
           object@lWidth)
+
+if (is.null(getGeneric("name")))
+    setGeneric("name", function(object)
+               standardGeneric("name"))
+setMethod("name", "AgNode", function(object)
+          object@name)
+if (is.null(getGeneric("txtLabel")))
+    setGeneric("txtLabel", function(object)
+               standardGeneric("txtLabel"))
+setMethod("txtLabel", "AgNode", function(object)
+          object@txtLabel)
 
 
 ### Class AgEdge
@@ -143,8 +184,6 @@ if (is.null(getGeneric("AgEdge")))
                standardGeneric("AgEdge"))
 ## !!! Will want to include edgeID here
 setClass("AgEdge", representation(splines="list",
-                                  startArrow="logical",
-                                  endArrow="logical",
                                   sp="xyPoint",
                                   ep="xyPoint",
                                   head="character",
@@ -162,17 +201,6 @@ if (is.null(getGeneric("splines")))
                standardGeneric("splines"))
 setMethod("splines", "AgEdge", function(object)
           object@splines)
-
-if (is.null(getGeneric("startArrow")))
-    setGeneric("startArrow", function(object)
-               standardGeneric("startArrow"))
-setMethod("startArrow", "AgEdge", function(object)
-          object@startArrow)
-if (is.null(getGeneric("endArrow")))
-    setGeneric("endArrow", function(object)
-               standardGeneric("endArrow"))
-setMethod("endArrow", "AgEdge", function(object)
-          object@endArrow)
 
 if (is.null(getGeneric("sp")))
     setGeneric("sp", function(object)
@@ -274,12 +302,19 @@ setMethod("getPoints", "xyPoint", function(object)
 setClass("AgTextLabel", representation(labelText="character",
                                        labelLoc="xyPoint",
                                        labelJust="character",
-                                       labelWidth="integer"))
+                                       labelWidth="integer",
+                                       labelColor="character"))
 if (is.null(getGeneric("labelText")))
     setGeneric("labelText", function(object)
                standardGeneric("labelText"))
 setMethod("labelText", "AgTextLabel", function(object)
           object@labelText)
+
+if (is.null(getGeneric("labelColor")))
+    setGeneric("labelColor", function(object)
+               standardGeneric("labelColor"))
+setMethod("labelColor", "AgTextLabel", function(object)
+          object@labelColor)
 
 if (is.null(getGeneric("labelLoc")))
     setGeneric("labelLoc", function(object)
@@ -299,16 +334,16 @@ if (is.null(getGeneric("labelWidth")))
 setMethod("labelWidth","AgTextLabel", function(object)
           object@labelWidth)
 
-if (is.null(getGeneric("nodePos")))
-    setGeneric("nodePos", function(object)
-               standardGeneric("nodePos"))
-setMethod("nodePos", "Ragraph", function(object)
-          object@nodePos)
+if (is.null(getGeneric("AgNode")))
+    setGeneric("AgNode", function(object)
+               standardGeneric("AgNode"))
+setMethod("AgNode", "Ragraph", function(object)
+          object@AgNode)
 
 
 .initRgraphvizShowMethods <- function() {
     setMethod("show", "Ragraph", function(object) {
-        print(paste("A graph with",length(nodePos(object)),
+        print(paste("A graph with",length(AgNode(object)),
                     "nodes."))
     })
 
@@ -347,23 +382,21 @@ setMethod("nodePos", "Ragraph", function(object)
 
     setMethod("lines","AgEdge",
           function(x,...,col=par("col"),len=0.25,lty=par("lty"),
-                   lwd=par("lwd")) {
+                   lwd=par("lwd"), edgemode="undirected") {
               z <- splines(x)
               lapply(z,lines,col=col,lty=lty,lwd=lwd,...)
 
-              ## Now need to draw the appropriate arrows, if any
-              if (startArrow(x)) {
-                  ## Draw end arrow
-                  ## get the first point of the first splie
-                  curP <- cPoints(z[[1]])[[1]]
-                  ## get the edge's ep
-                  curSP <- sp(x)
-                  arrows(getX(curP), getY(curP), getX(curSP),
-                         getY(curSP), col=col, length=len,
-                         lty=lty, lwd=lwd)
-              }
-              if (endArrow(x)) {
-                  ## Draw start arrow
+              ## Fill in the gap at the start of the edge
+              spPoints <- cPoints(z[[1]])
+              curP <- spPoints[[1]]
+              curSp <- sp(x)
+              lines(c(getX(curP), getX(curSp)),
+                    c(getY(curP), getY(curSp)),
+                    col=col, lty=lty, lwd=lwd)
+
+              ## Fill in the gap at the end of the edge, either
+              ## arrow or line
+              if (edgemode == "directed") {
                   ## get the last point of the last spline
                   epPoints <- cPoints(z[[length(z)]])
                   curP <- epPoints[[length(epPoints)]]
@@ -373,28 +406,25 @@ setMethod("nodePos", "Ragraph", function(object)
                          getY(curEP), col=col, length=len,
                          lty=lty, lwd=lwd)
               }
-
-              curLabel <- txtLabel(x)
-              if (!is.null(curLabel)) {
-                  ## This edge has a label, need to display it
-                  ## !! For now, just plot text at X/Y
-                  loc <- labelLoc(curLabel)
-
-                  justMod <- switch(labelJust(curLabel),
-                                    "l" = 0,
-                                    "n" = -0.5,
-                                    "r" = -1)
-
-                  xLoc <- getX(loc) + (justMod * labelWidth(curLabel))
-
-                  text(xLoc, getY(loc), labelText(curLabel))
-
+              else {
+                  ## Fill in the blank space as Graphviz thinks an
+                  ## arrowhead is coming here
+                  epPoints <- cPoints(z[[length(z)]])
+                  curP <- epPoints[[length(epPoints)]]
+                  curEP <- ep(x)
+                  lines(c(getX(curP),getX(curEP)),
+                        c(getY(curP),getY(curEP)), col=col,
+                        lty=lty, lwd=lwd)
               }
+
+              drawTxtLabel(txtLabel(x))
 
               return(NULL)
           })
 
 }
+
+
 
 bezier <- function(pnts, n, t) {
     ## Used for calculation of bezier splines

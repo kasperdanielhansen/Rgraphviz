@@ -1,47 +1,18 @@
-
-buildTestNodes <- function() {
-       nodes <- list()
-      nodes[[1]] <- new("pNode",name="foo")
-      nodes[[2]] <- new("pNode", name="blah", label="blah2")
-      nodes[[3]] <- new("pNode", name="bar")
-      nodes[[4]] <- new("pNode", name="blat")
-      nodes[[5]] <- new("pNode", name="5")
-      nodes[[6]] <- new("pNode", name="6")
-      nodes[[7]] <- new("pNode", name="7")
-       nodes[[8]] <- new("pNode", name="8", label="test")
-       nodes[[9]] <- new("pNode", name="9", label="chirac")
-       nodes[[10]] <- new("pNode", name="10", label="jacques")
-nodes
-   }
-
-buildTestEdges <- function() {
-      edges <- list()
-      edges[[1]] <- new("pEdge", from="foo", to="blah", label="test")
-      edges[[2]] <- new("pEdge", from="foo", to="bar")
-      edges[[3]] <- new("pEdge", from="bar", to="blat")
-      edges[[4]] <- new("pEdge", from="5", to="6")
-      edges[[5]] <- new("pEdge", from="7", to="bar")
-      edges[[6]] <- new("pEdge", from="bar", to="7")
-      edges[[7]] <- new("pEdge", from="blat", to="8", label="new edge")
-      edges[[8]] <- new("pEdge", from="blah", to="8", label="another")
-      edges[[9]] <- new("pEdge", from="9", to="10")
-      edges[[10]] <- new("pEdge", from="10", to="9")
-      edges[[11]] <- new("pEdge", from="9", to="5")
-      edges[[12]] <- new("pEdge", from="10", to="foo")
-      edges[[13]] <- new("pEdge", from="9", to="7")
-      edges[[14]] <- new("pEdge", from="7", to="blah")
-      edges
-  }
-
 agopen <- function(graph, name, kind=NULL, layout=TRUE,
                    layoutType=c("dot","neato","twopi")[1],
-                   attrs=getDefaultAttrs(layoutType), subGList) {
+                   attrs=getDefaultAttrs(layoutType),
+                   nodeAttrs=list(), edgeAttrs=list(),
+                   subGList=list()) {
 
       checkAttrs(attrs)
 
-      ## !!!!!!
-      nodes <- buildTestNodes()
-      edges <- buildTestEdges()
+      nodes <- buildNodeList(graph, nodeAttrs, subGList)
+      edges <- buildEdgeList(graph, edgeAttrs, subGList)
+
+      if (length(subGList) > 0)
+          subGs <- paste("cluster_",1:length(subGList), sep="")
+      else
+          subGs <- character()
 
       if (is.null(kind)) {
           ## Determine kind from the graph object
@@ -60,8 +31,6 @@ agopen <- function(graph, name, kind=NULL, layout=TRUE,
                          stop(paste("Incorrect kind parameter:",kind)))
       }
 
-      ### FIXME: Subgraph stuff needs to go here.
-
       ## all attrs must be character strings going into C,
       ## graphviz wants all attrs to be char*
       ## FIXME: so shouldn't we do that in C?
@@ -69,7 +38,8 @@ agopen <- function(graph, name, kind=NULL, layout=TRUE,
 
       g <- .Call("Rgraphviz_agopen", as.character(name),
                  as.integer(outK), as.list(nodes),
-                 as.list(edges), as.list(attrs))
+                 as.list(edges), as.list(attrs),
+                 as.character(subGs))
       g@layoutType <- layoutType
       g@edgemode <- edgemode(graph)
       g@nodes <- nodes
@@ -126,4 +96,100 @@ layoutGraph <- function(graph) {
 graphvizVersion <- function() {
     z <- .Call("Rgraphviz_graphvizVersion")
     z
+}
+
+buildNodeList <- function(graph, nodeAttrs=list(), subGList) {
+    pNodes <- list()
+
+    nodeNames <- nodes(graph)
+
+    if (length(nodeNames) > 0) {
+        pNodes <- lapply(nodeNames, function(x) {
+            new("pNode",name=x)})
+        names(pNodes) <- nodeNames
+
+        attrNames <- names(nodeAttrs)
+        ## FIXME: Horribly inefficient, just trying
+        ##        to get this to work for now
+        for (i in 1:length(nodeNames)) {
+            ## See if this node is in a subgraph
+            if (length(subGList) > 0) {
+                subGs <- which(unlist(lapply(subGList, function(x,y){y %in% nodes(x)},
+                                             nodeNames[i])))
+                if (length(subGs) == 1)
+                    pNodes[[i]]@subG <- subGs ## FIXME: Need replace method
+                else if (length(subGs) > 1)
+                    stop("Node ", nodeNames[i], " in multiple subgraphs")
+            }
+            ## Get any attrs for this node
+            curAttrs <- list()
+            for (j in seq(along=nodeAttrs)) {
+                curVal <- nodeAttrs[[j]][nodeNames[i]]
+                if (!is.na(curVal))
+                    curAttrs[[ attrNames[j] ]] <- as.character(curVal)
+            }
+            if (is.null(curAttrs$label))
+                curAttrs$label <- nodeNames[i]
+
+            ## FIXME: Need replace method
+            pNodes[[i]]@attrs <- curAttrs
+        }
+    }
+
+    pNodes
+}
+
+
+buildEdgeList <- function(graph, edgeAttrs=list(), subGList) {
+    buildPEList <- function(x,y) {
+        lapply(y, function(z) {new("pEdge", from=x, to=z)})
+    }
+
+    buildSubGEdgeNames <- function(subG) {
+        x <- edges(subG)
+        z <- names(x)
+        as.vector(mapply(paste, x, z, MoreArgs=list(sep="~")))
+    }
+
+    to <- edges(graph)
+    if (length(to) == 0)
+        return(list())
+
+    from <- names(to)
+
+    pEdges <- unlist(mapply(buildPEList, from, to),
+                     recursive=FALSE)
+
+    edgeNames <- unlist(lapply(pEdges, function(x) {
+        paste(from(x), to(x), sep="~")}))
+    names(pEdges) <- edgeNames
+
+    subGEdgeNames <- lapply(subGList, buildSubGEdgeNames)
+
+    attrNames <- names(edgeAttrs)
+    ## FIXME: Horribly inefficient, just trying
+    ##        to get this to work for now
+    for (i in 1:length(edgeNames)) {
+        ## Seei f this edge is in a subgraph
+        if (length(subGList) > 0) {
+            subGs <- which(unlist(lapply(subGEdgeNames, function(x,y)
+                                     {y %in% x}, edgeNames[i])))
+            if (length(subGs) == 1)
+                pEdges[[i]]@subG <- subGs ## FIXME: Need replace
+                                          ## method
+            else if (length(subGs) == 2)
+                stop("Edge ", edgeNames[i], " is in multiple subgraphs")
+        }
+
+        ## Get any attrs for this edge
+        curAttrs <- list()
+        for(j in seq(along=edgeAttrs)) {
+            curVal <- edgeAttrs[[j]][edgeNames[i]]
+            if (!is.na(curVal))
+                curAttrs[[ attrNames[j] ]] <- as.character(curVal)
+        }
+        ## FIXME: Need replace method
+        pEdges[[i]]@attrs <- curAttrs
+    }
+    pEdges
 }
