@@ -25,8 +25,10 @@
 
     setMethod("plot", "graphNEL",
               function(x, y, ..., nodeLabels, centerNode, nodeShape,
-                       nodeCols=par("bg"), textCols=par("fg"),
-                       edgeCols=par("col"), rankDir){
+                       defNodeCol=par("bg"), nodeCols,
+                       defTextCol=par("fg"), textCols,
+                       defEdgeCol=par("col"),edgeCols=list(),
+                       rankDir, fixedSize=TRUE){
                   if (missing(y))
                       y <- "dot"
 
@@ -36,10 +38,10 @@
                                    "undirected"="AGRAPH",
                                    "directed"="AGDIGRAPH",
                                    "AGRAPH")
-
+                  nodes <- nodes(x)
                   edges <- edges(x)
                   if(missing(nodeLabels) )
-                      nodeLabels <- nodes(x)
+                      nodeLabels <- nodes
 
                   ## Generate an attrs list (currently just
                   ## center)
@@ -83,19 +85,26 @@
 
                   ## Check on nodeCols.  If it is a named vector, it
                   ## needs to be in the same order as the node names
-                  if ((length(nodeCols) != length(nodes(x)))||
-                      (!all(names(nodeCols) %in%  nodes(x))))
-                      stop(paste("A named vector of node colors",
-                                 "was passed in, but it does not",
-                                 "match the node names of the graph"))
-                  else
-                      nodeCols <- nodeCols[match(nodes(x),
-                                                     names(nodeCols))]
+                  nC <- rep(defNodeCol,length(nodes))
+                  names(nC) <- nodes
+                  if (!missing(nodeCols))
+                      nC[match(names(nodeCols),names(nC))] <- nodeCols
 
-                  gc()
-                  g = agopen(x, "ABC", nodeLabels, agKind,  layout=TRUE,
+                  ## Now setup the textCols
+                  tC <- rep(defTextCol, length(nodes))
+                  print(tC)
+                  names(tC) <- nodes
+                  if (!missing(textCols))
+                      tC[match(names(textCols), names(tC))] <- textCols
+                  print(tC)
+                  nL <- nodeLabels
+                  if (fixedSize)
+                      nL <- rep(nL[match(max(nchar(nL)), nchar(nL))],
+                                length(nodes))
+
+                  g = agopen(x, "ABC", nL, agKind,  layout=TRUE,
                              layoutType=y, attrs=attrs)
-                  gc()
+
                   if (length(nodeLabels) > 0) {
                       nodeLocs <- getNodeLocs(g)
 
@@ -123,28 +132,24 @@
 
                       rad <- switch(nodeShape,
                                    circle=drawCircleNodes(nodeX, nodeY, ur,
-                                                         rad, nodeCols),
+                                                         rad, nC),
                                    ellipse=drawEllipseNodes(nodeX, nodeY,
-                                                           rad*2, heights, nodeCols)
+                                                           rad*2, heights, nC)
                                   )
 
 
                       ## Plot the edges
-                      ## Need to manually handle the color cycling
-                      colEnv <- new.env()
-                      colNum <- 1
-                      assign("colNum",colNum, colEnv)
-                      q <- lapply(AgEdge(g), function(x,cols, colEnv) {
-                          colNum <- get("colNum",colEnv)
-                          lines(x, col=edgeCols[colNum], len=rad/2)
-                          if (colNum == length(edgeCols))
-                              colNum <- 1
-                          else
-                              colNum <- colNum + 1
-                          assign("colNum",colNum,colEnv)
-                      }, edgeCols, colEnv)
+                      q <- lapply(AgEdge(g), function(x, edgeCols, defEdgeCol) {
+                          ## See if there's a specified edgeCol for this
+                          tail <- tail(x)
+                          head <- head(x)
+                          col <- as.character(edgeCols[[tail]][[head]])
+                          if (is.null(col))
+                              col <- defEdgeCol
+                          lines(x, col=col)
+                      }, edgeCols, defEdgeCol)
 
-                      text(nodeX,nodeY, nodeLabels, col=textCols)
+                      text(nodeX,nodeY, nodeLabels, col=tC)
                   }
                   else {
                       stop("No nodes in graph")
