@@ -1,7 +1,11 @@
   agopen <- function(graph, name, nodeLabels=nodes(graph),
                      kind=NULL, layout=TRUE,
                      layoutType=c("dot","neato","twopi")[1],
-                     attrs=NULL, subGList, edgeLabels) {
+                     attrs=getDefaultAttrs(layoutType,
+                     edgemode(graph)), subGList,
+                     edgeLabels=list()) {
+
+      checkAttrs(attrs)
 
       if (is.null(kind)) {
           ## Determine kind from the graph object
@@ -11,6 +15,7 @@
                          0)
       }
       else {
+          ## Use the specified 'kind' parameter.
           outK <- switch(kind,
                          "AGRAPH"=0,
                          "AGDIGRAPH"=1,
@@ -23,15 +28,33 @@
 
       nodes <- nodes(graph)
 
-      if (missing(edgeLabels))
-          edgeLabels <- list()
-      else {
-          if (!is.list(edgeLabels))
-              stop("edgeLabels must be a list")
+      ## We allow for users to pass in either 1
+      ## label which is used for all nodes, or a vector
+      ## with length equal to the length of nodes,
+      ## specifying the labels in order.
+      nNL <- length(nodeLabels)
 
+      if (nNL == 1)
+          nodeLabels <- rep(nodeLabels, length(nodes))
+      else
+          if (length(nodeLabels) != length(nodes))
+              stop(paste("nodeLabels must be the same",
+                         "length as the number of nodes"))
+
+      nL <- nodeLabels
+      if (attrs$node$fixedsize)
+          nL <- rep(nL[match(max(nchar(nL)), nchar(nL))],
+                    length(nodes))
+
+      if ((is.list(edgeLabels))&&(length(edgeLabels) == length(nodes))) {
           if (!all(unlist(lapply(edgeLabels,is.character))))
               stop("edgeLabel list can only contain character vectors")
       }
+      else if (length(edgeLabels) > 1)
+          stop("edgeLabels must be either ",
+               "empty, length one, or a list with the length of nodes")
+      else if (length(edgeLabels) == 1)
+          edgeLabels <- repEdgeLabels(edgeLabels, graph)
 
       subGs <- vector(mode="character")
 
@@ -98,13 +121,23 @@
           }
       }
 
+      ## all attrs must be character strings going into C,
+      ## graphviz wants all attrs to be char*
+      attrs <- lapply(attrs, function(x){lapply(x,as.character)})
+
       g <- .Call("Rgraphviz_agopen", as.character(name),
                  as.integer(outK), as.vector(nodes),
                  as.character(nodeLabels), as.list(edgeLabels),
                  as.integer(edgeMtrx[1,]), as.integer(edgeMtrx[2,]),
-                 as.double(edgeMtrx[3,]), as.integer(get("edgeSubs",env=arrEnv)),
+                 as.double(edgeMtrx[3,]),
+                 as.integer(get("edgeSubs",env=arrEnv)),
                  as.integer(get("nodeSubs",env=arrEnv)),
                  as.character(subGs), as.list(attrs))
+      g@layoutType <- layoutType
+      g@edgemode <- edgemode(graph)
+      g@nodeLabels <- nodeLabels
+      g@edgeLabels <- edgeLabels
+      g@nodeNames <- nodes
 
       if (layout)
           return(layoutGraph(g,layoutType))
