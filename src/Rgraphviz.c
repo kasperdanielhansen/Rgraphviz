@@ -492,6 +492,9 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 	    SET_SLOT(curEP, Rf_install("arrowtail"),
 		     R_scalarString(agget(edge, "arrowtail")));
 
+	    SET_SLOT(curEP, Rf_install("color"), 
+		     R_scalarString(agget(edge, "color")));
+
 	    /* Get the label information */
 	    if (edge->u.label != NULL) {
 		PROTECT(curLab = NEW_OBJECT(labClass));
