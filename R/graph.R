@@ -57,15 +57,15 @@
                       symbols(nodeX, nodeY, circles=rad, inches=FALSE,
                               bg="white",add=TRUE)
                       if (edgeMode == "undirected")
-                          q <- lapply(edgePoints(g), lines)
+                          q <- lapply(AgEdge(g), lines)
                       else
-                          q <- lapply(edgePoints(g), arrows.edgePoints)
+                          q <- lapply(AgEdge(g), arrows.AgEdge)
                       text(nodeX,nodeY, nodeLabels)
                   }
                   else {
                       stop("No nodes in graph")
                   }
-                  return(list(nodeLocs=nodeLocs, edges=edgePoints(g),
+                  return(list(nodeLocs=nodeLocs, edges=AgEdge(g),
                               nodeLabels=nodeLabels))
               }, where=where)
 }

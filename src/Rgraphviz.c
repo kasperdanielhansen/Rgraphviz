@@ -163,7 +163,7 @@ SEXP Rgraphviz_doDotLayout(SEXP graph) {
 	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 	SET_SLOT(graph,Rf_install("nodes"),nLayout);
 	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
-	SET_SLOT(graph,Rf_install("edgePoints"), cPoints);
+	SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
 	SET_SLOT(graph,Rf_install("boundBox"), bb);
 	UNPROTECT(4);
     }
@@ -231,7 +231,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     int i,k,l,pntLstEl;
     int curEle = 0;
 
-    epClass = MAKE_CLASS("edgePoints");
+    epClass = MAKE_CLASS("AgEdge");
     cpClass = MAKE_CLASS("BezierCurve");
     xyClass = MAKE_CLASS("xyPoint");
 
