@@ -70,8 +70,7 @@ weightLabels <- function(object) {
     setMethod("plot", "Ragraph",
               function(x, y, ...,
                        attrs, xlab="", ylab="",
-                       nodeCols=character(), textCols=character(),
-                       edgeCols=list(), drawNode=drawAgNode, newPlot=TRUE){
+                       drawNode=drawAgNode, newPlot=TRUE){
 
                   ## If this is a new plot, we need to call 'plot.new'
                   ## Otherwise we should not because we were most
@@ -114,21 +113,20 @@ weightLabels <- function(object) {
                       plot.xy(xy, type="n", ...)
 
                       if (length(drawNode) == 1)
-                          rad <- min(unlist(lapply(AgNode(x), drawAgNode, ur)))
+                         lapply(AgNode(x), drawNode, ur)
                       else if (length(drawNode) == nNodes) {
                           nodes <- AgNode(x)
-                          rad <- numeric()
                           for (i in 1:nNodes) {
                               curDrawFun <- drawNode[[i]]
-                              rad <- c(rad,curDrawFun(nodes[[i]],
-                                                      ur=ur))
+                              curDrawFun(nodes[[i]], ur)
                           }
-                          rad <- min(rad)
                       }
                       else
                           stop("Length of the drawNode parameter",
                                " must be either length 1 or the",
                                " number of nodes.")
+
+                      rad <- min(unlist(lapply(AgNode(x), getNodeRW)))
 
                       ## Plot the edges
                       q <- lapply(AgEdge(x), function(x, rad,
@@ -150,8 +148,14 @@ weightLabels <- function(object) {
               })
 }
 
+testPieGlyph <- function(node, ur) {
+    nodeCenter <- getNodeCenter(node)
+    pieGlyph(rep(1,8), xpos=getX(nodeCenter), ypos=getY(nodeCenter),
+             col=rainbow(8), radius=getNodeRW(node))
+}
+
 drawAgNode <- function(node, ur) {
-## First get X/Y
+    ## First get X/Y
     nodeCenter <- getNodeCenter(node)
     nodeX <- getX(nodeCenter)
     nodeY <- getY(nodeCenter)
@@ -168,7 +172,7 @@ drawAgNode <- function(node, ur) {
     switch(shape,
            "circle"=drawCircleNode(nodeX, nodeY, ur, rw, fg, bg),
            "ellipse"=ellipse(nodeX, nodeY, height=height, width=rw*2,
-           fg=fg, bg=bg),
+                             fg=fg, bg=bg),
            "box"=,
            "rect"=,
            "rectangle"=rect(nodeX-lw, nodeY-(height/2), nodeX+rw,
@@ -176,8 +180,6 @@ drawAgNode <- function(node, ur) {
            stop("Unimplemented shape"))
 
     drawTxtLabel(txtLabel(node), nodeX, nodeY)
-
-    rw
 }
 
 drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
@@ -225,7 +227,6 @@ drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
 
     invisible(symbols(nodeX, nodeY, circles=rad, inches=max(rad),
                       fg=fg, bg=bg,add=TRUE))
-##    rad
 }
 
 
