@@ -1,14 +1,14 @@
 importFrom("graphics", "plot", "lines")
 importFrom("methods", "show")
-
+                                                                                
 export(agopen, agwrite, agread, graphvizVersion, buildNodeList,
-       buildEdgeList, removedEdges, getDefaultAttrs, getNodeLocs,
-       getNodeNames, getNodeLabels, checkAttrs, layoutGraph, pieGlyph,
-	getRadiusDiv)
-
+        buildEdgeList, removedEdges, getDefaultAttrs, getNodeLocs,
+        getNodeNames, getNodeLabels, checkAttrs, layoutGraph, pieGlyph,
+        getRadiusDiv,drawAgNode, drawTxtLabel)
+                                                                                
 exportClasses("Ragraph", "boundingBox", "AgNode", "AgEdge",
-	      "BezierCurve", "xyPoint", "AgTextLabel", "pNode", "pEdge")
-
+              "BezierCurve", "xyPoint", "AgTextLabel", "pNode", "pEdge")
+                                                                                
 exportMethods("lines", "plot", "AgNode", "getNodeXY", "agraph",
 "edgemode", "laidout", "layoutType", "boundBox", "AgEdge",
 "getNodeXY", "botLeft", "upRight", "shape", "style", "color",
