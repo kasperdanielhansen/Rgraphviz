@@ -141,7 +141,11 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                       stop("No nodes in graph")
                   }
 
-                  invisible(list(nodeLocs=nodeLocs, edges=AgEdge(g),
+                  invisible(list(nodeLocs=nodeLocs,
+                                 nodeHeights=heights,
+                                 nodeRads=rep(rad,
+                                 length(nodes)),
+                                 edges=AgEdge(g),
                                  nodeLabels=nodeLabels))
               })
 }
