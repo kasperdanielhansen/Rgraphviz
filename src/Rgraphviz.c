@@ -476,8 +476,7 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
 
     /*** NODE ATTRS ***/
     agnodeattr(g,"label",NODENAME_ESC);
-/*    agnodeattr(g, "height", "0.71");
-     agnodeattr(g, "width", "2.83");
+/*
      agnodeattr(g, "fixedsize", "true");
 */
     /*** EDGE ATTRS ***/

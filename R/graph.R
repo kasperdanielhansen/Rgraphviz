@@ -27,11 +27,11 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
 .initRgraphvizPlotMethods <- function() {
 
     setMethod("plot", "graphNEL",
-              function(x, y, ..., nodeLabels, centerNode, nodeShape,
+              function(x, y, ..., nodeLabels,
                        defNodeCol=par("bg"), nodeCols=character(),
                        defTextCol=par("fg"), textCols=character(),
                        defEdgeCol=par("col"),edgeCols=list(),
-                       rankDir, fixedSize=TRUE, subGList){
+                       fixedNodeSize=TRUE, subGList, attrs){
                   if (!validGraph(x))
                   stop("The graph to be plotted is not a valid graph structure")
 
@@ -53,49 +53,47 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                           stop(paste("nodeLabels must be the same",
                                      "length as the number of nodes"))
 
-                  ## Generate an attrs list (currently just
-                  ## center)
-                  attrs <- vector(length=3,mode="list")
-                  names(attrs) <- c("graph","node","edge")
-
-                  ## First make sure that center exists in
-                  ## nodeLabels
-                  if (!missing(centerNode))
-                      attrs$graph$center <- checkCenterNode(centerNode, nodeLabels)
-
-                  ## Check node shapes
-                  if (missing(nodeShape))
-                      attrs$node$shape <- "circle"
-                  else
-                      attrs$node$shape <- checkNodeShape(nodeShape)
-
-                  ## If this is a dot layout, check the rankdir
-                  if (y == "dot") {
-                      if (missing(rankDir))
-                          attrs$graph$rankdir <- "TB"
-                      else
-                          attrs$graph$rankdir <- checkRankDir(rankDir)
+                  ## Make sure there is an attrs list, and if one was
+                  ## provided, sanity check that list
+                  if (missing(attrs)) {
+                      attrs <- vector(length=3,mode="list")
+                      names(attrs) <- c("graph","node","edge")
                   }
+                  else {
+                      if (length(attrs) != 3)
+                          stop("attrs must be of length 3")
+                      if (!all(names(attrs) %in%
+                               c("graph","node","edge")))
+                          stop(paste("Names of attrs must be 'graph',",
+                                     "'node', and 'edge'"))
+                  }
+
+                  ## Need to set some Rgraphviz induced defaults,
+                  ## as there might be some situations where we want
+                  ## different defaults then graphviz
+                  ## !! Should look at removing these in all cases
+                  if (is.null(attrs$node$shape))
+                      attrs$node$shape <- "circle"
+
+                  ## Sanity check attr values
+                  checkAttrs(attrs,nodeLabels)
 
                   ## Setup the node and text color vectors
                   nC <- getCols(defNodeCol, nodeCols, nodes)
                   tC <- getCols(defTextCol, textCols, nodes)
 
                   nL <- nodeLabels
-                  if (fixedSize)
+                  if (fixedNodeSize)
                       nL <- rep(nL[match(max(nchar(nL)), nchar(nL))],
                                 length(nodes))
 
-                  ## !!!!!!!!!!!!!!!!!!!
-
-                  ## Get the list
+                  ## If there was no subgraph list supplied, create an
+                  ## empty one.
                   if (missing(subGList))
                       subGList <- list()
 
-                  ## !!!!!!!!!!!!!!!!!!
-
                   g <- agopen(x, "ABC", nL, agKind,  layout=TRUE,
-                  layoutType=y, attrs=attrs, subGList)
+                              layoutType=y, attrs=attrs, subGList)
 
                   if (length(nodeLabels) > 0) {
                       nodeLocs <- getNodeLocs(g)
@@ -188,10 +186,21 @@ drawEllipseNodes <- function(nodeX, nodeY, heights, widths, nodeCols)
     return(min(widths)/72)
 }
 
+checkAttrs <- function(attrs, nodeLabels) {
+    if (!is.null(attrs$graph$rankdir))
+        checkRankDir(attrs$graph$rankdir)
+    if (!is.null(attrs$graph$center))
+        checkCenterNode(attrs$graph$center,nodeLabels)
+
+
+    if (!is.null(attrs$node$shape))
+        checkNodeShape(attrs$node$shape)
+}
+
 checkNodeShape <- function(nodeShape) {
     validShapes <- c("ellipse", "circle")
     if (nodeShape %in% validShapes)
-        return(nodeShape)
+        return(TRUE)
     else
         stop(paste("Invalid node shape supplied, must be one of:",
                    paste(validShapes, collapse=", ")))
@@ -200,7 +209,7 @@ checkNodeShape <- function(nodeShape) {
 checkCenterNode <- function(centerNode, nodeLabels) {
     if ((centerNode %in% nodeLabels)&&
         (length(centerNode) == 1)){
-        return(centerNode)
+        return(TRUE)
     }
     else
         stop("Invalid center supplied, must be a single node in the graph")
@@ -210,7 +219,7 @@ checkRankDir <- function(rankDir) {
     if (!(rankDir %in% c("TB","LR")))
         stop("Invalid rankDir parameter, must be 'TB' or 'LR'!")
     else
-        return(rankDir)
+        return(TRUE)
 }
 
 getCols <- function(defCol, cols, names) {
@@ -219,3 +228,4 @@ getCols <- function(defCol, cols, names) {
     nC[match(names(cols),names(nC))] <- cols
     nC
 }
+
