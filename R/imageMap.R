@@ -30,12 +30,12 @@ setMethod("imageMap",
   for(i in seq(along=tags))
     tags[[i]] = checkTags(tags[[i]], names(tags)[i])
     
-  if( !is.numeric(width) ||  length(with)!=1 )
+  if( !is.numeric(width) ||  length(width)!=1 )
     stop("'width' must be numeric of length 1.")
   if( !is.numeric(height) || length(height)!=1 )
     stop("'height' must be numeric of length 1.")
   if( !is.numeric(usr) || length(usr)!=4 )
-    stop("'height' must be numeric of length 4.")
+    stop("'usr' must be numeric of length 4.")
     
   ## transform user to pixel coordinates
   x.u2p = function(x) { (x-usr[1])/diff(usr[1:2])*width  }
