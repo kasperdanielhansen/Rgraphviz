@@ -98,5 +98,17 @@
 \seealso{\code{\link{GraphvizAttributes}}, \code{\link{plot.graph}},
   \code{\link{agopen}}}
 \examples{
+set.seed(123)
+V <- letters[1:10]
+M <- 1:4
+g1 <- randomGraph(V, M, .2)
+if (interactive()) {
+  op <- par()
+  on.exit(par=op)
+  par(ask=TRUE)
+  plot(g1, "dot")
+  plot(g1, "neato")
+  plot(g1, "twopi")
+}
 }
 \keyword{graphs}
