@@ -1,4 +1,4 @@
 .First.lib <- function(lib, pkg, where) {
-    library.dynam( "Rgraph", pkg, lib )
-    .Call("Rgraph_init")
+    library.dynam( "Rgraphviz", pkg, lib )
+    .Call("Rgraphviz_init")
 }
