@@ -90,7 +90,11 @@
   before, can have a profound effect on the outcome of the layout and
   care should be taken to select an appropriate one.
 }
-
+\details{
+  Portions of the layout descriptions were taken from documents provided
+  at \url{http://www.research.att.com/sw/graphviz}.  The specific
+  documents are listed in the \code{references} section of this page.
+}
 \author{Jeff Gentry}
 \references{\url{http://www.research.att.com/sw/tools/graphviz/dotguide.pdf},
   \url{http://www.research.att.com/sw/tools/graphviz/neatoguide.pdf},
