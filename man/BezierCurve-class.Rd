@@ -6,6 +6,8 @@
 \alias{pointList}
 \alias{bezierPoints}
 \alias{bezier}
+\alias{bLines}
+\alias{bLines,BezierCurve-method}
 \alias{bezierPoints,BezierCurve-method}
 \alias{pointList,BezierCurve-method}
 \alias{cPoints,BezierCurve-method}
