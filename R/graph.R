@@ -72,13 +72,17 @@ setMethod("plot", "Ragraph",
     ## determine whether node labels fit into nodes and set "cex" accordingly
     ## -----------------------------------------------------------------------
     agn <- AgNode(x)
-    nodeWidths <- sapply(agn, function(n) { getNodeRW(n)+getNodeLW(n) })
-    strWidths  <- sapply(agn, function(n) {
-      rv <- strwidth(labelText(txtLabel(n)))
-      if(length(rv)==0)
-        rv <- 0
-      return(rv)} )
-    cex <- min(nodeWidths / strWidths) * .9
+    nodeDims <- sapply(agn, function(n) { c(getNodeRW(n)+getNodeLW(n), getNodeHeight(n)) })
+    strDims  <- sapply(agn, function(n) {
+      s  <- labelText(txtLabel(n))
+      if(length(s)==0) {
+        rv <- c(strwidth(" "), strheight(" "))
+      } else {
+        rv <- c(strwidth(s)*1.1, strheight(s)*1.4)
+      }
+      return(rv)
+    } )
+    cex <- min(nodeDims / strDims)
     if(is.finite(cex))
       par(cex=cex)
   
@@ -101,7 +105,7 @@ setMethod("plot", "Ragraph",
     ## Use the smallest node radius as a means to scale the size of 
     ## the arrowheads -- in INCHES! see man page for "arrows", which is called
     ## from bLines, which is called from lines.
-    arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * min(nodeWidths) / (2*pi)
+    arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * min(nodeDims) / pi
     ## Plot the edges
     lapply(AgEdge(x), lines, len=arrowLen, edgemode=edgemode)
     
@@ -170,7 +174,7 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
 ## }
 
 drawCircleNode <- function(x, y, rad, fg, bg) {
-    invisible(symbols(x, y, circles=rad, inches=max(rad),
+    invisible(symbols(x, y, circles=rad, inches=FALSE, 
                       fg=fg, bg=bg, add=TRUE))
 }
 
