@@ -187,9 +187,9 @@
     }, where=where)
 
     setMethod("lines","AgEdge",
-              function(x,...) {
+              function(x,...,col=par("col")) {
                   z <- splines(x)
-                  lapply(z,lines)
+                  lapply(z,lines,col=col)
 
                   ## Now need to draw the appropriate arrows, if any
                   if (startArrow(x)) {
@@ -198,7 +198,8 @@
                       curP <-cPoints(z[[1]])[[1]]
                       ## get the edge's ep
                       curSP <- sp(x)
-                      arrows(getX(curP), getY(curP), getX(curSP), getY(curSP))
+                      arrows(getX(curP), getY(curP), getX(curSP),
+                             getY(curSP), col=col)
                   }
                   if (endArrow(x)) {
                       ## Draw start arrow
@@ -207,7 +208,8 @@
                       curP <- epPoints[[length(epPoints)]]
                       ## get the edge's sp
                       curEP <- ep(x)
-                      arrows(getX(curP), getY(curP), getX(curEP), getY(curEP))
+                      arrows(getX(curP), getY(curP), getX(curEP),
+                             getY(curEP), col=col)
                   }
 
                   return(NULL)
@@ -247,9 +249,9 @@
         out
     }, where=where)
 
-    setMethod("lines", "BezierCurve", function(x,...) {
+    setMethod("lines", "BezierCurve", function(x,...,col=par("col")) {
         z <- bezierPoints(x)
-        lines(z[,1],z[,2])
+        lines(z[,1],z[,2],col=col)
     }, where=where)
 
     setMethod("show", "BezierCurve", function(object) {
