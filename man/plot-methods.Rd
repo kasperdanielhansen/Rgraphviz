@@ -9,11 +9,11 @@
   A plot method for \code{graph} objects.
 }
 \section{Usage}{
-  \code{'graph': plot(x, y, ..., subGList=list(), attrs=getDefaultAttrs(y),
+  \code{'graph': plot(x, y, ..., subGList=list(), attrs=list(),
     nodeAttrs=list(), edgeAttrs=list(), xlab="", ylab="", main=NULL,
     sub=sub, recipEdges=c("combined", "distinct"))}
 
-  \code{'Ragraph': plot(x, y, ..., attrs, xlab="", ylab="", main=NULL,
+  \code{'Ragraph': plot(x, y, ..., xlab="", ylab="", main=NULL,
     sub=sub, drawNode=drawAgNode, newPlot=TRUE)}
 }
 \section{arguments}{
