@@ -21,7 +21,7 @@
 \alias{startArrow,AgEdge-method}
 \alias{tail,AgEdge-method}
 \alias{txtLabel,AgEdge-method}
-\alias{txtLael}
+\alias{txtLabel}
 \alias{arrowhead,AgEdge-method}
 \alias{arrowhead}
 \alias{arrowtail,AgEdge-method}

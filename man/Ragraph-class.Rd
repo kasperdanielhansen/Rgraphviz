@@ -2,16 +2,18 @@
 \docType{class}
 \alias{Ragraph-class}
 \alias{Ragraph}
-\alias{laidout}
 \alias{agraph}
-\alias{nodes}
+\alias{laidout}
+\alias{layoutType}
+\alias{edgemode}
 \alias{boundBox}
-\alias{getNodeLocs}
 \alias{AgEdge,Ragraph-method}
 \alias{agraph,Ragraph-method}
 \alias{boundBox,Ragraph-method}
-\alias{getNodeLocs,Ragraph-method}
 \alias{laidout,Ragraph-method}
+\alias{layoutType,Ragraph-method}
+\alias{edgemode,Ragraph-method}
+\alias{AgNode,Ragraph-method}
 \title{Class "Ragraph": A class to handle libgraph representations}
 \description{Class \code{Ragraph} is used to handle libgraph
   representations of R graph objects.}
@@ -24,8 +26,12 @@ Objects can be created by calls to the function \code{agopen}.
       based structure containing the libgraph information}
     \item{\code{laidout}:}{Object of class \code{"logical"}: Whether or
       not this graph has been laid out or not.}
-    \item{\code{nodes}:}{Object of class \code{"list"}: A list of
-      \code{NodePosition} objects.}
+    \item{\code{layoutType}:}{Object of class \code{"character"}: The
+      layout method used for this object}
+    \item{\code{edgemode}:}{Object of class \code{"character"}: The
+      edgemode for this graph - \dQuote{directed} or \dQuote{undirected}}
+    \item{\code{AgNode}:}{Object of class \code{"list"}: A list of
+      \code{AgNode} objects.}
     \item{\code{AgEdge}:}{Object of class \code{"list"}: A list of
       \code{AgEdge} objects.}
     \item{\code{boundBox}:}{Object of class \code{"boundBox"}: Defines
@@ -47,8 +53,12 @@ Objects can be created by calls to the function \code{agopen}.
       bounding box.}
     \item{AgEdge}{\code{signature(object = "Ragraph")}: Returns the edge
       list.}
-    \item{getNodeLocs}{\code{signature(object = "Ragraph")}: Returns a
-      list with X and Y positions of all nodes, used as a convenience}
+    \item{AgNode}{\code{signature(object = "Ragraph")}: Returns the node
+      list.}
+    \item{edgemode}{\code{signature(object = "Ragraph")}: Retrieves the
+      edgemode of this object.}
+    \item{layoutType}{\code{signature(object = "Ragraph")}: Retrives the
+      method used for the layout of this graph.}
   }
 }
 \author{Jeff Gentry}

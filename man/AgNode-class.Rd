@@ -2,8 +2,6 @@
 \docType{class}
 \alias{AgNode-class}
 \alias{AgNode}
-\alias{arrowhead}
-\alias{arrowtail}
 \alias{color}
 \alias{fillcolor}
 \alias{name}
