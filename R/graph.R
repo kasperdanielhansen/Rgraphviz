@@ -76,6 +76,11 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                   ## layout.
                   plot.new()
 
+                  if (missing(xlab))
+                      xlab <- ""
+                  if (missing(ylab))
+                      ylab <- ""
+
                   ## Need to set some Rgraphviz induced defaults,
                   ## as there might be some situations where we want
                   ## different defaults then graphviz
@@ -112,22 +117,33 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
 
                   g <- agopen(x, "ABC", nL, agKind,  layout=TRUE,
                               layoutType=y, attrs=attrs, subGList)
+                  invisible(plot(g,attrs=attrs, nodeLabels=nodeLabels, xlab=xlab,
+                                 ylab=ylab, nodeCols=nC, textCols=tC,
+                                 edgeCols=edgeCols, defEdgeCol=defEdgeCol))
+              })
 
-                  if (length(nodeLabels) > 0) {
-                      nodeLocs <- getNodeLocs(g)
+
+        setMethod("plot", "Ragraph",
+              function(x, y, ..., attrs, nodeLabels, xlab, ylab, nodeCols,
+              textCols, edgeCols, defEdgeCol){
+
+                  nNodes <- length(nodes(x))
+
+                  if (nNodes > 0) {
+                      nodeLocs <- getNodeLocs(x)
 
                       nodeX <- nodeLocs[["x"]]
                       nodeY <- nodeLocs[["y"]]
 
                       ## Get the radii of the nodes.  For now we're just
                       ## implementing circles and ellipses
-                      rad <- unlist(lapply(nodes(g), getNodeRW))
+                      rad <- unlist(lapply(nodes(x), getNodeRW))
                       RWidths <- rad
-                      heights <- unlist(lapply(nodes(g), getNodeHeight))
+                      heights <- unlist(lapply(nodes(x), getNodeHeight))
 
                       ## Get the upper right X,Y point of the bounding
                       ## box for the graph
-                      ur <- upRight(boundBox(g))
+                      ur <- upRight(boundBox(x))
 
                       ## Set up the plot region, plot the edges, then
                       ## nodes and finally the node labels.  We need
@@ -141,6 +157,9 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                       if (missing(ylab))
                           ylab <- ""
 
+                      if (missing(nodeLabels))
+                          nodeLabels <- 1:nNodes
+
                       ## !! Currently hardcoding log & asp,
                       ## !! probably want to change that over time.
                       plot.window(xlim=c(0,getX(ur)),
@@ -152,14 +171,14 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
 
                       rad <- switch(attrs$node$shape,
                                     circle=drawCircleNodes(nodeX, nodeY, ur,
-                                    rad, nC),
+                                    rad, nodeCols),
                                     ellipse=drawEllipseNodes(nodeX, nodeY,
-                                    rad*2, heights, nC)
+                                    rad*2, heights, nodeCols)
                                     )
 
 
                       ## Plot the edges
-                      q <- lapply(AgEdge(g), function(x, edgeCols,
+                      q <- lapply(AgEdge(x), function(x, edgeCols,
                                                       defEdgeCol, rad) {
                           ## See if there's a specified edgeCol for this
                           if (!is(x,"AgEdge"))
@@ -172,7 +191,7 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                           lines(x, col=col, len=(rad / 3))
                       }, edgeCols, defEdgeCol, rad)
 
-                      text(nodeX,nodeY, nodeLabels, col=tC)
+                      text(nodeX,nodeY, nodeLabels, col=textCols)
                   }
                   else {
                       stop("No nodes in graph")
@@ -181,7 +200,7 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                   invisible(list(nodeLocs=nodeLocs,
                                  nodeHeights=heights,
                                  nodeRwidths=RWidths,
-                                 edges=AgEdge(g),
+                                 edges=AgEdge(x),
                                  nodeLabels=nodeLabels))
               })
 }
