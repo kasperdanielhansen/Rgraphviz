@@ -241,7 +241,9 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     }
 
     gvc->g = g;
-    GD_gvc(g) = gvc;
+/* Don't think this is needed anymore, definitely doens't */
+/* work against Graphviz 1.13 */
+/*    GD_gvc(g) = gvc; */
 
     return(buildRagraph(g));    
 }
