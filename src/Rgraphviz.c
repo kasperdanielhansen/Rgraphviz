@@ -49,7 +49,7 @@ SEXP getListElement(SEXP list, char *str) {
 }
 
 int getVectorPos(SEXP vector, char *str) {
-    /* Returns position in a vector that matches string name */
+    /* Returns position in a named vector where the name matches string*/
     /* Returns -1 if not found */
     
     SEXP names; 
@@ -67,6 +67,8 @@ int getVectorPos(SEXP vector, char *str) {
 
     return(i);
 }
+
+
 
 static SEXP Rgraphviz_graph_type_tag;
 
@@ -266,6 +268,7 @@ SEXP Rgraphviz_getAttr(SEXP graph, SEXP attr) {
     return(R_scalarString(agget(g, STR(attr))));
 }
 
+
 SEXP Rgraphviz_assignAttrs(SEXP attrList, SEXP objList,
 			   SEXP defAttrs) {
     /* Assign attributes defined by attrList (and defAttrs) */
@@ -341,6 +344,7 @@ SEXP Rgraphviz_assignAttrs(SEXP attrList, SEXP objList,
 
     return(objList);
 }
+
 
 SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Will perform a Graphviz layout on a graph */
@@ -418,6 +422,70 @@ SEXP Rgraphviz_bezier(SEXP Rpnts, SEXP Rn, SEXP Rt) {
     UNPROTECT(1);
     return(out);
 }
+
+SEXP Rgraphviz_buildNodeList(SEXP graph, SEXP nodeAttrs,
+			     SEXP subGList, SEXP defAttrs) {
+    SEXP pNodes;
+    SEXP pnClass, curPN;
+    SEXP nodes;
+    SEXP attrs, attrNames, tmpStr;
+    SEXP curSubG, subGNodes;
+    int i, j, k, nSubG;
+
+    nSubG = length(subGList);
+
+    pnClass = MAKE_CLASS("pNode");
+
+    nodes = GET_SLOT(graph, Rf_install("nodes"));
+    PROTECT(pNodes = allocVector(VECSXP, length(nodes)));
+
+    PROTECT(attrNames = allocVector(STRSXP, 1));
+    SET_VECTOR_ELT(attrNames, 0, mkChar("label"));
+
+    for (i = 0; i < length(nodes); i++) {
+	PROTECT(tmpStr = allocVector(STRSXP, 1));
+	SET_STRING_ELT(tmpStr, 0, STRING_ELT(nodes, i));
+	PROTECT(curPN = NEW_OBJECT(pnClass));
+	SET_SLOT(curPN, Rf_install("name"), tmpStr);
+
+	PROTECT(attrs = allocVector(VECSXP, 1));
+	setAttrib(attrs, R_NamesSymbol, attrNames);
+
+	SET_VECTOR_ELT(attrs, 0, tmpStr);
+	SET_SLOT(curPN, Rf_install("attrs"), attrs);
+	SET_VECTOR_ELT(pNodes, i, curPN);
+	
+	for (j = 0; j < nSubG; j++) {
+	    curSubG = VECTOR_ELT(subGList, j);
+	    subGNodes = GET_SLOT(curSubG, Rf_install("nodes"));
+
+	    for (k = 0; k < length(subGNodes); k++) {
+		if (strcmp(CHAR(STRING_ELT(subGNodes, k)),
+			   CHAR(STRING_ELT(nodes, i))) == 0)
+		    break;
+	    }
+	    if (k == length(subGNodes))
+		continue;
+
+	    SET_SLOT(curPN, Rf_install("subG"), R_scalarInteger(j+1));
+	    /* Only one subgraph per node */
+	    break;
+	}
+
+	UNPROTECT(3);
+    }
+
+    UNPROTECT(1);
+
+    setAttrib(pNodes, R_NamesSymbol, nodes);
+
+    /* Put any attributes associated with this node list in */
+    pNodes = Rgraphviz_assignAttrs(nodeAttrs, pNodes, defAttrs);
+
+    UNPROTECT(1);
+    return(pNodes);
+}
+
 
 SEXP Rgraphviz_buildPEList(SEXP to, SEXP edgeMode, SEXP weights, 
 			   SEXP nEdges) {

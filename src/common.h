@@ -42,7 +42,6 @@ SEXP R_scalarLogical(Rboolean);
 SEXP R_scalarString(const char *);
 SEXP getListElement(SEXP, char*);
 int getVectorPos(SEXP, char*);
-
 SEXP Rgraphviz_init(void);
 SEXP Rgraphviz_fin(SEXP);
 SEXP Rgraphviz_doLayout(SEXP, SEXP);
@@ -55,6 +54,9 @@ SEXP getNodeLayouts(Agraph_t *);
 SEXP buildRagraph(Agraph_t *);
 SEXP Rgraphviz_graphvizVersion(void);
 SEXP Rgraphviz_getAttr(SEXP, SEXP);
+SEXP Rgraphviz_assignAttrs(SEXP, SEXP, SEXP);
+SEXP Rgraphviz_bezier(SEXP, SEXP, SEXP);
+SEXP Rgraphviz_buildNodeList(SEXP, SEXP, SEXP, SEXP);
 Agraph_t *dotLayout(Agraph_t *);
 Agraph_t *neatoLayout(Agraph_t *);
 Agraph_t *twopiLayout(Agraph_t *);

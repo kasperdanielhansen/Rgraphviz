@@ -119,26 +119,9 @@ graphvizVersion <- function() {
 
 buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
                           defAttrs=list()) {
-
-    pNodes <- list()
-
-    nodeNames <- as.character(nodes(graph))
-
-    if (length(nodeNames) > 0) {
-        pNodes <- lapply(nodeNames, function(x) {
-            new("pNode",name=x, attrs=list(label=x))})
-        names(pNodes) <- nodeNames
-
-        pNodes <- assignAttrs(nodeAttrs, pNodes, defAttrs)
-
-        ## See if this node is in a subgraph
-        if (length(subGList) > 0)
-            pNodes <- assignSubGs(subGList, pNodes, nodeNames)
-    }
-
-    pNodes
+    pNodes <- .Call("Rgraphviz_buildNodeList", graph, nodeAttrs, subGList,
+                   defAttrs, PACKAGE="Rgraphviz")
 }
-
 
 buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
                           edgeAttrs=list(), subGList=list(), defAttrs=list()) {
@@ -192,7 +175,7 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 
     if (length(subGList) > 0) {
         subGEdgeNames <- lapply(subGList, buildSubGEdgeNames)
-        pEdges <- assignSubGs(subGEdgeNames, pEdges, edgeNames)
+        pEdges <- assignEdgeSubGs(subGEdgeNames, pEdges, edgeNames)
     }
 
     pEdges
@@ -205,7 +188,7 @@ assignAttrs <- function(attrList, objList, defAttrs) {
     .Call("Rgraphviz_assignAttrs", attrList, objList, defAttrs, PACKAGE="Rgraphviz")
 }
 
-assignSubGs <- function(subGList, objList, objNames) {
+assignEdgeSubGs <- function(subGList, objList, objNames) {
 
     subGs <- sapply(subGList,
                     function(x, y) {y %in% x}, objNames)
