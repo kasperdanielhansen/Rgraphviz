@@ -28,6 +28,10 @@
 
 extern char *Info[];
 
+#ifdef GRAPHVIZ_1_12
+static GVC_t *gvc;
+#endif
+
 #define AGRAPH_T(x) ((agraph_t *)DATAPTR(x))
 #define STR(SE) CHAR(STRING_ELT(SE,0))
 
