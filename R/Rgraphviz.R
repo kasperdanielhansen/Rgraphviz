@@ -1,14 +1,23 @@
   agopen <- function(graph, name, nodeLabels=nodes(graph),
-                     kind="AGRAPH", layout=TRUE,
+                     kind=NULL, layout=TRUE,
                      layoutType=c("dot","neato","twopi")[1],
                      attrs=NULL, subGList, edgeLabels) {
 
-      outK <- switch(kind,
-                     "AGRAPH"=0,
-                     "AGDIGRAPH"=1,
-                     "AGRAPHSTRICT"=2,
-                     "AGDIGRAPHSTRICT"=3,
-                     stop(paste("Incorrect kind parameter:",kind)))
+      if (is.null(kind)) {
+          ## Determine kind from the graph object
+          outK <- switch(edgemode(graph),
+                         "undirected"=0,
+                         "directed"=1,
+                         0)
+      }
+      else {
+          outK <- switch(kind,
+                         "AGRAPH"=0,
+                         "AGDIGRAPH"=1,
+                         "AGRAPHSTRICT"=2,
+                         "AGDIGRAPHSTRICT"=3,
+                         stop(paste("Incorrect kind parameter:",kind)))
+      }
 
       edgeMtrx <- graph2graphviz(graph)
 

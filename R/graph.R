@@ -62,12 +62,6 @@ setMethod("weightLabels", "graph", function(object) {
                   if (missing(y))
                       y <- "dot"
 
-                  ## Get edgemode of graph
-                  edgeMode <- edgemode(x)
-                  agKind <- switch(edgeMode,
-                                   "undirected"="AGRAPH",
-                                   "directed"="AGDIGRAPH",
-                                   "AGRAPH")
                   nodes <- nodes(x)
                   edges <- edges(x)
 
@@ -162,8 +156,8 @@ setMethod("weightLabels", "graph", function(object) {
                   if (missing(subGList))
                       subGList <- list()
 
-                  g <- agopen(x, "ABC", nL, agKind,  layout=TRUE,
-                              layoutType=y, attrs=attrs, subGList,
+                  g <- agopen(x, "ABC", nL, layout=TRUE,
+                              layoutType=y, attrs=attrs, subGList=subGList,
                               edgeLabels=edgeLabels)
                   invisible(plot(g,attrs=attrs, nodeLabels=nodeLabels, xlab=xlab,
                                  ylab=ylab, nodeCols=nC, textCols=tC,
