@@ -10,7 +10,8 @@
 }
 \section{Usage}{
   \code{'graph': plot(x, y, ..., subGList=list(), attrs=getDefaultAttrs(y),
-    nodeAttrs=list(), edgeAttrs=list(), xlab="", ylab="", main=NULL, sub=sub)}
+    nodeAttrs=list(), edgeAttrs=list(), xlab="", ylab="", main=NULL,
+    sub=sub, recipEdges=c("combined", "distinct"))}
 
   \code{'Ragraph': plot(x, y, ..., attrs, xlab="", ylab="", main=NULL,
     sub=sub, drawNode=drawAgNode, newPlot=TRUE)}
@@ -35,7 +36,9 @@
     \code{plot.Ragraph} is called from \code{plot.graph}, the plotting
     device has already been setup and should not be reinitialized.
     However, when \code{plot.Ragraph} is being called directly this is
-    not the case}.
+    not the case}
+  \item{recipEdges}{Determines how to draw reciprocating edges.  See
+    \code{\link{agopen}}} 
   \item{...}{General commands to be sent to plot}
 }
 \section{details}{
