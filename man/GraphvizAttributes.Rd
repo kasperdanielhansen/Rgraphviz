@@ -9,20 +9,20 @@
   The following describes the allowable attributes to be used with
   Rgraphviz.  Most of these are sent directly to Graphviz and will
   influence the plot layout, some of these are only cosmetic and stay in
-  R.  Users are encouraged to look at
-  \url{http://www.research.att.com/~erg/graphviz/info/attrs.html}, which
+  R.  Users are referred to the Graphviz web documentation which
   contains some more detailed information on these attributes (and is
-  where the information is taken from).
+  our source).
 }
 \section{Graph Attributes}{
   \bold{General Graph Attributes:}
   \describe{
     \item{\code{bgcolor}:}{Color for the entire canvas.  This is used
-      only in R.  The default is to use \code{par(bg)}}
+      only in R.  The default is to use \code{par(
+	\dQuote{bg})}}
     \item{\code{center}:}{Drawing is centered in the output canvas.
       This is a boolean value with a default of \code{FALSE}.}
     \item{\code{fontcolor}:}{Color used for text, defaulting to
-      \code{par(fg)}.  R only}
+      \code{par(\dQuote{fg})}.  R only}
     \item{\code{fontname}:}{Font used for text.  Default is Times Roman.}
     \item{\code{fontpath}:}{Directory used to search for fonts}
     \item{\code{fontsize}:}{Font size, in points, for text.  This
@@ -48,7 +48,7 @@
       them at the bottom.  By default root graph labels go on the bottom
       and cluster labels go on the top.}
     \item{\code{layers}:}{Specifies a linearly ordered list of layer
-      names attached to the grpah.  Only those components belonging to
+      names attached to the graph.  Only those components belonging to
       the current layer appear.  This attribute accepts a
       \code{layerList}, which is list of strings separated by the
       characters defined with the \code{layersep} attribute which
@@ -75,7 +75,7 @@
       are emitted.  This is limited to one of the 8 row or column major
       orders.  One of \code{BL}, \code{BR}, \code{TR}, \code{RB},
       \code{RT}, \code{LB}, or \code{LT} specifying the 8 row or column
-      major orders for traverseing a rectangular array (the first
+      major orders for traversing a rectangular array (the first
       character corresponding to the major order and the second to the
       minor order).  The default value is \code{BL}}
     \item{\code{quantum}:}{If 'quantum' > 0.0, node label dimensions
@@ -85,7 +85,7 @@
     \item{\code{ranksep}:}{In dot, this gives the desired rank
       separation in inches.  If the value contains \code{equally}, the
       centers of all the ranks are spaced equally apart.  In twopi,
-      specifieds the separation of concentric circles.  This value is of
+      specifies the separation of concentric circles.  This value is of
     type double, with a minimum value of \code{0.02}.  In dot, the
     default value is \code{0.5} and for twopi it is \code{1.0}.} 
     \item{\code{ratio}:}{Sets the aspect ratio for the drawing.  If
@@ -208,7 +208,7 @@
   }
   \bold{Output Based}
   \describe{
-    \item{\code{resolution}:}{Number of pixeles per inch on a display,
+    \item{\code{resolution}:}{Number of pixels per inch on a display,
       used for SVG output.  The default for this attribute is
       \code{0.96} and it accepts values of type double.}
     \item{\code{stylesheet}:}{A URL or pathname specifying a XML style
@@ -224,7 +224,7 @@
     \item{\code{comment}:}{A device dependent commentary.  Not currently
     implemented.}
     \item{\code{nslimit}:}{Number of iterations in network simplex
-      applications.  Used in computing node x coordinants}
+      applications.  Used in computing node x coordinates}
     \item{\code{nslimit1}:}{Same as \code{nslimit} but for ranking
       nodes}
     \item{\code{outputorder}:}{Specify order in which nodes and edges are
@@ -241,7 +241,7 @@
       edges and \code{none} for undirected edges.  R only(?)}
     \item{\code{arrowsize}:}{Multiplicative scale factor for arrowheads,
       type double.  R only (?).  This attribute accepts values of type
-      double with a deafult of \code{1.0} and minimum of \code{1.0}.}
+      double with a default of \code{1.0} and minimum of \code{1.0}.}
     \item{\code{arrowtail}:}{Style of arrow on the tail node of an edge,
       see \code{arrowhead}.  For directed edges that with bidirectional
       arrows, \code{open} is used.  R only(?)}
@@ -352,7 +352,7 @@
       to the outside edge of the node.  The interior of the node is
       specified with the \code{fillcolor} attribute.  R only.
       Defaults to \code{par(bg)}.}
-    \item{\code{distortion}:}{Distorition factor for
+    \item{\code{distortion}:}{Distortion factor for
       \code{shape=polygon}, positive values cause top to be larger then
       bottom, negative is opposite.  This is a double value with a
       default of \code{0.0} and a minimum value of \code{-100.0}}
@@ -378,7 +378,7 @@
     \item{\code{orientation}:}{Angle, in degrees, used to rotate node
       shapes.  This accepts double values with a default of \code{0.0}
       and a minimum of \code{360.0} (Which doesn't make sense, but going
-    off of the Graphviz website notd in \code{references}.}
+    off of the Graphviz website noted in \code{references}.}
     \item{\code{peripheries}:}{Set number of peripheries used in
       polygonal shapes and cluster boundaries.  Note that user-defined
       shapes are treated as a form box shape, so the default peripheries
@@ -438,13 +438,26 @@
       local machine, the URL begins with "file://".  For remote files,
       graphviz must have been configured to use a command such as curl
       to retrieve the files remotely.  Currently unsupported}
-    \item{\code{z}:}{Provides z coordinant for the node in a 3D system.
+    \item{\code{z}:}{Provides z coordinates for the node in a 3D system.
       Currently unsupported}
   }
 }
+\section{details}{
+   Different attributes are appropriate for different specific graph
+   layout algorithms. Graphviz supports three different layout
+   algorithms, dot, neato and twopi.
+
+   There is some tension between attributes that graphviz supports and
+   those that we can support at the R level. Please let us know if there
+   are situations that are not being handled appropriately.
+   
+   All attributes are passed down to graphviz. However they can be later
+   modified for rendering in R.
+
+  }
 \references{\url{http://www.research.att.com/~erg/graphviz/info/attrs.html}}
 \author{Jeff Gentry}
-\seealso{\code{\link{plot.graph}}}
+\seealso{\code{\link{plot.graph}}, \code{\link{agopen}}}
 \examples{
 
 }
