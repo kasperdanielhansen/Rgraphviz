@@ -178,11 +178,11 @@ have a label.  However, both can have custom labels supplied via
 attributes.  
 
 <<labels, fig=TRUE>>=
-nAttrs$label <- c("lab1", "lab2", "lab3")
-names(nAttrs$label) <- c("a", "b", "g")
+nAttrs$label <- c(a="lab1", b="lab2", g="lab3")
+nAttrs
 
-eAttrs$label <- c("test", "test2")
-names(eAttrs$label) <- c("a~h", "h~c")
+eAttrs$label <- c("a~h"="test", "h~c"="test2")
+eAttrs
 
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 @
@@ -197,23 +197,20 @@ labels can also be specified with the \Robject{fontcolor} attribute.
 
 <<colors, fig=TRUE>>=
 ## Specify node drawing color
-nAttrs$color <- c("red", "red", "green", "blue")
-names(nAttrs$color) <- c("a", "b", "g", "d")
+nAttrs$color <- c(a="red", b="red", g="green", d="blue")
 
 ## Specify edge drawing color
-eAttrs$color <- c("blue", "purple")
-names(eAttrs$color) <- c("a~d", "h~c")
+eAttrs$color <- c("a~d"="blue", "h~c"="purple")
 
 ## Specify node fill color
-nAttrs$fillcolor <- "yellow"
-names(nAttrs$fillcolor) <- "j"
+nAttrs$fillcolor <- c(j="yellow")
 
 ## label color
-nAttrs$fontcolor <- c("green", "red")
-names(nAttrs$fontcolor) <- c("e", "f")
+nAttrs$fontcolor <- c(e="green", f="red")
+eAttrs$fontcolor <- c("a~h"="green", "h~c"="brown")
 
-eAttrs$fontcolor <- c("green", "brown")
-names(eAttrs$fontcolor) <- c("a~h", "h~c")
+nAttrs
+eAttrs
 
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 @
@@ -256,8 +253,8 @@ LSX=character(),  "Mini Unix"=character(), "Wollongong"=character(),
 "Ultrix-32"=character(), "PDP-11 Sys V"=character(), 
 "System V.3"=character(), "4.3 BSD"=character()),
 edgemode="directed")
-a <- plot(z,nodeCols=c("orange","yellow"))
-a <- plot(z,"neato",nodeCols=c("lightblue","yellow","lightgreen","orange"))
+a <- plot(z)
+a <- plot(z,"neato")
 @
 
 OS process map, using "twopi" layout and setting the \Robject{root}
