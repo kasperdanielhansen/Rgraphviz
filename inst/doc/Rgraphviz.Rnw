@@ -4,7 +4,7 @@
 %
 %\VignetteIndexEntry{HOWTO Rendering}
 %\VignetteDepends{Rgraphviz, graph}
-%\VignetteKeywords{Tools}
+%\VignetteKeywords{tools, graphs}
 %\VignettePackage{Rgraphviz}
 
 \documentclass{article}
@@ -67,8 +67,6 @@ isConnected(g2)
 z <- plot(g2,"twopi")
 @
 
-% We need an example here about how to do center node using attrs list
-
 And finally, to demonstrate how the differing layout methods work on
 this second graph:
 <<g2dot, fig=TRUE>>=
@@ -111,120 +109,114 @@ sg2 <- subGraph(c("f","h","i"), g1)
 plot(g1, subGList=list(sg1, sg2))
 @
 
-\section{Labels}
-
-Users can specify both node and edge labels to the plot.  Node labels
-are provided using the argument "nodeLabels" and consist of a
-character vector which must be equal in length to the number of nodes
-in the graph.  The first node label in the vector corresponds to the
-first node, etc.  If no nodeLabels argument is provided, the graph
-will simply use the node names as labels.
-
-Edge labels are slightly more complex, and are represented as a list.
-This list elements correspond to the 'tail' ('from') nodes.  Each
-element contains a named character vector where the elements of the
-vector are the edge labels and the names of said vector are the 'head'
-('to') node that corresponds with that edge.  As an example: 
-
-In both situations, the user can alternatively supply a single value
-to either "nodeLabels" or "edgeLabels", and in that case that value
-will be used for all of the node or edge labels (as appropriate for
-the parameter).
-
-<<edgeLabels>>=
-edgeLabs <- vector(length=length(nodes(g1)), mode="list")
-names(edgeLabs) <- names(edges(g1))
-for (i in 1:10)
-    edgeLabs[[i]] <- vector(mode="character")
-aLabs <- c("test", "foo", "blah", "hmmm")
-names(aLabs) <- c("b", "d", "e", "h")
-edgeLabs$a <- aLabs
-edgeLabs$a
-@
-
-This set up the initial empty list and then filled in labels for each
-edge connecting to node 'a' in this graph.  These labels can then be
-used in the plot:
-
-<<edgeLabelPlot, fig=TRUE>>=
-plot(g1, edgeLabels=edgeLabs)
-@
-
-For users who wish to use the edge weights as the labels, there is a
-convenience method \Rfunction{weightLabels} provided which will
-provide the same information as \Rfunction{edgeWeights} but in the
-appropriate format for the \Rfunction{edgeLabels} parameter.  As an
-example:
-
-<<edgeLabelWeightsPlot, fig=TRUE>>=
-plot(g1, edgeLabels=weightLabels(g1))
-@
-
-\section{Adding Some Color}
-
-Many aspects of the plotted graph can be colorized to help highlight
-certain features.  Nodes, node labels and edges can all have special
-coloring within a plot.  In all three cases there is a default color
-provided by the system, and a user can specifically note deviations
-from that default.  The default colors are defined by the arguments
-"defNodeCol", "defTextCol" and "defEdgeCol".  Any color can be
-specified to any of these, although suitable defaults are chosen if
-nothing is specified.  
-
-Specifying deviations from the default color is also easy.  The
-respective arguments here are "nodeCols", "textCols" and "edgeCols".
-In the former two cases, the system takes a named vector - and any
-element whose name matches the name of a node will have the specified
-color used for that node.  Edges are a bit more complex, and are
-represented as a list of node names (the tail nodes), each of which
-contain a list of node names (the head nodes) which contain a color.
-For every edge, if an element in the list exist x$tail$head, that
-color will be used for the edge.
-
-<<colorExamples, fig=TRUE>>=
-  nodeCols <- c("red","blue","green")
-  names(nodeCols) <- c("c","d","i")
-  textCols <- c("yellow","orange","violet")
-  names(textCols) <- c("a","b","d")
-  edgeCols <- list()
-  edgeCols$a$b <- "red"
-  edgeCols$f$h <- "blue"
-  edgeCols$b$h <- "green"
-  edgeCols$b$f <- "orange"
-
-  plot(g1,nodeCols=nodeCols,textCols=textCols, edgeCols=edgeCols)
-@
+\section{Attributes}
 
 \section{The Attributes List}
 
 There are many visualization options in Graphviz that can be set beyond those
-which are given explicit options using Rgraphviz.  The user can
-manually specify values for any of these by specificing an attribute
-list which will get passed down to Graphviz.  An example of an
-attribute that users would commonly want to specify is "dir" which
-notes the direction of a directed edge - for instance the default is
-"forward", but one could set "backwards", "none" (ie it is visually
-undirected) or even "both" (so one can represent an edge in each
-direction between two nodes using only one actual edge and not two).
-A list of all available attributes is accessible online at:
-http://www.research.att.com/~erg/graphviz/info/attrs.html. (note that
-not all of these will have a visible effect in Rgraphviz)
+which are given explicit options using Rgraphviz - such as colors of
+nodes and edges, which node to center on for twopi plots, node labels,
+edge labels, edge weights, arrow heads and tails, etc.  A list of all
+available attributes is accessible online at:
+http://www.research.att.com/~erg/graphviz/info/attrs.html".  (Note
+that there are some differences between default values and also some
+attributes will not have an effect in Rgraphviz.  Please see the man
+page for \Rfunction{graphvizAttributes} for more details)
 
-To manually specify attributes, one must first create an attributes
-list, which is a list of length three with the names "graph", "node",
-and "edge" (corresponding to graph attributes, node attributes and
-edge attributes respectively).  Each one of these list elements is
-itself a list of the appropriate attributes.  For instance, to define
-the "dir" attribute to be "both" as mentioned above:
+Attributes can be set both globally (for the entire graph, for all
+edges, all nodes, etc) as well as on a per-node and per-edge basis.
+Global attributes are set via a list and passed in as the
+\Robject{attrs} argument to \Rfunction{plot}.  A default set of global
+attributes are used if nothing else is provided, using the function
+\Rfunction{getDefaultAttrs} - users are encouraged to work off of the
+return of this function instead of creating their own from scratch as
+then attributes which they don't want to change from the defaults will
+still be kept intact.  The \Rfunction{getDefaultAttrs} function takes
+as a parameter the layout type to be used (dot, neato or twopi) but
+defaults to dot.  The \Robject{attrs} list is a four element list
+with element names of 'graph', 'cluster', 'edge' and 'node'.  Within
+each element is another list, where the names correspond to attributes
+and the values correspond to the value to use globally on that
+attribute.  An example of this structure can be seen with the default
+list provided by \Rfunction{getDefaultAttrs}:
 
-<<createAttrs>>=
-attrs <- vector(length=3, mode="list")
-names(attrs) <- c("graph", "node", "edge")
-attrs$edge$dir <- "both"
-attrs
+<<defAttrs>>=
+z <- getDefaultAttrs()
+z
 @
 
+Users can also set attributes per-node and per-edge.  In this case, if
+an attribute is defined for a particular node then that node uses the
+specified attribute and the rest of the nodes use the global default.
+Note that any attribute that is set on a per-node or per-edge basis
+\texttt{must} have a default set globally, due to the way that
+Graphviz sets attributes.  Both the per-node and per-edge attributes
+are set in the same basic manner - the attributes are set using a list
+where the names of the elements are the attributes, and each element
+contains a named vector.  The names of this vector correspond to
+either node names or edge names, and the values of the vector are the
+values to set the attribute to for that node or edge.  The one place
+to take care about is with the edge names in that the name of an edge
+is x~y where x is the 'from' node and y is the 'to' node.  Note that
+even with an undirected graph that x~y is not the same thing as y~x as
+it depends on how the edge was explicitly defined.  These lists are
+then passed in to \Rfunction{plot} as the arguments \Robject{nodeAttrs}
+and \Robject{edgeAttrs}.  The following sections will demonstrate how to
+set per-node and per-edge attributes for commonly desired tasks.  For
+these we will construct two lists, \Robject{nAttrs} and \Robject{eAttrs}
+to pass in to \Rfunction{plot}.
 
+<<baseLists>>=
+nAttrs <- list()
+eAttrs <- list()
+@
+
+\section{Labels}
+
+By default, nodes use the node name as their label and edges do not
+have a label.  However, both can have custom labels supplied via
+attributes.  
+
+<<labels, fig=TRUE>>=
+nAttrs$label <- c("lab1", "lab2", "lab3")
+names(nAttrs$label) <- c("a", "b", "g")
+
+eAttrs$label <- c("test", "test2")
+names(eAttrs$label) <- c("a~h", "h~c")
+
+plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
+@
+
+\section{Adding Some Color}
+
+There are many areas where color can be specified to the plotted
+graph.  Edges can be drawn in a non-default color, as can nodes.
+Nodes can also have a specific \Robject{fillcolor} defined, detailing
+what color the interior of the node should be.  The color used for the
+labels can also be specified with the \Robject{fontcolor} attribute.  
+
+<<colors, fig=TRUE>>=
+## Specify node drawing color
+nAttrs$color <- c("red", "red", "green", "blue")
+names(nAttrs$color) <- c("a", "b", "g", "d")
+
+## Specify edge drawing color
+eAttrs$color <- c("blue", "purple")
+names(eAttrs$color) <- c("a~d", "h~c")
+
+## Specify node fill color
+nAttrs$fillcolor <- "yellow"
+names(nAttrs$fillcolor) <- "j"
+
+## label color
+nAttrs$fontcolor <- c("green", "red")
+names(nAttrs$fontcolor) <- c("e", "f")
+
+eAttrs$fontcolor <- c("green", "brown")
+names(eAttrs$fontcolor) <- c("a~h", "h~c")
+
+plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
+@
 
 \section{Example Graphs}
 
@@ -268,7 +260,9 @@ a <- plot(z,nodeCols=c("orange","yellow"))
 a <- plot(z,"neato",nodeCols=c("lightblue","yellow","lightgreen","orange"))
 @
 
-OS process map, using "twopi" layout ...
+OS process map, using "twopi" layout and setting the \Robject{root}
+attribute to change the center node of the "twopi" layout:
+<<OSneato, fig=TRUE>>=
 z <- new("graphNEL",
 nodes=c("run","intr","runbl","kernel","zombie","sleep","runmem","swap","runswap","new"),
 edgeL=list("run"=list(edges=c(2,3,4)),"intr"=list(edges=c(1,3)),
@@ -277,7 +271,10 @@ edgeL=list("run"=list(edges=c(2,3,4)),"intr"=list(edges=c(1,3)),
 "sleep"=list(edges=c(4,7,8)), "runmem"=list(edges=c(4,6,9,10)),
 "swap"=list(edges=c(6,9)),
 "runswap"=list(edges=c(7,8,10)), "new"=list(edges=c(7,9))))
-a <- plot(z, "twopi")
+
+curAttrs <- getDefaultAttrs("twopi")
+curAttrs$graph$root <- "runmem"
+a <- plot(z, "twopi", attrs=curAttrs)
 @
 
 \end{document}
