@@ -122,7 +122,8 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
 
 
                       ## Plot the edges
-                      q <- lapply(AgEdge(g), function(x, edgeCols, defEdgeCol) {
+                      q <- lapply(AgEdge(g), function(x, edgeCols,
+                                                      defEdgeCol, rad) {
                           ## See if there's a specified edgeCol for this
                           if (!is(x,"AgEdge"))
                               stop(paste("Class:",class("AgEdge")))
@@ -131,8 +132,8 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                           col <- as.character(edgeCols[[tail]][[head]])
                           if (length(col)==0)
                               col <- defEdgeCol
-                          lines(x, col=col)
-                      }, edgeCols, defEdgeCol)
+                          lines(x, col=col, len=(rad * 0.25))
+                      }, edgeCols, defEdgeCol, rad)
 
                       text(nodeX,nodeY, nodeLabels, col=tC)
                   }
