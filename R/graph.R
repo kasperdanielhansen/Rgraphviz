@@ -159,7 +159,7 @@ drawAgNode <- function(node, ur) {
 }
 
 drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
-    if (!is.null(txtLabel)) {
+    if ((!is.null(txtLabel))&&(length(labelText(txtLabel)) > 0)) {
         loc <- labelLoc(txtLabel)
         if (missing(xLoc)) {
             justMod <- switch(labelJust(txtLabel),
