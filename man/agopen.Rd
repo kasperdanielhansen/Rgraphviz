@@ -8,7 +8,9 @@
 }
 \usage{
 agopen(graph, name, kind = NULL, layout = TRUE,
-       layoutType=c("dot","neato","twopi")[1], attrs=getDefaultAttrs(layoutType),
+       layoutType=c("dot","neato","twopi")[1],
+       attrs=getDefaultAttrs(layoutType),
+       nodeAttrs=list(), edgeAttrs=list(),
        subGList)
 }
 \arguments{
@@ -18,6 +20,8 @@ agopen(graph, name, kind = NULL, layout = TRUE,
   \item{layout}{Whether to layout the graph or not}
   \item{layoutType}{Defines the layout engine.  Defaults to dot}
   \item{attrs}{A list of graphviz attributes}
+  \item{nodeAttrs}{A list of specific node attributes}
+  \item{edgeAttrs}{A list of specific edge attributes}
   \item{subGList}{A list describing subgraphs for the graph parameter}
 }
 \details{
@@ -38,16 +42,13 @@ agopen(graph, name, kind = NULL, layout = TRUE,
   routines are used to compute the layout locations for the graph.
   Otherwise the graph is returned without layout information.
 
-  The \code{attrs} argument takes a list, with three sublists -
-  \code{graph}, \code{node}, and \code{edge}.  Each of these sublists
-  will correspond to graph-wide, node-wide or edge-wide attributes
-  to be set, with the name of the element corresponding to the attribute
-  name and the value of the element being the value.
-
   If the \code{subGList} parameter is used, every element in that list
   must be a \code{graph} that is a proper subset of the actual
   \code{graph} parameter.  These subgraphs are then noted to the
   underlying Graphviz software to be plotted as a cluster.
+
+  For a description of \code{attrs}, \code{nodeAttrs} and
+  \code{edgeAttrs}, see the \code{\link{Ragraph}} man page.
 }
 \value{
   An object of class \code{Ragraph}
