@@ -58,7 +58,7 @@ isConnected(g1)
 @
 
 A working "twopi" layout can be seen with this graph:
-<<workingTwopi>>=
+<<workingTwopi, fig=TRUE>>=
 set.seed(123)
 V <- letters[14:22]
 g2 <- randomEGraph(V, .2)
@@ -68,8 +68,10 @@ z <- plot(g2,"twopi")
 
 And finally, to demonstrate how the differing layout methods work on
 this second graph:
-<<g2Examples>>=
+<<g2dot, fig=TRUE>>=
 z <- plot(g2,"dot")
+@
+<<g2neato, fig=TRUE>>=
 z <- plot(g2,"neato")
 @
 \end{document}
