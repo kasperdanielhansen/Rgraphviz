@@ -158,15 +158,25 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
                           edgeAttrs=list(), subGList=list()) {
     recipEdges <- match.arg(recipEdges)
 
-    buildPEList <- function(x,y, edgemode) {
+    buildPEList <- function(x, y, weights, edgemode) {
+        ## FIXME: Can this assumption be safely made?
+        wtNames <- nodes(graph)[names(weights)]
+        weights <- as.character(weights)
+        names(weights) <- wtNames
+
+        ## FIXME: Make these mapply and feed in the weights
         if (edgemode == "directed")
-            lapply(y, function(z) {new("pEdge", from=as.character(x),
+            mapply(function(z, w) {new("pEdge", from=as.character(x),
                                        to=as.character(z),
-                                       attrs=list(arrowhead="open"))})
+                                       attrs=list(arrowhead="open",
+                                       weight=w))},
+                   y, weights)
         else
-           lapply(y, function(z) {new("pEdge", from=as.character(x),
+           mapply(function(z, w) {new("pEdge", from=as.character(x),
                                       to=as.character(z),
-                                      attrs=list(arrowhead="none"))})
+                                      attrs=list(arrowhead="none",
+                                      weight=w))},
+                  y, weights)
     }
 
     buildSubGEdgeNames <- function(subG) {
@@ -184,7 +194,8 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 
     from <- names(to)
 
-    pEdges <- mapply(buildPEList, from, to, MoreArgs=list(edgemode=edgemode))
+    pEdges <- mapply(buildPEList, from, to, edgeWeights(graph),
+                     MoreArgs=list(edgemode=edgemode))
 
     ## FIXME: Sometimes the Mapply has a list of lists,
     ## and sometimes just a list of length unlist(edges(graph))
