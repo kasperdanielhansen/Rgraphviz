@@ -1,6 +1,8 @@
 \name{buildNodeList}
 \alias{buildNodeList}
 \alias{buildEdgeList}
+\alias{assignAttrs}
+\alias{assignSubGs}
 \title{A function to build lists of node and edge objects}
 \description{
   These functions can be used to generate lists of \code{pNode} and

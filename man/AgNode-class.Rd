@@ -9,7 +9,7 @@
 \alias{getNodeRW}
 \alias{getNodeLW}
 \alias{getNodeCenter}
-\alias{convertRadius}
+\alias{getRadiusDiv}
 \alias{getNodeHeight}
 \alias{style}
 \alias{style,AgNode-method}

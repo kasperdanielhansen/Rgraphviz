@@ -60,14 +60,18 @@
   custom function to be used for all nodes or a list (where length is
   equal to the nubmer of nodes) of functions where the Nth element in
   the list provides the drawing function for the Nth node, and every
-  function will take two parameters - the first is an object of class
+  function will take four parameters - the first is an object of class
   \code{AgNode} representing the node itself and the second is an object
   of class \code{\link{xyPoint}} representing the upper right corner of
   the Graphviz plotting region (where the lower left is \code{0,0}).
-  The second parameter will not be necessary for most users, but can be
-  useful if it is necessary to map the Graphviz points to inch values
-  (see \code{\link{drawCircleNode}} for an example of a function that
-  needs this.)
+  The third parameter, \code{attrs} is a node attribute list and
+  represents post-layout attribute changes where the user wants to
+  override values present in the layout.  The last argument,
+  \code{radConv} is a divisor to the radius and is used to convert from
+  \code{Graphviz} units to \R plotting units.  Outside of the first
+  argument, the rest of these (particularly \code{radConv} which
+  generally shouldn't be specifically set) do not need to be set by the
+  user, but any drawing function must have them as parameters.
   
   The \code{attrs} list requires a particular format.  It must be of
   length 3 with names \code{graph}, \code{node}, and \code{edge}.  Each
