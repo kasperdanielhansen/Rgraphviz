@@ -73,6 +73,7 @@
         print(paste("A graph with",length(nodes(object)),
                   "nodes."))
     }, where=where)
+
 }
 
 .initBoundingBox <- function(where) {

@@ -1,4 +1,6 @@
-agopen <- function(graph, name, kind="AGRAPH", layout=TRUE) {
+agopen <- function(graph, name, kind="AGRAPH", layout=TRUE,
+                   layoutType=c("dot","neato","twopi")[1],
+                   attrs=NULL) {
     outK <- switch(kind,
                    "AGRAPH"=0,
                    "AGDIGRAPH"=1,
@@ -15,37 +17,47 @@ agopen <- function(graph, name, kind="AGRAPH", layout=TRUE) {
                as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
                as.integer(edgeMtrx[,3]))
 
+    if (is.list(attrs))
+        g <- agset(g, attrs)
+
     if (layout)
-        return(layoutGraph(g))
+        return(layoutGraph(g,layoutType))
     else
         return(g)
 }
 
-layoutGraph <- function(graph) {
+agset <- function(graph, attrs) {
+    if (!is.list(attrs))
+        stop("Malformed attrs argument, must be a list")
+    if (is(graph,"graphNEL"))
+        stop("Please use function agopen() for graphNEL objects")
+    if (laidout(graph) == TRUE)
+        stop("Graph is already laid out")
+    if (!is(graph,"Ragraph"))
+        stop("Object is not of class Ragraph")
+
+    g <- .Call("Rgraphviz_agset", as.list(attrs))
+    return(g)
+}
+
+layoutGraph <- function(graph, layoutType=c("dot","neato","twopi")[1]) {
     if (inherits(graph,"graphNEL"))
         stop("Please use function agopen() for graphNEL objects")
     if (!inherits(graph,"Ragraph"))
         stop("Object is not of class Ragraph")
 
+    type <- switch(layoutType,
+                   "dot"=0,
+                   "neato"=1,
+                   "twopi"=2,
+                   stop(paste("Invalid layout type:",layoutType))
+                   )
+
     if (laidout(graph) == FALSE) {
-        z <- .Call("Rgraphviz_doDotLayout", graph);
+        z <- .Call("Rgraphviz_doLayout", graph, as.integer(type));
         return(z)
     }
     else {
         return(graph)
     }
-}
-
-libgraph2ps <- function(graph, fileName="graph.ps") {
-    if (laidout(graph) == FALSE)
-        graph <- layoutGraph(graph)
-    x <- .Call("Rgraphviz_graph2ps",graph,as.character(fileName))
-}
-
-graph2ps <- function(graph, name, kind=0, fileName="graph.ps") {
-    g <- switch(class(graph),
-                "graphNEL"=agopen(graph, name, kind, layout=TRUE),
-                "Ragraph"=graph
-                )
-    libgraph2ps(g,fileName)
 }

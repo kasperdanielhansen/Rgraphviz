@@ -38,43 +38,16 @@ It is quite simple to generate a R plot window to display your graph.
 Once you have your graph object, simply use the \Rfunction{plot}
 method:
 
-<<plot graph, fig=TRUE>>=
-plot(g1)
+<<plotDot, fig=TRUE>>=
+z <- plot(g1)
 @
 
-\section{Generating Postscript}
+The \Rpackage{Rgraphviz} package allows you to specify varying layout
+engines, such as "dot" (the default), "neato", and "twopi".  This can
+be done using the call to plot:
 
-Your graph can also be written out to a postscript file using
-the \Rfunction{graph2ps} function.  \Rfunction{graph2ps} has the following
-set of arguments:
-
-\begin{verbatim}
-graph2ps(graph,name,kind=0,fileName="graph.ps")
-
-graph:    A graph object.
-name:     The name of the graph.
-kind:     The type of graph (see below)
-filename: The name of the file to output to.
-\end{verbatim}
-
-The {\tt kind} parameter is an integer value with the following
-meanings:
-	0: An undirected graph
-	1: A directed graph
-	2: A strict undirected graph
-	3: A strict directed graph.
-Note that strict graphs do not allow self arcs or multi-edges.
-
-Once you have decided what style (directed/undirected/etc) you wish
-your graph to be rendered as, you can now create the postscript file.
-Note that here we are using a temporary file to output to.
- 
-<<render>>=
-outFile <- tempfile()
-graph2ps(g1,"A Random Graph",kind=0,file=outFile)
+<<plotNeato, fig=TRUE>>=
+z <- plot(g1, "neato")
 @
-
-From here, the output file that you choose can be displayed or printed
-using your preferred methods.
 
 \end{document}
