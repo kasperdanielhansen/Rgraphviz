@@ -20,6 +20,7 @@
 \alias{getNodeHeight,Ragraph-method}
 \alias{getNodeXY,Ragraph-method}
 \alias{getNodeXY}
+\alias{getNodeLocs}
 \alias{getNodeNames}
 \alias{getNodeLabels}
 \title{Class "Ragraph": A class to handle libgraph representations}
