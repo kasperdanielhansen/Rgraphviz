@@ -205,6 +205,8 @@ setClass("AgEdge", representation(splines="list",
                                   arrowtail="character",
                                   arrowsize="character",
                                   color="character",
+                                  lty="numeric",
+                                  lwd="numeric",
                                   txtLabel="AgTextLabel"))
 
 if (is.null(getGeneric("color")))
@@ -397,6 +399,11 @@ setMethod("lines", "AgEdge",
     arrowtails <- c(arrowtail(x), rep("none", length(z)-1))
     arrowheads <- c(rep("none", length(z)-1), arrowhead(x))
 
+    if(length(x@lty)>0)
+      lty=x@lty[1]
+    if(length(x@lwd)>0)
+      lwd=x@lwd[1]
+    
     len <- len * as.numeric(arrowsize(x))
     mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
            MoreArgs=list(len=len, col=color(x),
@@ -447,17 +454,42 @@ if (is.null(getGeneric("boundBox")))
 setMethod("boundBox", "Ragraph", function(object)
               object@boundBox)
 
-if (is.null(getGeneric("AgEdge")))
-    setGeneric("AgEdge", function(object)
-               standardGeneric("AgEdge"))
+
+##------------------------------------------------------------
+## accessor and replacement methods for AgEdge slot
+##------------------------------------------------------------
+if(!isGeneric("AgEdge"))
+  setGeneric("AgEdge", function(object)
+             standardGeneric("AgEdge"))
 setMethod("AgEdge", "Ragraph", function(object)
           object@AgEdge)
 
-if (is.null(getGeneric("AgNode")))
-    setGeneric("AgNode", function(object)
-               standardGeneric("AgNode"))
+if(!isGeneric("AgEdge<-"))
+  setGeneric("AgEdge<-", function(object, value)
+             standardGeneric("AgEdge<-"))
+setReplaceMethod("AgEdge", "Ragraph",
+                 function(object, value) {
+                   object@AgEdge = value
+                   return(object)
+                 })
+
+##------------------------------------------------------------
+## accessor and replacement methods for AgNode slot
+##------------------------------------------------------------
+if(!isGeneric("AgNode"))
+  setGeneric("AgNode", function(object)
+             standardGeneric("AgNode"))
 setMethod("AgNode", "Ragraph", function(object)
           object@AgNode)
+
+if(!isGeneric("AgNode<-"))
+  setGeneric("AgNode<-", function(object, value)
+             standardGeneric("AgNode<-"))
+setReplaceMethod("AgNode", "Ragraph",
+                 function(object, value) {
+                   object@AgNode = value
+                   return(object)
+                 })
 
 
 setMethod("getNodeXY", "Ragraph",  function(object) {
