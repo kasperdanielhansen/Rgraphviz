@@ -75,7 +75,7 @@ getNodeNames <- function(object) {
 getNodeLabels <- function(object) {
     if (!is(object, "Ragraph"))
         stop("Need a Ragraph object")
-    unlist(lapply(object@AgNode, label))
+    unlist(lapply(object@AgNode, function(x) labelText(x@txtLabel)))
 }
 
 ### Class boundingBox
@@ -150,6 +150,10 @@ if (is.null(getGeneric("getNodeHeight")))
                standardGeneric("getNodeHeight"))
 setMethod("getNodeHeight", "AgNode", function(object)
           object@height)
+setMethod("getNodeHeight", "Ragraph", function(object) {
+      nodes = object@AgNode
+      sapply(nodes, getNodeHeight)
+   })
 
 if (is.null(getGeneric("getNodeRW")))
     setGeneric("getNodeRW", function(object)
@@ -157,17 +161,29 @@ if (is.null(getGeneric("getNodeRW")))
 setMethod("getNodeRW", "AgNode", function(object)
           object@rWidth)
 
+setMethod("getNodeRW", "Ragraph", function(object) {
+      nodes = object@AgNode
+      sapply(nodes, getNodeRW)
+   })
+
 if (is.null(getGeneric("getNodeLW")))
     setGeneric("getNodeLW", function(object)
                standardGeneric("getNodeLW"))
 setMethod("getNodeLW", "AgNode", function(object)
           object@lWidth)
 
+setMethod("getNodeLW", "Ragraph", function(object) {
+      nodes = object@AgNode
+      sapply(nodes, getNodeLW)
+   })
+
+
 if (is.null(getGeneric("name")))
     setGeneric("name", function(object)
                standardGeneric("name"))
 setMethod("name", "AgNode", function(object)
           object@name)
+
 if (is.null(getGeneric("txtLabel")))
     setGeneric("txtLabel", function(object)
                standardGeneric("txtLabel"))
