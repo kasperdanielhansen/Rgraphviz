@@ -31,7 +31,9 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                        defNodeCol=par("bg"), nodeCols=character(),
                        defTextCol=par("fg"), textCols=character(),
                        defEdgeCol=par("col"),edgeCols=list(),
-                       fixedNodeSize=TRUE, subGList, attrs){
+                       fixedNodeSize=TRUE, subGList, attrs, xlab,
+                       ylab){
+
                   if (!validGraph(x))
                   stop("The graph to be plotted is not a valid graph structure")
 
@@ -68,6 +70,12 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                                      "'node', and 'edge'"))
                   }
 
+                  ## Need to call plot.new before getting the default
+                  ## size attribute as it uses par("pin") and must be
+                  ## on the proper plotting frame if the user is using
+                  ## layout.
+                  plot.new()
+
                   ## Need to set some Rgraphviz induced defaults,
                   ## as there might be some situations where we want
                   ## different defaults then graphviz
@@ -75,7 +83,17 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                   if (is.null(attrs$node$shape))
                       attrs$node$shape <- "circle"
 
-                  ## Sanity check attr values
+                  ## If the user hasn't explicitly defined a 'size'
+                  ## attribute, set it to match the size of the plotting
+                  ## region.  Also, set the ratio such that graphviz
+                  ## will compress the plot into the plotting region.
+                  if (is.null(attrs$graph$size))
+                      attrs$graph$size <- paste(par("pin"),collapse=", ")
+                  if (is.null(attrs$graph$ratio))
+                      attrs$graph$ratio <- "compress"
+
+                  ## Sanity check attr values.  This is going to C
+                  ## very soon (and currently isn't all that good anyways)
                   checkAttrs(attrs,nodeLabels)
 
                   ## Setup the node and text color vectors
@@ -104,6 +122,7 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                       ## Get the radii of the nodes.  For now we're just
                       ## implementing circles and ellipses
                       rad <- unlist(lapply(nodes(g), getNodeRW))
+                      print(rad)
                       RWidths <- rad
                       heights <- unlist(lapply(nodes(g), getNodeHeight))
 
@@ -112,13 +131,25 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                       ur <- upRight(boundBox(g))
 
                       ## Set up the plot region, plot the edges, then
-                      ## nodes and finally the node labels
-                      opar <- par(pty="s", oma=c(0,0,0,0),
-                                  mai=c(0,0,0,0))
-                      on.exit(par=opar, add=TRUE)
-                      plot(NA,NA,xlim=c(0,getX(ur)), ylim=c(0,getY(ur)),
-                           type="n",main=NULL,xlab="",ylab="",xaxt="n",
-                           yaxt="n",bty="n",...)
+                      ## nodes and finally the node labels.  We need
+                      ## to emulate what happens in 'plot.default' as
+                      ## we called plot.new() above, and for the same
+                      ## reasons as doing that, calling 'plot' now
+                      ## will mung up the thing if people are using
+                      ## 'layout' with this.
+                      if (missing(xlab))
+                          xlab <- ""
+                      if (missing(ylab))
+                          ylab <- ""
+
+                      ## !! Currently hardcoding log & asp,
+                      ## !! probably want to change that over time.
+                      plot.window(xlim=c(0,getX(ur)),
+                                  ylim=c(0,getY(ur)),
+                                  log="",asp=NA,...)
+                      xy <- xy.coords(NA, NA, xlab, ylab, "")
+                      ## !! Also still hardcoding 'type'
+                      plot.xy(xy, type="n", ...)
 
                       rad <- switch(attrs$node$shape,
                                     circle=drawCircleNodes(nodeX, nodeY, ur,

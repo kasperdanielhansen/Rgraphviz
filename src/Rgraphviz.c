@@ -79,8 +79,6 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     Rboolean laidout;
     SEXP slotTmp, elmt, attrNames;
 
-    /* !!!! Need to check the neames on attrs */
-
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == TRUE)
 	error("graph is already laid out");
@@ -105,7 +103,16 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     }
     UNPROTECT(2);
 
-     SET_SLOT(graph, Rf_install("agraph"), slotTmp);
+    /* Lastly do edge-wide */
+    PROTECT(elmt = getListElement(attrs, "edge"));
+    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
+    for (i = 0; i < length(elmt); i++) {
+	agedgeattr(g, CHAR(STRING_ELT(attrNames,i)),
+		   STR(VECTOR_ELT(elmt,i)));
+    }
+    UNPROTECT(2);
+
+    SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 
     UNPROTECT(1);
     return(graph);
@@ -171,8 +178,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     g = agopen(STR(name), ag_k);
 
     /* Allocate space in the subgraph array */
-    sgs = (Agraph_t *)malloc(length(subGs) * sizeof(Agraph_t *));
-
+    sgs = (Agraph_t **)malloc(length(subGs) * sizeof(Agraph_t *));
 
     if (length(subGs) > 0) {
 	/* Create any subgraphs, if necessary */
@@ -476,9 +482,11 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
 
     /*** NODE ATTRS ***/
     agnodeattr(g,"label",NODENAME_ESC);
-/*
+/*    agnodeattr(g, "height", "0.25");
+     agnodeattr(g, "width", "6");
      agnodeattr(g, "fixedsize", "true");
 */
+
     /*** EDGE ATTRS ***/
     /* Arrow direction */
     if (AG_IS_DIRECTED(g)) 
