@@ -1,6 +1,6 @@
 #include "common.h"
 
-SEXP R_scalarReal(float v) {
+SEXP R_scalarReal(double v) {
     SEXP ans = allocVector(REALSXP,1);
     REAL(ans)[0] = v;
     return(ans);
