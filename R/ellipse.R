@@ -3,7 +3,8 @@
 # begin ellipse
 ellipse <- function(x,y,
                     width,height=width,theta=2*pi,
-                    npoints=100,plot=TRUE) {
+                    npoints=100,plot=TRUE, fg=par("fg"),
+                    bg=par("bg")) {
   # x = x coordinate of center
   # y = y coordinate of center
   # width = length of major axis
@@ -12,6 +13,7 @@ ellipse <- function(x,y,
   # npoints = number of points to send to polygon
   # plot = if TRUE, add to current device
   # = if FALSE, return list of components
+  # bg - color to fill the ellipse with
   a <- width/2
   b <- height/2
   xcoord <- seq(-a,a,length=npoints)
@@ -22,10 +24,10 @@ ellipse <- function(x,y,
   x.theta <- xx*cos(2*pi-theta)+yy*sin(2*pi-theta)+x
   y.theta <- yy*cos(2*pi-theta)-xx*sin(2*pi-theta)+y
   if(plot)
-    invisible(polygon(x.theta,y.theta,density=0))
+    invisible(polygon(x.theta,y.theta, density=NA, border=fg, col=bg))
   else
     invisible(list(coords=data.frame(x=x.theta,y=y.theta),
                    center=c(x,y),
                    theta=theta))
 }
-# end ellipse 
+# end ellipse
