@@ -29,6 +29,9 @@
                        defTextCol=par("fg"), textCols=character(),
                        defEdgeCol=par("col"),edgeCols=list(),
                        rankDir, fixedSize=TRUE){
+                  if (!validGraph(x))
+                      stop("The graph to be plotted is not a valid graph structure")
+
                   if (missing(y))
                       y <- "dot"
 
@@ -40,7 +43,7 @@
                                    "AGRAPH")
                   nodes <- nodes(x)
                   edges <- edges(x)
-                  if(missing(nodeLabels) )
+                  if(missing(nodeLabels))
                       nodeLabels <- nodes
                   else
                       if (length(nodeLabels) != length(nodes))
@@ -55,7 +58,7 @@
                   ## First make sure that center exists in
                   ## nodeLabels
                   if (!missing(centerNode))
-                      attrs$graph$center <- checkCenterNode(centerNode)
+                      attrs$graph$center <- checkCenterNode(centerNode, nodeLabels)
 
                   ## Check node shapes
                   if (missing(nodeShape))
@@ -100,9 +103,8 @@
 
                       ## Set up the plot region, plot the edges, then
                       ## nodes and finally the node labels
-                      mfrow <- par("mfrow")
                       opar <- par(pty="s", oma=c(0,0,0,0),
-                                  mai=c(0,0,0,0), mfrow=mfrow)
+                                  mai=c(0,0,0,0))
                       on.exit(par=opar, add=TRUE)
                       plot(NA,NA,xlim=c(0,getX(ur)), ylim=c(0,getY(ur)),
                            type="n",main=NULL,xlab="",ylab="",xaxt="n",
@@ -119,10 +121,12 @@
                       ## Plot the edges
                       q <- lapply(AgEdge(g), function(x, edgeCols, defEdgeCol) {
                           ## See if there's a specified edgeCol for this
+                          if (!is(x,"AgEdge"))
+                              stop(paste("Class:",class("AgEdge")))
                           tail <- tail(x)
                           head <- head(x)
                           col <- as.character(edgeCols[[tail]][[head]])
-                          if (is.null(col))
+                          if (length(col)==0)
                               col <- defEdgeCol
                           lines(x, col=col)
                       }, edgeCols, defEdgeCol)
@@ -132,6 +136,7 @@
                   else {
                       stop("No nodes in graph")
                   }
+
                   invisible(list(nodeLocs=nodeLocs, edges=AgEdge(g),
                               nodeLabels=nodeLabels))
               }, where=where)
@@ -175,7 +180,7 @@ checkNodeShape <- function(nodeShape) {
                    paste(validShapes, collapse=", ")))
 }
 
-checkCenterNode <- function(centerNode) {
+checkCenterNode <- function(centerNode, nodeLabels) {
     if ((centerNode %in% nodeLabels)&&
         (length(centerNode) == 1)){
         return(centerNode)
