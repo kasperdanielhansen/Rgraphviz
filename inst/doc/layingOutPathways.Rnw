@@ -1,0 +1,197 @@
+%
+% NOTE -- ONLY EDIT Rgraphviz.Rnw!!!
+% Biobase.tex file will get overwritten.
+%
+%\VignetteIndexEntry{HOWTO layout pathways}
+%\VignetteDepends{Rgraphviz, graph}
+%\VignetteKeywords{tools, graphs}
+%\VignettePackage{Rgraphviz}
+ 
+\documentclass{article}
+\usepackage{hyperref}
+\usepackage{graphicx}
+ 
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Robject}[1]{{\textit{#1}}}
+ 
+\author{Jeff Gentry}
+\begin{document}
+\title{HowTo layout a pathway}
+\maketitle
+
+\section{Overview}
+
+This article will demonstrate how you can use \Rpackage{Rgraphviz} to
+layout and render pathways, such as the ones available at KEGG
+(\url{http://www.genome.ad.jp/kegg/pathway/}).  For demonstration
+purposes, we will be working with the \Robject{hsa041510} pathway from
+KEGG (\url{http://www.genome.ad.jp/kegg/pathway/hsa/hsa04510.html}),
+which is available as a \Robject{graph} object from the 
+\Rpackage{graph} package as the \Robject{integrinMediatedCellAdhesion}
+dataset.  This dataset contains the graph as well as a list of
+attributes that can be used for plotting.  The pathway graph as
+rendered by KEGG is seen here:
+
+\includegraphics[width=120mm]{hsa04510.png}
+
+\section{Obtaining the initial graph}
+
+At this time, there is no automated way to extract the appropriate
+information from KEGG (or other sites) and construct a graph.  If one
+wishes to layout their own pathways, it requires manual construction
+of a graph, creating each node and then recording the edges.
+Likewise, for any basic attributes (such as the green/white coloration
+in the hsa041510 graph), they too must be collected by hand.  For
+instance, this would be a good time to take advantage of edge weights
+by putting in desired values (which can be changed later, if
+necessary) while constructing the edges of the graph.  We have
+manipulated some of the weights, such as the weight between the p85
+and p110 nodes, as they are intended to be directly next to each
+other.  Once
+constructed, the graph can be saved with the \Rfunction{save} command
+and stored for later use (which has been done already as part of the
+\Robject{integrinMediatedCellAdhesion} dataset).
+
+<<setup>>=
+library("Rgraphviz")
+data("integrinMediatedCellAdhesion")
+IMCAGraph
+@
+
+\section{Laying out the graph}
+
+Laying out a pathway graph is much like dealing with any other graph,
+except that typically we want to as closely emulate the officially
+laid out graph (or at least make it look like an actual pathway - the
+Graphviz layout methods were not designed with this task in mind).  A
+lot of experimenation comes into play, in order to find the right
+combination of attributes, although there are some general tips that
+can help out.  The first thing to know is that we will almost always
+want to use the \Robject{dot} layout, as that will provide the closest
+base to work off.  Likewise, the \Robject{rankdir} attribute should be
+set to \Robject{LR}, to give us the left to right look of the graph.
+To see our starting point, here is the \Robject{IMCAGraph} with just
+those settings. 
+
+<<initial, fig=TRUE>>=
+plot(IMCAGraph, attrs=list(graph=list(rankdir="LR")))
+@
+
+Note that \Robject{IMCAAttrs\$defAttrs} is simply just the
+\Robject{rankdir} attribute for \Robject{graph}, so we will be using
+that in place of the \Rfunction{list} call from now on.
+
+This plot is not terrible, in that it conveys the proper information,
+but the formatting is quite different from the layout at KEGG, and can
+be difficult to get a coherent idea of what is going on.  Furthermore,
+smaller things like the coloration of the nodes and the shape of the
+phosphatidylinositol signaling system are not being represented here.
+
+Here is where using other attributes can start to have a positive
+effect.  We can set the colors of each node (another piece that is
+necessary to enter in manually) and change the shape of the
+phosphyatidylinositol signaling system node to be an ellipse.  We have
+done this for this graph in the \Robject{IMCAAttrs\$nodeAttrs} data:
+
+<<nodeAttrs>>=
+IMCAAttrs$nodeAttrs$shape
+IMCAAttrs$nodeAttrs$width
+IMCAAttrs$nodeAttrs$height
+IMCAAttrs$nodeAttrs$fillcolor[1:10]
+@
+
+Using these attributes to plot the graph will get us a bit closer to
+our goal:
+
+<<plotWNodeAttrs, fig=TRUE>>=
+plot(IMCAGraph, attrs=IMCAAttrs$defAttrs,
+     nodeAttrs=IMCAAttrs$nodeAttrs)
+@
+
+Here the color scheme is now the same as on KEGG, and using an ellipse
+helps with the rendering of the phosphatidylinositol signaling system
+node.  However, we're still left with the issue that the layout itself
+doesn't convey the same meaning as the original.  The output nodes are
+scattered about, there's not a clear sense of where the membrane nodes
+are, and many nodes that are intended to be close to each other simply
+are not.  This is where the use of subgraphs and clusters can help.
+In Graphviz, a subgraph is an organizational method to note that a set
+of nodes and edges belong in the same conceptual space, sharing
+attributes and the like.  While there is some tendency to have nodes
+be laid out near each other in a subgraph, there is no guarantee of
+this, and the results can be highly dependent on the layout method
+(\Robject{dot}, \Robject{neato}, etc).  A Graphviz cluster is a
+subgraph which is laid out as a separate graph and then introduced
+into the main graph.  This provides a much stronger guarantee of
+having the nodes clustered together visually.  For a description of
+how to specify subgraphs in \Rpackage{Rgraphviz}, please see the
+vignette \texttt{HowTo Render A Graph Using Rgraphviz}.  
+
+So here we will define four subgraphs: One will be the membrane nodes,
+one will be the output nodes, one will be the F-actin block and the
+last will be everything else.  It would be possible to specify more
+subgraphs to try to help keep things more blocked together like the
+original graph, but for the purposes of this document, these are what
+will be used.
+
+<<subgraphs>>=
+nodes <- nodes(IMCAGraph)
+
+sg1 <- subGraph(nodes[c(2,1,3,4)], IMCAGraph)
+sg2 <- subGraph(c(nodes[5:14], nodes[19:48], nodes[52]), IMCAGraph)
+sg3 <- subGraph(nodes[49:51], IMCAGraph)
+sg4 <- subGraph(nodes[15:18], IMCAGraph)
+@
+
+While we have the subgraphs defined, we still have not determined
+whether to use these as subgraphs or clusters in Graphviz.  Ideally,
+we would like to use clusters, as that guarantees that the nodes will
+be laid out close together.  However, it would also be useful to
+utilize the \Robject{rank} attribute for the membrane and output
+nodes, specifically using the values \Robject{source} and
+\Robject{sink} respectively.  That will help to get the verticle line
+up that we see in the KEGG graph and create more of the left to right
+pathway feel.  The problem is that \Robject{rank} only works with
+subgraphs and not clusters.  So for the membrane and output subgraphs,
+we will be defining them as Graphviz subgraphs, and the other two
+subgraphs will be defined as clusters.  We have already prepared all
+of this as \Robject{IMCAAttrs\$subGList}:
+
+<<subGList>>=
+IMCAAttrs$subGList
+@
+
+You can see that subgraphs 1 and 3 have the \Robject{cluster}
+parameter set to \Robject{FALSE} as well as having a \Robject{rank}
+attribute set appropriate.  Subgraphs 2 and 4 simply have the subgraph
+itself, and will be laid out as a cluster without any special
+attributes.  Using this subgraph list, we now get:
+
+<<plotSubgraph, fig=TRUE>>=
+plot(IMCAGraph, attrs=IMCAAttrs$defAttrs,
+     nodeAttrs=IMCAAttrs$nodeAttrs, subGList=IMCAAttrs$subGList)
+@
+
+While this is still not identical to the image on KEGG (and for most
+graphs, it will be impossible given current abilities to do so), this
+layout is now much closer to providing an accurate visual rendition of
+the pathway.  We can see the output nodes are now to the right end of
+the graph, and while not neatly stacked on the left hand side the
+membrane nodes are to the left side of the rest.  We can also see the
+F-actin group in the lower left portion of the graph, representing one
+of the clusters.  
+
+\section{Conclusions}
+
+At this time, laying out a pathway can provide good visual information
+for users, although it isn't yet able to be completely automated nor
+is it a perfect science.  Yet with a bit of work and experimentation,
+one can get a fairly close rendition of what is available on sites
+like KEGG and have the ability to directly manipulate the graphs and
+customize the outputs to demonstrate a variety of effects.  Hopefully
+as time goes on, we will be able to provide more in the way of
+automation in our tools, but even as it exists now, laying out
+pathways can provide a valuable tool for users.
+
+\end{document}
