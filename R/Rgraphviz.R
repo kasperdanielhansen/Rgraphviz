@@ -156,6 +156,9 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList=list()) {
 
 buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
                           edgeAttrs=list(), subGList=list()) {
+    if (numEdges(graph) == 0)
+        return(list())
+
     recipEdges <- match.arg(recipEdges)
 
     buildPEList <- function(x, y, weights, edgemode) {
@@ -251,3 +254,8 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     pEdges
 }
 
+edgeNames <- function(graph) {
+    to <- edges(graph)
+
+    unlist(mapply(function(x,y) { paste(y,x,sep="~")}, to, names(to)))
+}
