@@ -1,0 +1,19 @@
+Installing Rgraphviz:
+
+The Rgraphviz package requires a bit of extra work beyond 
+simply installing the package itself to run properly.  The user
+must first have installed the GraphViz software provided by AT&T
+(which must be at least version 1.9.20030401.0515).  To do this:
+
+- Go to http://www.graphviz.org/pub/graphviz/
+- Download GraphViz (it is recommended to take 'graphviz-current',
+  which will be the latest version).
+- Unpack the distribution
+- In the GraphViz directory, run './configure', 'make' and finally
+  'make install'.  If you have special configuration needs, specify
+  them with the './configure'.
+
+Finally, make sure that you have the 'graph' R package installed.  
+
+Once these things are both installed properly, you can then proceed
+to install Rgraphviz.
