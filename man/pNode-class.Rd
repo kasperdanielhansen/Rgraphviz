@@ -34,8 +34,14 @@ Objects can be created by calls of the form \code{new("pNode", ...)}.
   A value of \code{0} implies that the node is not a member of any subgraph.
 }
 \author{R. Gentleman and Jeff Gentry}
-\seealso{\code{\link{pEdge}}, \code{\link{agopen}}}
+\seealso{\code{\link{pEdge}}, \code{\link{agopen}}, \code{\link{buildNodeList}}}
 \examples{
-##---- Should be DIRECTLY executable !! ----
+   set.seed(123)
+   V <- letters[1:10]
+   M <- 1:4
+   g1 <- randomGraph(V, M, .2)
+
+   z <- buildNodeList(g1)
+   z[[1]]   ## Object of type pNode
 }
 \keyword{classes}

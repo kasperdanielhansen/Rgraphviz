@@ -9,8 +9,8 @@
   for plotting.
 }
 \usage{
-buildNodeList(graph, nodeAttrs = list(), subGList)
-buildEdgeList(graph, edgeAttrs = list(), subGList)
+buildNodeList(graph, nodeAttrs = list(), subGList=list())
+buildEdgeList(graph, edgeAttrs = list(), subGList=list())
 }
 \arguments{
   \item{graph}{An object of class \code{graph}}
@@ -46,8 +46,15 @@ buildEdgeList(graph, edgeAttrs = list(), subGList)
   A list of class \code{pNode} or \code{pEdge} objects.
 }
 \author{Jeff Gentry}
-\seealso{\code{\link{agopen}}, \code{link{plot.graph}}}
+\seealso{\code{\link{agopen}}, \code{link{plot.graph}},
+  \code{\link{pNode}},\code{\link{pEdge}}}
 \examples{
-##---- Should be DIRECTLY executable !! ----
+   set.seed(123)
+   V <- letters[1:10]
+   M <- 1:4
+   g1 <- randomGraph(V, M, .2)
+
+   z <- buildEdgeList(g1)
+   x <- buildNodeList(g1)
 }
 \keyword{utilities}
