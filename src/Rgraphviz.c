@@ -93,57 +93,6 @@ SEXP Rgraphviz_fin(SEXP s) {
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
-    /* Used to set attributes for the graph/nodes/edges */
-    Agraph_t *g;
-    int i;
-    Rboolean laidout;
-    SEXP slotTmp, elmt, attrNames;
-
-    /* If the graph is already laid out, it makes no sense to set
-       attrs */
-    laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
-    if (laidout == TRUE)
-	error("graph is already laid out");
-
-    PROTECT(slotTmp = GET_SLOT(graph, Rf_install("agraph")));
-    CHECK_Rgraphviz_graph(slotTmp);
-    g = R_ExternalPtrAddr(slotTmp);
-    
-    /* Set the graph level attributes */
-    PROTECT(elmt = getListElement(attrs, "graph"));
-    /* Now elmt is a list of attributes to set */
-    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
-    for (i = 0; i < length(elmt); i++) {
-	agraphattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
-    }
-    
-    UNPROTECT(2);
-    /* Now do node-wide */
-    PROTECT(elmt = getListElement(attrs, "node"));
-    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
-    for (i = 0; i < length(elmt); i++) {
-	agnodeattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
-    }
-    UNPROTECT(2);
-
-    /* Lastly do edge-wide */
-    PROTECT(elmt = getListElement(attrs, "edge"));
-    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
-    printf("Num elements: %d\n", length(elmt));
-    for (i = 0; i < length(elmt); i++) {
-	printf("Testing edge: |%s|, |%s|\n",
-	       CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
-	agedgeattr(g, CHAR(STRING_ELT(attrNames,i)),
-		   STR(VECTOR_ELT(elmt,i)));
-    }
-    UNPROTECT(2);
-
-    SET_SLOT(graph, Rf_install("agraph"), slotTmp);
-
-    UNPROTECT(1);
-    return(graph);
-}
 
 SEXP Rgraphviz_agread(SEXP filename) {
     Agraph_t *g;

@@ -39,7 +39,6 @@ SEXP Rgraphviz_fin(SEXP);
 SEXP Rgraphviz_doLayout(SEXP, SEXP);
 SEXP getBoundBox(Agraph_t *);
 SEXP getEdgeLocs(Agraph_t *,int);
-SEXP Rgraphviz_agset(SEXP, SEXP);
 SEXP Rgraphviz_agread(SEXP);
 SEXP Rgraphviz_agwrite(SEXP, SEXP);
 SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP,
