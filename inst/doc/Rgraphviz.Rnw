@@ -243,7 +243,9 @@ The \Rpackage{Rgraphviz} package allows you to specify different
 shapes for your nodes.  Currently, the only shapes allowed are
 \Robject{circle} (the default), \Robject{ellipse} and \Robject{box}.
 As with previous attributes, the shape can be set globally or for
-specific nodes.
+specific nodes.  Here is the same graph from the previous example,
+with the default shape as \Robject{ellipse} and with two nodes
+specified as being \Robject{box} and two as \Robject{circle}:
 
 <<nodeShapes, fig=TRUE>>=
 defAttrs$node$shape <- "ellipse"
