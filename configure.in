@@ -26,23 +26,30 @@ if test "${DOTNEATO_CONFIG}" != "not found"; then
 	MINOR=`echo [${MINOR}] | cut -f2 -d"."`
 
 	if test ${MAJOR} -eq "1"; then
-	   if test ${MINOR} -eq "12"; then
-		GVIZ_DEFS="-DGRAPHVIZ_1_12"
-	   fi
 	   if test ${MINOR} -lt "12"; then
 		AC_MSG_RESULT(failed)
 		AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR)
 	   fi
-	else
-	     AC_MSG_RESULT(failed)
-     	     AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR)	
-	fi
-	if test ${MAJOR} -eq "1"; then
+	   if test ${MINOR} -eq "12"; then
+		GVIZ_DEFS="-DGRAPHVIZ_1_12"
+	   fi
 	   if test ${MINOR} -lt "16"; then
 		PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
            else
+		GVIZ_DEFS="-DGRAPHVIZGT_1_16"
 		PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
 	   fi
+	else
+	   if test ${MAJOR} -eq "2"; then
+                GVIZ_DEFS="-DGRAPHVIZGT_1_16"
+		PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
+		   
+           else
+              AC_MSG_RESULT(failed)
+              AC_MSG_ERROR(please specify a valid path to
+	      'dotneato-config' version >= 1.12 using
+	      --with-graphviz=DIR)   
+           fi        
 	fi
 else
      AC_MSG_RESULT(failed)
