@@ -9,8 +9,8 @@ export(agopen, agwrite, agread, graphvizVersion, buildNodeList,
 exportClasses("Ragraph", "boundingBox", "AgNode", "AgEdge",
               "BezierCurve", "xyPoint", "AgTextLabel", "pNode", "pEdge")
                                                                                 
-exportMethods("lines", "plot", "AgNode", "getNodeXY", "agraph",
-"edgemode", "laidout", "layoutType", "boundBox", "AgEdge",
+exportMethods("lines", "plot", "AgNode", "AgNode<-", "getNodeXY", "agraph",
+"edgemode", "laidout", "layoutType", "boundBox", "AgEdge", "AgEdge<-",
 "getNodeXY", "botLeft", "upRight", "shape", "style", "color",
 "fillcolor", "getNodeCenter", "getNodeHeight", "getNodeRW",
 "getNodeLW", "name", "txtLabel", "arrowsize", "arrowhead",
