@@ -1,4 +1,4 @@
-### Methods for the graph classes in package graph
+## FIXME: Can graph2graphviz & weightLabels go?
 graph2graphviz <- function(object) {
     if( ! is(object, "graph") )
         stop("need a graph object")
