@@ -80,37 +80,33 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == TRUE)
 	error("graph is already laid out");
-    slotTmp = GET_SLOT(graph, Rf_install("agraph"));
+    PROTECT(slotTmp = GET_SLOT(graph, Rf_install("agraph")));
     CHECK_Rgraphviz_graph(slotTmp);
     g = R_ExternalPtrAddr(slotTmp);
     
     /* Currently only handling graph-wide attributes */
     PROTECT(elmt = getListElement(attrs, "graph"));
     /* Now elmt is a list of attributes to set */
-    attrNames = getAttrib(elmt, R_NamesSymbol);
+    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
     for (i = 0; i < length(elmt); i++) {
 	agraphattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
     }
     
-    UNPROTECT(1);
+    UNPROTECT(2);
     /* Now do node-wide ... NEED TO DO THIS BETTER */
     PROTECT(elmt = getListElement(attrs, "node"));
-    attrNames = getAttrib(elmt, R_NamesSymbol);
+    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
     for (i = 0; i < length(elmt); i++) {
 	agnodeattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
     }
-    UNPROTECT(1);
+    UNPROTECT(2);
 
     PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 					R_NilValue));
-    R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin);
-    SET_SLOT(graph, Rf_install("agraph"), slotTmp);
+/*    R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin); */
+     SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 
-    
-    slotTmp = GET_SLOT(graph, Rf_install("agraph"));
-    h = R_ExternalPtrAddr(slotTmp);
-
-    UNPROTECT(1);
+    UNPROTECT(2);
     return(graph);
 }
 
@@ -154,7 +150,6 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     Agedge_t *curEdge;
     int ag_k = 0;
     int i, curNode;
-    char *tmpStr;
     
     if (!isInteger(kind))
 	error("kind must be an integer value");
@@ -213,7 +208,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == FALSE) {
-	slotTmp = GET_SLOT(graph, install("agraph"));
+	PROTECT(slotTmp = GET_SLOT(graph, install("agraph")));
 	CHECK_Rgraphviz_graph(slotTmp);
 	g = R_ExternalPtrAddr(slotTmp);
 	
@@ -244,15 +239,14 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 						Rf_install("numEdges")))[0]));
 	PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 					    R_NilValue));
-	R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin);
+/*	R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin); */
 	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 	SET_SLOT(graph,Rf_install("nodes"),nLayout);
 	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
 	SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
 	SET_SLOT(graph,Rf_install("boundBox"), bb);
-	UNPROTECT(4);
+	UNPROTECT(5);
     }
-    fflush(stdout);
     return(graph);
 }
 
@@ -261,7 +255,7 @@ SEXP buildRagraph(Agraph_t *g) {
 
     PROTECT(graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 				 R_NilValue));
-    R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin);
+/*    R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin); */
 
     klass = MAKE_CLASS("Ragraph");
     PROTECT(obj = NEW_OBJECT(klass));
@@ -303,11 +297,15 @@ SEXP getNodeLayouts(Agraph_t *g) {
     SEXP outLst, nlClass, xyClass, curXY, curNL;
     int i, nodes;
     
+    if (g == NULL)
+	error("getNodeLayouts passed a NULL graph");
+
     nlClass = MAKE_CLASS("NodePosition");
     xyClass = MAKE_CLASS("xyPoint");
 
     nodes = agnnodes(g);
     node = agfstnode(g);
+
     PROTECT(outLst = allocVector(VECSXP, nodes));
 
     for (i = 0; i < nodes; i++) {	
@@ -321,6 +319,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 	SET_SLOT(curNL,Rf_install("lWidth"),R_scalarInteger(node->u.lw));
 	SET_ELEMENT(outLst, i, curNL);
 	node = agnxtnode(g,node);
+	    
 	UNPROTECT(2);
     }
     UNPROTECT(1);
@@ -345,6 +344,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 
     nodes = agnnodes(g);
     node = agfstnode(g);
+
     for (i = 0; i < nodes; i++) {
 	edge = agfstout(g, node);
 	while (edge != NULL) {
