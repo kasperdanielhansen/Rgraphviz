@@ -17,7 +17,7 @@ AC_ARG_WITH(graphviz,
 
 if test "${DOTNEATO_CONFIG}" != "not found"; then
 	AC_MSG_RESULT(${DOTNEATO_CONFIG})
-	PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
+	PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
 	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
 
 	MAJOR=`${DOTNEATO_CONFIG} --version`
@@ -37,6 +37,13 @@ if test "${DOTNEATO_CONFIG}" != "not found"; then
 	else
 	     AC_MSG_RESULT(failed)
      	     AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR)	
+	fi
+	if test ${MAJOR} -eq "1"; then
+	   if test ${MINOR} -lt "16"; then
+		PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
+           else
+		PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
+	   fi
 	fi
 else
      AC_MSG_RESULT(failed)
