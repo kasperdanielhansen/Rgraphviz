@@ -28,8 +28,6 @@
 
                       if (interactive())
                           x11(width=wd, height=ht)
-                      else
-                          postscript()
                   }
 
                   plot.new()
@@ -61,8 +59,6 @@
                       sz <- getGraphSize(x)
                       if (interactive())
                           x11(width=sz[1], height=sz[2])
-                      else
-                          postscript()
 
                       plot.new()
                   }
