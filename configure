@@ -1305,11 +1305,15 @@ echo "$as_me: error: please specify a valid path to 'dotneato-config' version >=
    { (exit 1); exit 1; }; }
 	   fi
 	else
+	    if test ${MAJOR} -eq "2"; then
+		PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
+            else
 	     echo "$as_me:$LINENO: result: failed" >&5
 echo "${ECHO_T}failed" >&6
      	     { { echo "$as_me:$LINENO: error: please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR" >&5
 echo "$as_me: error: please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR" >&2;}
    { (exit 1); exit 1; }; }
+            fi
 	fi
 	if test ${MAJOR} -eq "1"; then
 	   if test ${MINOR} -lt "16"; then
