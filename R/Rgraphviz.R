@@ -52,7 +52,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     g <- .Call("Rgraphviz_agopen", as.character(name),
                as.integer(outK), as.list(nodes),
                as.list(edges), as.list(attrs),
-               as.character(subGs))
+               as.character(subGs), PACKAGE="Rgraphviz"))
     g@layoutType <- layoutType
     g@edgemode <- edgeMode
 
@@ -69,7 +69,7 @@ agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
     if (!file.exists(filename))
         stop(paste("Request file",filename,"does not exist"))
 
-    g <- .Call("Rgraphviz_agread", as.character(filename))
+    g <- .Call("Rgraphviz_agread", as.character(filename), PACKAGE="Rgraphviz")
 
     if (layout)
         return(layoutGraph(g,layoutType))
@@ -78,7 +78,8 @@ agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
 }
 
 agwrite <- function(graph, filename) {
-    g <- .Call("Rgraphviz_agwrite", graph, as.character(filename))
+    g <- .Call("Rgraphviz_agwrite", graph, as.character(filename),
+               PACKAGE="Rgraphviz")
 }
 
 
@@ -96,7 +97,8 @@ layoutGraph <- function(graph) {
                    )
 
     if (laidout(graph) == FALSE) {
-        z <- .Call("Rgraphviz_doLayout", graph, as.integer(type));
+        z <- .Call("Rgraphviz_doLayout", graph, as.integer(type),
+                   PACKAGE="Rgraphviz");
         return(z)
     }
     else {
@@ -105,7 +107,7 @@ layoutGraph <- function(graph) {
 }
 
 graphvizVersion <- function() {
-    z <- .Call("Rgraphviz_graphvizVersion")
+    z <- .Call("Rgraphviz_graphvizVersion", PACKAGE="Rgraphviz")
     z
 }
 
