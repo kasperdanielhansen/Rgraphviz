@@ -52,7 +52,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     g <- .Call("Rgraphviz_agopen", as.character(name),
                as.integer(outK), as.list(nodes),
                as.list(edges), as.list(attrs),
-               as.character(subGs), PACKAGE="Rgraphviz"))
+               as.character(subGs), PACKAGE="Rgraphviz")
     g@layoutType <- layoutType
     g@edgemode <- edgeMode
 
