@@ -23,11 +23,13 @@ if (is.null(getGeneric("laidout")))
 setMethod("laidout", "Ragraph", function(object)
           object@laidout)
 
-if (is.null(getGeneric("nodes")))
-    setGeneric("nodes", function(object)
-               standardGeneric("nodes"))
-setMethod("nodes", "Ragraph", function(object)
-          object@nodes)
+.initgraphMethods <- function() {
+    if (is.null(getGeneric("nodes")))
+        setGeneric("nodes", function(object)
+                   standardGeneric("nodes"))
+    setMethod("nodes", "Ragraph", function(object)
+              object@nodes)
+}
 
 if (is.null(getGeneric("boundBox")))
     setGeneric("boundBox", function(object)
