@@ -1,7 +1,7 @@
   agopen <- function(graph, name, nodeLabels=nodes(graph),
                      kind="AGRAPH", layout=TRUE,
                      layoutType=c("dot","neato","twopi")[1],
-                     attrs=NULL, subGList) {
+                     attrs=NULL, subGList, edgeLabels) {
 
       outK <- switch(kind,
                      "AGRAPH"=0,
@@ -13,6 +13,9 @@
       edgeMtrx <- graph2graphviz(graph)
 
       nodes <- nodes(graph)
+
+      if (missing(edgeLabels))
+          edgeLabels <- list()
 
       subGs <- vector(mode="character")
 
@@ -81,7 +84,7 @@
 
       g <- .Call("Rgraphviz_agopen", as.character(name),
                  as.integer(outK), as.vector(nodes),
-                 as.character(nodeLabels),
+                 as.character(nodeLabels), as.list(edgeLabels),
                  as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
                  as.integer(edgeMtrx[,3]), as.integer(get("edgeSubs",env=arrEnv)),
                  as.integer(get("nodeSubs",env=arrEnv)), as.character(subGs))
