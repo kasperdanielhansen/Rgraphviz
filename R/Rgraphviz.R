@@ -112,7 +112,6 @@ layoutGraph <- function(graph) {
     }
 }
 
-
 graphvizVersion <- function() {
     z <- .Call("Rgraphviz_graphvizVersion", PACKAGE="Rgraphviz")
     z
@@ -185,7 +184,7 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 
     edgeNames <- edgeNames(graph, "distinct")
 
-    ## Make sure that het attributes in the vectors of the
+    ## Make sure that the attributes in the vectors of the
     ## list elements are in the same order as the edgenames
     edgeAttrs <- lapply(edgeAttrs, function(x) {
         out <- x[edgeNames];
@@ -200,6 +199,7 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 
     from <- names(to)
 
+    ## Generate the list of pEdge objects
     pEdges <- mapply(buildPEList, from, to, edgeWeights(graph),
                      MoreArgs=list(edgemode=edgemode))
 
