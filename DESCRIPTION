@@ -4,6 +4,6 @@ Description: Interfaces R with the AT&T GraphViz library to provide the ability 
 Version: 1.0.20
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>
 Maintainer: Jeff Gentry <jgentry@jimmy.harvard.edu>
-Depends: R (>= 1.7.0), graph
+Depends: R (>= 1.8.0), graph
 SystemRequirements: Graphviz (>= 1.10)
 License: LGPL
