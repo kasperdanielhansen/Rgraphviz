@@ -1,6 +1,6 @@
 AC_INIT(src/Rgraphviz.c)
 AC_PREREQ(2.13)
-AC_REVISION($Revision: 1.11 $)
+AC_REVISION($Revision: 1.12 $)
 # AC_CONFIG_SRCDIR(src/Rgraphviz.c)
 
 AC_DEFUN([CHECK_GRAPHVIZ],
@@ -30,10 +30,17 @@ if test "${DOTNEATO_CONFIG}" != "not found"; then
 	   if test ${MINOR} -eq "12"; then
 		GVIZ_DEFS="-DGRAPHVIZ_1_12"
 	   fi
+	   if test ${MINOR} -lt "12"; then
+		AC_MSG_RESULT(failed)
+		AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR)
+	   fi
+	else
+	     AC_MSG_RESULT(failed)
+     	     AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR)	
 	fi
 else
      AC_MSG_RESULT(failed)
-     AC_MSG_ERROR(please specify a valid path to 'dotneato-config' with --with-graphviz=DIR)
+     AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR)
 fi])
 
 CHECK_GRAPHVIZ
