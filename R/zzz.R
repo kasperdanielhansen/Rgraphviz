@@ -1,8 +1,8 @@
 .First.lib <- function(lib, pkg, where) {
     if (missing(where)) {
-        where <- match(paste("package:", pkgname, sep=""), search())
+        where <- match(paste("package:", pkg, sep=""), search())
         if(is.na(where)) {
-            warning(paste("Not a package name: ",pkgname))
+            warning(paste("Not a package name: ",pkg))
             return()
         }
         where <- pos.to.env(where)
