@@ -1,4 +1,4 @@
-.initGraphMethods <- function(where) {
+.initRgraphvizMethods <- function(where) {
     setMethod("plot", c("graphNEL", "missing"),
               function(x,y,...){
                   require(Rgraphviz)

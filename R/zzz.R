@@ -11,4 +11,8 @@
     require(graph)
     library.dynam( "Rgraphviz", pkg, lib )
     .Call("Rgraphviz_init")
+
+    .initRgraphvizMethods(where)
+    .initGraphPlotClasses(where)
 }
+
