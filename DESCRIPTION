@@ -8,3 +8,4 @@ Depends: R (>= 1.8.0), graph
 Suggests: Biobase
 SystemRequirements: Graphviz version >= 1.11
 License: LGPL
+ReleaseLevel: devel
