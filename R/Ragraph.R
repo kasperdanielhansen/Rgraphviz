@@ -105,7 +105,7 @@ if (is.null(getGeneric("AgNode")))
                standardGeneric("AgNode"))
 setClass("AgNode", representation(center="xyPoint",
                                   name="character",
-                                  txtlabel="AgTextLabel",
+                                  txtLabel="AgTextLabel",
                                   height="integer",
                                   rWidth="integer",
                                   lWidth="integer",

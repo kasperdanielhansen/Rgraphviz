@@ -427,13 +427,13 @@ SEXP getNodeLayouts(Agraph_t *g) {
  		     R_scalarReal(node->u.label->fontsize));
     
 	}
+
 	SET_SLOT(curNL, Rf_install("txtLabel"), curLab);
-	UNPROTECT(1);
 	
 	SET_ELEMENT(outLst, i, curNL);
 	node = agnxtnode(g,node);
 	    
-	UNPROTECT(2);
+	UNPROTECT(3);
     }
     UNPROTECT(1);
     return(outLst);
