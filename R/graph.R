@@ -81,8 +81,17 @@
                       attrs$graph$rankdir <- rankDir
                   }
 
-                  ## twopi layout requires the graph to be fully
-                  ## connected
+                  ## Check on nodeCols.  If it is a named vector, it
+                  ## needs to be in the same order as the node names
+                  if ((length(nodeCols) != length(nodes(x)))||
+                      (!all(names(nodeCols) %in%  nodes(x))))
+                      stop(paste("A named vector of node colors",
+                                 "was passed in, but it does not",
+                                 "match the node names of the graph"))
+                  else
+                      nodeCols <- nodeCols[match(nodes(x),
+                                                     names(nodeCols))]
+
                   gc()
                   g = agopen(x, "ABC", nodeLabels, agKind,  layout=TRUE,
                              layoutType=y, attrs=attrs)
@@ -104,10 +113,10 @@
 
                       ## Set up the plot region, plot the edges, then
                       ## nodes and finally the node labels
-                      opar <- par(pty="s", oma=c(0,0,0,0), mai=c(0,0,0,0))
+                      mfrow <- par("mfrow")
+                      opar <- par(pty="s", oma=c(0,0,0,0),
+                                  mai=c(0,0,0,0), mfrow=mfrow)
                       on.exit(par=opar, add=TRUE)
-
-
                       plot(NA,NA,xlim=c(0,getX(ur)), ylim=c(0,getY(ur)),
                            type="n",main=NULL,xlab="",ylab="",xaxt="n",
                            yaxt="n",bty="n",...)
