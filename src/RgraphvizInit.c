@@ -12,6 +12,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {"getEdgeLocs", (DL_FUNC)&getEdgeLocs, 2},
     {"Rgraphviz_graphvizVersion", (DL_FUNC)&Rgraphviz_graphvizVersion, 0},
     {"setDefaultAttrs", (DL_FUNC)&setDefaultAttrs, 1},
+    {"Rgraphviz_getAttr", (DL_FUNC)&Rgraphviz_getAttr, 2},
     {NULL, NULL, 0},
 };
 

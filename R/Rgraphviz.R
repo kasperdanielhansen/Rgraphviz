@@ -1,12 +1,13 @@
 agopen <- function(graph,  name, nodes, edges, kind=NULL,
                    layout=TRUE, layoutType=c("dot","neato","twopi")[1],
-                   attrs=getDefaultAttrs(layoutType),
+                   attrs=list(),
                    nodeAttrs=list(), edgeAttrs=list(),
                    subGList=list(), edgeMode=edgemode(graph),
                    recipEdges=c("combined", "distinct")) {
 
 
     recipEdges <- match.arg(recipEdges)
+    attrs <- getDefaultAttrs(attrs, layoutType)
     checkAttrs(attrs)
 
     if ((missing(graph)) && (missing(edgeMode)))
@@ -79,6 +80,10 @@ agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
         return(g)
 }
 
+getGraphAttr <- function(graph, attr) {
+    .Call("Rgraphviz_getAttr", graph, as.character(attr))
+}
+
 agwrite <- function(graph, filename) {
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename),
                PACKAGE="Rgraphviz")
@@ -107,6 +112,7 @@ layoutGraph <- function(graph) {
         return(graph)
     }
 }
+
 
 graphvizVersion <- function() {
     z <- .Call("Rgraphviz_graphvizVersion", PACKAGE="Rgraphviz")
@@ -246,3 +252,4 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 
     pEdges
 }
+
