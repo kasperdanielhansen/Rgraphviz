@@ -19,7 +19,8 @@
 \alias{name,AgNode-method}
 \alias{shape,AgNode-method}
 \alias{txtLabel,AgNode-method}
-
+\alias{drawAgNode}
+\alias{drawCircleNode}
 \title{Class "AgNode": A class to describe a node for a Ragraph object}
 \description{This class is used to represent nodes for the
   \code{Ragraph} class.  One can retrieve various pieces of information
