@@ -11,6 +11,8 @@
 \alias{getNodeCenter}
 \alias{convertRadius}
 \alias{getNodeHeight}
+\alias{style}
+\alias{style,AgNode-method}
 \alias{color,AgNode-method}
 \alias{fillcolor,AgNode-method}
 \alias{getNodeCenter,AgNode-method}
@@ -49,6 +51,7 @@ Objects can be created by calls of the form \code{new("AgNode", ...)}.
       color to fill in the node with.}
     \item{\code{shape}:}{Object of class \code{"character"}: The shape
       of the node.}
+    \item{\code{style}:}{Object of class \code{"character"}: The style of the node.}
   }
 }
 \section{Methods}{
@@ -68,6 +71,8 @@ Objects can be created by calls of the form \code{new("AgNode", ...)}.
     \item{name}{\code{signature(object = "AgNode")}: Retrieves the name
       of the node.}
     \item{shape}{\code{signature(object = "AgNode")}: Returns the shape
+      of the node.}
+    \item{style}{\code{signature(object = "AgNode")}: Returns the style
       of the node.}
     \item{txtLabel}{\code{signature(object = "AgNode")}: Retrieves the
       node label.}

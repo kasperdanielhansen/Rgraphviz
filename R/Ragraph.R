@@ -111,13 +111,21 @@ setClass("AgNode", representation(center="xyPoint",
                                   lWidth="integer",
                                   color="character",
                                   fillcolor="character",
-                                  shape="character"))
+                                  shape="character",
+                                  style="character"))
 
 if (is.null(getGeneric("shape")))
     setGeneric("shape", function(object)
                standardGeneric("shape"))
 setMethod("shape", "AgNode", function(object)
           object@shape)
+
+if (is.null(getGeneric("style")))
+    setGeneric("style", function(object)
+               standardGeneric("style"))
+setMethod("style", "AgNode", function(object)
+          object@style)
+
 
 if (is.null(getGeneric("color")))
     setGeneric("color", function(object)
@@ -180,6 +188,7 @@ setClass("AgEdge", representation(splines="list",
                                   tail="character",
                                   arrowhead="character",
                                   arrowtail="character",
+                                  arrowsize="character",
                                   color="character",
                                   txtLabel="AgTextLabel"))
 
@@ -189,6 +198,11 @@ if (is.null(getGeneric("color")))
 setMethod("color","AgEdge", function(object)
           object@color)
 
+if (is.null(getGeneric("arrowsize")))
+    setGeneric("arrowsize", function(object)
+               standardGeneric("arrowsize"))
+setMethod("arrowsize", "AgEdge", function(object)
+          object@arrowsize)
 
 if (is.null(getGeneric("arrowhead")))
     setGeneric("arrowhead", function(object)
@@ -463,6 +477,9 @@ setMethod("labelFontsize", "AgTextLabel", function(object)
                   edgeColor <- as.character(attrs$color[edgeName])
               else
                   edgeColor <- color(x)
+
+              ## Adjust arrowhead size according to attr
+              len <- len * as.numeric(arrowsize(x))
 
               mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
                      MoreArgs=list(len=len, col=edgeColor,

@@ -398,6 +398,8 @@ SEXP getNodeLayouts(Agraph_t *g) {
 		 R_scalarString(agget(node, "fillcolor")));
 	SET_SLOT(curNL, Rf_install("shape"),
 		 R_scalarString(agget(node, "shape")));
+	SET_SLOT(curNL, Rf_install("style"),
+		 R_scalarString(agget(node, "style")));
 
 
 	PROTECT(curLab = NEW_OBJECT(labClass));
@@ -521,6 +523,8 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		     R_scalarString(agget(edge, "arrowhead")));
 	    SET_SLOT(curEP, Rf_install("arrowtail"),
 		     R_scalarString(agget(edge, "arrowtail")));
+	    SET_SLOT(curEP, Rf_install("arrowsize"),
+		     R_scalarString(agget(edge, "arrowsize")));
 
 	    SET_SLOT(curEP, Rf_install("color"), 
 		     R_scalarString(agget(edge, "color")));
