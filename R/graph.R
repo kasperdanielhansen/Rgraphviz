@@ -101,7 +101,6 @@
                       ## Get the upper right X,Y point of the bounding
                       ## box for the graph
                       ur <- upRight(boundBox(g))
-                      print(ur)
 
                       ## Set up the plot region, plot the edges, then
                       ## nodes and finally the node labels
@@ -171,7 +170,6 @@ drawEllipseNodes <- function(nodeX, nodeY, heights, widths, nodeCols)
     ##!!! GET RID OF FOR LOOP
     for (i in 1:length(nodeX)) {
         ellipse(nodeX[i], nodeY[i], heights[i], widths[i])
-        print(paste(nodeX[i], nodeY[i], heights[i], widths[i]),sep=", ")
     }
     return(min(widths)/72)
 }
