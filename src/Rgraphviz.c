@@ -549,6 +549,9 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		SET_SLOT(curLab, Rf_install("labelColor"),
 			 R_scalarString(node->u.label->fontcolor));
 
+		SET_SLOT(curLab, Rf_install("labelFontsize"),
+			 R_scalarReal(edge->u.label->fontsize));
+
 		SET_SLOT(curEP, Rf_install("txtLabel"), curLab);
 		UNPROTECT(1);
 	    }
@@ -600,7 +603,7 @@ Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     for (i = 0; i < length(elmt); i++) {
 	agedgeattr(g, CHAR(STRING_ELT(attrNames,i)),
 		   STR(VECTOR_ELT(elmt,i)));
-    }
+   }
     UNPROTECT(2);
 
     return(g);
