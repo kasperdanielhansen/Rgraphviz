@@ -257,5 +257,9 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 edgeNames <- function(graph) {
     to <- edges(graph)
 
-    unlist(mapply(function(x,y) { paste(y,x,sep="~")}, to, names(to)))
+    unlist(mapply(function(x,y) {
+        if (length(x) > 0)
+            paste(y,x,sep="~")
+        else
+            NULL}, to, names(to)))
 }
