@@ -130,7 +130,7 @@ SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
     
 
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
-		     SEXP edges, SEXP attrs) {
+		     SEXP edges, SEXP attrs, SEXP subGs) {
     /* Will create a new Agraph_t* object in graphviz and then */
     /* a Ragraph S4 object around it, returning it to R */
     Agraph_t *g, *tmpGraph;
@@ -138,10 +138,10 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     Agnode_t *head, *tail, *tmp;
     Agedge_t *curEdge;
     int ag_k = 0;
-    int i;
+    int i,j;
     int curSubG;
-
     SEXP pNode, curPN, pEdge, curPE;
+    SEXP attrNames, curAttrs;
 
     pNode = MAKE_CLASS("pNode");
     pEdge = MAKE_CLASS("pEdge");
@@ -161,16 +161,15 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     g = agopen(STR(name), ag_k);
 
     /* Allocate space in the subgraph array */
-/*    sgs = (Agraph_t **)malloc(length(subGs) * sizeof(Agraph_t *));
+    sgs = (Agraph_t **)malloc(length(subGs) * sizeof(Agraph_t *));
 
-      if (length(subGs) > 0) { */
-	/* Create any subgraphs, if necessary */
-    /*
+    if (length(subGs) > 0) { 
+	/* Create any subgraphs, if necessary */	
 	for (i = 0; i < length(subGs); i++) {
 	    sgs[i] = agsubg(g,CHAR(STRING_ELT(subGs,i)));
 	}
     }
-*/
+
     /* Set default attributes */
     g = setDefaultAttrs(g,attrs);
 
@@ -180,39 +179,40 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 
 	/* Need to check the node # against the subG vector */
 	/* And assign it to the proper graph, not necessarily 'g' */
-	/* !!! Deal with SubGs later 
-	 curSubG = INTEGER(nodeSubs)[i];
-	 if (curSubG > 0) {
-	*/	    /* Point tmpGraph to the appropriate current graph */
+	curSubG = INTEGER(GET_SLOT(curPN, Rf_install("subG")))[0];
+	if (curSubG > 0) {
+	    /* Point tmpGraph to the appropriate current graph */
 	    /* Remember that in R they're numbered 1->X and in */
 	    /* C it is 0-(X-1) */
-	/*    tmpGraph = sgs[curSubG-1];
- 	}
-	else */
-  	    tmpGraph = g;
-	    
+	    tmpGraph = sgs[curSubG-1];
+	}
+	else 
+	    tmpGraph = g;
+	
 	tmp = agnode(tmpGraph, STR(GET_SLOT(curPN, 
 					     Rf_install("name"))));
-	agset(tmp, "label", STR(GET_SLOT(curPN,
-					  Rf_install("label")))); 
-	agset(tmp, "shape", STR(GET_SLOT(curPN,
-					  Rf_install("shape"))));
-	UNPROTECT(1);
+
+	PROTECT(curAttrs = GET_SLOT(curPN, Rf_install("attrs")));
+	PROTECT(attrNames = getAttrib(curAttrs, R_NamesSymbol));
+	for (j = 0; j < length(curAttrs); j++) {
+	    agset(tmp,  CHAR(STRING_ELT(attrNames,j)),
+		  STR(VECTOR_ELT(curAttrs,j)));
+	}
+
+	UNPROTECT(3);
     }
 
     /* now fill in the edges */
     for (i = 0; i < length(edges); i++) {
 	PROTECT(curPE = VECTOR_ELT(edges, i));
 
-	/* !!! Deal w/ SubG's later */
-/*	curSubG = INTEGER(edgeSubs)[i];
- 	if (curSubG > 0) {
-	     tmpGraph = sgs[curSubG-1];
-	 }
-	 else { */
-	tmpGraph = g;
-/*	 } */
-
+	curSubG = INTEGER(GET_SLOT(curPE, Rf_install("subG")))[0];
+  	if (curSubG > 0) {
+	    tmpGraph = sgs[curSubG-1];
+	}
+	else { 
+	    tmpGraph = g;
+	} 
 
 	tail = agfindnode(g, STR(GET_SLOT(curPE,
 					  Rf_install("from"))));
@@ -225,22 +225,14 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	    error("Missing head node");
 
 	curEdge = agedge(tmpGraph, tail, head);
-	agset(curEdge, "weight", INTEGER(GET_SLOT(curPE,
-						  Rf_install("weight")))[0]);
-	agset(curEdge, "label", STR(GET_SLOT(curPE, 
-					      Rf_install("label"))));
-	agset(curEdge, "arrowhead", STR(GET_SLOT(curPE,
-					      Rf_install("arrowhead"))));
-	agset(curEdge, "dir", STR(GET_SLOT(curPE,
-					    Rf_install("dir"))));
-	agset(curEdge, "fontname", STR(GET_SLOT(curPE,
-						 Rf_install("fontname"))));
-	agset(curEdge, "headclip", 
-	      (int)LOGICAL(GET_SLOT(curPE, Rf_install("headclip")))[0]);
-	agset(curEdge, "tailclip",
-	      (int)LOGICAL(GET_SLOT(curPE, Rf_install("tailclip")))[0]);
 
-	UNPROTECT(1);
+	PROTECT(curAttrs = GET_SLOT(curPE, Rf_install("attrs")));
+	PROTECT(attrNames = getAttrib(curAttrs, R_NamesSymbol));
+	for (j = 0; j < length(curAttrs); j++) {
+	    agset(curEdge, CHAR(STRING_ELT(attrNames,j)),
+		  STR(VECTOR_ELT(curAttrs, j)));
+	}
+	UNPROTECT(3);
     }
 
     return(buildRagraph(g));    
@@ -289,7 +281,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
 						Rf_install("numEdges")))[0]));
 	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
-	SET_SLOT(graph,Rf_install("nodePos"),nLayout);
+	SET_SLOT(graph,Rf_install("AgNode"),nLayout);
 	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
 	SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
 	SET_SLOT(graph,Rf_install("boundBox"), bb);
@@ -345,13 +337,20 @@ SEXP getBoundBox(Agraph_t *g) {
 SEXP getNodeLayouts(Agraph_t *g) {
     Agnode_t *node;
     SEXP outLst, nlClass, xyClass, curXY, curNL;
+    SEXP curLab, labClass;
     int i, nodes;
+    char *tmpString;
     
     if (g == NULL)
 	error("getNodeLayouts passed a NULL graph");
 
-    nlClass = MAKE_CLASS("NodePosition");
+    nlClass = MAKE_CLASS("AgNode");
     xyClass = MAKE_CLASS("xyPoint");
+    labClass = MAKE_CLASS("AgTextLabel");
+
+    /* tmpString is used to convert a char to a char* w/ labels */
+    tmpString = (char *)malloc(2 * sizeof(char));
+
 
     nodes = agnnodes(g);
     node = agfstnode(g);
@@ -367,6 +366,42 @@ SEXP getNodeLayouts(Agraph_t *g) {
 	SET_SLOT(curNL,Rf_install("height"),R_scalarInteger(node->u.ht));
 	SET_SLOT(curNL,Rf_install("rWidth"),R_scalarInteger(node->u.rw));
 	SET_SLOT(curNL,Rf_install("lWidth"),R_scalarInteger(node->u.lw));
+	SET_SLOT(curNL,Rf_install("name"), R_scalarString(node->name));
+
+	SET_SLOT(curNL, Rf_install("color"), 
+		 R_scalarString(agget(node, "color")));
+	SET_SLOT(curNL, Rf_install("fillcolor"),
+		 R_scalarString(agget(node, "fillcolor")));
+	SET_SLOT(curNL, Rf_install("shape"),
+		 R_scalarString(agget(node, "shape")));
+
+	if (node->u.label != NULL) {
+	    PROTECT(curLab = NEW_OBJECT(labClass));
+	    SET_SLOT(curLab, Rf_install("labelText"),
+		     R_scalarString(node->u.label->line->str));
+	    /* Get the X/Y location of the label */
+	    PROTECT(curXY = NEW_OBJECT(xyClass));
+	    SET_SLOT(curXY, Rf_install("x"),
+		     R_scalarInteger(node->u.label->p.x));
+	    SET_SLOT(curXY, Rf_install("y"),
+		     R_scalarInteger(node->u.label->p.y));
+	    SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
+	    UNPROTECT(1);
+	    
+	    snprintf(tmpString, 2, "%c",node->u.label->line->just);
+	    SET_SLOT(curLab, Rf_install("labelJust"),
+		     R_scalarString(tmpString));
+	    
+	    SET_SLOT(curLab, Rf_install("labelWidth"),
+		     R_scalarInteger(node->u.label->line->width));
+
+	    SET_SLOT(curLab, Rf_install("labelColor"),
+		     R_scalarString(node->u.label->fontcolor));
+	    
+	    SET_SLOT(curNL, Rf_install("txtLabel"), curLab);
+	    UNPROTECT(1);
+	}
+
 	SET_ELEMENT(outLst, i, curNL);
 	node = agnxtnode(g,node);
 	    
@@ -430,10 +465,6 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		UNPROTECT(2);
 	    }	    
 	    SET_SLOT(curEP, Rf_install("splines"), pntList);
-	    SET_SLOT(curEP, Rf_install("startArrow"),
-		     R_scalarLogical(bez.sflag)); 
-	    SET_SLOT(curEP, Rf_install("endArrow"),
-		     R_scalarLogical(bez.eflag));
 	    /* get the sp and ep */
 	    PROTECT(curXY = NEW_OBJECT(xyClass));
 	    SET_SLOT(curXY, Rf_install("x"),
@@ -477,6 +508,9 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		SET_SLOT(curLab, Rf_install("labelWidth"),
 			 R_scalarInteger(edge->u.label->line->width));
 
+		SET_SLOT(curLab, Rf_install("labelColor"),
+			 R_scalarString(node->u.label->fontcolor));
+
 		SET_SLOT(curEP, Rf_install("txtLabel"), curLab);
 		UNPROTECT(1);
 	    }
@@ -503,18 +537,6 @@ Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     /* to have defined defaults manually */
     int i;
     SEXP attrNames, elmt;
-
-    /* Note that not all defaults are exactly as in normal graphviz */
-    /*** GRAPH ATTRS ***/
-    /* Neato overlap type */
-    agraphattr(g, "overlap", "");
-    agraphattr(g, "splines", "true");
-    agraphattr(g, "model", "");
-    /*** NODE ATTRS ***/
-    agnodeattr(g,"label",NODENAME_ESC);
-    /*** EDGE ATTRS ***/
-    agedgeattr(g, "weight", "1.0");
-    agedgeattr(g, "label", "");
 
     /* Now set user defined attributes */
     /* Set the graph level attributes */
