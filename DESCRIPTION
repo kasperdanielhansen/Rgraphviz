@@ -1,0 +1,8 @@
+Package: Rgraph
+Title: Access for libgraph library
+Version: 0.1
+Author: Jeff Gentry <jgentry@jimmy.harvard.edu>
+Maintainer: Jeff Gentry <jgentry@jimmy.harvard.edu>
+Depends: R (>= 1.6.0)
+Description: Interface with the libgraph library from the graphviz package to provide postcript renderings of graphs.
+License: LGPL
