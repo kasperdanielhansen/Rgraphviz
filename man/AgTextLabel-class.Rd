@@ -24,7 +24,9 @@ Objects can be created by calls of the form \code{new("AgTextLabel", ...)}.
     \item{\code{labelJust}:}{Object of class \code{"character"} The
       justification of the label }
     \item{\code{labelWidth}:}{Object of class \code{"integer"} The width
-    of the label}
+      of the label}
+    \item{\code{labelColor}:}{Object of class \code{"character"} The
+      color to print the label} 
   }
 }
 \section{Methods}{
@@ -33,10 +35,11 @@ Objects can be created by calls of the form \code{new("AgTextLabel", ...)}.
     \item{labelLoc}{Retrieves the labelLoc slot}
     \item{labelJust}{Retrieves the labelJust slot}
     \item{labelWidth}{Retrieves the labelWidth slot}
-    }
+    \item{labelColor}{Retrieves the labelColor slot}
+  }
 }
 \author{Jeff Gentry}
-\seealso{\code{\link{AgEdge-class}}}
+\seealso{\code{\link{AgEdge-class}}, \code{\link{AgNode-class}}}
 \examples{
 
 }

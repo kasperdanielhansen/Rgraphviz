@@ -21,7 +21,11 @@
 \alias{startArrow,AgEdge-method}
 \alias{tail,AgEdge-method}
 \alias{txtLabel,AgEdge-method}
-\alias{txtLabel}
+\alias{txtLael}
+\alias{arrowhead,AgEdge-method}
+\alias{arrowhead}
+\alias{arrowtail,AgEdge-method}
+\alias{arrowtail}
 \title{Class "AgEdge": A class to describe an edge for a Ragraph object}
 \description{  This class is used to represent edges for the
   \code{Ragraph} class.  One can retrieve various pieces of information
@@ -45,6 +49,10 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
       for this edge.}
     \item{\code{tail}:}{Object of class \code{"character"} The tail node
       for this edge.}
+    \item{\code{arrowhead}:}{Object of class \code{"character"} The
+      style of arrowhead for this edge.}
+    \item{\code{arrowtail}:}{Object of class \code{"character"} The
+      style of arrowtail for this edge.}
   }
 }
 
@@ -62,27 +70,13 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
     \item{head}{Gets the head slot}
     \item{tail}{Gets the tail slot}
     \item{txtLabel}{Returns any label for this edge}
+    \item{arrowhead}{Retrieves the \code{arrowhead} slot.}
+    \item{arrowtail}{Retrieves the \code{arrowtail} slot.}
   }
 }
 \author{Jeff Gentry}
 \seealso{\code{\link{Ragraph}}, \code{\link{BezierCurve}}, \code{\link{xyPoint}}}
 \examples{
-\dontrun{
-  set.seed(123)
-  V <- letters[14:22]
-  g1 <- randomEGraph(V, .2)
-  z <- agopen(g1,"foo",layoutType="neato")
-  edges <- z@AgEdge
-  e1 <- edges[[1]]
-  splines(e1)
-  startArrow(e1)
-  endArrow(e1)
-  sp(e1)
-  ep(e1)
-  numSplines(e1)
-  getSpline(e1,1)
-  head(e1)
-  tail(e1)
-  txtLabel(e1)
-}}
+  ## ---- Should be DIRECTLY executable !! ----
+}
 \keyword{classes}
