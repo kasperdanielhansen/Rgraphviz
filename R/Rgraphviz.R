@@ -124,13 +124,6 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
 
     nodeNames <- as.character(nodes(graph))
 
-    ## Make sure all the vectors are in the same order as the node
-    ## names.
-    nodeAttrs <- lapply(nodeAttrs, function(x) {
-        out <- x[nodeNames];
-        out[!is.na(out)]
-    })
-
     if (length(nodeNames) > 0) {
         pNodes <- lapply(nodeNames, function(x) {
             new("pNode",name=x, attrs=list(label=x))})
@@ -141,7 +134,6 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
         ## See if this node is in a subgraph
         if (length(subGList) > 0)
             pNodes <- assignSubGs(subGList, pNodes, nodeNames)
-
     }
 
     pNodes
@@ -155,41 +147,13 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 
     recipEdges <- match.arg(recipEdges)
 
-    buildPEList <- function(x, y, weights, edgemode) {
-        ## FIXME: Can this assumption be safely made?
-        wtNames <- nodes(graph)[names(weights)]
-        weights <- as.character(weights)
-        names(weights) <- wtNames
-
-        if (edgemode == "directed")
-            mapply(function(z, w) {new("pEdge", from=as.character(x),
-                                       to=as.character(z),
-                                       attrs=list(arrowhead="open",
-                                       weight=w))},
-                   y, weights)
-        else
-           mapply(function(z, w) {new("pEdge", from=as.character(x),
-                                      to=as.character(z),
-                                      attrs=list(arrowhead="none",
-                                      weight=w))},
-                  y, weights)
-    }
-
     buildSubGEdgeNames <- function(subG) {
         x <- edges(subG)
         z <- names(x)
         as.vector(mapply(paste, x, z, MoreArgs=list(sep="~")))
     }
 
-
     edgeNames <- edgeNames(graph, "distinct")
-
-    ## Make sure that the attributes in the vectors of the
-    ## list elements are in the same order as the edgenames
-    edgeAttrs <- lapply(edgeAttrs, function(x) {
-        out <- x[edgeNames];
-        out[!is.na(out)]
-    })
 
     edgemode <- edgemode(graph)
 
@@ -197,18 +161,9 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     if (length(to) == 0)
         return(list())
 
-    from <- names(to)
-
     ## Generate the list of pEdge objects
-    pEdges <- mapply(buildPEList, from, to, edgeWeights(graph),
-                     MoreArgs=list(edgemode=edgemode))
-
-    ## FIXME: Sometimes the Mapply has a list of lists,
-    ## and sometimes just a list of length unlist(edges(graph))
-    ## In the former case it needs to be unlisted, the latter
-    ## it doesn't.  Why the difference?  Need to sort this out.
-    if (! any(unlist(lapply(pEdges, is, "pEdge"))))
-        pEdges <- unlist(pEdges, recursive=FALSE)
+    pEdges <- .Call("Rgraphviz_buildPEList", to, edgemode, edgeWeights(graph),
+                    length(unlist(edges(graph))), PACKAGE="Rgraphviz")
 
     ## Even if recipEdges is 'combined', it saves a lot of work
     ## when trying to figure out the arrowtail stuff if all of
@@ -247,59 +202,7 @@ assignAttrs <- function(attrList, objList, defAttrs) {
     if (length(attrList) == 0)
         return(objList)
 
-    attrNames <- names(attrList)
-
-    defAttrs <- defAttrs[attrNames]
-
-
-    ## If there's no default, the requested attr won't work
-    ## anyways, and this can currently only cause problems,
-    ## so weed them out
-    defAttrs <- defAttrs[!sapply(defAttrs, is.null)]
-
-    ## If there are no defaults provided, every specified
-    ## attribute must be of length 'n', where 'n' is the length
-    ## of the objList
-    if (length(defAttrs) == 0) {
-        lens <- sapply(attrList, length)
-        oLen <- length(objList)
-        bad <- which(lens != oLen)
-        out <- paste("Attribute", attrNames[bad],
-                     "has no default and is not specified for all objects.",
-                     collapse="\n")
-        warning(out)
-        attrList <- attrList[!bad]
-        if (length(attrList) == 0)
-            return(objList)
-    }
-
-    ## Create a list containing all of the default values
-    attrs <- lapply(defAttrs, function(x, y) {
-        out <- as.character(rep(x, length(y)))
-        names(out) <- y
-        out
-    }, names(objList))
-    names(attrs) <- names(defAttrs)
-
-    ## Now that the defaults are had, need to overlay the custom
-    ## values
-    attrs <- mapply(function(x, y) {
-        newNames <- names(y)
-        x[newNames] <- as.character(y)
-        x
-    }, attrs, attrList)
-
-    ## FIXME: After playing around with various
-    ## permutations of XXXapply, can't seem to get this
-    ## to work w/o the for loops
-    nK <- seq(along=attrs[,1])
-    for (j in seq(along=attrNames)) {
-        for (k in nK) {
-            objList[[k]]@attrs[[ attrNames[j] ]] <- attrs[k,j]
-        }
-    }
-
-    objList
+    .Call("Rgraphviz_assignAttrs", attrList, objList, defAttrs, PACKAGE="Rgraphviz")
 }
 
 assignSubGs <- function(subGList, objList, objNames) {

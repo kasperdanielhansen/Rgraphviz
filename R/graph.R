@@ -147,7 +147,7 @@ drawAgNode <- function(node, ur, attrs=list(), conv=1) {
                              rect(nodeX-lw, nodeY-(height/2),
                                   nodeX+rw, nodeY+(height/2),
                                   col=bg, border=FALSE)},
-           stop("Unimplemented node shape"))
+           stop("Unimplemented node shape: ", shape))
 
     drawTxtLabel(txtLabel(node), nodeX, nodeY, width=rad*2, nodeName, attrs)
 }

@@ -33,17 +33,18 @@ R_scalarString(const char *v)
 }
 
 SEXP getListElement(SEXP list, char *str) {
-    /* Given a R list and acharacter string, will return the */
+    /* Given a R list and a character string, will return the */
     /* element of the list which has the name that corresponds to the */
     /*   string */
     SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol);
     int i;
 
-    for (i = 0; i < length(list); i++)
+    for (i = 0; i < length(list); i++) {
 	if (strcmp(CHAR(STRING_ELT(names,i)), str) == 0) {
 	    elmt = VECTOR_ELT(list, i);
 	    break;
 	}
+    }
     return(elmt);
 }
 
@@ -51,12 +52,15 @@ int getVectorPos(SEXP vector, char *str) {
     /* Returns position in a vector that matches string name */
     /* Returns -1 if not found */
     
-    SEXP names = getAttrib(vector, R_NamesSymbol);
+    SEXP names; 
     int i;
 
+    PROTECT(names = getAttrib(vector, R_NamesSymbol));
     for (i = 0; i < length(vector); i++)
 	if (strcmp(CHAR(STRING_ELT(names,i)),str) == 0)
 	    break;
+    
+    UNPROTECT(1);
 
     if (i == length(vector))
 	i = -1;
@@ -261,7 +265,82 @@ SEXP Rgraphviz_getAttr(SEXP graph, SEXP attr) {
 
     return(R_scalarString(agget(g, STR(attr))));
 }
+
+SEXP Rgraphviz_assignAttrs(SEXP attrList, SEXP objList,
+			   SEXP defAttrs) {
+    /* Assign attributes defined by attrList (and defAttrs) */
+    /* to slots of the objects listed in objList            */
+    int i, j, k, namePos, leno;
+    SEXP curAttrs, curObj, attrNames, objNames;
+    SEXP attrsSlot, newASlot, oattrs;
+    SEXP names, onames;
+    SEXP attrPos;
+    SEXP curSTR;
     
+    
+    PROTECT(attrNames = getAttrib(attrList, R_NamesSymbol));
+    PROTECT(objNames = getAttrib(objList, R_NamesSymbol));
+
+    for (i = 0; i < length(objList); i++) {
+	curObj = VECTOR_ELT(objList, i);
+	PROTECT(attrsSlot = GET_SLOT(curObj, Rf_install("attrs")));
+	for (j = 0; j < length(attrList); j++) {
+	    PROTECT(curSTR = allocVector(STRSXP, 1));
+    
+	    PROTECT(curAttrs = coerceVector(VECTOR_ELT(attrList, j), STRSXP));
+	    PROTECT(attrPos = getListElement(curAttrs, CHAR(STRING_ELT(objNames, i))));
+	    if (attrPos == R_NilValue) {
+		/* We need to use the default value here */
+		UNPROTECT(1);
+		PROTECT(attrPos = STRING_ELT(getListElement(defAttrs,
+							    CHAR(STRING_ELT(attrNames, j))), 0));
+		       
+		if (attrPos == R_NilValue) {
+		    error("No attribute or default was assigned for %s",
+			  STR(GET_SLOT(curObj, Rf_install("name"))));
+		}
+	    }
+	    
+	    /* Now we have attrVal and need to add this to the node */
+	    namePos = getVectorPos(attrsSlot,
+				   CHAR(STRING_ELT(attrNames, j)));
+	    if (namePos < 0) {
+		/* This is a new element, need to expand the vector */		
+		PROTECT(oattrs = attrsSlot);
+		leno = length(oattrs);
+		PROTECT(onames = getAttrib(attrsSlot, R_NamesSymbol));
+		PROTECT(names = allocVector(STRSXP, leno+1));
+		PROTECT(newASlot = allocVector(VECSXP, leno+1));
+		for (k = 0; k < leno; k++) {
+		    SET_VECTOR_ELT(newASlot, k, STRING_ELT(oattrs, k));
+		    SET_VECTOR_ELT(names, k, STRING_ELT(onames, k));
+		}
+
+		/* Assign the new element */
+		/* FIXME: Why do I need to convert it to char* and
+		   back to STRSXP? */	
+		SET_VECTOR_ELT(curSTR, 0, attrPos);
+		SET_VECTOR_ELT(newASlot, leno, curSTR);
+		SET_VECTOR_ELT(names, leno, STRING_ELT(attrNames, j));
+		setAttrib(newASlot, R_NamesSymbol, names);
+		attrsSlot = newASlot;
+		UNPROTECT(4);
+	    }
+	    else {
+		SET_VECTOR_ELT(curSTR, 0, attrPos);
+		SET_VECTOR_ELT(attrsSlot, namePos, curSTR);
+	    }
+	    UNPROTECT(3);
+	}
+	SET_SLOT(curObj, Rf_install("attrs"), attrsSlot);
+	SET_VECTOR_ELT(objList, i, curObj);
+	UNPROTECT(1);
+    }
+
+    UNPROTECT(2);
+
+    return(objList);
+}
 
 SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Will perform a Graphviz layout on a graph */
@@ -315,6 +394,72 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     }
 
     return(graph);
+}
+
+SEXP Rgraphviz_buildPEList(SEXP to, SEXP edgeMode, SEXP weights, 
+			   SEXP nEdges) {
+    int x, y, curEle = 0;
+    SEXP from;
+    SEXP peList;
+    SEXP peClass, curPE;
+    SEXP curAttrs, curFrom, curTo, curWeights;
+    SEXP attrNames;
+    SEXP tmpToSTR, tmpWtSTR;
+
+    
+    peClass = MAKE_CLASS("pEdge");
+
+    PROTECT(peList = allocVector(VECSXP, INTEGER(nEdges)[0]));
+
+    PROTECT(curAttrs = allocVector(VECSXP, 2));
+
+    PROTECT(attrNames = allocVector(STRSXP, 2));
+    SET_VECTOR_ELT(attrNames, 0, mkChar("arrowhead"));
+    SET_VECTOR_ELT(attrNames, 1, mkChar("weight"));
+    setAttrib(curAttrs, R_NamesSymbol, attrNames);
+
+    PROTECT(from = getAttrib(to, R_NamesSymbol));
+
+    /* For each edge, create a new object of class pEdge */
+    /* and then assign the 'from' and 'to' strings as */
+    /* as well as the default attrs (arrowhead & weight) */
+    for (x = 0; x < length(from); x++) {
+	PROTECT(curFrom = allocVector(STRSXP, 1));
+
+	SET_VECTOR_ELT(curFrom, 0, VECTOR_ELT(from, x));
+	curTo = VECTOR_ELT(to, x);
+	curWeights = VECTOR_ELT(weights, x);
+	
+	for (y = 0; y < length(curTo); y++) {
+	    PROTECT(tmpToSTR = allocVector(STRSXP, 1));
+    
+	    PROTECT(curPE = NEW_OBJECT(peClass));
+
+	    SET_SLOT(curPE, Rf_install("from"), curFrom);
+	    SET_VECTOR_ELT(tmpToSTR, 0, VECTOR_ELT(curTo, y));
+	    SET_SLOT(curPE, Rf_install("to"), tmpToSTR);
+	    
+	    if (strcmp(STR(edgeMode), "directed") == 0)
+		SET_VECTOR_ELT(curAttrs, 0, R_scalarString("open"));
+	    else 
+		SET_VECTOR_ELT(curAttrs, 0, R_scalarString("none"));
+
+	    PROTECT(tmpWtSTR = allocVector(STRSXP, 1));
+
+	    SET_VECTOR_ELT(tmpWtSTR, 0, 
+			   asChar(R_scalarReal(REAL(curWeights)[y])));
+	    SET_VECTOR_ELT(curAttrs, 1, tmpWtSTR);
+
+	    SET_SLOT(curPE, Rf_install("attrs"), curAttrs);
+	    SET_VECTOR_ELT(peList, curEle++, curPE);
+
+	    UNPROTECT(3);
+	}
+	UNPROTECT(1);
+    }
+
+    UNPROTECT(4);
+    return(peList);
 }
 
 SEXP buildRagraph(Agraph_t *g) {
