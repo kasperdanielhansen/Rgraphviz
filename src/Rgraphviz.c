@@ -555,7 +555,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 			 R_scalarInteger(edge->u.label->u.txt.line->width));
 
 		SET_SLOT(curLab, Rf_install("labelColor"),
-			 R_scalarString(node->u.label->fontcolor));
+			 R_scalarString(edge->u.label->fontcolor));
 
 		SET_SLOT(curLab, Rf_install("labelFontsize"),
 			 R_scalarReal(edge->u.label->fontsize));
