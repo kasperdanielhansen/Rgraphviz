@@ -44,8 +44,11 @@ g1 <- randomGraph(V, M, .2)
 z <- agopen(g1,"foo")
 x <- AgEdge(z)  ## list of AgEdge objects
 x[[1]]  ## AgEdge
-a <- splines(x[[1]])
+a <- splines(x[[1]])[[1]]
 a  ## BezierCurve
 
+cPoints(a)
+pointList(a)
+bezierPoints(a)
 }
 \keyword{classes}

@@ -54,17 +54,25 @@ if (is.null(getGeneric("AgNode")))
 setMethod("AgNode", "Ragraph", function(object)
           object@AgNode)
 
-getNodeLocs <- function(object) {
-    if (! is(object, "Ragraph"))
-        stop("need a Ragraph object")
+if (is.null(getGeneric("getNodeXY")))
+    setGeneric("getNodeXY", function(object)
+               standardGeneric("getNodeXY"))
 
+setMethod("getNodeXY", "Ragraph",  function(object) {
     out <- vector(mode="list",length=2)
     names(out) <- c("x","y")
     xys <- lapply(object@AgNode,getNodeCenter)
     out[[1]] <- unlist(lapply(xys,getX))
     out[[2]] <- unlist(lapply(xys,getY))
     out
-}
+})
+
+setMethod("getNodeXY", "AgNode", function(object) {
+    cen <- getNodeCenter(object)
+    out <- list(x=getX(cen), y=getY(cen))
+    out
+})
+
 
 getNodeNames <- function(object) {
     if (!is(object, "Ragraph"))
@@ -433,7 +441,8 @@ setMethod("labelFontsize", "AgTextLabel", function(object)
     })
 
     setMethod("show", "xyPoint", function(object)
-              print(paste(object@x,object@y,sep=",")))
+             cat(paste("x: ", object@x, ", y: ",
+                          object@y, "\n", sep="")))
 
     setMethod("show", "AgEdge", function(object) {
         z <- splines(object)
@@ -466,46 +475,45 @@ setMethod("labelFontsize", "AgTextLabel", function(object)
     })
 
     setMethod("lines","AgEdge",
-          function(x,..., len=0.25,lty=par("lty"),
-                   lwd=par("lwd"), edgemode="undirected",
-                   attrs=list()) {
-              edgeName <- paste(tail(x),head(x),sep="~")
-              attrNames <- names(attrs)
+              function(x,..., len=0.25,lty=par("lty"),
+                       lwd=par("lwd"), edgemode="undirected",
+                       attrs=list()) {
+                  edgeName <- paste(tail(x),head(x),sep="~")
+                  attrNames <- names(attrs)
 
-              z <- splines(x)
+                  z <- splines(x)
 
-              arrowtails <- rep("none", length(z))
-              if (("arrowtail" %in% attrNames)&&
-                  (edgeName %in% names(attrs$arrowtail)))
-                  arrowtails[1] <- as.character(attrs$arrowtail[edgeName])
-              else
-                  arrowtails[1] <- arrowtail(x)
+                  arrowtails <- rep("none", length(z))
+                  if (("arrowtail" %in% attrNames)&&
+                      (edgeName %in% names(attrs$arrowtail)))
+                      arrowtails[1] <- as.character(attrs$arrowtail[edgeName])
+                  else
+                      arrowtails[1] <- arrowtail(x)
 
-              arrowheads <- rep("none", length(z))
-              if (("arrowhead" %in% attrNames)&&
-                  (edgeName %in% names(attrs$arrowhead)))
-                  arrowheads[length(z)] <- as.character(attrs$arrowhead[edgeName])
-              else
-                  arrowheads[length(z)] <- arrowhead(x)
+                  arrowheads <- rep("none", length(z))
+                  if (("arrowhead" %in% attrNames)&&
+                      (edgeName %in% names(attrs$arrowhead)))
+                      arrowheads[length(z)] <- as.character(attrs$arrowhead[edgeName])
+                  else
+                      arrowheads[length(z)] <- arrowhead(x)
 
-              if (("color" %in% attrNames)&&
-                  (edgeName %in% names(attrs$color)))
-                  edgeColor <- as.character(attrs$color[edgeName])
-              else
-                  edgeColor <- color(x)
+                  if (("color" %in% attrNames)&&
+                      (edgeName %in% names(attrs$color)))
+                      edgeColor <- as.character(attrs$color[edgeName])
+                  else
+                      edgeColor <- color(x)
 
-              ## Adjust arrowhead size according to attr
-              len <- len * as.numeric(arrowsize(x))
+                  ## Adjust arrowhead size according to attr
+                  len <- len * as.numeric(arrowsize(x))
 
-              mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
-                     MoreArgs=list(len=len, col=edgeColor,
-                     lty=lty, lwd=lwd, ...))
+                  mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
+                         MoreArgs=list(len=len, col=edgeColor,
+                         lty=lty, lwd=lwd, ...))
 
-              drawTxtLabel(txtLabel(x), objName=edgeName, objAttrs=attrs)
+                  drawTxtLabel(txtLabel(x), objName=edgeName, objAttrs=attrs)
 
-              return(NULL)
-          })
-
+                  return(NULL)
+              })
 }
 
 

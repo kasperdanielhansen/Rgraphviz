@@ -38,5 +38,8 @@ g1 <- randomGraph(V, M, .2)
 z <- agopen(g1,"foo")
 x <- boundBox(z)
 x
+
+botLeft(x)
+upRight(x)
 }
 \keyword{classes}

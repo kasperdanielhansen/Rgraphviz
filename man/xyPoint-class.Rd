@@ -35,5 +35,9 @@ Objects can be created by calls of the form \code{new("xyPoint", ...)}.
    z <- new("xyPoint", x=150, y=30)
    z
    getPoints(z)
+
+   getX(z)
+   getY(z)
+
 }
 \keyword{classes}
