@@ -74,14 +74,15 @@ SEXP Rgraphviz_graph2ps(SEXP graph, SEXP outFile) {
 }
 
 
-SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP eList) {
+SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
+		      SEXP to, SEXP weights) {
     Agraph_t *g;
     Agnode_t *head, *tail;
     Agedge_t *curEdge;
     SEXP graphRef, elmt, obj, klass;
     int ag_k = 0;
     int i, curNode;
-
+    
     if (!isInteger(kind))
 	error("kind must be an integer value");
     else
@@ -89,9 +90,6 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP eList) {
 
     if (!isString(name))
 	error("name must be a string");
-
-    if (!isNewList(eList))
-	error("nelist must be a list");
 
     aginit();
     g = agopen(STR(name), ag_k);
@@ -106,27 +104,22 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP eList) {
     for (i = 0; i < length(nodes); i++) {
 	agnode(g, CHAR(STRING_ELT(nodes,i)));
     }
-
     /* now fill in the edges */
-    for (i = 0; i < length(eList); i++) {
-	PROTECT(elmt = VECTOR_ELT(eList, i));
-	curNode = INTEGER(GET_SLOT(elmt, 
-				   Rf_install("bNode")))[0];
+    for (i = 0; i < length(from); i++) {
+	curNode = INTEGER(from)[i];
 	head = agfindnode(g, CHAR(STRING_ELT(nodes,curNode-1)));
 	if (head == NULL)
 	    error("Missing head node");
 	/* Get weights for these edges */
-	curNode = INTEGER(GET_SLOT(elmt, 
-				   Rf_install("eNode")))[0]; 
+	curNode = INTEGER(to)[i];
+	fflush(stdout);
 	tail = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
 	if (tail == NULL)
 	    error("Missing tail node");
 	if (agfindedge(g,head,tail) == NULL) {  
-	    curEdge = agedge(g, tail, head);
-	    curEdge->u.weight = INTEGER(GET_SLOT(elmt,
-						 Rf_install("weight")))[0];
-	}  
-	UNPROTECT(1);
+		curEdge = agedge(g, tail, head);
+		curEdge->u.weight = INTEGER(weights)[i];
+	}
     }
 
     PROTECT(graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
@@ -138,7 +131,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP eList) {
     
     SET_SLOT(obj, Rf_install("agraph"), graphRef);
     SET_SLOT(obj, Rf_install("laidout"), R_scalarLogical(FALSE));
-    SET_SLOT(obj, Rf_install("numEdges"), R_scalarInteger(length(eList)));
+    SET_SLOT(obj, Rf_install("numEdges"), R_scalarInteger(agnedges(g)));
 
     UNPROTECT(2);
 
@@ -216,7 +209,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 	SET_SLOT(curXY,Rf_install("y"),R_scalarInteger(node->u.coord.y));
 	SET_SLOT(curNL,Rf_install("center"),curXY);
 	SET_SLOT(curNL,Rf_install("height"),R_scalarInteger(node->u.ht));
-	SET_SLOT(curNL,Rf_install("rWidth"),R_scalarReal(node->u.rw));
+	SET_SLOT(curNL,Rf_install("rWidth"),R_scalarInteger(node->u.rw));
 	SET_SLOT(curNL,Rf_install("lWidth"),R_scalarInteger(node->u.lw));
 	SET_ELEMENT(outLst, i, curNL);
 	node = agnxtnode(g,node);

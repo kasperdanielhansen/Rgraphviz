@@ -5,6 +5,14 @@
     .initControlPoints(where)
     .initBoundingBox(where)
     .initXYPoint(where)
+
+    .initRgraphvizPlot(where)
+}
+
+.initRgraphvizPlot <- function(where) {
+    setClass("RgraphvizPlot", representation(), where=where)
+
+
 }
 
 .initRagraph <- function(where) {
@@ -16,8 +24,8 @@
                                        nodes="list",
                                        edgePoints="list",
                                        boundBox="boundingBox"
-                                       )
-             )
+                                       ),
+             where=where)
 
     if (is.null(getGeneric("agraph")))
         setGeneric("agraph", function(object)

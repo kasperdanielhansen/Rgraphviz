@@ -1,8 +1,26 @@
 .initRgraphvizMethods <- function(where) {
+    if (is.null(getGeneric("graph2graphviz")))
+        setGeneric("graph2graphviz", function(object,...)
+                   standardGeneric("graph2graphviz"), where=where)
+
+    setMethod("graph2graphviz", "graphNEL", function(object) {
+        ## Return a 3 column integer matrix (from, to, weight)
+        nodeNames <- nodes(object)
+        ed <- edges(object)
+        elem <- sapply(ed, length)
+        from <- rep(names(elem), elem)
+        from <- match(from, nodeNames)
+
+        to <- unlist(ed)
+        to <- match(to, nodeNames)
+
+        weights <- unlist(edgeWeights(object))
+        gvMtrx <- matrix(c(from, to, weights), ncol=3)
+        gvMtrx
+    }, where=where)
+
     setMethod("plot", c("graphNEL", "missing"),
               function(x,y,...){
-                  require(Rgraphviz)
-
                   ## Get kind from graph in future
                   g = agopen(x, name, layout=TRUE)
 
@@ -41,3 +59,5 @@
                   }
               }, where=where)
 }
+
+

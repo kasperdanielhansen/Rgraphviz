@@ -1,13 +1,15 @@
 agopen <- function(graph, name, kind=0, layout=TRUE) {
-    ### !!! 'kind' is really a set of defined values.  Need to figure
-    ### this out
+    ## !!! 'kind' is really a set of defined values.  Need to figure
+    ## this out
 
-    edges <- uniqueEdges(graph)
+    edgeMtrx <- graph2graphviz(graph)
+
     nodes <- nodes(graph)
-    weights <- edgeWeights(graph)
 
-    g <- .Call("Rgraphviz_agopen", as.character(name), as.integer(kind),
-               as.vector(nodes), as.list(edges), as.list(weights))
+    g <- .Call("Rgraphviz_agopen", as.character(name),
+               as.integer(kind), as.vector(nodes),
+               as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
+               as.integer(edgeMtrx[,3]))
 
     if (layout)
         return(layoutGraph(g))
