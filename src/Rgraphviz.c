@@ -254,7 +254,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	PROTECT(slotTmp = GET_SLOT(graph, install("agraph")));
 	CHECK_Rgraphviz_graph(slotTmp);
 	g = R_ExternalPtrAddr(slotTmp);
-	
+
 	if (!isInteger(layoutType))
 	    error("layoutType must be an integer value");
 	else {
