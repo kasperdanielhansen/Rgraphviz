@@ -1,4 +1,4 @@
-agopen <- function(graph, name, kind=0) {
+agopen <- function(graph, name, kind=0, layout=TRUE) {
     ### !!! 'kind' is really a set of defined values.  Need to figure
     ### this out
 
@@ -6,31 +6,48 @@ agopen <- function(graph, name, kind=0) {
     weights <- edgeWeights(graph)
 
     g <- .Call("Rgraphviz_agopen", as.character(name), as.integer(kind),
-               as.list(edges), as.list(weights))
+               as.list(edges), as.list(weights), layout)
     return(g)
 }
 
+layoutGraph <- function(graph) {
+    if (laidout(graph) == FALSE) {
+        z <- .Call("Rgraphviz_doDotLayout", graph);
+        return(z)
+    }
+    else {
+        return(graph)
+    }
+}
+
 libgraph2ps <- function(graph, fileName="graph.ps") {
+    if (laidout(graph) == FALSE)
+        graph <- layoutGraph(graph)
     x <- .Call("Rgraphviz_graph2ps",graph,as.character(fileName))
+    return(graph)
 }
 
 graph2ps <- function(graph, name, kind=0, fileName="graph.ps") {
-    g <- agopen(graph, name, kind)
-    libgraph2ps(g,fileName)
+    g <- switch(class(graph),
+                "graphNEL"=agopen(graph, name, kind, layout=TRUE),
+                "Ragraph"=graph
+                )
+
+    return(libgraph2ps(g,fileName))
 }
 
 plotGraph <- function(graph, name="graph") {
     ## Really should go into 'graph' package, as a plot method for
     ## the graph class.
 
-    ## Get 'kind' from graph object
-    g <- agopen(graph, name)
+    ## Get kind from graph in future
+    g = agopen(graph, name, layout=TRUE)
 
     edges <- edges(graph)
     names <- names(edges)
 
     if (length(names) > 0) {
-        nodes <- getNodeLocs(g)
+        nodes <- nodeLocs(g)
 
         maxX <- max(nodes[,1])
         rad <- rep(maxX/20, nrow(nodes))
@@ -49,6 +66,7 @@ plotGraph <- function(graph, name="graph") {
     else {
         stop("No nodes in graph")
     }
+    return(g)
 }
 
 getLineDiffs <- function(edges, i, names, x, y, rad) {
@@ -95,10 +113,4 @@ plotEdge <- function(edge, i, edges, names, x, y, z) {
            x[dimPos]-x1[diffPos], y[dimPos]-y1[diffPos],code=2)
 }
 
-getNodeLocs <- function(graph) {
-    ## Returns a matrix of x/y positions for each node,
-    ## based off a libgraph graph object
-    m <- .Call("Rgraphviz_getNodeLocs",graph)
-    m
-}
 
