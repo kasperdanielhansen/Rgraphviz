@@ -29,4 +29,5 @@ z <- agopen(g1,"foo",layout=FALSE)
 x <- z
 a <- layoutGraph(z)
 }
-\keyword{utilities}
+\keyword{graphs}
+

@@ -25,4 +25,4 @@ g1 <- randomGraph(V, M, .2)
 z <- agopen(g1,"foo",layout=FALSE)
 agwrite(z,tempfile())
 }
-\keyword{utilities}
+\keyword{graphs}

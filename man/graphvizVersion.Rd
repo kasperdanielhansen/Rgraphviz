@@ -15,4 +15,5 @@ graphvizVersion()
 \examples{
 graphvizVersion()
 }
-\keyword{utilities}
+\keyword{graphs}
+
