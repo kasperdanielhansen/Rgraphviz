@@ -67,17 +67,7 @@ isConnected(g2)
 z <- plot(g2,"twopi")
 @
 
-Note that the "twopi" layout method is heavily dependent on what is
-specified to be the central node.  This can be defined by using the
-'centerNode' argument to the plot (only useful for "twopi" layouts),
-and if no 'centerNode' is specified the system will attempt to
-determine a suitable default:
-
-<<twopiCenter, fig=TRUE>>=
-print("need a new example, broken")
-
-z <- plot(g2,"twopi",centerNode="r")
-@
+% We need an example here about how to do center node using attrs list
 
 And finally, to demonstrate how the differing layout methods work on
 this second graph:
@@ -135,6 +125,11 @@ This list elements correspond to the 'tail' ('from') nodes.  Each
 element contains a named character vector where the elements of the
 vector are the edge labels and the names of said vector are the 'head'
 ('to') node that corresponds with that edge.  As an example: 
+
+In both situations, the user can alternatively supply a single value
+to either "nodeLabels" or "edgeLabels", and in that case that value
+will be used for all of the node or edge labels (as appropriate for
+the parameter).
 
 <<edgeLabels>>=
 edgeLabs <- vector(length=length(nodes(g1)), mode="list")
