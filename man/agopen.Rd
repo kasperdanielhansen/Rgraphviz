@@ -9,7 +9,7 @@
 \usage{
 agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
        layoutType=c("dot","neato","twopi")[1],
-       attrs=getDefaultAttrs(layoutType),
+       attrs=list(),
        nodeAttrs=list(), edgeAttrs=list(),
        subGList=list(), edgeMode=edgemode(graph),
        recipEdges=c("combined", "distinct"))
