@@ -5,5 +5,5 @@ Version: 1.3.11
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>
 Maintainer: Jeff Gentry <jgentry@jimmy.harvard.edu>
 Depends: R (>= 1.8.0), graph
-SystemRequirements: Graphviz version 1.10
+SystemRequirements: Graphviz release version 1.10
 License: LGPL
