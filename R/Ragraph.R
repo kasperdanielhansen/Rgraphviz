@@ -23,14 +23,6 @@ if (is.null(getGeneric("laidout")))
 setMethod("laidout", "Ragraph", function(object)
           object@laidout)
 
-.initgraphMethods <- function() {
-    if (is.null(getGeneric("nodes")))
-        setGeneric("nodes", function(object)
-                   standardGeneric("nodes"))
-    setMethod("nodes", "Ragraph", function(object)
-              object@nodes)
-}
-
 if (is.null(getGeneric("boundBox")))
     setGeneric("boundBox", function(object)
                standardGeneric("boundBox"))
@@ -55,10 +47,6 @@ setMethod("getNodeLocs", "Ragraph", function(object) {
     out
 })
 
-setMethod("show", "Ragraph", function(object) {
-    print(paste("A graph with",length(nodes(object)),
-                "nodes."))
-})
 
 ### Class boundingBox
 
@@ -184,43 +172,6 @@ setMethod("getSpline", "AgEdge", function(object, pos) {
         return(NULL)
 })
 
-setMethod("show", "AgEdge", function(object) {
-    z <- splines(object)
-    out <- paste("An edge with",numSplines(object),"BezierCurve objects:")
-    cat(out,"\n")
-    for (i in seq(along=z))
-        show(z[[i]])
-})
-
-setMethod("lines","AgEdge",
-          function(x,...,col=par("col"),len=0.25) {
-              z <- splines(x)
-              lapply(z,lines,col=col)
-
-              ## Now need to draw the appropriate arrows, if any
-              if (startArrow(x)) {
-                  ## Draw end arrow
-                  ## get the first point of the first splie
-                  curP <-cPoints(z[[1]])[[1]]
-                  ## get the edge's ep
-                  curSP <- sp(x)
-                  arrows(getX(curP), getY(curP), getX(curSP),
-                         getY(curSP), col=col, length=len)
-              }
-              if (endArrow(x)) {
-                  ## Draw start arrow
-                  ## get the last point of the last spline
-                  epPoints <- cPoints(z[[length(z)]])
-                  curP <- epPoints[[length(epPoints)]]
-                  ## get the edge's sp
-                  curEP <- ep(x)
-                  arrows(getX(curP), getY(curP), getX(curEP),
-                         getY(curEP), col=col, length=len)
-              }
-
-              return(NULL)
-          })
-
 ### Class BezierCurve
 
 setGeneric("BezierCurve", function(object)
@@ -255,21 +206,6 @@ setMethod("bezierPoints", "BezierCurve", function(object) {
     out
 })
 
-setMethod("lines", "BezierCurve", function(x,...,col=par("col")) {
-    z <- bezierPoints(x)
-    lines(z[,1],z[,2],col=col)
-})
-
-setMethod("show", "BezierCurve", function(object) {
-    z <- cPoints(object)
-    out <- paste(unlist(lapply(z,
-                               function(x){paste(getPoints(x),
-                                                 collapse=",")})),
-                 collapse=" ")
-    out <- paste(out,"\n")
-    cat(out)
-})
-
 
 ### CLass xyPoint
 setGeneric("xyPoint", function(object)
@@ -296,8 +232,81 @@ if (is.null(getGeneric("getPoints")))
 setMethod("getPoints", "xyPoint", function(object)
           c(object@x, object@y))
 
-setMethod("show", "xyPoint", function(object)
-          print(paste(object@x,object@y,sep=",")))
+.initgraphMethods <- function() {
+    if (is.null(getGeneric("nodes")))
+        setGeneric("nodes", function(object)
+                   standardGeneric("nodes"))
+    setMethod("nodes", "Ragraph", function(object)
+              object@nodes)
+}
+
+
+.initRgraphvizShowMethods <- function() {
+    setMethod("show", "Ragraph", function(object) {
+        print(paste("A graph with",length(nodes(object)),
+                    "nodes."))
+    })
+
+    setMethod("show", "xyPoint", function(object)
+              print(paste(object@x,object@y,sep=",")))
+
+    setMethod("show", "AgEdge", function(object) {
+        z <- splines(object)
+        out <- paste("An edge with",numSplines(object),"BezierCurve objects:")
+        cat(out,"\n")
+        for (i in seq(along=z))
+            show(z[[i]])
+    })
+
+    setMethod("show", "BezierCurve", function(object) {
+        z <- cPoints(object)
+        out <- paste(unlist(lapply(z,
+                                   function(x){paste(getPoints(x),
+                                                     collapse=",")})),
+                     collapse=" ")
+        out <- paste(out,"\n")
+        cat(out)
+    })
+}
+
+.initRgraphvizLineMethods <- function() {
+    ## initializes methods for generics that exist in R-base
+
+    setMethod("lines", "BezierCurve", function(x,...,col=par("col")) {
+        z <- bezierPoints(x)
+        lines(z[,1],z[,2],col=col)
+    })
+
+    setMethod("lines","AgEdge",
+          function(x,...,col=par("col"),len=0.25) {
+              z <- splines(x)
+              lapply(z,lines,col=col)
+
+              ## Now need to draw the appropriate arrows, if any
+              if (startArrow(x)) {
+                  ## Draw end arrow
+                  ## get the first point of the first splie
+                  curP <-cPoints(z[[1]])[[1]]
+                  ## get the edge's ep
+                  curSP <- sp(x)
+                  arrows(getX(curP), getY(curP), getX(curSP),
+                         getY(curSP), col=col, length=len)
+              }
+              if (endArrow(x)) {
+                  ## Draw start arrow
+                  ## get the last point of the last spline
+                  epPoints <- cPoints(z[[length(z)]])
+                  curP <- epPoints[[length(epPoints)]]
+                  ## get the edge's sp
+                  curEP <- ep(x)
+                  arrows(getX(curP), getY(curP), getX(curEP),
+                         getY(curEP), col=col, length=len)
+              }
+
+              return(NULL)
+          })
+
+}
 
 bezier <- function(pnts, n, t) {
     ## Used for calculation of bezier splines

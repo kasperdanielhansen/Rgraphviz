@@ -4,5 +4,8 @@
 
     require(graph) || stop ("Rgraphviz requires package graph.")
     .initgraphMethods()
+    .initRgraphvizLineMethods()
+    .initRgraphvizShowMethods()
+    .initRgraphvizPlotMethods()
 }
 
