@@ -13,7 +13,7 @@
   A plot method for \code{graph} objects.
 }
 \section{Usage}{
-\code{plot(x, y, ..., nodeLabels, 
+\code{plot(x, y, ..., nodeLabels, nodeShape="circle",
     defNodeCol=par("bg"), nodeCols=character(), defTextCol=par("fg"),
     textCols=character(), defEdgeCol=par("col"), edgeCols=list(),
     fixedNodeSize=TRUE, subGList,attrs)}
@@ -25,6 +25,8 @@
   \item{nodeLabels}{A character vector containing labels for the nodes.
     If not provided, the plot will use the node names.  If provided, the
     vector must have length equal to the number of nodes}
+  \item{nodeShape}{The shape of the nodes.  Currently can be one of
+    'circle' or 'ellipse'}
   \item{defNodeCol}{This is the default color to use for nodes}
   \item{nodeCols}{A named character vector of colors.  Any node which
     matches the name of an element in this vector will have that color
@@ -59,7 +61,7 @@
   http://www.research.att.com/~erg/graphviz/info/attrs.html.  All
   attribute values should be entered as character strings (even if the
   requested value is to be otherwise).
-
+  
   Currently only global settings are implemented for nodes and edges,
   this will change in the near future such that these attributes can
   be set per edge/node.

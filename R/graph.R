@@ -27,7 +27,7 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
 .initRgraphvizPlotMethods <- function() {
 
     setMethod("plot", "graphNEL",
-              function(x, y, ..., nodeLabels,
+              function(x, y, ..., nodeLabels,nodeShape="circle",
                        defNodeCol=par("bg"), nodeCols=character(),
                        defTextCol=par("fg"), textCols=character(),
                        defEdgeCol=par("col"),edgeCols=list(),
@@ -85,8 +85,9 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                   ## as there might be some situations where we want
                   ## different defaults then graphviz
                   ## !! Should look at removing these in all cases
-                  if (is.null(attrs$node$shape))
-                      attrs$node$shape <- "circle"
+                  if (! nodeShape %in% c("circle","ellipse"))
+                      stop("nodeShape must be circle or ellipse")
+                  attrs$node$shape <- nodeShape
 
                   ## If the user hasn't explicitly defined a 'size'
                   ## attribute, set it to match the size of the plotting
@@ -234,7 +235,8 @@ drawEllipseNodes <- function(nodeX, nodeY, heights, widths, nodeCols)
 {
     ##!!! GET RID OF FOR LOOP
     for (i in 1:length(nodeX)) {
-        ellipse(nodeX[i], nodeY[i], heights[i], widths[i])
+        ellipse(nodeX[i], nodeY[i], heights[i],
+                widths[i],bg=nodeCols[i])
     }
     return(min(widths)/72)
 }

@@ -32,7 +32,6 @@ R_scalarString(const char *v)
   return(ans);
 }
 
-
 SEXP getListElement(SEXP list, char *str) {
     SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol);
     int i;
@@ -229,7 +228,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	else {
 	    tmpGraph = g;
 	}
-	
+
 	if (agfindedge(tmpGraph, head, tail) == NULL) {
 	    curEdge = agedge(tmpGraph, tail, head);
 	    curEdge->u.weight = INTEGER(weights)[i];
@@ -368,10 +367,11 @@ SEXP getNodeLayouts(Agraph_t *g) {
 }
 
 SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
-    SEXP outList, curCP, curEP, pntList, pntSet, curXY;
-    SEXP epClass, cpClass, xyClass;
+    SEXP outList, curCP, curEP, pntList, pntSet, curXY, curLab;
+    SEXP epClass, cpClass, xyClass, labClass;
     Agnode_t *node, *head;
     Agedge_t *edge;
+    char *tmpString;
     bezier bez;
     int nodes;
     int i,k,l,pntLstEl;
@@ -380,6 +380,10 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     epClass = MAKE_CLASS("AgEdge");
     cpClass = MAKE_CLASS("BezierCurve");
     xyClass = MAKE_CLASS("xyPoint");
+    labClass = MAKE_CLASS("AgTextLabel");
+
+    /* tmpString is used to convert a char to a char* w/ labels */
+    tmpString = (char *)malloc(2 * sizeof(char));
 
     PROTECT(outList = allocVector(VECSXP, numEdges));
 
@@ -442,6 +446,31 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 	    SET_SLOT(curEP, Rf_install("head"),
 		     R_scalarString(head->name));
 
+	    /* Get the label information */
+	    if (edge->u.label != NULL) {
+		PROTECT(curLab = NEW_OBJECT(labClass));
+		SET_SLOT(curLab, Rf_install("labelText"),
+			 R_scalarString(edge->u.label->line->str));
+		/* Get the X/Y location of the label */
+		PROTECT(curXY = NEW_OBJECT(xyClass));
+		SET_SLOT(curXY, Rf_install("x"),
+			 R_scalarInteger(edge->u.label->p.x));
+		SET_SLOT(curXY, Rf_install("y"),
+			 R_scalarInteger(edge->u.label->p.y));
+		SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
+		UNPROTECT(1);
+			 
+		snprintf(tmpString, 2, "%c",edge->u.label->line->just);
+		SET_SLOT(curLab, Rf_install("labelJust"),
+			 R_scalarString(tmpString));
+
+		SET_SLOT(curLab, Rf_install("labelWidth"),
+			 R_scalarInteger(edge->u.label->line->width));
+
+		SET_SLOT(curEP, Rf_install("label"), curLab);
+		UNPROTECT(1);
+	    }
+
 	    SET_ELEMENT(outList, curEle++, curEP);
 	    UNPROTECT(2);
 	    edge = agnxtout(g, edge);
@@ -450,6 +479,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     }
     UNPROTECT(1);
 
+    free(tmpString);
     return(outList);
 }
 
@@ -495,7 +525,6 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
     else
 	agedgeattr(g, "dir", "none");
     agedgeattr(g, "weight", "1.0");
-
 
     /* Neato spline type */
 

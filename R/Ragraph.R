@@ -114,7 +114,14 @@ setClass("AgEdge", representation(splines="list",
                                   sp="xyPoint",
                                   ep="xyPoint",
                                   head="character",
-                                  tail="character"))
+                                  tail="character",
+                                  label="AgTextLabel"))
+
+if (is.null(getGeneric("label")))
+    setGeneric("label", function(object)
+               standardGeneric("label"))
+setMethod("label", "AgEdge", function(object)
+          object@label)
 
 if (is.null(getGeneric("splines")))
     setGeneric("splines", function(object)
@@ -170,12 +177,11 @@ setMethod("getSpline", "AgEdge", function(object, pos) {
         return(object@splines[[pos]])
     else
         return(NULL)
+
 })
 
 ### Class BezierCurve
 
-setGeneric("BezierCurve", function(object)
-           standardGeneric("BezierCurve"))
 setClass("BezierCurve", representation(cPoints="list"))
 
 if (is.null(getGeneric("cPoints")))
@@ -208,11 +214,8 @@ setMethod("bezierPoints", "BezierCurve", function(object) {
 
 
 ### CLass xyPoint
-setGeneric("xyPoint", function(object)
-           standardGeneric("xyPoint"))
 setClass("xyPoint", representation(x="numeric",
-                                   y="numeric")
-         )
+                                   y="numeric"))
 
 if (is.null(getGeneric("getX")))
     setGeneric("getX", function(object)
@@ -231,6 +234,38 @@ if (is.null(getGeneric("getPoints")))
                standardGeneric("getPoints"))
 setMethod("getPoints", "xyPoint", function(object)
           c(object@x, object@y))
+
+### Class AgTextLabel
+## used to represent a 'textlabel_t' and related information
+setClass("AgTextLabel", representation(labelText="character",
+                                       labelLoc="xyPoint",
+                                       labelJust="character",
+                                       labelWidth="integer"))
+if (is.null(getGeneric("labelText")))
+    setGeneric("labelText", function(object)
+               standardGeneric("labelText"))
+setMethod("labelText", "AgTextLabel", function(object)
+          object@labelText)
+
+if (is.null(getGeneric("labelLoc")))
+    setGeneric("labelLoc", function(object)
+               standardGeneric("labelLoc"))
+setMethod("labelLoc", "AgTextLabel", function(object)
+          object@labelLoc)
+
+if (is.null(getGeneric("labelJust")))
+    setGeneric("labelJust", function(object)
+               standardGeneric("labelJust"))
+setMethod("labelJust", "AgTextLabel", function(object)
+          object@labelJust)
+
+if (is.null(getGeneric("labelWidth")))
+    setGeneric("labelWidth", function(object)
+               standardGeneric("labelWidth"))
+setMethod("labelWidth","AgTextLabel", function(object)
+          object@labelWidth)
+
+
 
 .initgraphMethods <- function() {
     if (is.null(getGeneric("nodes")))
@@ -301,6 +336,14 @@ setMethod("getPoints", "xyPoint", function(object)
                   curEP <- ep(x)
                   arrows(getX(curP), getY(curP), getX(curEP),
                          getY(curEP), col=col, length=len)
+              }
+
+              label <- label(x)
+              if (!is.null(label)) {
+                  ## This edge has a label, need to display it
+                  ## !! For now, just plot text at X/Y
+
+
               }
 
               return(NULL)

@@ -30,6 +30,7 @@
 SEXP R_scalarReal(double);
 SEXP R_scalarInteger(int);
 SEXP R_scalarLogical(Rboolean);
+SEXP R_scalarString(const char *);
 SEXP getListElement(SEXP, char*);
 
 SEXP Rgraphviz_init(void);
