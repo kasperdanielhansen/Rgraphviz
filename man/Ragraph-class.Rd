@@ -6,6 +6,7 @@
 \alias{agraph}
 \alias{nodes}
 \alias{boundBox}
+\alias{getNodeLocs}
 \title{Class "Ragraph": A class to handle libgraph representations}
 \description{Class \code{Ragraph} is used to handle libgraph
   representations of R graph objects.}

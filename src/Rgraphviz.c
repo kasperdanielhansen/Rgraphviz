@@ -60,24 +60,23 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     Agraph_t *g;
     int i;
     Rboolean laidout;
-    SEXP slotTmp, elmt, graphNames;
+    SEXP slotTmp, elmt, attrNames;
 
     /* !!!! Need to check the neames on attrs */
 
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == TRUE)
 	error("graph is already laid out");
-
-    slotTmp = GET_SLOT(graph, install("agraph"));
+    slotTmp = GET_SLOT(graph, Rf_install("agraph"));
     CHECK_Rgraphviz_graph(slotTmp);
     g = R_ExternalPtrAddr(slotTmp);
     
     /* Currently only handling graph-wide attributes */
     PROTECT(elmt = getListElement(attrs, "graph"));
     /* Now elmt is a list of attributes to set */
-    graphNames = getAttrib(elmt, R_NamesSymbol);
+    attrNames = getAttrib(elmt, R_NamesSymbol);
     for (i = 0; i < length(elmt); i++) {
-	
+	agset(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
     }
 
     UNPROTECT(1);
@@ -115,6 +114,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
     for (i = 0; i < length(nodes); i++) {
 	agnode(g, CHAR(STRING_ELT(nodes,i)));
     }
+
     /* now fill in the edges */
     for (i = 0; i < length(from); i++) {
 	curNode = INTEGER(from)[i];
@@ -169,6 +169,8 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	if (!isInteger(layoutType))
 	    error("layoutType must be an integer value");
 	else {
+	    printf("Switching on type\n");
+	    fflush(stdout);
 	    switch(INTEGER(layoutType)[0]) {
 	    case DOTLAYOUT:
 		g = dotLayout(g);
@@ -183,7 +185,8 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		error("Invalid layout type\n");
 	    }
 	}
-	
+	printf("Main layout complete\n");
+	fflush(stdout);
 	PROTECT(nLayout = getNodeLayouts(g));
 	PROTECT(bb = getBoundBox(g));
 	PROTECT(cPoints= 
@@ -359,19 +362,14 @@ Agraph_t *neatoLayout(Agraph_t *g) {
 
     agset(g, "overlap", "scale");
     agset(g, "splines", "true");
-	
 
-    graph_init(g);
-    g->u.drawing->engine = NEATO;
-    neato_init_node_edge(g);
+    neato_init_graph(g);
     nG = scan_graph(g);
-    
     p = agget(g,"model");
     if (p && (streq(p,"circuit")))
 	circuit_model(g,nG);
     else
 	shortest_path(g, nG);
-
     initial_positions(g, nG);
     diffeq_model(g, nG);
     solve_model(g, nG);
@@ -379,21 +377,22 @@ Agraph_t *neatoLayout(Agraph_t *g) {
     adjustNodes(g);
     spline_edges(g);
     dotneato_postprocess(g, dot_nodesize);
-   
     return(g);
 }
 
 Agraph_t *twopiLayout(Agraph_t *g) {
     Agnode_t* ctr;
-/*
-    g->u.drawing->engine = TWOPI
+    
+    twopi_init_graph(g); 
     ctr = agfstnode(g);
     twopi_init_graph(g);
     circleLayout(g,ctr);
     adjustNodes(g);
+    printf("f\n");
     spline_edges(g);
+    printf("g\n");
     dotneato_postprocess(g,twopi_nodesize);
-*/    
+    printf("h\n");
     return(g);
 }
 
@@ -402,17 +401,16 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
     /* if we want to dynamically set them, we need */
     /* to have defined defaults manually */
 
+    /* Note that not all defaults are exactly as in normal graphviz */
+
     /*** GRAPH ATTRS ***/
     /* Neato overlap type */
     agraphattr(g, "overlap", "");
-    agraphattr(g, "splines", "false");
+    agraphattr(g, "splines", "true");
     agraphattr(g, "model", "");
 
     /*** NODE ATTRS ***/
-    /* !!!! This is somewhat temporary until we allow */
-    /* !!!! for all attributes to be settable in R */
-    if (!agfindattr(g->proto->n,"shape"))
-	agnodeattr(g,"shape","circle");
+    agnodeattr(g,"shape","circle");
 
     /*** EDGE ATTRS ***/
     /* Arrow direction */
