@@ -9,6 +9,8 @@
 \alias{ep}
 \alias{getSpline}
 \alias{numSplines}
+\alias{head}
+\alias{tail}
 \title{Class "AgEdge": A class to describe an edge for a Ragraph object}
 \description{  This class is used to represent edges for the
   \code{Ragraph} class.  One can retrieve various pieces of information
@@ -28,6 +30,10 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
       point of the edge}
     \item{\code{ep}:}{Object of class \code{"xyPoint"} The end point of
       the edge}
+    \item{code{head}:}{Object of class \code{"character"} The head node
+      for this edge}
+    \item{code{tail}:}{Object of class \code{"character"} The tail node
+      for this edge}
   }
 }
 
@@ -42,6 +48,8 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
     \item{getSpline}{Convenience method to retrieve a specific spline}
     \item{show}{Displays a concise description of the object}
     \item{lines}{Draws the edge}
+    \item{head}{Gets the head slot}
+    \item{tail}{Gets the tail slot}
   }
 }
 \author{Jeff Gentry}
