@@ -254,7 +254,8 @@
       \code{black}.} 
     \item{\code{decorate}:}{If TRUE, attach edge label to edge by a
       2-segment polyline, underlining the label, then going to the
-      closest point of the spline.  Default is \code{FALSE}.}
+      closest point of the spline.  Default is \code{FALSE}.  Currently
+      unimplemented.} 
     \item{\code{dir}:}{Edge type drawing, which ends should get the
       arrowhead.  R only(?).  For directed graphs, this defaults to
       \code{forward} and undirected graphs default to \code{both}.
@@ -262,15 +263,17 @@
       directions) and \code{back} (Arrow on the tail only)}
     \item{\code{fontcolor}:}{The color used for text.  The
       default value is \code{black} in R}
-    \item{\code{fontname}:}{Font used for text.  Defaults to Times Roman}
+    \item{\code{fontname}:}{Font used for text.  Defaults to Times
+      Roman.  Currently unimplemented.}
     \item{\code{fontsize}:}{Font size, used for text.  Defaults to
       \code{14.0} with a minimum value of \code{1.0}}
     \item{\code{headclip}:}{Head of the edge is clipped to the boundary
       of the head node, otherwise it goes to the center of the node.
-      This is a boolean value with the default of \code{TRUE}}
+      This is a boolean value with the default of \code{TRUE}.
+      Currently unimplemented}
     \item{\code{headlabel}:}{Label for the head of the edge.  See
       \code{label} in \code{Graph Attributes} for a description of
-      additional escape sequences.}
+      additional escape sequences.  Currently unimplemented.}
     \item{\code{headport}:}{Where on the node to aim the edges, uses
       \code{center},
       \code{n}, \code{s}, \code{e}, \code{nw}, \code{nw}, \code{se}, and
@@ -280,30 +283,24 @@
       additional escape sequences.}
     \item{\code{labelangle}:}{Angle in degrees that the label is
       rotated, as a double.  Default is \code{-25.0} with a minimum
-      value of \code{-180.0}}
+      value of \code{-180.0}.  Currently unimplemented.}
     \item{\code{labeldistance}:}{Multiplicative scaling factor adjusting
       the distance that the label is from the node.  This is a double
       value with a default of \code{1.0} and a minimum value of \code{0.0}.}
-    \item{\code{labelfontcolor}:}{Color used for the edge labels.  This
-      defaults to \code{black}} 
-    \item{\code{labelfontname}:}{Font used for the edge labels.  See
-      \code{fontname}} 
-    \item{\code{labelfontsize}:}{Size used for the edge labels.  See
-      \code{fontsize}. }
-    \item{\code{layer}:}{Specifies the layers that this edge is present,
+   \item{\code{layer}:}{Specifies the layers that this edge is present,
       type of \code{layerRange}.  This is specified as a string in the
       format \code{layerID} or \code{layerIDslayerIDslayerID...}, where
       \code{s} is a character from the \code{layersep} attribute.  The
       \code{layerID} attribute can be \code{all}, a decimal integer or a
     layer name.  Defaults to the empty string.} 
-    \item{\code{pos}:}{Position of the spline control points, in points}
     \item{\code{style}:}{Set line style for the edge.  R only.  Can be
       one of \code{dashed}, \code{dotted}, \code{solid}, \code{invis}
       and \code{bold}.  Defaults to \code{solid}.}
     \item{\code{tailclip}:}{Same as \code{headclip} except for the tail
-      of the edge.  Defaults to \code{TRUE}}
+      of the edge.  Defaults to \code{TRUE}.  Currently unimplemented.}
     \item{\code{taillabel}:}{Same as \code{headlabel} except for the
-      tail of the edge.  Defaults to the empty string.}
+      tail of the edge.  Defaults to the empty string.  Currently
+      unimplemented.} 
     \item{\code{weight}:}{The weight of the edge.  This attribute is of
       type double with a default of \code{0.75} and a minimum value of
       \code{0.01}.} 
@@ -380,16 +377,13 @@
     \item{\code{layer}:}{Layers in which the node is present.  See
       \code{layer} in \code{Edge Attributes} for an explanation of
       acceptable inputs. }
-    \item{\code{orientation}:}{Angle, in degrees, used to rotate node
-      shapes.  This accepts double values with a default of \code{0.0}
-      and a minimum of \code{360.0} (Which doesn't make sense, but going
-    off of the Graphviz website noted in \code{references}.}
     \item{\code{peripheries}:}{Set number of peripheries used in
       polygonal shapes and cluster boundaries.  Note that user-defined
       shapes are treated as a form box shape, so the default peripheries
       value is 1 and the user-defined shape will be drawn in a bounding
       rectangle.  Setting peripheries=0 will turn this off.  Also, 1 is
-      the maximum peripheries value for clusters.}
+      the maximum peripheries value for clusters.  Not currently
+      implemented.}
     \item{\code{pos}:}{Position of the node (For neato layouts, this is
       the initial position of the node).   Specified using the notion
       \code{val,val} where each val is a double.}
