@@ -8,7 +8,7 @@
     .initRgraphvizPlotMethods()
     if(.Platform$OS.type == "windows" && require("Biobase") && interactive()
         && .Platform$GUI ==  "Rgui"){
-        addPDF2Vig("Rgraphviz")
+        addVigs2WinMenu("Rgraphviz")
     }
 }
 
