@@ -38,6 +38,13 @@ It is quite simple to generate a R plot window to display your graph.
 Once you have your graph object, simply use the \Rfunction{plot}
 method:
 
+\begin{figure}[htbp]
+  \centering
+  <<plotDot, fig=TRUE, echo=FALSE>>=
+    z <- plot(g1)
+  \caption{Example graph, laid out with dot}
+  \label{fig:g1dot}
+\end{figure}
 
 The \Rpackage{Rgraphviz} package allows you to specify varying layout
 engines, such as "dot" (the default), "neato", and "twopi".  This can
@@ -131,7 +138,7 @@ z <- new("graphNEL", nodes=c("5th Edition","6th Edition","Interdata",
 "PWB 2.0", "Unix/TS 1.0", "Unix/TS 3.0", "Unix/TS++",  
 "TS 4.0", "System V.0", "System V.2", "LSX", "Mini Unix",
 "Wollongong", "Ultrix-11", "Xenix", "UniPlus+", "9th Edition", 
-"2.9 BSD", "Ultirx-32", "PDP-11 Sys V", "System V.3","4.3 BSD",
+"2.9 BSD", "Ultrix-32", "PDP-11 Sys V", "System V.3","4.3 BSD",
 "PWB 1.2"), edgeL=list(
 "5th Edition"=list(edges=c(2,15)), 
 "6th Edition"=list(edges=c(29,7,30,31,3)),
@@ -148,7 +155,12 @@ z <- new("graphNEL", nodes=c("5th Edition","6th Edition","Interdata",
 "PWB 2.0"=list(edges=24), "Unix/TS 1.0"=list(edges=24),
 "Unix/TS 3.0"=list(edges=26), "Unix/TS++"=list(edges=26),
 "TS 4.0"=list(edges=27),
-"System V.0"=list(edges=28), "System V.2"=list(edges=39)),
+"System V.0"=list(edges=28), "System V.2"=list(edges=39),
+LSX=character(),  "Mini Unix"=character(), "Wollongong"=character(),
+"Ultrix-11"=character(), "Xenix"=character(), "UniPlus+"=character(),
+"9th Edition"=character(), "2.9 BSD"=character(),
+"Ultrix-32"=character(), "PDP-11 Sys V"=character(), 
+"System V.3"=character(), "4.3 BSD"=character()),
 edgemode="directed")
 a <- plot(z,nodeCols=c("orange","yellow"))
 @
