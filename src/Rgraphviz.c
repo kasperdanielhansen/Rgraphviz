@@ -58,7 +58,7 @@ SEXP Rgraphviz_fin(SEXP s) {
 }
 
 SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
-    Agraph_t *g;
+    Agraph_t *g,*h;
     int i;
     Rboolean laidout;
     SEXP slotTmp, elmt, attrNames;
@@ -77,10 +77,19 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     /* Now elmt is a list of attributes to set */
     attrNames = getAttrib(elmt, R_NamesSymbol);
     for (i = 0; i < length(elmt); i++) {
-	agset(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
+	agraphattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
     }
 
-    UNPROTECT(1);
+    PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
+					R_NilValue));
+    R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin);
+    SET_SLOT(graph, Rf_install("agraph"), slotTmp);
+
+    
+    slotTmp = GET_SLOT(graph, Rf_install("agraph"));
+    h = R_ExternalPtrAddr(slotTmp);
+
+    UNPROTECT(2);
     return(graph);
 }
 
@@ -104,6 +113,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
     Agedge_t *curEdge;
     int ag_k = 0;
     int i, curNode;
+    char *tmpStr;
     
     if (!isInteger(kind))
 	error("kind must be an integer value");
@@ -384,8 +394,6 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
     /*** NODE ATTRS ***/
     agnodeattr(g,"shape","circle");
     agnodeattr(g,"fixedsize","true");
-    /* We're handling the labels ourselves */
-    agnodeattr(g, "label","");
 
     /*** EDGE ATTRS ***/
     /* Arrow direction */

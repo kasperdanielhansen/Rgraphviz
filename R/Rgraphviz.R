@@ -22,7 +22,7 @@
                as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
                as.integer(edgeMtrx[,3]))
 
-    if (is.list(attrs))
+    if ((is.list(attrs))&&(length(attrs)>0))
         g <- agset(g, attrs)
 
     if (layout)

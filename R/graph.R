@@ -21,7 +21,7 @@
 
 
     setMethod("plot", "graphNEL",
-              function(x, y, ..., nodeLabels){
+              function(x, y, ..., nodeLabels, center){
                   if (missing(y))
                       y <- "dot"
 
@@ -32,12 +32,29 @@
                                    "directed"="AGDIGRAPH",
                                    "AGRAPH")
 
-                  ## twopi layout requires the graph to be fully
-                  ## connected
-                  g = agopen(x, "ABC", agKind, layout=TRUE, layoutType=y)
                   edges <- edges(x)
                   if(missing(nodeLabels) )
                       nodeLabels <- nodes(x)
+
+                  ## Generate an attrs list (currently just
+                  ## center)
+                  attrs <- vector(length=3,mode="list")
+                  names(attrs) <- c("graph","node","edge")
+
+                  ## First make sure that center exists in
+                  ## nodeLabels
+                  if (!missing(center)) {
+                      if (center %in% nodeLabels) {
+                          attrs$graph$center <- center
+                      }
+                      else
+                          stop("Invalid center supplied, must be a node in the graph")
+                  }
+
+                  ## twopi layout requires the graph to be fully
+                  ## connected
+                  g = agopen(x, "ABC", agKind, layout=TRUE,
+                             layoutType=y, attrs=attrs)
 
                   if (length(nodeLabels) > 0) {
                       nodeLocs <- getNodeLocs(g)
