@@ -3,6 +3,7 @@
               function(x, y, ..., subGList=list(),
                        attrs=list(),
                        nodeAttrs=list(), edgeAttrs=list(),
+                       subGAttrs=list(),
                        xlab="", ylab="", main=NULL, sub=NULL,
                        recipEdges=c("combined", "distinct")){
                   if (!validGraph(x))
@@ -15,7 +16,7 @@
                   g <- agopen(x, "ABC", layout=TRUE, layoutType=y,
                               attrs=attrs, nodeAttrs=nodeAttrs,
                               edgeAttrs=edgeAttrs, subGList=subGList,
-                              recipEdges=recipEdges)
+                              recipEdges=recipEdges, subGAttrs=subGAttrs)
 
                   invisible(plot(g, xlab=xlab,
                                  ylab=ylab, main=main, sub=sub))
@@ -25,8 +26,13 @@
     setMethod("plot", "Ragraph",
               function(x, y, ..., xlab="", ylab="", main=NULL, sub=NULL,
                        drawNode=drawAgNode, nodeAttrs=list(),
-                       edgeAttrs=list()) {
+                       edgeAttrs=list(), subGAttrs=list()) {
                   plot.new()
+
+                  ## !!!!
+                  ## FIXME: Do we still need node/edge/subGAttrs here?
+                  ## !!!!
+
 
                   ## Some plots can get clipped and shouldn't be.
                   ## Change the clip setting to clip to the figure

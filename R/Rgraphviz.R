@@ -2,7 +2,8 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
                    layout=TRUE, layoutType=c("dot","neato","twopi"),
                    attrs=list(),
                    nodeAttrs=list(), edgeAttrs=list(),
-                   subGList=list(), edgeMode=edgemode(graph),
+                   subGList=list(),subGAttrs=list(),
+                   edgeMode=edgemode(graph),
                    recipEdges=c("combined", "distinct")) {
 
     layoutType <- match.arg(layoutType)
@@ -25,10 +26,9 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
                                attrs$edge)
     }
 
-    if (length(subGList) > 0)
-        subGs <- paste("cluster_",1:length(subGList), sep="")
-    else
-        subGs <- character()
+    subGs <- names(subGList)
+    if (length(subGs) != length(subGList))
+        stop("Elements in the subGList must be named")
 
     if (is.null(kind)) {
         ## Determine kind from the graph object
@@ -47,15 +47,11 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
                        stop(paste("Incorrect kind parameter:",kind)))
     }
 
-    ## all attrs must be character strings going into C,
-    ## graphviz wants all attrs to be char*
-    ## FIXME: so shouldn't we do that in C?
-    attrs <- lapply(attrs, function(x){lapply(x,as.character)})
-
     g <- .Call("Rgraphviz_agopen", as.character(name),
                as.integer(outK), as.list(nodes),
                as.list(edges), as.list(attrs),
-               as.character(subGs), PACKAGE="Rgraphviz")
+               as.character(subGs), as.list(subGAttrs),
+               PACKAGE="Rgraphviz")
     g@layoutType <- layoutType
     g@edgemode <- edgeMode
 

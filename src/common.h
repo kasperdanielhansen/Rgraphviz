@@ -49,7 +49,7 @@ SEXP getBoundBox(Agraph_t *);
 SEXP getEdgeLocs(Agraph_t *,int);
 SEXP Rgraphviz_agread(SEXP);
 SEXP Rgraphviz_agwrite(SEXP, SEXP);
-SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP getNodeLayouts(Agraph_t *);
 SEXP buildRagraph(Agraph_t *);
 SEXP Rgraphviz_graphvizVersion(void);
