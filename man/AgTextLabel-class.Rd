@@ -52,10 +52,27 @@ Objects can be created by calls of the form \code{new("AgTextLabel", ...)}.
 V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
-z <- agopen(g1,"foo")
+
+## Make the labels be the edge weights.  This code is from the vignette
+eAttrs <- list()
+ew <- edgeWeights(g1)
+lw <- unlist(unlist(ew))
+toRemove <- removedEdges(g1)
+lw <- lw[-toRemove]
+names(lw) <- edgeNames(g1)
+eAttrs$label <- lw
+
+z <- agopen(g1,"foo", edgeAttrs=eAttrs)
 x <- AgEdge(z)  ## list of AgEdge objects
 x[[1]]  ## AgEdge
 a <- txtLabel(x[[1]])
 a ## txtLabel object
+
+labelText(a)
+labelLoc(a)
+labelJust(a)
+labelWidth(a)
+labelColor(a)
+labelFontsize(a)
 }
 \keyword{classes}

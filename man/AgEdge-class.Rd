@@ -78,6 +78,21 @@ M <- 1:4
 g1 <- randomGraph(V, M, .2)
 z <- agopen(g1,name="foo")
 x <- AgEdge(z)  ## list of AgEdge objects
-x[[1]]
+
+vv <- x[[1]]
+vv
+## Demonstrate the methods of this class
+splines(vv)
+sp(vv)
+ep(vv)
+numSplines(vv)
+getSpline(vv, 1)
+head(vv)
+tail(vv)
+txtLabel(vv)
+arrowhead(vv)
+arrowtail(vv)
+arrowsize(vv)
+
 }
 \keyword{classes}

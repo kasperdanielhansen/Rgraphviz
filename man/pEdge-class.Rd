@@ -51,6 +51,10 @@ Objects can be created by calls of the form \code{new("pEdge", ...)}.
    g1 <- randomGraph(V, M, .2)
 
    z <- buildEdgeList(g1)
-   z[[1]]   ## Object of type pEdge
+   vv <- z[[1]]   ## Object of type pEdge
+
+   vv
+   from(vv)
+   to(vv)
 }
 \keyword{classes}
