@@ -9,6 +9,7 @@
 \alias{getNodeRW}
 \alias{getNodeLW}
 \alias{getNodeCenter}
+\alias{convertRadius}
 \alias{getNodeHeight}
 \alias{color,AgNode-method}
 \alias{fillcolor,AgNode-method}
