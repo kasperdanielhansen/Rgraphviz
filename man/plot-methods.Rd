@@ -13,10 +13,10 @@
   A plot method for \code{graph} objects.
 }
 \section{Usage}{
-\code{plot(x, y, ..., nodeLabels, centerNode, nodeShape,
+\code{plot(x, y, ..., nodeLabels, 
     defNodeCol=par("bg"), nodeCols=character(), defTextCol=par("fg"),
     textCols=character(), defEdgeCol=par("col"), edgeCols=list(),
-    rankDir, fixedSize=TRUE, subGList)}
+    fixedNodeSize=TRUE, subGList,attrs)}
 }
 \section{arguments}{
   \item{x}{The \code{graph} object to plot}
@@ -25,11 +25,6 @@
   \item{nodeLabels}{A character vector containing labels for the nodes.
     If not provided, the plot will use the node names.  If provided, the
     vector must have length equal to the number of nodes}
-  \item{centerNode}{The node which is to be the center node in the
-    plot.  Only useful with \code{twopi} layouts}
-  \item{nodeShape}{The shape of the nodes, currently one of
-    \code{circle} or \code{ellipse}, with \code{circle} being the
-    default}
   \item{defNodeCol}{This is the default color to use for nodes}
   \item{nodeCols}{A named character vector of colors.  Any node which
     matches the name of an element in this vector will have that color
@@ -43,18 +38,27 @@
     Any element in this argument of the form node1$node2 in which there
     exists an edge between node1 and node2 will use node1$node2[[1]] as
     the color for that edge}
-  \item{rankDir}{The direction that the plot is laid out in, one of
-    either \code{TB} for Top-to-Bottom or \code{LR} for Left-to-Right.
-    The default value is \code{TB}.  This argument is only useful for
-    \code{dot} layouts.}
+  \item{fixedNodeSize}{If TRUE, then all NODES will be forced to be
+    of the same size (equal to the determined size of the largest node),
+    otherwise Graphviz will size each node according to its own algorithms}
   \item{subGList}{A list of subgraphs taken from the primary
     \code{graph} object to be plotted.  If provided, these subgraphs
     will be clustered visually.  If not provided, no clusters will be used.}
+  \item{attrs}{A list of Graphviz attributes to be sent to the layout engine}
   \item{...}{General commands to be sent to plot}
 }
 \section{details}{
   This method is currently only implemented for the \code{graphNEL}
   subclass of \code{graph}.
+
+  The \code{attrs} list requires a particular format.  It must be of
+  length 3 with names \code{graph}, \code{node}, and \code{edge}.  Each
+  of these elements themselves are lists - such that an element of
+  \code{graph} corresponds to a graph element.  A full listing of
+  attributes and their possible settings is available at
+  http://www.research.att.com/~erg/graphviz/info/attrs.html.  All
+  attribute values should be entered as character strings (even if the
+  requested value is to be otherwise).
   
   ****Details about things like the various layout methods, etc etc ****
 }
