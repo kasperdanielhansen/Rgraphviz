@@ -5,6 +5,8 @@
 \alias{labelLoc}
 \alias{labelJust}
 \alias{labelWidth}
+\alias{labelColor}
+\alias{labelColor,AgTextLabel-method}
 \alias{labelText,AgTextLabel-method}
 \alias{labelLoc,AgTextLabel-method}
 \alias{labelJust,AgTextLabel-method}
