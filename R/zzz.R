@@ -7,5 +7,9 @@
     .initRgraphvizLineMethods()
     .initRgraphvizShowMethods()
     .initRgraphvizPlotMethods()
+    if(.Platform$OS.type == "windows" && require("Biobase") && interactive()
+        && .Platform$GUI ==  "Rgui"){
+        addPDF2Vig("widgetTools")
+    }
 }
 
