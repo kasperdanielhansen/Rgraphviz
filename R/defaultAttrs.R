@@ -40,6 +40,8 @@ getDefaultAttrs <- function(layoutType=c("dot","neato","twopi")[1]) {
     defAttr$edge$weight <- 1.0
     defAttr$edge$label <- ""
     defAttr$edge$fontcolor <- par("fg")
+    defAttr$edge$arrowhead <- "normal"
+    defAttr$edge$arrowtail <- "none"
 
     defAttr
 }
