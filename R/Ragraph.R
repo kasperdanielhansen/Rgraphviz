@@ -195,32 +195,28 @@
               function(x,...) {
                   z <- splines(x)
                   lapply(z,lines)
+
+                  ## Now need to draw the appropriate arrows, if any
+                  if (startArrow(x)) {
+                      ## Draw end arrow
+                      ## get the first point of the first splie
+                      curP <-cPoints(z[[1]])[[1]]
+                      ## get the edge's ep
+                      curSP <- sp(x)
+                      arrows(getX(curP), getY(curP), getX(curSP), getY(curSP))
+                  }
+                  if (endArrow(x)) {
+                      ## Draw start arrow
+                      ## get the last point of the last spline
+                      epPoints <- cPoints(z[[length(z)]])
+                      curP <- epPoints[[length(epPoints)]]
+                      ## get the edge's sp
+                      curEP <- ep(x)
+                      arrows(getX(curP), getY(curP), getX(curEP), getY(curEP))
+                  }
+
                   return(NULL)
               }, where=where)
-}
-
-arrows.AgEdge <- function(x,...) {
-    z <- splines(x)
-    lapply(z, lines)
-
-    ## Now need to draw the appropriate arrows
-    if (startArrow(x)) {
-        ## Draw end arrow
-        ## get the first point of the first splie
-        curP <-cPoints(z[[1]])[[1]]
-        ## get the edge's ep
-        curSP <- sp(x)
-        arrows(getX(curP), getY(curP), getX(curSP), getY(curSP))
-    }
-    if (endArrow(x)) {
-        ## Draw start arrow
-        ## get the last point of the last spline
-        epPoints <- cPoints(z[[length(z)]])
-        curP <- epPoints[[length(epPoints)]]
-        ## get the edge's sp
-        curEP <- ep(x)
-        arrows(getX(curP), getY(curP), getX(curEP), getY(curEP))
-    }
 }
 
 .initBezierCurve <- function(where) {
