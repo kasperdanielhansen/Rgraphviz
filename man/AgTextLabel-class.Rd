@@ -36,7 +36,7 @@ Objects can be created by calls of the form \code{new("AgTextLabel", ...)}.
     }
 }
 \author{Jeff Gentry}
-\seealso{\code{\link{AgEdge-class}}}}
+\seealso{\code{\link{AgEdge-class}}}
 \examples{
 ##---- Should be DIRECTLY executable !! ----
 }
