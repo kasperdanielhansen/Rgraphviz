@@ -123,106 +123,23 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
                    defAttrs, PACKAGE="Rgraphviz")
 }
 
+
 buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
                           edgeAttrs=list(), subGList=list(), defAttrs=list()) {
-    if (numEdges(graph) == 0)
-        return(list())
 
     recipEdges <- match.arg(recipEdges)
 
-    buildSubGEdgeNames <- function(subG) {
-        x <- edges(subG)
-        z <- names(x)
-        as.vector(mapply(paste, x, z, MoreArgs=list(sep="~")))
-    }
-
     edgeNames <- edgeNames(graph, "distinct")
 
-    edgemode <- edgemode(graph)
-
-    to <- edges(graph)
-    if (length(to) == 0)
-        return(list())
+    if ((recipEdges == "combined")&&(length(edgeNames) > 0))
+        removed <- which(! edgeNames %in% edgeNames(graph, "combined"))
+    else
+        removed <- character()
 
     ## Generate the list of pEdge objects
-    pEdges <- .Call("Rgraphviz_buildPEList", to, edgemode, edgeWeights(graph),
-                    length(unlist(edges(graph))), PACKAGE="Rgraphviz")
-
-    ## Even if recipEdges is 'combined', it saves a lot of work
-    ## when trying to figure out the arrowtail stuff if all of
-    ## the pEdge objects are named.
-    names(pEdges) <- edgeNames
-
-    if (recipEdges == "combined") {
-        removedEdges <- removedEdges(graph)
-        if (length(removedEdges) > 0) {
-            edgeNames <- edgeNames[-removedEdges]
-            if (edgemode == "directed") {
-                ## Add in the arrowtails if this was a directed graph
-                for (i in 1:length(removedEdges)) {
-                    rf <- from(pEdges[[removedEdges[i]]])
-                    rt <- to(pEdges[[removedEdges[i]]])
-                    revName <- paste(rt, rf, sep="~")
-                    if (is.null(pEdges[[revName]]@attrs$arrowtail))
-                        pEdges[[revName]]@attrs$arrowtail <- "open"
-                }
-            }
-            pEdges <- pEdges[-removedEdges]
-        }
-    }
-
-    pEdges <- assignAttrs(edgeAttrs, pEdges, defAttrs)
-
-    if (length(subGList) > 0) {
-        subGEdgeNames <- lapply(subGList, buildSubGEdgeNames)
-        pEdges <- assignEdgeSubGs(subGEdgeNames, pEdges, edgeNames)
-    }
-
-    pEdges
+    .Call("Rgraphviz_buildEdgeList", graph, subGList, edgeNames,
+          removed, edgeAttrs, defAttrs, PACKAGE="Rgraphviz")
 }
-
-assignAttrs <- function(attrList, objList, defAttrs) {
-    if (length(attrList) == 0)
-        return(objList)
-
-    .Call("Rgraphviz_assignAttrs", attrList, objList, defAttrs, PACKAGE="Rgraphviz")
-}
-
-assignEdgeSubGs <- function(subGList, objList, objNames) {
-
-    subGs <- sapply(subGList,
-                    function(x, y) {y %in% x}, objNames)
-
-    whichSubGs <- apply(subGs, 1, function(x) {
-        out <- which(x)
-        if (length(out) == 0)
-            0
-        else
-            out})
-
-    if (is.list(whichSubGs)) {
-        bad <- which(sapply(whichSubGs, length) > 1)
-        stop(objNames[bad], " is in multiple subgraphs")
-    }
-    else {
-        ## FIXME: Why does this need as.integer and not the nodes?
-        objList <- mapply(function(x,y) { x@subG <- as.integer(y); x},
-                         objList, whichSubGs)
-    }
-
-    objList
-}
-
-removedEdges <- function(graph) {
-    if ((!is(graph, "graph")) && (!is(graph,"Ragraph")))
-        stop("removedEdges only accepts objects of class ",
-             "'graph' or 'Ragraph'")
-
-    allEdges <- edgeNames(graph, "distinct")
-    combEdges <- edgeNames(graph, "combined")
-    which(! allEdges %in% combEdges)
-}
-
 
 setMethod("edgeNames", "Ragraph", function(object,
                                            recipEdges=c("combined",
@@ -250,3 +167,12 @@ setMethod("edgeNames", "Ragraph", function(object,
 })
 
 
+removedEdges <- function(graph) {
+    if ((!is(graph, "graph")) && (!is(graph,"Ragraph")))
+        stop("removedEdges only accepts objects of class ",
+             "'graph' or 'Ragraph'")
+
+    allEdges <- edgeNames(graph, "distinct")
+    combEdges <- edgeNames(graph, "combined")
+    which(! allEdges %in% combEdges)
+}
