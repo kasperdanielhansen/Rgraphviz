@@ -1,8 +1,8 @@
 .initGraphPlotClasses <- function(where) {
     .initRagraph(where)
     .initEdgePoints(where)
-    .initNodeLayout(where)
-    .initControlPoints(where)
+    .initNodePosition(where)
+    .initBezierCurve(where)
     .initBoundingBox(where)
     .initXYPoint(where)
 
@@ -95,36 +95,36 @@
               object@upRight, where=where)
 }
 
-.initNodeLayout <- function(where) {
-    if (is.null(getGeneric("nodeLayout")))
-        setGeneric("nodeLayout", function(object)
-                   standardGeneric("nodeLayout"), where=where)
-    setClass("nodeLayout", representation(center="xyPoint",
+.initNodePosition <- function(where) {
+    if (is.null(getGeneric("NodePosition")))
+        setGeneric("NodePosition", function(object)
+                   standardGeneric("NodePosition"), where=where)
+    setClass("NodePosition", representation(center="xyPoint",
                                           height="integer",
                                           rWidth="integer",
                                           lWidth="integer"))
     if (is.null(getGeneric("getNodeCenter")))
         setGeneric("getNodeCenter", function(object)
                    standardGeneric("getNodeCenter"), where=where)
-    setMethod("getNodeCenter", "nodeLayout", function(object)
+    setMethod("getNodeCenter", "NodePosition", function(object)
               object@center, where=where)
 
     if (is.null(getGeneric("getNodeHeight")))
         setGeneric("getNodeHeight", function(object)
                    standardGeneric("getNodeHeight"), where=where)
-    setMethod("getNodeHeight", "nodeLayout", function(object)
+    setMethod("getNodeHeight", "NodePosition", function(object)
               object@height, where=where)
 
     if (is.null(getGeneric("getNodeRW")))
         setGeneric("getNodeRW", function(object)
                    standardGeneric("getNodeRW"), where=where)
-    setMethod("getNodeRW", "nodeLayout", function(object)
+    setMethod("getNodeRW", "NodePosition", function(object)
               object@rWidth, where=where)
 
     if (is.null(getGeneric("getNodeLW")))
         setGeneric("getNodeLW", function(object)
                   standardGeneric("getNodeLW"), where=where)
-    setMethod("getNodeLW", "nodeLayout", function(object)
+    setMethod("getNodeLW", "NodePosition", function(object)
               object@lWidth, where=where)
 
 }
@@ -164,30 +164,39 @@
             show(z[[i]])
     }, where=where)
 
-    setMethod("plot",c("edgePoints","missing"),
-              function(x,y,...) {
+    setMethod("lines","edgePoints",
+              function(x,...) {
                   z <- splines(x)
-                  lapply(z,function(a){q <- bezierPoints(a);
-                                       lines(q[,1],q[,2])})
+                  lapply(z,lines)
                   return(NULL)
               }, where=where)
 }
 
-.initControlPoints <- function(where) {
-    setGeneric("controlPoints", function(object)
-               standardGeneric("controlPoints"), where=where)
-    setClass("controlPoints", representation(cPoints="list"))
+arrows.edgePoints <- function(x,...) {
+    z <- splines(x)
+    zLen <- length(z)
+    if (zLen > 1) {
+        ## Multiple splines, draw the others normally
+        lapply(z[1:(zLen-1)],lines)
+    }
+    arrows.BezierCurve(z[[zLen]])
+}
+
+.initBezierCurve <- function(where) {
+    setGeneric("BezierCurve", function(object)
+               standardGeneric("BezierCurve"), where=where)
+    setClass("BezierCurve", representation(cPoints="list"))
 
     if (is.null(getGeneric("cPoints")))
         setGeneric("cPoints", function(object)
                    standardGeneric("cPoints"), where=where)
-    setMethod("cPoints", "controlPoints", function(object)
+    setMethod("cPoints", "BezierCurve", function(object)
               object@cPoints, where=where)
 
     if (is.null(getGeneric("pointList")))
         setGeneric("pointList", function(object)
                    standardGeneric("pointList"), where=where)
-    setMethod("pointList", "controlPoints", function(object) {
+    setMethod("pointList", "BezierCurve", function(object) {
         z <- cPoints(object)
         out <- lapply(z, getPoints)
         out
@@ -196,7 +205,7 @@
     if (is.null(getGeneric("bezierPoints")))
         setGeneric("bezierPoints", function(object)
                    standardGeneric("bezierPoints"), where=where)
-    setMethod("bezierPoints", "controlPoints", function(object) {
+    setMethod("bezierPoints", "BezierCurve", function(object) {
         z <- pointList(object)
         out <- vector("list", length=11)
         for (i in 0:10)
@@ -206,7 +215,12 @@
         out
     }, where=where)
 
-    setMethod("show", "controlPoints", function(object) {
+    setMethod("lines", "BezierCurve", function(x,...) {
+        z <- bezierPoints(x)
+        lines(z[,1],z[,2])
+    }, where=where)
+
+    setMethod("show", "BezierCurve", function(object) {
         z <- cPoints(object)
         out <- paste(unlist(lapply(z,
                                    function(x){paste(getPoints(x),
@@ -214,6 +228,17 @@
                      collapse=" ")
         print(out)
     }, where=where)
+}
+
+arrows.BezierCurve <- function(x,...) {
+    ## Draws lines on all but the final segment
+    z <- bezierPoints(x)
+    zLen <- nrow(z)
+    if (zLen > 2) {
+        a <- z[1:zLen-1,,drop=FALSE]
+        lines(a[,1],a[,2])
+    }
+    arrows(z[zLen-1,1],z[zLen-1,2],z[zLen,1],z[zLen,2])
 }
 
 .initXYPoint <- function(where) {

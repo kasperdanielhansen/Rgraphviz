@@ -1,13 +1,17 @@
-agopen <- function(graph, name, kind=0, layout=TRUE) {
-    ## !!! 'kind' is really a set of defined values.  Need to figure
-    ## this out
+agopen <- function(graph, name, kind="AGRAPH", layout=TRUE) {
+    outK <- switch(kind,
+                   "AGRAPH"=0,
+                   "AGDIGRAPH"=1,
+                   "AGRAPHSTRICT"=2,
+                   "AGDIGRAPHSTRICT"=3,
+                   stop(paste("Incorrect kind parameter:",kind)))
 
     edgeMtrx <- graph2graphviz(graph)
 
     nodes <- nodes(graph)
 
     g <- .Call("Rgraphviz_agopen", as.character(name),
-               as.integer(kind), as.vector(nodes),
+               as.integer(outK), as.vector(nodes),
                as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
                as.integer(edgeMtrx[,3]))
 

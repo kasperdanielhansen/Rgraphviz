@@ -88,11 +88,17 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
     else
 	ag_k = INTEGER(kind)[0];
 
+    if ((ag_k < 0)||(ag_k > 3))
+	error("kind must be an integer value between 0 and 3");
+
     if (!isString(name))
 	error("name must be a string");
 
     aginit();
-    g = agopen(STR(name), ag_k);
+    /* We don't actually want to do the layout with the directed */
+    /* flag as it messes up the R edge drawing.  But we do need */
+    /* to know later on if the graph is directed or not */
+    g = agopen(STR(name), AGRAPH);
 
     /* Set default attributes */
     /* !!!! This is somewhat temporary until we allow */
@@ -116,7 +122,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
 	tail = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
 	if (tail == NULL)
 	    error("Missing tail node");
-	if (agfindedge(g,head,tail) == NULL) {  
+	if ((ag_k == AGDIGRAPH) || (agfindedge(g,head,tail) == NULL)) {  
 		curEdge = agedge(g, tail, head);
 		curEdge->u.weight = INTEGER(weights)[i];
 	}
@@ -195,7 +201,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
     SEXP outLst, nlClass, xyClass, curXY, curNL;
     int i, nodes;
     
-    nlClass = MAKE_CLASS("nodeLayout");
+    nlClass = MAKE_CLASS("NodePosition");
     xyClass = MAKE_CLASS("xyPoint");
 
     nodes = agnnodes(g);
@@ -230,7 +236,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     int curEle = 0;
 
     epClass = MAKE_CLASS("edgePoints");
-    cpClass = MAKE_CLASS("controlPoints");
+    cpClass = MAKE_CLASS("BezierCurve");
     xyClass = MAKE_CLASS("xyPoint");
 
     PROTECT(outList = allocVector(VECSXP, numEdges));

@@ -4,26 +4,30 @@
                    standardGeneric("graph2graphviz"), where=where)
 
     setMethod("graph2graphviz", "graphNEL", function(object) {
-        ## Return a 3 column integer matrix (from, to, weight)
+        ## Return a 3 column numeric matrix (from, to, weight)
         nodeNames <- nodes(object)
         ed <- edges(object)
         elem <- sapply(ed, length)
         from <- rep(names(elem), elem)
-        from <- match(from, nodeNames)
+        from <- as.integer(match(from, nodeNames))
 
         to <- unlist(ed)
-        to <- match(to, nodeNames)
+        to <- as.integer(match(to, nodeNames))
 
-        weights <- unlist(edgeWeights(object))
+        weights <- as.integer(unlist(edgeWeights(object)))
         gvMtrx <- matrix(c(from, to, weights), ncol=3)
         gvMtrx
     }, where=where)
 
     setMethod("plot", c("graphNEL", "missing"),
               function(x, y, ..., nodeLabels){
-                  ## Get kind from graph in future
-                  g = agopen(x, "ABC", layout=TRUE)
-
+                  ## Get edgemode of graph
+                  edgeMode <- edgemode(x)
+                  agKind <- switch(edgeMode,
+                                   "undirected"="AGRAPH",
+                                   "directed"="AGDIGRAPH",
+                                   "AGRAPH")
+                  g = agopen(x, "ABC", agKind, layout=TRUE)
                   edges <- edges(x)
                   if(missing(nodeLabels) )
                       nodeLabels <- nodes(x)
@@ -49,11 +53,13 @@
                       outLim <- max(getY(ur), getX(ur))
                       plot(NA,NA,xlim=c(0,outLim), ylim=c(0,outLim),
                            type="n",main=NULL,xlab="",ylab="",xaxt="n",
-                           yaxt="n",...)
-                      # ,bty="n"
+                           yaxt="n",bty="n",...)
                       symbols(nodeX, nodeY, circles=rad, inches=FALSE,
                               bg="white",add=TRUE)
-                      q <- lapply(edgePoints(g), plot)
+                      if (edgeMode == "undirected")
+                          q <- lapply(edgePoints(g), lines)
+                      else
+                          q <- lapply(edgePoints(g), arrows.edgePoints)
                       text(nodeX,nodeY, nodeLabels)
                   }
                   else {
