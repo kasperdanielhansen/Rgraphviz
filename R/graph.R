@@ -71,7 +71,8 @@ weightLabels <- function(object) {
     setMethod("plot", "Ragraph",
               function(x, y, ...,
                        attrs, xlab="", ylab="", main=NULL, sub=NULL,
-                       drawNode=drawAgNode, newPlot=TRUE){
+                       drawNode=drawAgNode,
+                       newPlot=TRUE){
 
                   ## If this is a new plot, we need to call 'plot.new'
                   ## Otherwise we should not because we were most
