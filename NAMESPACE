@@ -2,7 +2,7 @@ importFrom("graphics", "plot", "lines")
 importFrom("methods", "show")
                                                                                 
 export(agopen, agwrite, agread, graphvizVersion, buildNodeList,
-        buildEdgeList, removedEdges, getDefaultAttrs, getNodeLocs,
+        buildEdgeList, removedEdges, getDefaultAttrs, 
         getNodeNames, getNodeLabels, checkAttrs, layoutGraph, pieGlyph,
         getRadiusDiv,drawAgNode, drawTxtLabel)
                                                                                 
