@@ -86,11 +86,11 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                   ## If the user hasn't explicitly defined a 'size'
                   ## attribute, set it to match the size of the plotting
                   ## region.  Also, set the ratio such that graphviz
-                  ## will compress the plot into the plotting region.
+                  ## will use the entire plotting region by default.
                   if (is.null(attrs$graph$size))
                       attrs$graph$size <- paste(par("pin"),collapse=", ")
                   if (is.null(attrs$graph$ratio))
-                      attrs$graph$ratio <- "compress"
+                      attrs$graph$ratio <- "fill"
 
                   ## Sanity check attr values.  This is going to C
                   ## very soon (and currently isn't all that good anyways)
