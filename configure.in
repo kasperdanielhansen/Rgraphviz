@@ -1,6 +1,6 @@
 AC_INIT(src/Rgraphviz.c)
 AC_PREREQ(2.13)
-AC_REVISION($Revision: 1.10 $)
+AC_REVISION($Revision: 1.11 $)
 # AC_CONFIG_SRCDIR(src/Rgraphviz.c)
 
 AC_DEFUN([CHECK_GRAPHVIZ],
@@ -9,21 +9,21 @@ AC_ARG_WITH(graphviz,
 [ --with-graphviz=DIR root directory of graphviz installation
 [defaults to /usr/local]],
 [if test x"$withval" != no ; then
-	DOTNEATO_CONFIG="$withval"
+	DOTNEATO_CONFIG="$withval/bin/dotneato-config"
  else
-	DOTNEATO_CONFIG=["not found"]
+	DOTNEATO_CONFIG="not found"
  fi],
-[AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config, ["not found"])])
+[AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config, [not found])])
 
-if test ${DOTNEATO_CONFIG} != "not found"; then
+if test "${DOTNEATO_CONFIG}" != "not found"; then
 	AC_MSG_RESULT(${DOTNEATO_CONFIG})
 	PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
 	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
 
-	MAJOR=`dotneato-config --version`
+	MAJOR=`${DOTNEATO_CONFIG} --version`
 	MAJOR=`echo [${MAJOR}] | cut -f1 -d"."`
 	
-	MINOR=`dotneato-config --version`
+	MINOR=`${DOTNEATO_CONFIG} --version`
 	MINOR=`echo [${MINOR}] | cut -f2 -d"."`
 
 	if test ${MAJOR} -eq "1"; then

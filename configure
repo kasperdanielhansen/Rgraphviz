@@ -902,7 +902,7 @@ echo $ECHO_N "checking for graphviz... $ECHO_C" >&6
 if test "${with_graphviz+set}" = set; then
   withval="$with_graphviz"
   if test x"$withval" != no ; then
-	DOTNEATO_CONFIG="$withval"
+	DOTNEATO_CONFIG="$withval/bin/dotneato-config"
  else
 	DOTNEATO_CONFIG="not found"
  fi
@@ -931,7 +931,7 @@ for ac_dir in $ac_dummy; do
 fi
 done
 
-  test -z "$ac_cv_path_DOTNEATO_CONFIG" && ac_cv_path_DOTNEATO_CONFIG=""not found""
+  test -z "$ac_cv_path_DOTNEATO_CONFIG" && ac_cv_path_DOTNEATO_CONFIG="not found"
   ;;
 esac
 fi
@@ -947,16 +947,16 @@ fi
 
 fi;
 
-if test ${DOTNEATO_CONFIG} != "not found"; then
+if test "${DOTNEATO_CONFIG}" != "not found"; then
 	echo "$as_me:951: result: ${DOTNEATO_CONFIG}" >&5
 echo "${ECHO_T}${DOTNEATO_CONFIG}" >&6
 	PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
 	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
 
-	MAJOR=`dotneato-config --version`
+	MAJOR=`${DOTNEATO_CONFIG} --version`
 	MAJOR=`echo ${MAJOR} | cut -f1 -d"."`
 
-	MINOR=`dotneato-config --version`
+	MINOR=`${DOTNEATO_CONFIG} --version`
 	MINOR=`echo ${MINOR} | cut -f2 -d"."`
 
 	if test ${MAJOR} -eq "1"; then
