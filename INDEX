@@ -1,14 +1,26 @@
 AgEdge-class            Class "AgEdge": A class to describe an edge
                         for a Ragraph object
-agopen                  A function to obtain a libgraph object
+AgTextLabel-class       Class "AgTextLabel": Represents a graphviz
+                        text label
 BezierCurve-class       Class "BezierCurve": A class to describe a
                         Bezier curve
-boundingBox-class       Class "boundingBox": A class to describe the
-                        bounding box of a Ragraph
-layoutGraph             A function to layout graph locations
 NodePosition-class      Class "NodePosition": A class to describe the
                         location and size of a node
 Ragraph-class           Class "Ragraph": A class to handle libgraph
                         representations
+agopen                  A function to obtain a libgraph object
+agwrite                 A function to write a Ragraph object to a file
+boundingBox-class       Class "boundingBox": A class to describe the
+                        bounding box of a Ragraph
+checkAttrs              A function to check graph attributes
+ellipse                 A function to plot ellipses
+graph2graphviz-methods
+                        A method for transforming a graph into
+                        graphviz format
+graphvizVersion         A function to determine graphviz library
+                        version
+layoutGraph             A function to layout graph locations
+plot-methods            Plot a graph object - methods
+weightLabels-methods    A method for providing edge weights for labels
 xyPoint-class           Class "xyPoint": A class to represent a X/Y
                         coordinate.
