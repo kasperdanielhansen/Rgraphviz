@@ -152,14 +152,6 @@ weightLabels <- function(object) {
               })
 }
 
-testPieGlyph <- function(node, ur) {
-    ## Can be used in place of drawAgNode. Draws a pie chart for every
-    ## node (not useful for real work as the pie chart is going to be
-    ## identical in every case
-    nodeCenter <- getNodeCenter(node)
-    pieGlyph(rep(1,8), xpos=getX(nodeCenter), ypos=getY(nodeCenter),
-             col=rainbow(8), radius=getNodeRW(node))
-}
 
 drawAgNode <- function(node, ur) {
     ## First get X/Y
