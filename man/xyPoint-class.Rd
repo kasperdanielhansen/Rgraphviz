@@ -5,6 +5,7 @@
 \alias{getX}
 \alias{getY}
 \alias{getPoints}
+\alias{show,xyPoint-method}
 \alias{getPoints,xyPoint-method}
 \alias{getX,xyPoint-method}
 \alias{getY,xyPoint-method}

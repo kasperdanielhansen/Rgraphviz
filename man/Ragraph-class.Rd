@@ -7,6 +7,7 @@
 \alias{layoutType}
 \alias{edgemode}
 \alias{boundBox}
+\alias{show,Ragraph-method}
 \alias{edgeNames,Ragraph-method}
 \alias{AgEdge,Ragraph-method}
 \alias{agraph,Ragraph-method}

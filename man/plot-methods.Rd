@@ -4,6 +4,8 @@
 \alias{plot.graph}
 \alias{plot.Ragraph}
 \alias{drawCircleNodes}
+\alias{plot,Ragraph-method}
+\alias{plot,graph-method}
 \title{ Plot a graph object - methods}
 \description{
   A plot method for \code{graph} objects.

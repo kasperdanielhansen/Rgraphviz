@@ -10,6 +10,8 @@
 \alias{head}
 \alias{tail}
 \alias{arrowsize}
+\alias{lines,AgEdge-method}
+\alias{show,AgEdge-method}
 \alias{arrowsize,AgEdge-method}
 \alias{color,AgEdge-method}
 \alias{ep,AgEdge-method}
