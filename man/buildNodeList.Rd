@@ -10,18 +10,28 @@
 }
 \usage{
 buildNodeList(graph, nodeAttrs = list(), subGList=list())
-buildEdgeList(graph, edgeAttrs = list(), subGList=list())
+buildEdgeList(graph, recipEdges=c("combined", "distinct"),
+              edgeAttrs = list(), subGList=list())
 }
 \arguments{
   \item{graph}{An object of class \code{graph}}
   \item{nodeAttrs}{A list of attributes for specific nodes}
   \item{edgeAttrs}{A list of attributes for specific edges}
   \item{subGList}{A list of any subgraphs to be used in Graphviz}
+  \item{recipEdges}{How to deal with reciprocated edges}
 }
 \details{
   These functions will take either the nodes or the edges of the
   specified graph and generate a list of either \code{pNode} or
   \code{pEdge} objects.
+
+  The \code{recipEdges} argument can be used to specify how to handle
+  reciprocal edges.  The default value, \code{combined} will combine any
+  reciprocated edges into a single edge (and if the graph is directed,
+  will by default place an arrowhead on both ends of the edge), while
+  the other option is \code{distinct} which will draw to separate
+  edges.  Note that in the case of an undirected graph, every edge of a
+  \code{graphNEL} is going to be reciprocal due to implementation issues.
 
   The \code{nodeAttrs} and \code{edgeAttrs} attribute lists are to be
   used for cases where one wants to set an attribute on a node or an
