@@ -110,15 +110,14 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
     /* now fill in the edges */
     for (i = 0; i < length(from); i++) {
 	curNode = INTEGER(from)[i];
-	head = agfindnode(g, CHAR(STRING_ELT(nodes,curNode-1)));
-	if (head == NULL)
-	    error("Missing head node");
-	/* Get weights for these edges */
-	curNode = INTEGER(to)[i];
-	fflush(stdout);
-	tail = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
+	tail = agfindnode(g, CHAR(STRING_ELT(nodes,curNode-1)));
 	if (tail == NULL)
 	    error("Missing tail node");
+	/* Get weights for these edges */
+	curNode = INTEGER(to)[i];
+	head = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
+	if (head == NULL)
+	    error("Missing head node");
 	if ((ag_k == AGDIGRAPH) || (agfindedge(g,head,tail) == NULL)) {  
 		curEdge = agedge(g, tail, head);
 		curEdge->u.weight = INTEGER(weights)[i];
