@@ -129,7 +129,7 @@
 
 }
 
-.initEdgePoints <- function(where) {
+.initAgEdge <- function(where) {
     if (is.null(getGeneric("AgEdge")))
         setGeneric("AgEdge", function(object)
                    standardGeneric("AgEdge"), where=where)
