@@ -1,0 +1,40 @@
+\name{agopen}
+\alias{agopen}
+\title{A function to obtain a libgraph object}
+\description{
+  This function will read in a \code{graph} object and create a
+  \code{libgraph} external reference in C.  This reference can then be
+  used for other functions.
+}
+\usage{
+agopen(graph, name, kind = 0)
+}
+%- maybe also `usage' for other objects documented here.
+\arguments{
+  \item{graph}{An object of class \code{graphNEL}}
+  \item{name}{The name of the graph}
+  \item{kind}{The type of graph}
+}
+\details{
+  \code{graph} is from the package \link{graph}.
+
+  The \code{kind} attribute can be one of: AGRAPH, AGRAPHSTRICT, AGDIGRAPH,
+  or AGDIGRAPHSTRICT.  Strict graphs cannot have  self-arcs  or
+  multi-edges.
+}
+\value{
+  An external reference to the libgraph representation.
+}
+\references{http://www.research.att.com/sw/tools/graphviz/}
+\author{Jeff Gentry}
+\seealso{\code{\link{dotLayout}}, \code{\link{emitGraph}}, \code{\link{getDotfile}}}
+
+\examples{
+set.seed(123)
+V <- letters[1:10]
+M <- 1:4
+g1 <- randomGraph(V, M, .2)
+z <- agopen(g1,"foo")
+}
+\keyword{utilities}
+
