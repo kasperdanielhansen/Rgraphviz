@@ -70,8 +70,8 @@
                   lapply(toEdges,
                          function(x, arrEnv, toEdges,
                                   curEdgeNum, edgeFromTo, i) {
-                             tmp <- matrix(c(curEdgeNum,x),nrow=1,ncol=2)
-                             tmpMatches <- apply(edgeFromTo,1,"==",tmp)
+                             tmp <- matrix(c(curEdgeNum,x),nrow=2,ncol=1)
+                             tmpMatches <- apply(edgeFromTo,2,"==",tmp)
                              tmpMatches <- apply(tmpMatches,2,all)
                              if (any(tmpMatches)) {
                                  whichEdge <- which(tmpMatches)[1]
