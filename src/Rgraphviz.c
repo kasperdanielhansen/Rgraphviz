@@ -170,11 +170,13 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     aginit();
     g = agopen(STR(name), ag_k);
 
+    /* Allocate space in the subgraph array */
+    sgs = (Agraph_t *)malloc(length(subGs) * sizeof(Agraph_t *));
+
+
     if (length(subGs) > 0) {
 	/* Create any subgraphs, if necessary */
 	
-	/* Allocate space in the subgraph array */
-	sgs = (Agraph_t *)malloc(length(subGs) * sizeof(Agraph_t *));
 	for (i = 0; i < length(subGs); i++) {
 	    sgs[i] = agsubg(g,CHAR(STRING_ELT(subGs,i)));
 	}
@@ -233,7 +235,6 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	}
     }
 
-    free(sgs); 
     return(buildRagraph(g));    
 }
 
