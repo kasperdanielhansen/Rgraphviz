@@ -26,7 +26,7 @@
     setMethod("plot", "graphNEL",
               function(x, y, ..., nodeLabels, centerNode, nodeShape,
                        nodeCols=par("bg"), textCols=par("fg"),
-                       edgeCols=par("col")){
+                       edgeCols=par("col"), rankDir){
                   if (missing(y))
                       y <- "dot"
 
@@ -69,6 +69,16 @@
                   else
                       stop(paste("Invalid node shape supplied, must be one of:",
                                  paste(validShapes, collapse=", ")))
+
+                  ## If this is a dot layout, check the rankdir
+                  if (y == "dot") {
+                      if (missing(rankDir))
+                          rankDir <- "TB"
+                      else {
+                          if (!(rankDir %in% c("TB","LR")))
+                             stop("Invalid rankDir parameter, must be 'TB' or 'LR'!")
+                      attrs$graph$rankdir <- rankDir
+                  }
 
                   ## twopi layout requires the graph to be fully
                   ## connected

@@ -404,7 +404,6 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
     agraphattr(g, "overlap", "");
     agraphattr(g, "splines", "true");
     agraphattr(g, "model", "");
-    agraphattr(g, "rotate", "90");
 
     /*** NODE ATTRS ***/
 /*    agnodeattr(g,"shape","circle"); */
