@@ -437,20 +437,38 @@ setMethod("labelFontsize", "AgTextLabel", function(object)
 
     setMethod("lines","AgEdge",
           function(x,..., len=0.25,lty=par("lty"),
-                   lwd=par("lwd"), edgemode="undirected") {
+                   lwd=par("lwd"), edgemode="undirected",
+                   attrs=list()) {
+              edgeName <- paste(tail(x),head(x),sep="~")
+              attrNames <- names(attrs)
+
               z <- splines(x)
 
               arrowtails <- rep("none", length(z))
-              arrowtails[1] <- arrowtail(x)
+              if (("arrowtail" %in% attrNames)&&
+                  (edgeName %in% names(attrs$arrowtail)))
+                  arrowtails[1] <- as.character(attrs$arrowtail[edgeName])
+              else
+                  arrowtails[1] <- arrowtail(x)
 
               arrowheads <- rep("none", length(z))
-              arrowheads[length(z)] <- arrowhead(x)
+              if (("arrowhead" %in% attrNames)&&
+                  (edgeName %in% names(attrs$arrowhead)))
+                  arrowheads[length(z)] <- as.character(attrs$arrowhead[edgeName])
+              else
+                  arrowheads[length(z)] <- arrowhead(x)
+
+              if (("color" %in% attrNames)&&
+                  (edgeName %in% names(attrs$color)))
+                  edgeColor <- as.character(attrs$color[edgeName])
+              else
+                  edgeColor <- color(x)
 
               mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
-                     MoreArgs=list(len=len, col=color(x),
+                     MoreArgs=list(len=len, col=edgeColor,
                      lty=lty, lwd=lwd, ...))
 
-              drawTxtLabel(txtLabel(x))
+              drawTxtLabel(txtLabel(x), objName=edgeName, objAttrs=attrs)
 
               return(NULL)
           })
