@@ -42,6 +42,7 @@ static SEXP Rgraphviz_graph_type_tag;
 } while (0)
 
 SEXP Rgraphviz_init(void) {
+    freopen ("/dev/null", "w", stderr);
     Rgraphviz_graph_type_tag = install("RGRAPH_TYPE_TAG");
     checkGraphvizVers();
     return(R_NilValue);
