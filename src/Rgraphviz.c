@@ -540,7 +540,13 @@ SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
 	
 	curTo = coerceVector(VECTOR_ELT(VECTOR_ELT(edgeL, x), 0),
 			     INTSXP);
-	curWeights = VECTOR_ELT(VECTOR_ELT(edgeL, x), 1);
+	if (length(VECTOR_ELT(edgeL, x)) > 1)
+	    PROTECT(curWeights = VECTOR_ELT(VECTOR_ELT(edgeL, x), 1));
+	else {
+	    PROTECT(curWeights = allocVector(REALSXP, length(curTo)));
+	    for (i = 0; i < length(curWeights); i++)
+		REAL(curWeights)[i] = 1;
+	}
 
 	for (y = 0; y < length(curTo); y++) {
 	    PROTECT(toName = STRING_ELT(from, INTEGER(curTo)[y]-1));
@@ -548,7 +554,6 @@ SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
 				       length(toName) + 2) *
 				      sizeof(char));
 	    sprintf(edgeName, "%s~%s", STR(curFrom), CHAR(toName));
-
 	    /* See if this edge is a removed edge */
 	    for (i = 0; i < length(removedEdges); i++) {
 		if (strcmp(CHAR(STRING_ELT(edgeNames, 
@@ -619,7 +624,6 @@ SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
 	    SET_VECTOR_ELT(goodEdgeNames, curEle, mkChar(edgeName));
 	    SET_VECTOR_ELT(peList, curEle, curPE);
 	    curEle++;
-
 	    for (i = 0; i < nSubG; i++) {
 		curSubG = VECTOR_ELT(subGList, i);
 
@@ -648,7 +652,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP graph, SEXP subGList,
 	    free(edgeName);
 	    UNPROTECT(4);
 	}
-	UNPROTECT(1);
+	UNPROTECT(2);
     }
     setAttrib(peList, R_NamesSymbol, goodEdgeNames);
     peList = assignAttrs(edgeAttrs, peList, defAttrs);
