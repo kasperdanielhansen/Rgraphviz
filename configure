@@ -889,9 +889,11 @@ rm -f conftest.sh
 
 # AC_CONFIG_SRCDIR(src/Rgraphviz.c)
 
+echo "$as_me:892: checking for graphviz" >&5
+echo $ECHO_N "checking for graphviz... $ECHO_C" >&6
 # Extract the first word of "dotneato-config", so it can be a program name with args.
 set dummy dotneato-config; ac_word=$2
-echo "$as_me:894: checking for $ac_word" >&5
+echo "$as_me:896: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
 if test "${ac_cv_path_DOTNEATO_CONFIG+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -908,26 +910,26 @@ for ac_dir in $ac_dummy; do
   test -z "$ac_dir" && ac_dir=.
   if $as_executable_p "$ac_dir/$ac_word"; then
    ac_cv_path_DOTNEATO_CONFIG="$ac_dir/$ac_word"
-   echo "$as_me:911: found $ac_dir/$ac_word" >&5
+   echo "$as_me:913: found $ac_dir/$ac_word" >&5
    break
 fi
 done
 
-  test -z "$ac_cv_path_DOTNEATO_CONFIG" && ac_cv_path_DOTNEATO_CONFIG=""NO_PROG""
+  test -z "$ac_cv_path_DOTNEATO_CONFIG" && ac_cv_path_DOTNEATO_CONFIG=""not found""
   ;;
 esac
 fi
 DOTNEATO_CONFIG=$ac_cv_path_DOTNEATO_CONFIG
 
 if test -n "$DOTNEATO_CONFIG"; then
-  echo "$as_me:923: result: $DOTNEATO_CONFIG" >&5
+  echo "$as_me:925: result: $DOTNEATO_CONFIG" >&5
 echo "${ECHO_T}$DOTNEATO_CONFIG" >&6
 else
-  echo "$as_me:926: result: no" >&5
+  echo "$as_me:928: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 
-if test ${DOTNEATO_CONFIG} != "NO_PROG"; then
+if test ${DOTNEATO_CONFIG} != "not found"; then
 	PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
 	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
 
@@ -943,9 +945,9 @@ if test ${DOTNEATO_CONFIG} != "NO_PROG"; then
 	   fi
 	fi
 else
-   echo "$as_me:946: result: failed" >&5
+   echo "$as_me:948: result: failed" >&5
 echo "${ECHO_T}failed" >&6
-   { { echo "$as_me:948: error: please specify a valid path to 'dotneato-config' with --with-graphviz=DIR" >&5
+   { { echo "$as_me:950: error: please specify a valid path to 'dotneato-config' with --with-graphviz=DIR" >&5
 echo "$as_me: error: please specify a valid path to 'dotneato-config' with --with-graphviz=DIR" >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -1060,7 +1062,7 @@ rm -f confdef2opt.sed
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:1063: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:1065: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -1227,7 +1229,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:1230: error: ambiguous option: $1
+    { { echo "$as_me:1232: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -1246,7 +1248,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:1249: error: unrecognized option: $1
+  -*) { { echo "$as_me:1251: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -1282,7 +1284,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "src/Makevars" ) CONFIG_FILES="$CONFIG_FILES src/Makevars" ;;
-  *) { { echo "$as_me:1285: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:1287: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -1475,7 +1477,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:1478: creating $ac_file" >&5
+    { echo "$as_me:1480: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -1493,7 +1495,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:1496: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:1498: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -1506,7 +1508,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:1509: error: cannot find input file: $f" >&5
+           { { echo "$as_me:1511: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
