@@ -1,45 +1,3 @@
-## FIXME: Can graph2graphviz & weightLabels go?
-graph2graphviz <- function(object) {
-    if( ! is(object, "graph") )
-        stop("need a graph object")
-    ## Return a 3 column numeric matrix (from, to, weight)
-    fromTo <- edgeMatrix(object, duplicates=TRUE)
-    colnames(fromTo) <- NULL
-    weights <- unlist(edgeWeights(object))
-
-    gvMtrx <- rbind(fromTo, weights)
-    ## Make sure the matrix is numeric
-    if (!is.numeric(gvMtrx))
-        stop("non-numeric values in the edge matrix")
-    if (any(is.na(gvMtrx)))
-        stop("NAs in the edge matrix")
-
-    gvMtrx
-}
-
-weightLabels <- function(object) {
-    if( ! is(object, "graph") )
-        stop("need a graph object")
-    ## Will return the edge weights of a graph in a format
-    ## that is appropriate for use with the edge labels in
-    ## a plotted graph
-
-    weights <- edgeWeights(object)
-
-    ## The elements need to be modified such that the names are
-    ## the character names of the to nodes, not numeric and
-    ## the values in the vector are character - not numeric
-    nodes <- nodes(object)
-
-    labels <- lapply(weights, function(x, nodes) {
-        labNames <- names(x)
-        x <- as.character(x)
-        names(x) <- nodes[as.numeric(labNames)]
-        x}, nodes)
-
-    labels
-}
-
 .initRgraphvizPlotMethods <- function() {
 
     setMethod("plot", "graph",
@@ -218,45 +176,54 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc, width) {
 
         ## Get the font size that Graphviz believes this to be
         op <- par()
-        on.exit(par(ps=op$ps), add=TRUE)
-        par(ps=labelFontsize(txtLabel))
 
-        ## FIXME:
-        ## Due to scaling down to the specified size, the labels
-        ## also need to be scaled.  Graphviz does this post-layout,
-        ## so we need to as well.  Not sure how best to go about this,
-        ## but for now using this bad hack -> basically the idea
-        ## is to keep trying smaller and smaller values of 'cex'
-        ## to get the string small enough for the node.  If we hit the
-        ## minimum font size, don't output the label and signal a
-        ## warning.
+        curFontsize <- labelFontsize(txtLabel)
+        if (length(curFontsize) > 0) {
+            on.exit(par(ps=op$ps), add=TRUE)
+            par(ps=curFontsize)
+        }
+        else
+            curFontsize <- op$ps
 
-        ## This won't be uniform though - not sure exactly how
-        ## Graphviz takes care of this, they get a uniform scaling,
-        ## whereas this will have different font sizes for different
-        ## nodes based on the length of the string
+        cex <- op$cex
+
+        if (!missing(width)) {
+            ## FIXME:
+            ## Due to scaling down to the specified size, the labels
+            ## also need to be scaled.  Graphviz does this post-layout,
+            ## so we need to as well.  Not sure how best to go about this,
+            ## but for now using this bad hack -> basically the idea
+            ## is to keep trying smaller and smaller values of 'cex'
+            ## to get the string small enough for the node.  If we hit the
+            ## minimum font size, don't output the label and signal a
+            ## warning.
+
+            ## This won't be uniform though - not sure exactly how
+            ## Graphviz takes care of this, they get a uniform scaling,
+            ## whereas this will have different font sizes for different
+            ## nodes based on the length of the string
 
 
-        strW <- width+1
-        cex <- par("cex")
-        width <- width * .8
-        count <- 0
-        while (strW > width) {
-            x <- strwidth(labelText(txtLabel), "inches", cex)
-            if (x == strW) {
-                count <- count + 1
-                if (count == 5) {
-                    warning("Label ", labelText(txtLabel),
-                            " is too large for node")
-                    return()
+            strW <- width+1
+            width <- width * .8
+            count <- 0
+            while (strW > width) {
+                x <- strwidth(curFontsize, "inches", cex)
+                if (x == strW) {
+                    count <- count + 1
+                    if (count == 5) {
+                        warning("Label ", curFontsize,
+                                " is too large for node")
+                        return()
+                    }
                 }
+                strW <- x
+                if (strW > width)
+                    cex <- cex * .9
             }
-            strW <- x
-            if (strW > width)
-                cex <- cex * .9
         }
 
-        text(xLoc, yLoc, labelText(txtLabel),
+        text(xLoc, yLoc, curFontsize,
              col=labelColor(txtLabel), cex=cex)
     }
 }
@@ -283,9 +250,6 @@ convertRadius <- function(rad, ur) {
 }
 
 drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
-
-#    rad <- convertRadius(rad, ur)
-
     invisible(symbols(nodeX, nodeY, circles=rad, inches=max(rad),
                       fg=fg, bg=bg,add=TRUE))
 }

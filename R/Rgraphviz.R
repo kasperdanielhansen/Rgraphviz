@@ -65,7 +65,6 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
         return(g)
 }
 
-
 agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
                    layout=TRUE) {
     ## First check that the file exists
@@ -81,14 +80,14 @@ agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
 }
 
 getGraphAttr <- function(graph, attr) {
-    .Call("Rgraphviz_getAttr", graph, as.character(attr))
+    .Call("Rgraphviz_getAttr", graph, as.character(attr),
+          PACKAGE="Rgraphviz")
 }
 
 agwrite <- function(graph, filename) {
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename),
                PACKAGE="Rgraphviz")
 }
-
 
 layoutGraph <- function(graph) {
     if (inherits(graph,"graphNEL"))
@@ -126,12 +125,10 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList=list()) {
 
     if (length(nodeNames) > 0) {
         pNodes <- lapply(nodeNames, function(x) {
-            new("pNode",name=x)})
+            new("pNode",name=x, attrs=list(label=x))})
         names(pNodes) <- nodeNames
 
         attrNames <- names(nodeAttrs)
-        ## FIXME: Horribly inefficient, just trying
-        ##        to get this to work for now
         for (i in 1:length(nodeNames)) {
             ## See if this node is in a subgraph
             if (length(subGList) > 0) {
@@ -142,18 +139,14 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList=list()) {
                 else if (length(subGs) > 1)
                     stop("Node ", nodeNames[i], " in multiple subgraphs")
             }
-            ## Get any attrs for this node
-            curAttrs <- list()
-            for (j in seq(along=nodeAttrs)) {
-                curVal <- nodeAttrs[[j]][nodeNames[i]]
-                if (!is.na(curVal))
-                    curAttrs[[ attrNames[j] ]] <- as.character(curVal)
-            }
-            if (is.null(curAttrs$label))
-                curAttrs$label <- nodeNames[i]
+        }
 
-            ## FIXME: Need replace method
-            pNodes[[i]]@attrs <- curAttrs
+        for (j in seq(along=nodeAttrs)) {
+            names <- names(nodeAttrs[[j]])
+            for (k in seq(along=nodeAttrs[[j]])) {
+                pNodes[[ names[k] ]]@attrs[[ attrNames[j] ]] <-
+                    as.character(nodeAttrs[[j]][k])
+            }
         }
     }
 
@@ -165,8 +158,13 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
                           edgeAttrs=list(), subGList=list()) {
     recipEdges <- match.arg(recipEdges)
 
-    buildPEList <- function(x,y) {
-        lapply(y, function(z) {new("pEdge", from=x, to=z)})
+    buildPEList <- function(x,y, edgemode) {
+        if (edgemode == "directed")
+            lapply(y, function(z) {new("pEdge", from=x, to=z,
+                                       attrs=list(arrowhead="open"))})
+        else
+           lapply(y, function(z) {new("pEdge", from=x, to=z,
+                                      attrs=list(arrowhead="none"))})
     }
 
     buildSubGEdgeNames <- function(subG) {
@@ -175,22 +173,23 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
         as.vector(mapply(paste, x, z, MoreArgs=list(sep="~")))
     }
 
+
+    edgemode <- edgemode(graph)
+
     to <- edges(graph)
     if (length(to) == 0)
         return(list())
 
     from <- names(to)
 
+    pEdges <- mapply(buildPEList, from, to, MoreArgs=list(edgemode=edgemode))
+
     ## FIXME: Sometimes the Mapply has a list of lists,
     ## and sometimes just a list of length unlist(edges(graph))
     ## In the former case it needs to be unlisted, the latter
-    ## it doesn't.  Why the difference?  NEed to sort this out.
-    pEdges <- mapply(buildPEList, from, to)
-
+    ## it doesn't.  Why the difference?  Need to sort this out.
     if (! any(unlist(lapply(pEdges, inherits, "pEdge"))))
         pEdges <- unlist(pEdges, recursive=FALSE)
-
-    edgemode <- edgemode(graph)
 
     edgeNames <- unlist(lapply(pEdges, function(x) {
         paste(from(x), to(x), sep="~")}))
@@ -199,11 +198,17 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     subGEdgeNames <- lapply(subGList, buildSubGEdgeNames)
 
     attrNames <- names(edgeAttrs)
+    for (j in seq(along=edgeAttrs)) {
+        names <- names(edgeAttrs[[j]])
+
+        for (k in seq(along=edgeAttrs[[j]])) {
+            pEdges[[ names[k] ]]@attrs[[ attrNames[j] ]] <-
+                as.character(edgeAttrs[[j]][k])
+        }
+    }
 
     handled <- character()
     remove <- numeric()
-    ## FIXME: Horribly inefficient, just trying
-    ##        to get this to work for now
     for (i in 1:length(edgeNames)) {
         revName <- paste(to(pEdges[[i]]), from(pEdges[[i]]),
                          sep="~")
@@ -215,36 +220,17 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
                 subGs <- which(unlist(lapply(subGEdgeNames, function(x,y)
                                          {y %in% x}, edgeNames[i])))
                 if (length(subGs) == 1)
-                    pEdges[[i]]@subG <- subGs ## FIXME: Need replace
-                ## method
+                    pEdges[[i]]@subG <- subGs
                 else if (length(subGs) == 2)
                     stop("Edge ", edgeNames[i], " is in multiple subgraphs")
-            }
-
-            ## Get any attrs for this edge
-            curAttrs <- list()
-            for(j in seq(along=edgeAttrs)) {
-                curVal <- edgeAttrs[[j]][edgeNames[i]]
-                if (!is.na(curVal))
-                    curAttrs[[ attrNames[j] ]] <- as.character(curVal)
             }
         }
         else {
             remove <- c(remove, i)
-            ## FIXME: need replacem ethod for attrs
             if ((is.null(pEdges[[revName]]@attrs$arrowtail))
                 &&(edgemode == "directed"))
                 pEdges[[revName]]@attrs$arrowtail <- "open"
         }
-
-        ## Since we're using the arrowhead/arrowtail
-        ## to specify if arrows are beign drawn or not,
-        ## the default relies on the edgemode
-        if ((is.null(curAttrs$arrowhead))&&(edgemode == "directed"))
-            curAttrs$arrowhead <- "open"
-
-        ## FIXME: Need replace method
-        pEdges[[i]]@attrs <- curAttrs
     }
 
     if (length(remove) > 0)
