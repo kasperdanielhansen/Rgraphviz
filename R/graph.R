@@ -123,6 +123,13 @@ setMethod("weightLabels", "graphNEL", function(object) {
                   if (is.null(attrs$graph$ratio))
                       attrs$graph$ratio <- "fill"
 
+                  if (is.null(attrs$edge$dir)) {
+                      if (edgemode(x) == "undirected")
+                          attrs$edge$dir <- "none"
+                      else
+                          attrs$edge$dir <- "forward"
+                  }
+
                   ## Sanity check attr values.  This is going to C
                   ## very soon (and currently isn't all that good anyways)
                   checkAttrs(attrs,nodeLabels)
