@@ -525,7 +525,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
     SEXP toName;
     SEXP recipPE;
     char *edgeName, *recipName;
-    int i, j, nSubG;
+    int i, j, k, nSubG;
     int nEdges = length(edgeNames);
 
     if (length(edgeL) == 0)
@@ -592,14 +592,14 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 					       sizeof(char));
 		    sprintf(recipName, "%s~%s", CHAR(toName), STR(curFrom));
 
-		    for (j = 0; j < curEle; j++) {
-			if (strcmp(CHAR(STRING_ELT(goodEdgeNames, j)),
+		    for (k = 0; k < curEle; k++) {
+			if (strcmp(CHAR(STRING_ELT(goodEdgeNames, k)),
 				   recipName) == 0)
 			    break;
 		    }
 		    free(recipName);
-
-		    PROTECT(recipPE = VECTOR_ELT(peList, j));
+		    
+		    PROTECT(recipPE = VECTOR_ELT(peList, k));
 
 		    recipAttrs = GET_SLOT(recipPE, Rf_install("attrs"));
 		    recipAttrNames = getAttrib(recipAttrs,
@@ -626,7 +626,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 		    setAttrib(newRecipAttrs, R_NamesSymbol, newRecipAttrNames);
 		    
 		    SET_SLOT(recipPE, Rf_install("attrs"), newRecipAttrs);
-		    SET_VECTOR_ELT(peList, i, recipPE);
+		    SET_VECTOR_ELT(peList, k, recipPE);
 		    UNPROTECT(3);
 
 		}
