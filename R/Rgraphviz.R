@@ -96,7 +96,7 @@ graphvizVersion <- function() {
     z
 }
 
-buildNodeList <- function(graph, nodeAttrs=list(), subGList) {
+buildNodeList <- function(graph, nodeAttrs=list(), subGList=list()) {
     pNodes <- list()
 
     nodeNames <- nodes(graph)
@@ -138,7 +138,7 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList) {
 }
 
 
-buildEdgeList <- function(graph, edgeAttrs=list(), subGList) {
+buildEdgeList <- function(graph, edgeAttrs=list(), subGList=list()) {
     buildPEList <- function(x,y) {
         lapply(y, function(z) {new("pEdge", from=x, to=z)})
     }
