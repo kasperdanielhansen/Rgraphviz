@@ -8,10 +8,12 @@
   can be used to verify that such a list is valid for use.
 }
 \usage{
-getDefaultAttrs(layoutType=c("dot", "neato", "twopi")[1])
+getDefaultAttrs(curAttrs = list(), layoutType = c("dot", "neato",
+                 "twopi")[1])
 checkAttrs(attrs)
 }
 \arguments{
+  \item{curAttrs}{Any attributes currently defined}
   \item{layoutType}{The layout method being used}
   \item{attrs}{ An attribute list of graphviz attributes}
 }
