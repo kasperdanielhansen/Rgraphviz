@@ -1,2 +1,1 @@
-require(methods)
-require(graph)
+library(graph)
