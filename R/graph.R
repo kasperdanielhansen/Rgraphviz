@@ -116,20 +116,14 @@ weightLabels <- function(object) {
                       rad <- min(unlist(lapply(AgNode(x), drawAgNode, ur)))
 
                       ## Plot the edges
-                      q <- lapply(AgEdge(x), function(x, edgeCols,
-                                                      defEdgeCol, rad,
-                                                      edgemode) {
+                      q <- lapply(AgEdge(x), function(x, rad, edgemode) {
                           ## See if there's a specified edgeCol for this
                           if (!is(x,"AgEdge"))
                               stop(paste("Class:",class("AgEdge")))
                           tail <- tail(x)
                           head <- head(x)
-                          col <- as.character(edgeCols[[tail]][[head]])
-                          if (length(col)==0)
-                              col <- defEdgeCol
-                          lines(x, col=col, len=(rad / 3),
-                                edgemode=edgemode)
-                      }, edgeCols, attrs$edge$color, rad, edgemode(x))
+                          lines(x, len=(rad / 3), edgemode=edgemode)
+                      }, rad, edgemode(x))
                   }
                   else {
                       stop("No nodes in graph")
