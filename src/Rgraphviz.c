@@ -90,6 +90,12 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP eList) {
     aginit();
     g = agopen(STR(name), ag_k);
 
+    /* Set default attributes */
+    /* !!!! This is somewhat temporary until we allow */
+    /* !!!! for all attributes to be settable in R */
+    if (!agfindattr(g->proto->n,"shape"))
+	agnodeattr(g,"shape","circle");
+
     /* Get the nodes created */
     for (i = 0; i < length(nodes); i++) {
 	agnode(g, CHAR(STRING_ELT(nodes,i)));
@@ -122,9 +128,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP eList) {
     R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin);
 
     klass = MAKE_CLASS("Ragraph");
-    /*XX  the call to duplicate is needed until 1.6.2 is released
-      because of a bug in the NEW() mechanism in < 1.6.2! */
-    PROTECT(obj = duplicate(NEW_OBJECT(klass)));
+    PROTECT(obj = NEW_OBJECT(klass));
     
     SET_SLOT(obj, Rf_install("agraph"), graphRef);
     SET_SLOT(obj, Rf_install("laidout"), R_scalarLogical(FALSE));
@@ -138,7 +142,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP eList) {
 SEXP Rgraphviz_doDotLayout(SEXP graph) {
     Agraph_t *g;
     Rboolean laidout;
-    SEXP slotTmp, pos, cPoints;
+    SEXP slotTmp, nLayout, cPoints;
 
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == FALSE) {
@@ -147,7 +151,7 @@ SEXP Rgraphviz_doDotLayout(SEXP graph) {
 	g = R_ExternalPtrAddr(slotTmp);
 	
 	g = dotLayout(g);
-	PROTECT(pos = getNodeLocs(g));
+	PROTECT(nLayout = getNodeLayouts(g));
 	PROTECT(cPoints= 
 		getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
 						Rf_install("numEdges")))[0]));
@@ -156,7 +160,7 @@ SEXP Rgraphviz_doDotLayout(SEXP graph) {
 					     R_NilValue));
 	R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin);
 	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
-	SET_SLOT(graph,Rf_install("nodeLocs"),pos);
+	SET_SLOT(graph,Rf_install("nodes"),nLayout);
 	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
 	SET_SLOT(graph,Rf_install("edgePoints"), cPoints);
 	UNPROTECT(3);
@@ -164,21 +168,33 @@ SEXP Rgraphviz_doDotLayout(SEXP graph) {
     return(graph);
 }
 
-SEXP getNodeLocs(Agraph_t *g) {
+SEXP getNodeLayouts(Agraph_t *g) {
     Agnode_t *node;
-    SEXP pos;
+    SEXP outLst, nlClass, xyClass, curXY, curNL;
     int i, nodes;
+    
+    nlClass = MAKE_CLASS("nodeLayout");
+    xyClass = MAKE_CLASS("xyPoint");
 
     nodes = agnnodes(g);
     node = agfstnode(g);
-    PROTECT(pos = allocMatrix(REALSXP, nodes, 2));
+    PROTECT(outLst = allocVector(VECSXP, nodes));
+
     for (i = 0; i < nodes; i++) {
-	REAL(pos)[i] = node->u.coord.x;
-	REAL(pos)[i + nodes] = node->u.coord.y;
+	PROTECT(curNL = NEW_OBJECT(nlClass));
+	PROTECT(curXY = NEW_OBJECT(xyClass));
+	SET_SLOT(curXY,Rf_install("x"),R_scalarInteger(node->u.coord.x));
+	SET_SLOT(curXY,Rf_install("y"),R_scalarInteger(node->u.coord.y));
+	SET_SLOT(curNL,Rf_install("center"),curXY);
+	SET_SLOT(curNL,Rf_install("height"),R_scalarInteger(node->u.ht));
+	SET_SLOT(curNL,Rf_install("rWidth"),R_scalarInteger(node->u.rw));
+	SET_SLOT(curNL,Rf_install("lWidth"),R_scalarInteger(node->u.lw));
+	SET_ELEMENT(outLst, i, curNL);
 	node = agnxtnode(g,node);
+	UNPROTECT(2);
     }
     UNPROTECT(1);
-    return(pos);
+    return(outLst);
 }
 
 SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
@@ -202,7 +218,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     for (i = 0; i < nodes; i++) {
 	edge = agfstout(g, node);
 	while (edge != NULL) {
-	    PROTECT(curEP = duplicate(NEW_OBJECT(epClass)));
+	    PROTECT(curEP = NEW_OBJECT(epClass));
 	    bez = edge->u.spl->list[0];
 	    PROTECT(pntList = allocVector(VECSXP, 
 					  ((bez.size-1)/3)));
@@ -213,10 +229,10 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 	    /* points, and then every other set starting with the */
 	    /* last point from the previous set and then the next 3 */
 	    for (k = 1; k < bez.size; k += 3) {
-		PROTECT(curCP = duplicate(NEW_OBJECT(cpClass)));
+		PROTECT(curCP = NEW_OBJECT(cpClass));
 		PROTECT(pntSet = allocVector(VECSXP, 4));
 		for (l = -1; l < 3; l++) {
-		    PROTECT(curXY = duplicate(NEW_OBJECT(xyClass)));
+		    PROTECT(curXY = NEW_OBJECT(xyClass));
 		    SET_SLOT(curXY, Rf_install("x"), 
 			     R_scalarInteger(bez.list[k+l].x));
 		    SET_SLOT(curXY, Rf_install("y"), 

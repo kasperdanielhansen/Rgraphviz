@@ -4,7 +4,7 @@
 
     setClass("Ragraph", representation(agraph="externalptr",
                                        laidout="logical",
-                                       nodeLocs="matrix",
+                                       nodes="list",
                                        numEdges="integer",
                                        edgePoints="list"
                                        )
@@ -22,11 +22,11 @@
     setMethod("laidout", "Ragraph", function(object)
               object@laidout, where=where)
 
-    if (is.null(getGeneric("nodeLocs")))
-        setGeneric("nodeLocs", function(object)
-                   standardGeneric("nodeLocs"), where=where)
-    setMethod("nodeLocs", "Ragraph", function(object)
-              object@nodeLocs, where=where)
+    if (is.null(getGeneric("nodes")))
+        setGeneric("nodes", function(object)
+                   standardGeneric("nodes"), where=where)
+    setMethod("nodes", "Ragraph", function(object)
+              object@nodes, where=where)
 
     if (is.null(getGeneric("numEdges")))
         setGeneric("numEdges", function(object)
@@ -40,10 +40,56 @@
     setMethod("edgePoints", "Ragraph", function(object)
               object@edgePoints, where=where)
 
+    if (is.null(getGeneric("getNodeLocs")))
+        setGeneric("getNodeLocs", function(object)
+                   standardGeneric("getNodeLocs"), where=where)
+    setMethod("getNodeLocs", "Ragraph", function(object) {
+        out <- vector(mode="list",length=2)
+        names(out) <- c("x","y")
+        xys <- lapply(object@nodes,getNodeCenter)
+        out[[1]] <- unlist(lapply(xys,getX))
+        out[[2]] <- unlist(lapply(xys,getY))
+        out
+    }, where=where)
+
     setMethod("show", "Ragraph", function(object) {
-        print(paste("A graph with",nrow(nodeLocs(object)),
+        print(paste("A graph with",length(nodes(object)),
                   "nodes."))
     }, where=where)
+}
+
+.initNodeLayout <- function(where) {
+    if (is.null(getGeneric("nodeLayout")))
+        setGeneric("nodeLayout", function(object)
+                   standardGeneric("nodeLayout"), where=where)
+    setClass("nodeLayout", representation(center="xyPoint",
+                                          height="integer",
+                                          rWidth="integer",
+                                          lWidth="integer"))
+    if (is.null(getGeneric("getNodeCenter")))
+        setGeneric("getNodeCenter", function(object)
+                   standardGeneric("getNodeCenter"), where=where)
+    setMethod("getNodeCenter", "nodeLayout", function(object)
+              object@center, where=where)
+
+    if (is.null(getGeneric("getNodeHeight")))
+        setGeneric("getNodeHeight", function(object)
+                   standardGeneric("getNodeHeight"), where=where)
+    setMethod("getNodeHeight", "nodeLayout", function(object)
+              object@height, where=where)
+
+    if (is.null(getGeneric("getNodeRW")))
+        setGeneric("getNodeRW", function(object)
+                   standardGeneric("getNodeRW"), where=where)
+    setMethod("getNodeRW", "nodeLayout", function(object)
+              object@rWidth, where=where)
+
+    if (is.null(getGeneric("getNodeLW")))
+        setGeneric("getNodeLW", function(object)
+                  standardGeneric("getNodeLW"), where=where)
+    setMethod("getNodeLW", "nodeLayout", function(object)
+              object@lWidth, where=where)
+
 }
 
 .initEdgePoints <- function(where) {

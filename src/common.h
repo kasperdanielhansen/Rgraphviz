@@ -15,7 +15,7 @@ extern char *Info[] = {
 #endif
 
 #include <math.h>
-#include <gvconfig.h>
+/*#include <gvconfig.h>*/
 #include <render.h>
 #include <graph.h>
 #include <dotprocs.h>
@@ -31,6 +31,6 @@ SEXP Rgraphviz_graph2ps(SEXP, SEXP);
 SEXP Rgraphviz_doDotLayout(SEXP);
 SEXP getEdgeLocs(Agraph_t *,int);
 SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP);
-SEXP getNodeLocs(Agraph_t *);
+SEXP getNodeLayouts(Agraph_t *);
 Agraph_t *dotLayout(Agraph_t *);
 #endif

@@ -56,16 +56,17 @@ plotGraph <- function(graph, name="graph") {
     names <- names(edges)
 
     if (length(names) > 0) {
-        nodes <- nodeLocs(g)
+        nodeLocs <- getNodeLocs(g)
 
-        maxX <- max(nodes[,1])
-        rad <- rep(maxX/20, nrow(nodes))
+        nodeX <- nodeLocs[["x"]]
+        nodeY <- nodeLocs[["y"]]
 
-        x <- nodes[,1]
-        y <- nodes[,2]
+        ### !!! For now just drawing circles, and thus only need one
+        ### !!! of the half widths to get the radius
+        rad <- unlist(lapply(nodes(g), getNodeRW))
 
-        symbols(x,y,circles=rad, inches=FALSE)
-        points(x,y, pch=names, cex=2)
+        symbols(nodeX,nodeY,circles=rad, inches=FALSE)
+        points(nodeX,nodeY, pch=names, cex=2)
         q <- lapply(edgePoints(g), plotEdge)
     }
     else {
