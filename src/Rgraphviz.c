@@ -215,7 +215,6 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	curLabel = getVectorPos(curEdgeLabels, 
 				CHAR(STRING_ELT(nodes, curNode-1)));
 	
-	
 	curSubG = INTEGER(edgeSubs)[i];
 	if (curSubG > 0) {
 	    tmpGraph = sgs[curSubG-1];
@@ -224,6 +223,8 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	    tmpGraph = g;
 	}
 
+	/* Setup the edge in the graph.  If the opposite edge already */
+	/* exists then handle it differently */ 
 	if (agfindedge(tmpGraph, head, tail) == NULL) {
 	    curEdge = agedge(tmpGraph, tail, head);
 	    curEdge->u.weight = INTEGER(weights)[i];
@@ -233,6 +234,10 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 		      CHAR(STRING_ELT(curEdgeLabels, curLabel)));
 	}
 	else {
+	    /* If the opposite edge already exists, we only care if we */
+	    /* have a directed graph.  In that case, how we handle */
+	    /* depends on the edge direction attribute - in some */
+	    /* cases a second edge is defined, in others not */
 	    if (ag_k == AGDIGRAPH) {
 		curEdge = agfindedge(tmpGraph, head, tail);
 		edgeDir = agget(curEdge, "dir");
@@ -255,16 +260,20 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 }
 
 SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
+    /* Will perform a Graphviz layout on a graph */
     Agraph_t *g;
     Rboolean laidout;
     SEXP slotTmp, nLayout, cPoints, bb;
 
+    /* First make sure that hte graph is not already laid out */
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == FALSE) {
+	/* Extract the Agraph_t pointer from the S4 object */
 	PROTECT(slotTmp = GET_SLOT(graph, install("agraph")));
 	CHECK_Rgraphviz_graph(slotTmp);
 	g = R_ExternalPtrAddr(slotTmp);
 
+	/* Call the appropriate Graphviz layout routine */
 	if (!isInteger(layoutType))
 	    error("layoutType must be an integer value");
 	else {
@@ -285,6 +294,8 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		error("Invalid layout type\n");
 	    }
 	}
+	/* Here we want to extract information for the resultant S4
+	   object */
 	PROTECT(nLayout = getNodeLayouts(g));
 	PROTECT(bb = getBoundBox(g));
 	PROTECT(cPoints= 

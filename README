@@ -7,7 +7,9 @@ must first have installed the GraphViz software provided by AT&T
 
 - Go to http://www.graphviz.org/pub/graphviz/
 - Download GraphViz (it is recommended to take 'graphviz-current',
-  which will be the latest version).
+  which will be the latest version).  NOTE: Please download the source
+  and build using the sources instead of using RPMs or other prepackaged
+  methods.  For instance, to use graphviz-current, get graphviz-current.tar.gz.
 - Unpack the distribution
 - In the GraphViz directory, run './configure', 'make' and finally
   'make install'.  If you have special configuration needs, specify
