@@ -321,7 +321,8 @@ setMethod("bezierPoints", "BezierCurve", function(object) {
     z <- pointList(object)
     out <- vector("list", length=11)
     for (i in 0:10)
-        out[[i+1]] <- .Call("Rgraphviz_bezier", z, length(z), i/10)
+        out[[i+1]] <- .Call("Rgraphviz_bezier", z, length(z), i/10,
+                            PACKAGE="Rgraphviz")
     out <- matrix(unlist(out), ncol=2, byrow=TRUE,
                   dimnames=list(NULL,c("x","y")))
     out
