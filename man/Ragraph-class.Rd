@@ -14,6 +14,9 @@
 \alias{layoutType,Ragraph-method}
 \alias{edgemode,Ragraph-method}
 \alias{AgNode,Ragraph-method}
+\alias{getNodeLocs}
+\alias{getNodeNames}
+\alias{getNodeLabels}
 \title{Class "Ragraph": A class to handle libgraph representations}
 \description{Class \code{Ragraph} is used to handle libgraph
   representations of R graph objects.}

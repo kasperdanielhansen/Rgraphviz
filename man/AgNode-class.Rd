@@ -7,6 +7,7 @@
 \alias{name}
 \alias{shape}
 \alias{getNodeRW}
+\alias{getNodeLW}
 \alias{getNodeCenter}
 \alias{getNodeHeight}
 \alias{color,AgNode-method}
