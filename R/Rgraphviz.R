@@ -206,8 +206,7 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     if (! any(unlist(lapply(pEdges, inherits, "pEdge"))))
         pEdges <- unlist(pEdges, recursive=FALSE)
 
-    edgeNames <- unlist(lapply(pEdges, function(x) {
-        paste(from(x), to(x), sep="~")}))
+    edgeNames <- edgeNames(graph)
     names(pEdges) <- edgeNames
 
     subGEdgeNames <- lapply(subGList, buildSubGEdgeNames)
@@ -254,12 +253,7 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     pEdges
 }
 
-edgeNames <- function(graph) {
-    to <- edges(graph)
 
-    unlist(mapply(function(x,y) {
-        if (length(x) > 0)
-            paste(y,x,sep="~")
-        else
-            NULL}, to, names(to)))
-}
+setMethod("edgeNames", "Ragraph", function(object) {
+    sapply(AgEdge(object), function(x) paste(tail(x), head(x), sep="~"))
+})

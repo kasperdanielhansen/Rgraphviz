@@ -7,6 +7,7 @@
 \alias{layoutType}
 \alias{edgemode}
 \alias{boundBox}
+\alias{edgeNames,Ragraph-method}
 \alias{AgEdge,Ragraph-method}
 \alias{agraph,Ragraph-method}
 \alias{boundBox,Ragraph-method}
@@ -60,8 +61,10 @@ Objects can be created by calls to the function \code{agopen}.
       list.}
     \item{edgemode}{\code{signature(object = "Ragraph")}: Retrieves the
       edgemode of this object.}
-    \item{layoutType}{\code{signature(object = "Ragraph")}: Retrives the
+    \item{layoutType}{\code{signature(object = "Ragraph")}: Retrieves the
       method used for the layout of this graph.}
+    \item{edgeNames}{\code{signature(object = "Ragraph")}: Returns a
+      vector of the names of the edges in this graph.}
   }
 }
 \author{Jeff Gentry}

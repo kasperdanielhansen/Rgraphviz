@@ -220,7 +220,7 @@ function and \Rfunction{unlist} to format the output of
 <<edgeWeightLabels, fig=TRUE>>=
 ew <- edgeWeights(g1)
 lw <- unlist(unlist(ew))
-names(lw) <- edgeNames(g)
+names(lw) <- edgeNames(g1)
 eAttrs$label <- lw
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 @
