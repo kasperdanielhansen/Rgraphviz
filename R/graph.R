@@ -75,15 +75,34 @@
                       ## box for the graph
                       ur <- upRight(boundBox(g))
 
-                      ## Set up the plot region, plot the edges, then the nodes,
-                      ## and finally the node labels
+                      ## Set up the plot region, plot the edges, then
+                      ## nodes and finally the node labels
                       opar <- par(pty="s", oma=c(0,0,0,0), mai=c(0,0,0,0))
-                      on.exit(par=opar)
+                      on.exit(par=opar, add=TRUE)
+
                       outLim <- max(getY(ur), getX(ur))
-                      plot(NA,NA,xlim=c(0,outLim), ylim=c(0,outLim),
+                      pin <- par("pin")
+                      if (pin[1] == pin[2]) {
+                          conv <- outLim/pin[1]
+                      }
+                      else if (pin[1] > pin[2]) {
+                          conv <- getX(ur)/pin[1]
+                      }
+                      else {
+                          conv <- getY(ur)/pin[2]
+                      }
+                      rad <- rad/conv
+
+                      ## !!! gc() here seems to help stability
+                      gc()
+
+                      plot(NA,NA,xlim=c(0,getX(ur)), ylim=c(0,getY(ur)),
                            type="n",main=NULL,xlab="",ylab="",xaxt="n",
                            yaxt="n",bty="n",...)
-                      symbols(nodeX, nodeY, circles=rad, inches=FALSE,
+
+                      gc()
+
+                      symbols(nodeX, nodeY, circles=rad, inches=max(rad),
                               bg=nodeCols,add=TRUE)
 
                       ## Plot the edges
@@ -93,7 +112,7 @@
                       assign("colNum",colNum, colEnv)
                       q <- lapply(AgEdge(g), function(x,cols, colEnv) {
                           colNum <- get("colNum",colEnv)
-                          lines(x, col=edgeCols[colNum])
+                          lines(x, col=edgeCols[colNum], len=min(rad)/2)
                           if (colNum == length(edgeCols))
                               colNum <- 1
                           else
