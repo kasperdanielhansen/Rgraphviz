@@ -145,12 +145,16 @@ SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
 
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
 		      SEXP nodeLabels, SEXP from,
-		      SEXP to, SEXP weights) {
-    Agraph_t *g;
+		      SEXP to, SEXP weights, SEXP edgeSubs,
+		      SEXP nodeSubs,
+		      SEXP subGs) {
+    Agraph_t *g, *tmpGraph;
+    Agraph_t **sgs;
     Agnode_t *head, *tail, *tmp;
     Agedge_t *curEdge;
     int ag_k = 0;
     int i, curNode;
+    int curSubG;
     
     if (!isInteger(kind))
 	error("kind must be an integer value");
@@ -166,12 +170,33 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     aginit();
     g = agopen(STR(name), ag_k);
 
+    if (length(subGs) > 0) {
+	/* Create any subgraphs, if necessary */
+	
+	/* Allocate space in the subgraph array */
+	for (i = 0; i < length(subGs); i++) {
+	    sgs[i] = agsubg(g,CHAR(STRING_ELT(subGs,i)));
+	}
+    }
+
     /* Set default attributes */
     g = setDefaultAttrs(g);
 
     /* Get the nodes created */
     for (i = 0; i < length(nodes); i++) {
-	tmp = agnode(g, CHAR(STRING_ELT(nodes,i))); 
+	/* Need to check the node # against the subG vector */
+	/* And assign it to the proper grpah, not necessarily 'g' */
+	curSubG = INTEGER(nodeSubs)[i];
+	if (curSubG > 0) {
+	    /* Point tmpGraph to the appropriate current graph */
+	    /* Remember that in R they're numbered 1->X and in */
+	    /* C it is 0-(X-1) */
+	    tmpGraph = sgs[curSubG-1];
+	}
+	else
+	    tmpGraph = g;
+
+	tmp = agnode(tmpGraph, CHAR(STRING_ELT(nodes,i))); 
  	agset(tmp, "label", CHAR(STRING_ELT(nodeLabels,i)));
     }
 
@@ -186,14 +211,22 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	head = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
 	if (head == NULL)
 	    error("Missing head node");
+
+	curSubG = INTEGER(edgeSubs)[i];
+	if (curSubG > 0) {
+	    tmpGraph = sgs[curSubG-1];
+	}
+	else {
+	    tmpGraph = g;
+	}
 	
-	if (agfindedge(g, head, tail) == NULL) {
-	    curEdge = agedge(g, tail, head);
+	if (agfindedge(tmpGraph, head, tail) == NULL) {
+	    curEdge = agedge(tmpGraph, tail, head);
 	    curEdge->u.weight = INTEGER(weights)[i];
 	}
 	else {
 	    if (ag_k == AGDIGRAPH) {
-		curEdge = agfindedge(g, head, tail);
+		curEdge = agfindedge(tmpGraph, head, tail);
 		agset(curEdge,"dir","both");
 	    }
 	}

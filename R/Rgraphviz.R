@@ -1,33 +1,87 @@
   agopen <- function(graph, name, nodeLabels=nodes(graph),
                      kind="AGRAPH", layout=TRUE,
-                   layoutType=c("dot","neato","twopi")[1],
-                   attrs=NULL) {
+                     layoutType=c("dot","neato","twopi")[1],
+                     attrs=NULL, subGList) {
 
       outK <- switch(kind,
-                   "AGRAPH"=0,
-                   "AGDIGRAPH"=1,
-                   "AGRAPHSTRICT"=2,
-                   "AGDIGRAPHSTRICT"=3,
-                   stop(paste("Incorrect kind parameter:",kind)))
+                     "AGRAPH"=0,
+                     "AGDIGRAPH"=1,
+                     "AGRAPHSTRICT"=2,
+                     "AGDIGRAPHSTRICT"=3,
+                     stop(paste("Incorrect kind parameter:",kind)))
 
-    edgeMtrx <- graph2graphviz(graph)
+      edgeMtrx <- graph2graphviz(graph)
 
-    nodes <- nodes(graph)
+      nodes <- nodes(graph)
 
-    g <- .Call("Rgraphviz_agopen", as.character(name),
-               as.integer(outK), as.vector(nodes),
-               as.character(nodeLabels),
-               as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
-               as.integer(edgeMtrx[,3]))
+      ## !! At this point have all the info from the main graph
+      ## !! need to determine the nodeSubs vector and the edgeSubs
+      ## !! vector
+      subGs <- vector(mode="character")
 
-    if ((is.list(attrs))&&(length(attrs)>0))
-        g <- agset(g, attrs)
+      nodeSubs <- vector(length=length(nodes), mode="numeric")
+      names(nodeSubs) <- nodes
 
-    if (layout)
-        return(layoutGraph(g,layoutType))
-    else
-        return(g)
-}
+      edgeSubs <- rep(0,length(unlist(edges(graph))))
+
+      if ((!missing(subGList))&&(length(subGList) > 0)) {
+          ## !! Naive methods are being used here
+          ## !! Need to speed up the node and edge assignments
+          ## !! drastically
+          curEdge <- 0
+          edgeFromTo <- edgeMtrx[,1:2]
+          for (i in 1:length(subGList)) {
+              subGs <- c(subGs,paste("cluster_",i,sep=""))
+
+              subNodes <- nodes(subGList[[i]])
+              for (j in 1:length(subNodes)) {
+                  if (nodeSubs[subNodes[j]] != 0)
+                      stop("Duplicated nodes in subgraphs")
+                  else
+                      nodeSubs[subNodes[j]] <- i
+              }
+
+              ## Now do the edges
+              subEdgeL <- edgeL(subGList[[i]])
+              fromEdgeNames <- names(subEdgeL)
+              for (j in 1:length(subEdgeL)) {
+                  toEdges <- subEdgeL[[j]]$edges
+                  curEdgeNum <- as.integer(match(fromEdgeNames[j],
+                                           nodes))
+                  for (k in 1:length(toEdges)) {
+                      curEdge <- curEdge + 1
+                      if (length(toEdges) > 0) {
+                          tmp <- matrix(c(curEdgeNum,toEdges[k]),nrow=1,ncol=2)
+                          tmpMatches <- apply(edgeFromTo,1,"==",tmp)
+                          tmpMatches <- apply(tmpMatches,2,all)
+                          if (any(tmpMatches)) {
+                              whichEdge <- which(tmpMatches)[1]
+                              if (edgeSubs[whichEdge] != 0)
+                                  stop("Duplicated edges in subgraphs")
+                              else
+                                  edgeSubs[whichEdge] <- i
+                          }
+                      }
+                  }
+              }
+          }
+      }
+
+      g <- .Call("Rgraphviz_agopen", as.character(name),
+                 as.integer(outK), as.vector(nodes),
+                 as.character(nodeLabels),
+                 as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
+                 as.integer(edgeMtrx[,3]), as.integer(edgeSubs),
+                 as.integer(nodeSubs), as.character(subGs))
+
+      if ((is.list(attrs))&&(length(attrs)>0))
+          g <- agset(g, attrs)
+
+      if (layout)
+          return(layoutGraph(g,layoutType))
+      else
+          return(g)
+  }
 
 agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
                    layout=TRUE) {
