@@ -37,8 +37,8 @@ getDefaultAttrs <- function(curAttrs=list(),
         curAttrs$graph$overlap <- ""
     if (is.null(curAttrs$graph$splines))
         curAttrs$graph$splines <- TRUE
-    if (is.null(curAttrs$graph$model))
-        curAttrs$graph$model <- ""
+
+
 
     ## Now do layout specific graph attributes
     if (layoutType == "dot") {
@@ -67,8 +67,22 @@ getDefaultAttrs <- function(curAttrs=list(),
         curAttrs$node$fontcolor <- fg
     if (is.null(curAttrs$node$fontsize))
         curAttrs$node$fontsize <- "14"
-    if (is.null(curAttrs$node$style))
-        curAttrs$node$style <- ""
+#    if (is.null(curAttrs$node$style))
+#        curAttrs$node$style <- "solid"
+#    if (is.null(curAttrs$node$distortion))
+#        curAttrs$node$distortion <- "0.0"
+#    if (is.null(curAttrs$node$height))
+#        curAttrs$node$height <- "0.5"
+#    if (is.null(curAttrs$node$layer))
+#        curAttrs$node$layer <- ""
+#    if (is.null(curAttrs$node$regular))
+#        curAttrs$node$regular <- FALSE
+#    if (is.null(curAttrs$node$sides))
+#        curAttrs$node$sides <- "4"
+#    if (is.null(curAttrs$node$skew))
+#        curAttrs$node$skew <- "0.0"
+#    if (is.null(curAttrs$node$width))
+#        curAttrs$node$width <- "0.75"
 
 
     ## edge attrs
@@ -92,6 +106,24 @@ getDefaultAttrs <- function(curAttrs=list(),
         curAttrs$edge$labelfontsize <- "11"
     if (is.null(curAttrs$edge$arrowsize))
         curAttrs$edge$arrowsize <- "1"
+    if (is.null(curAttrs$edge$headport))
+        curAttrs$edge$headport <- "center"
+    if (is.null(curAttrs$edge$layer))
+       curAttrs$edge$layer <- ""
+    if (is.null(curAttrs$edge$style))
+        curAttrs$edge$style <- "solid"
+
+    if (layoutType == "dot") {
+#        if (is.null(curAttrs$edge$constraint))
+#            curAttrs$edge$constraint <- FALSE
+
+#        if (is.null(curAttrs$edge$minlen))
+#            curAttrs$edge$minlen <- "1"
+    }
+
+    if (layoutType == "neato")
+        if (is.null(curAttrs$edge$len))
+            curAttrs$edge$len <- "1.0"
 
     curAttrs
 }
