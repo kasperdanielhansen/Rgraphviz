@@ -1,10 +1,11 @@
 AC_INIT(src/Rgraphviz.c)
 AC_PREREQ(2.13)
-AC_REVISION($Revision: 1.7 $)
+AC_REVISION($Revision: 1.8 $)
 # AC_CONFIG_SRCDIR(src/Rgraphviz.c)
 
-AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config, "NO_PROG")
-if test ${DOTNEATO_CONFIG} != "NO_PROG"; then
+AC_MSG_CHECKING(for graphviz)
+AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config, "not found")
+if test ${DOTNEATO_CONFIG} != "not found"; then
 	PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
 	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
 
