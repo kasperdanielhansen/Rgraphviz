@@ -46,7 +46,7 @@ weightLabels <- function(object) {
               function(x, y, ..., subGList=list(),
                        attrs=getDefaultAttrs(y),
                        nodeAttrs=list(), edgeAttrs=list(),
-                       xlab="", ylab=""){
+                       xlab="", ylab="", main=NULL){
                   if (!validGraph(x))
                       stop("The graph to be plotted is not a valid graph structure")
                   if (missing(y))
@@ -63,13 +63,13 @@ weightLabels <- function(object) {
                               edgeAttrs=edgeAttrs, subGList=subGList)
 
                   invisible(plot(g,attrs=attrs, xlab=xlab,
-                                 ylab=ylab, newPlot=FALSE))
+                                 ylab=ylab, main=main, newPlot=FALSE))
               })
 
 
     setMethod("plot", "Ragraph",
               function(x, y, ...,
-                       attrs, xlab="", ylab="",
+                       attrs, xlab="", ylab="", main=NULL,
                        drawNode=drawAgNode, newPlot=TRUE){
 
                   ## If this is a new plot, we need to call 'plot.new'
@@ -111,6 +111,8 @@ weightLabels <- function(object) {
                       xy <- xy.coords(NA, NA, xlab, ylab, "")
                       ## !! Also still hardcoding 'type'
                       plot.xy(xy, type="n", ...)
+
+                      title(main=main, xlab=xlab, ylab=ylab)
 
                       if (length(drawNode) == 1)
                          lapply(AgNode(x), drawNode, ur)
