@@ -1,71 +1,72 @@
 require("graph") || stop("Rgraphviz requires package graph")
+### CLass xyPoint
+setClass("xyPoint", representation(x="numeric",
+                                   y="numeric"))
 
-### Class Ragraph
-setGeneric("Ragraph", function(object)
-           standardGeneric("Ragraph"))
+if (is.null(getGeneric("getX")))
+    setGeneric("getX", function(object)
+               standardGeneric("getX"))
+setMethod("getX", "xyPoint", function(object)
+          object@x)
 
-setClass("Ragraph", representation(agraph="externalptr",
-                                   laidout="logical",
-                                   layoutType="character",
-                                   edgemode="character",
-                                   AgNode="list",
-                                   AgEdge="list",
-                                   boundBox="boundingBox"))
+if (is.null(getGeneric("getY")))
+    setGeneric("getY", function(object)
+               standardGeneric("getY"))
+setMethod("getY", "xyPoint", function(object)
+          object@y)
 
-if (is.null(getGeneric("agraph")))
-    setGeneric("agraph", function(object)
-               standardGeneric("agraph"))
-setMethod("agraph", "Ragraph", function(object)
-          object@agraph)
+if (is.null(getGeneric("getPoints")))
+    setGeneric("getPoints", function(object)
+               standardGeneric("getPoints"))
+setMethod("getPoints", "xyPoint", function(object)
+          c(object@x, object@y))
 
-if (is.null(getGeneric("edgemode")))
-    setGeneric("edgemode", function(object)
-               standardGeneric("edgemode"))
-setMethod("edgemode", "Ragraph", function(object)
-          object@edgemode)
+### Class AgTextLabel
+## used to represent a 'textlabel_t' and related information
+setClass("AgTextLabel", representation(labelText="character",
+                                       labelLoc="xyPoint",
+                                       labelJust="character",
+                                       labelWidth="integer",
+                                       labelColor="character",
+                                       labelFontsize="numeric"))
+if (is.null(getGeneric("labelText")))
+    setGeneric("labelText", function(object)
+               standardGeneric("labelText"))
+setMethod("labelText", "AgTextLabel", function(object)
+          object@labelText)
 
-if (is.null(getGeneric("laidout")))
-    setGeneric("laidout", function(object)
-               standardGeneric("laidout"))
-setMethod("laidout", "Ragraph", function(object)
-          object@laidout)
+if (is.null(getGeneric("labelColor")))
+    setGeneric("labelColor", function(object)
+               standardGeneric("labelColor"))
+setMethod("labelColor", "AgTextLabel", function(object)
+          object@labelColor)
 
-if (is.null(getGeneric("layoutType")))
-    setGeneric("layoutType", function(object)
-               standardGeneric("layoutType"))
-setMethod("layoutType", "Ragraph", function(object)
-          object@layoutType)
+if (is.null(getGeneric("labelLoc")))
+    setGeneric("labelLoc", function(object)
+               standardGeneric("labelLoc"))
+setMethod("labelLoc", "AgTextLabel", function(object)
+          object@labelLoc)
 
-if (is.null(getGeneric("boundBox")))
-    setGeneric("boundBox", function(object)
-               standardGeneric("boundBox"))
-setMethod("boundBox", "Ragraph", function(object)
-              object@boundBox)
+if (is.null(getGeneric("labelJust")))
+    setGeneric("labelJust", function(object)
+               standardGeneric("labelJust"))
+setMethod("labelJust", "AgTextLabel", function(object)
+          object@labelJust)
 
-if (is.null(getGeneric("AgEdge")))
-    setGeneric("AgEdge", function(object)
-               standardGeneric("AgEdge"))
-setMethod("AgEdge", "Ragraph", function(object)
-          object@AgEdge)
+if (is.null(getGeneric("labelWidth")))
+    setGeneric("labelWidth", function(object)
+               standardGeneric("labelWidth"))
+setMethod("labelWidth","AgTextLabel", function(object)
+          object@labelWidth)
 
-if (is.null(getGeneric("AgNode")))
-    setGeneric("AgNode", function(object)
-               standardGeneric("AgNode"))
-setMethod("AgNode", "Ragraph", function(object)
-          object@AgNode)
+if (is.null(getGeneric("labelFontsize")))
+    setGeneric("labelFontsize", function(object)
+               standardGeneric("labelFontsize"))
 
-if (is.null(getGeneric("getNodeXY")))
-    setGeneric("getNodeXY", function(object)
-               standardGeneric("getNodeXY"))
+setMethod("labelFontsize", "AgTextLabel", function(object)
+          object@labelFontsize)
 
-setMethod("getNodeXY", "Ragraph",  function(object) {
-    out <- vector(mode="list",length=2)
-    names(out) <- c("x","y")
-    xys <- lapply(object@AgNode,getNodeCenter)
-    out[[1]] <- unlist(lapply(xys,getX))
-    out[[2]] <- unlist(lapply(xys,getY))
-    out
-})
+
 
 getNodeLocs <- function(object) {
     .Deprecated("getNodeXY")
@@ -156,10 +157,6 @@ if (is.null(getGeneric("getNodeHeight")))
                standardGeneric("getNodeHeight"))
 setMethod("getNodeHeight", "AgNode", function(object)
           object@height)
-setMethod("getNodeHeight", "Ragraph", function(object) {
-      nodes = object@AgNode
-      sapply(nodes, getNodeHeight)
-   })
 
 if (is.null(getGeneric("getNodeRW")))
     setGeneric("getNodeRW", function(object)
@@ -167,10 +164,6 @@ if (is.null(getGeneric("getNodeRW")))
 setMethod("getNodeRW", "AgNode", function(object)
           object@rWidth)
 
-setMethod("getNodeRW", "Ragraph", function(object) {
-      nodes = object@AgNode
-      sapply(nodes, getNodeRW)
-   })
 
 if (is.null(getGeneric("getNodeLW")))
     setGeneric("getNodeLW", function(object)
@@ -178,10 +171,6 @@ if (is.null(getGeneric("getNodeLW")))
 setMethod("getNodeLW", "AgNode", function(object)
           object@lWidth)
 
-setMethod("getNodeLW", "Ragraph", function(object) {
-      nodes = object@AgNode
-      sapply(nodes, getNodeLW)
-   })
 
 
 if (is.null(getGeneric("name")))
@@ -195,6 +184,11 @@ if (is.null(getGeneric("txtLabel")))
                standardGeneric("txtLabel"))
 setMethod("txtLabel", "AgNode", function(object)
           object@txtLabel)
+
+if (is.null(getGeneric("getNodeXY")))
+    setGeneric("getNodeXY", function(object)
+               standardGeneric("getNodeXY"))
+
 
 setMethod("getNodeXY", "AgNode", function(object) {
     cen <- getNodeCenter(object)
@@ -367,77 +361,8 @@ setMethod("bLines", "BezierCurve", function(x,...,col=par("col"),
 })
 
 
-### CLass xyPoint
-setClass("xyPoint", representation(x="numeric",
-                                   y="numeric"))
 
-if (is.null(getGeneric("getX")))
-    setGeneric("getX", function(object)
-               standardGeneric("getX"))
-setMethod("getX", "xyPoint", function(object)
-          object@x)
 
-if (is.null(getGeneric("getY")))
-    setGeneric("getY", function(object)
-               standardGeneric("getY"))
-setMethod("getY", "xyPoint", function(object)
-          object@y)
-
-if (is.null(getGeneric("getPoints")))
-    setGeneric("getPoints", function(object)
-               standardGeneric("getPoints"))
-setMethod("getPoints", "xyPoint", function(object)
-          c(object@x, object@y))
-
-### Class AgTextLabel
-## used to represent a 'textlabel_t' and related information
-setClass("AgTextLabel", representation(labelText="character",
-                                       labelLoc="xyPoint",
-                                       labelJust="character",
-                                       labelWidth="integer",
-                                       labelColor="character",
-                                       labelFontsize="numeric"))
-if (is.null(getGeneric("labelText")))
-    setGeneric("labelText", function(object)
-               standardGeneric("labelText"))
-setMethod("labelText", "AgTextLabel", function(object)
-          object@labelText)
-
-if (is.null(getGeneric("labelColor")))
-    setGeneric("labelColor", function(object)
-               standardGeneric("labelColor"))
-setMethod("labelColor", "AgTextLabel", function(object)
-          object@labelColor)
-
-if (is.null(getGeneric("labelLoc")))
-    setGeneric("labelLoc", function(object)
-               standardGeneric("labelLoc"))
-setMethod("labelLoc", "AgTextLabel", function(object)
-          object@labelLoc)
-
-if (is.null(getGeneric("labelJust")))
-    setGeneric("labelJust", function(object)
-               standardGeneric("labelJust"))
-setMethod("labelJust", "AgTextLabel", function(object)
-          object@labelJust)
-
-if (is.null(getGeneric("labelWidth")))
-    setGeneric("labelWidth", function(object)
-               standardGeneric("labelWidth"))
-setMethod("labelWidth","AgTextLabel", function(object)
-          object@labelWidth)
-
-if (is.null(getGeneric("labelFontsize")))
-    setGeneric("labelFontsize", function(object)
-               standardGeneric("labelFontsize"))
-
-setMethod("labelFontsize", "AgTextLabel", function(object)
-          object@labelFontsize)
-
-setMethod("show", "Ragraph", function(object) {
-    print(paste("A graph with",length(AgNode(object)),
-                "nodes."))
-})
 
 setMethod("show", "xyPoint", function(object)
           cat(paste("x: ", object@x, ", y: ",
@@ -510,3 +435,86 @@ setMethod("lines","AgEdge",
                   return(NULL)
               })
 
+### Class Ragraph
+setGeneric("Ragraph", function(object)
+           standardGeneric("Ragraph"))
+
+setClass("Ragraph", representation(agraph="externalptr",
+                                   laidout="logical",
+                                   layoutType="character",
+                                   edgemode="character",
+                                   AgNode="list",
+                                   AgEdge="list",
+                                   boundBox="boundingBox"))
+
+if (is.null(getGeneric("agraph")))
+    setGeneric("agraph", function(object)
+               standardGeneric("agraph"))
+setMethod("agraph", "Ragraph", function(object)
+          object@agraph)
+
+if (is.null(getGeneric("edgemode")))
+    setGeneric("edgemode", function(object)
+               standardGeneric("edgemode"))
+setMethod("edgemode", "Ragraph", function(object)
+          object@edgemode)
+
+if (is.null(getGeneric("laidout")))
+    setGeneric("laidout", function(object)
+               standardGeneric("laidout"))
+setMethod("laidout", "Ragraph", function(object)
+          object@laidout)
+
+if (is.null(getGeneric("layoutType")))
+    setGeneric("layoutType", function(object)
+               standardGeneric("layoutType"))
+setMethod("layoutType", "Ragraph", function(object)
+          object@layoutType)
+
+if (is.null(getGeneric("boundBox")))
+    setGeneric("boundBox", function(object)
+               standardGeneric("boundBox"))
+setMethod("boundBox", "Ragraph", function(object)
+              object@boundBox)
+
+if (is.null(getGeneric("AgEdge")))
+    setGeneric("AgEdge", function(object)
+               standardGeneric("AgEdge"))
+setMethod("AgEdge", "Ragraph", function(object)
+          object@AgEdge)
+
+if (is.null(getGeneric("AgNode")))
+    setGeneric("AgNode", function(object)
+               standardGeneric("AgNode"))
+setMethod("AgNode", "Ragraph", function(object)
+          object@AgNode)
+
+
+setMethod("getNodeXY", "Ragraph",  function(object) {
+    out <- vector(mode="list",length=2)
+    names(out) <- c("x","y")
+    xys <- lapply(object@AgNode,getNodeCenter)
+    out[[1]] <- unlist(lapply(xys,getX))
+    out[[2]] <- unlist(lapply(xys,getY))
+    out
+})
+
+setMethod("getNodeHeight", "Ragraph", function(object) {
+      nodes = object@AgNode
+      sapply(nodes, getNodeHeight)
+   })
+
+setMethod("getNodeRW", "Ragraph", function(object) {
+      nodes = object@AgNode
+      sapply(nodes, getNodeRW)
+   })
+
+setMethod("getNodeLW", "Ragraph", function(object) {
+      nodes = object@AgNode
+      sapply(nodes, getNodeLW)
+   })
+
+setMethod("show", "Ragraph", function(object) {
+    print(paste("A graph with",length(AgNode(object)),
+                "nodes."))
+})
