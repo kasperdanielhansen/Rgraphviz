@@ -10,16 +10,21 @@ agopen <- function(graph, name, kind=0) {
     return(g)
 }
 
-dotLayout <- function(g) {
-    g <- .Call("Rgraphviz_dotLayout", g)
-    return(g)
+graph2ps <- function(graph, fileName="graph.ps") {
+    .Call("Rgraphviz_graph2ps",graph,as.character(fileName))
 }
 
-emitGraph <- function(g, fileName="graph.ps") {
-    .Call("Rgraphviz_emitGraph", g, as.character(fileName))
-}
-
-getDotfile <- function(g) {
+##dotLayout <- function(g) {
+##    g <- .Call("Rgraphviz_dotLayout", g)
+##    return(g)
+##}
+##
+##emitGraph <- function(g, fileName="graph.ps") {
+##    .Call("Rgraphviz_emitGraph", g, as.character(fileName))
+##}
+##
+##getDotfile <- function(g) {
     ## Currently only writes to stdout
-    .Call("Rgraphviz_getDotfile", g)
-}
+##    .Call("Rgraphviz_getDotfile", g)
+##}
+
