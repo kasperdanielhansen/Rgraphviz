@@ -121,6 +121,16 @@ used in the plot:
 plot(g1, edgeLabels=edgeLabs)
 @
 
+For users who wish to use the edge weights as the labels, there is a
+convenience method \Rfunction{weightLabels} provided which will
+provide the same information as \Rfunction{edgeWeights} but in the
+appropriate format for the \Rfunction{edgeLabels} parameter.  As an
+example:
+
+<<edgeLabelWeightsPlot, fig=TRUE>>=
+plot(g1, edgeLabels=weightLabels(g1))
+@
+
 \section{Adding Some Color}
 
 Many aspects of the plotted graph can be colorized to help highlight
