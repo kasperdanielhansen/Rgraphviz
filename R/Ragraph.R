@@ -307,25 +307,28 @@ setMethod("labelWidth","AgTextLabel", function(object)
 .initRgraphvizLineMethods <- function() {
     ## initializes methods for generics that exist in R-base
 
-    setMethod("lines", "BezierCurve", function(x,...,col=par("col")) {
+    setMethod("lines", "BezierCurve", function(x,...,col=par("col"),
+                                               lty=par("lty")) {
         z <- bezierPoints(x)
-        lines(z[,1],z[,2],col=col)
+        lines(z[,1],z[,2],col=col,lty=lty,...)
     })
 
     setMethod("lines","AgEdge",
-          function(x,...,col=par("col"),len=0.25) {
+          function(x,...,col=par("col"),len=0.25,lty=par("lty"),
+                   lwd=par("lwd")) {
               z <- splines(x)
-              lapply(z,lines,col=col)
+              lapply(z,lines,col=col,lty=lty,...)
 
               ## Now need to draw the appropriate arrows, if any
               if (startArrow(x)) {
                   ## Draw end arrow
                   ## get the first point of the first splie
-                  curP <-cPoints(z[[1]])[[1]]
+                  curP <- cPoints(z[[1]])[[1]]
                   ## get the edge's ep
                   curSP <- sp(x)
                   arrows(getX(curP), getY(curP), getX(curSP),
-                         getY(curSP), col=col, length=len)
+                         getY(curSP), col=col, length=len,
+                         lty=lty, lwd=lwd)
               }
               if (endArrow(x)) {
                   ## Draw start arrow
@@ -335,7 +338,8 @@ setMethod("labelWidth","AgTextLabel", function(object)
                   ## get the edge's sp
                   curEP <- ep(x)
                   arrows(getX(curP), getY(curP), getX(curEP),
-                         getY(curEP), col=col, length=len)
+                         getY(curEP), col=col, length=len,
+                         lty=lty, lwd=lwd)
               }
 
               label <- label(x)

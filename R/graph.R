@@ -23,6 +23,30 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
     gvMtrx
 })
 
+if (is.null(getGeneric("weightLabels")))
+    setGeneric("weightLabels", function(object, ...)
+               standardGeneric("weightLabels"))
+
+setMethod("weightLabels", "graphNEL", function(object) {
+    ## Will return the edge weights of a graph in a format
+    ## that is appropriate for use with the edge labels in
+    ## a plotted graphNEL
+
+    weights <- edgeWeights(object)
+
+    ## The elements need to be modified such that the names are
+    ## the character names of the to nodes, not numeric and
+    ## the values in the vector are character - not numeric
+    nodes <- nodes(object)
+
+    labels <- lapply(weights, function(x, nodes) {
+        labNames <- names(x)
+        x <- as.character(x)
+        names(x) <- nodes[as.numeric(labNames)]
+        x}, nodes)
+
+    labels
+})
 
 .initRgraphvizPlotMethods <- function() {
 
