@@ -93,7 +93,7 @@
         setGeneric("NodePosition", function(object)
                    standardGeneric("NodePosition"), where=where)
     setClass("NodePosition", representation(center="xyPoint",
-                                            height="numeric",
+                                            height="integer",
                                             rWidth="integer",
                                             lWidth="integer"))
     if (is.null(getGeneric("getNodeCenter")))
