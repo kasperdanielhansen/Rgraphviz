@@ -5,7 +5,6 @@
 \alias{cPoints}
 \alias{pointList}
 \alias{bezierPoints}
-\alias{bezier}
 \alias{bLines}
 \alias{bLines,BezierCurve-method}
 \alias{bezierPoints,BezierCurve-method}

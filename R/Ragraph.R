@@ -321,12 +321,11 @@ setMethod("bezierPoints", "BezierCurve", function(object) {
     z <- pointList(object)
     out <- vector("list", length=11)
     for (i in 0:10)
-        out[[i+1]] <- bezier(z, length(z), i/10)
+        out[[i+1]] <- .Call("Rgraphviz_bezier", z, length(z), i/10)
     out <- matrix(unlist(out), ncol=2, byrow=TRUE,
                   dimnames=list(NULL,c("x","y")))
     out
 })
-
     if (is.null(getGeneric("bLines")))
         setGeneric("bLines", function(x, ...)
                    standardGeneric("bLines"))
@@ -354,9 +353,6 @@ setMethod("bLines", "BezierCurve", function(x,...,col=par("col"),
 
     headStart <- z[numSegs-1,]
     headEnd <- z[numSegs,]
-
-##    if ((headStart[1] == headEnd[1])&&(headStart[2] == headEnd[2]))
-##        print("uh oh")
 
     switch(arrowhead,
            "none"=lines(c(headStart[1], headEnd[1]),
@@ -518,16 +514,4 @@ setMethod("labelFontsize", "AgTextLabel", function(object)
                   return(NULL)
               })
 }
-
-
-bezier <- function(pnts, n, t) {
-    ## Used for calculation of bezier splines
-    n <- n-1
-    x <- 0
-    for (k in 0:n) {
-        x <- x + (pnts[[k+1]] * choose(n,k) * (t^k) * ((1-t)^(n-k)))
-    }
-    return(x)
-}
-
 
