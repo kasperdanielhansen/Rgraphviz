@@ -434,50 +434,45 @@ if (is.null(getGeneric("labelFontsize")))
 setMethod("labelFontsize", "AgTextLabel", function(object)
           object@labelFontsize)
 
-.initRgraphvizShowMethods <- function() {
-    setMethod("show", "Ragraph", function(object) {
-        print(paste("A graph with",length(AgNode(object)),
-                    "nodes."))
-    })
+setMethod("show", "Ragraph", function(object) {
+    print(paste("A graph with",length(AgNode(object)),
+                "nodes."))
+})
 
-    setMethod("show", "xyPoint", function(object)
-             cat(paste("x: ", object@x, ", y: ",
-                          object@y, "\n", sep="")))
+setMethod("show", "xyPoint", function(object)
+          cat(paste("x: ", object@x, ", y: ",
+                    object@y, "\n", sep="")))
 
-    setMethod("show", "AgEdge", function(object) {
-        z <- splines(object)
-        out <- paste("An edge between", head(object),
-                     "and", tail(object),
-                     "with",numSplines(object),"BezierCurve objects:")
-        cat(out,"\n")
-        for (i in seq(along=z))
-            show(z[[i]])
-    })
+setMethod("show", "AgEdge", function(object) {
+    z <- splines(object)
+    out <- paste("An edge between", head(object),
+                 "and", tail(object),
+                 "with",numSplines(object),"BezierCurve objects:")
+    cat(out,"\n")
+    for (i in seq(along=z))
+        show(z[[i]])
+})
 
-    setMethod("show", "BezierCurve", function(object) {
-        z <- cPoints(object)
-        out <- paste(unlist(lapply(z,
-                                   function(x){paste(getPoints(x),
-                                                     collapse=",")})),
-                     collapse=" ")
-        out <- paste(out,"\n")
-        cat(out)
-    })
-}
+setMethod("show", "BezierCurve", function(object) {
+    z <- cPoints(object)
+    out <- paste(unlist(lapply(z,
+                               function(x){paste(getPoints(x),
+                                                 collapse=",")})),
+                 collapse=" ")
+    out <- paste(out,"\n")
+    cat(out)
+})
 
-.initRgraphvizLineMethods <- function() {
-    ## initializes methods for generics that exist in R-base
+setMethod("lines", "BezierCurve", function(x,...,col=par("col"),
+                                           lty=par("lty"), lwd=par("lwd")) {
+    z <- bezierPoints(x)
+    lines(z[,1],z[,2],col=col,lty=lty,lwd=lwd)
+})
 
-    setMethod("lines", "BezierCurve", function(x,...,col=par("col"),
-                                               lty=par("lty"), lwd=par("lwd")) {
-        z <- bezierPoints(x)
-        lines(z[,1],z[,2],col=col,lty=lty,lwd=lwd)
-    })
-
-    setMethod("lines","AgEdge",
-              function(x,..., len=0.25,lty=par("lty"),
-                       lwd=par("lwd"), edgemode="undirected",
-                       attrs=list()) {
+setMethod("lines","AgEdge",
+          function(x,..., len=0.25,lty=par("lty"),
+                   lwd=par("lwd"), edgemode="undirected",
+                   attrs=list()) {
                   edgeName <- paste(tail(x),head(x),sep="~")
                   attrNames <- names(attrs)
 
@@ -514,5 +509,4 @@ setMethod("labelFontsize", "AgTextLabel", function(object)
 
                   return(NULL)
               })
-}
 

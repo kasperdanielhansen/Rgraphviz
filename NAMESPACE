@@ -1,0 +1,20 @@
+importFrom("graphics", "plot", "lines")
+importFrom("methods", "show")
+
+export(agopen, agwrite, agread, graphvizVersion, buildNodeList,
+       buildEdgeList, removedEdges, getDefaultAttrs, getNodeLocs,
+       getNodeNames, getNodeLabels, checkAttrs, layoutGraph, pieGlyph)
+
+exportClasses("Ragraph", "boundingBox", "AgNode", "AgEdge",
+	      "BezierCurve", "xyPoint", "AgTextLabel", "pNode", "pEdge")
+
+exportMethods("lines", "plot", "AgNode", "getNodeXY", "agraph",
+"edgemode", "laidout", "layoutType", "boundBox", "AgEdge",
+"getNodeXY", "botLeft", "upRight", "shape", "style", "color",
+"fillcolor", "getNodeCenter", "getNodeHeight", "getNodeRW",
+"getNodeLW", "name", "txtLabel", "arrowsize", "arrowhead",
+"arrowtail", "splines", "sp", "ep", "head", "tail", "numSplines",
+"getSpline", "cPoints", "pointList", "bezierPoints", "bLines", "getX",
+"getY", "getPoints", "labelText", "labelColor", "labelLoc",
+"labelJust", "labelWidth", "labelFontsize", "show", "edgeNames",
+"edgeL", "toDot", "imageMap", "from", "to")
