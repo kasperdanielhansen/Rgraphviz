@@ -55,7 +55,11 @@ static SEXP Rgraphviz_graph_type_tag;
 
 SEXP Rgraphviz_init(void) {
     Rgraphviz_graph_type_tag = install("RGRAPH_TYPE_TAG");
-    checkGraphvizVers();
+
+/* Need to comment this out until a better mechanism is found for
+   version checking */
+/*    checkGraphvizVers(); */
+
     return(R_NilValue);
 }
 
@@ -410,7 +414,7 @@ void checkGraphvizVers(void) {
     char *out;
     int ret;
 
-    /* Compare the current version, Info[2] w/ MINGRAPHVIZVER */
+    /* Compare the current version, Info[1] w/ MINGRAPHVIZVER */
     /* Throw an error if it isn't at least equal to min ver */
     ret = strcmp(Info[1], MINGRAPHVIZVER);
     if (ret < 0) {
