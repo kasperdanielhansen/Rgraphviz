@@ -1,10 +1,21 @@
 AC_INIT(src/Rgraphviz.c)
 AC_PREREQ(2.13)
-AC_REVISION($Revision: 1.8 $)
+AC_REVISION($Revision: 1.9 $)
 # AC_CONFIG_SRCDIR(src/Rgraphviz.c)
 
 AC_MSG_CHECKING(for graphviz)
-AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config, "not found")
+AC_ARG_WITH(graphviz,
+[ --with-graphviz=DIR root directory of graphviz installation
+[defaults to /usr/local]],
+[if test x"$withval" != no ; then
+	AC_MSG_RESULT(yes)
+	DOTNEATO_CONFIG="$withval"
+ else
+	AC_MSG_RESULT(no)
+	DOTNEATO_CONFIG="not found"
+ fi],
+[AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config, "not found")])
+
 if test ${DOTNEATO_CONFIG} != "not found"; then
 	PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
 	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
@@ -21,9 +32,11 @@ if test ${DOTNEATO_CONFIG} != "not found"; then
 	   fi
 	fi
 else
-   AC_MSG_RESULT(failed)
-   AC_MSG_ERROR(please specify a valid path to 'dotneato-config' with --with-graphviz=DIR)
+     AC_MSG_RESULT(failed)
+     AC_MSG_ERROR(please specify a valid path to 'dotneato-config' with --with-graphviz=DIR)
 fi
+
+
 
 AC_SUBST(GVIZ_DEFS)
 AC_SUBST(PKG_CPPFLAGS)
