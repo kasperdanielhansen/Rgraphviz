@@ -148,7 +148,7 @@ attributes, see the section \texttt{Attributes} below.
 Please note that only the \Robject{graph} element is required.  If the
 \Robject{cluster} element is not specified, the subgraph is assumed to
 be a \texttt{cluster} and if there are no attributes to specify for
-this subgrpah then \Robject{attrs} is unecessary.
+this subgraph then \Robject{attrs} is unnecessary.
 
 
 <<subGplot, fig=TRUE>>=
