@@ -1,5 +1,6 @@
-\name{imageMap}
-\alias{imageMap}
+\name{imageMap-methods}
+\docType{methods}
+\alias{imageMap-methods}
 \alias{imageMap,Ragraph-method}
 \alias{imageMap,Ragraph,connection,list,character-method}
 
