@@ -1,7 +1,7 @@
 Package: Rgraphviz
 Title: Access for libgraph library
 Description: Interface with the libgraph library from the graphviz package to provide postcript renderings of graphs.
-Version: 0.0.22
+Version: 0.0.23
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>
 Maintainer: Jeff Gentry <jgentry@jimmy.harvard.edu>
 Depends: R (>= 1.7.0), graph

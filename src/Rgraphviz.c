@@ -127,6 +127,25 @@ SEXP Rgraphviz_agread(SEXP filename) {
     return(buildRagraph(g));
 }
 
+SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
+    Agraph_t *g;
+    FILE *dotFile;
+    SEXP slotTmp;
+
+    slotTmp = GET_SLOT(graph, Rf_install("agraph"));
+    CHECK_Rgraphviz_graph(slotTmp);
+    g = R_ExternalPtrAddr(slotTmp);
+
+    dotFile = fopen(STR(filename),"w");
+    if (dotFile == NULL) {
+	error("Error opening file");
+    }
+    agwrite(g, dotFile);
+
+    return(R_NilValue);
+}
+    
+
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
 		      SEXP nodeLabels, SEXP from,
 		      SEXP to, SEXP weights) {
@@ -220,19 +239,39 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	}
 	PROTECT(nLayout = getNodeLayouts(g));
 	PROTECT(bb = getBoundBox(g));
+	printf("2\n");
+	fflush(stdout);
 	PROTECT(cPoints= 
 		getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
 						Rf_install("numEdges")))[0]));
+	printf("3\n");
+	fflush(stdout);
 	PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
 					    R_NilValue));
+	printf("4\n");
+	fflush(stdout);
 	R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin);
+	printf("5\n");
+	fflush(stdout);
 	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
+	printf("6\n");
+	fflush(stdout);
 	SET_SLOT(graph,Rf_install("nodes"),nLayout);
+	printf("7\n");
+	fflush(stdout);
 	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
+	printf("8\n");
+	fflush(stdout);
 	SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
+	printf("9\n");
+	fflush(stdout);
 	SET_SLOT(graph,Rf_install("boundBox"), bb);
+	printf("10\n");
+	fflush(stdout);
 	UNPROTECT(4);
     }
+    printf("Back to R ....\n");
+    fflush(stdout);
     return(graph);
 }
 
@@ -380,9 +419,12 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 	    head = edge->head;
 	    SET_SLOT(curEP, Rf_install("head"),
 		     R_scalarString(head->name));
-	
+
 	    SET_ELEMENT(outList, curEle++, curEP);
 	    UNPROTECT(2);
+	    printf("Testing:\n");
+	    printf("Head: %s\n", edge->head->name);
+	    printf("Tail: %s\n", edge->tail->name);
 	    edge = agnxtout(g, edge);
 	}
 	node = agnxtnode(g, node);
