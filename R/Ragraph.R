@@ -357,7 +357,8 @@ setClass("AgTextLabel", representation(labelText="character",
                                        labelLoc="xyPoint",
                                        labelJust="character",
                                        labelWidth="integer",
-                                       labelColor="character"))
+                                       labelColor="character",
+                                       labelFontsize="numeric"))
 if (is.null(getGeneric("labelText")))
     setGeneric("labelText", function(object)
                standardGeneric("labelText"))
@@ -388,6 +389,12 @@ if (is.null(getGeneric("labelWidth")))
 setMethod("labelWidth","AgTextLabel", function(object)
           object@labelWidth)
 
+if (is.null(getGeneric("labelFontsize")))
+    setGeneric("labelFontsize", function(object)
+               standardGeneric("labelFontsize"))
+
+setMethod("labelFontsize", "AgTextLabel", function(object)
+          object@labelFontsize)
 
 .initRgraphvizShowMethods <- function() {
     setMethod("show", "Ragraph", function(object) {

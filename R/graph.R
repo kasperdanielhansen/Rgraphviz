@@ -44,7 +44,7 @@ weightLabels <- function(object) {
 
     setMethod("plot", "graph",
               function(x, y, ..., subGList=list(),
-                       attrs=getDefaultAttrs(y),
+                       attrs=list(),
                        nodeAttrs=list(), edgeAttrs=list(),
                        xlab="", ylab="", main=NULL, sub=NULL,
                        recipEdges=c("combined", "distinct")){
@@ -60,6 +60,18 @@ weightLabels <- function(object) {
                   ## attributes as it uses par("pin") and must be
                   ## on the proper plotting frame if the user is using
                   ## layout.
+
+                  if (! is.null(attrs$graph$size)) {
+                      splitSize <- strsplit(attrs$graph$size,",")[[1]]
+                      if (length(splitSize) != 2)
+                          stop("Invalid graph size attribute: ",
+                               attrs$graph$size)
+                      wd <- as.numeric(splitSize[1])
+                      ht <- as.numeric(splitSize[2])
+
+                      x11(width=wd, height=ht)
+                  }
+
                   plot.new()
 
                   g <- agopen(x, "ABC", layout=TRUE, layoutType=y,
@@ -75,7 +87,7 @@ weightLabels <- function(object) {
 
     setMethod("plot", "Ragraph",
               function(x, y, ...,
-                       attrs, xlab="", ylab="", main=NULL, sub=NULL,
+                       attrs=list(), xlab="", ylab="", main=NULL, sub=NULL,
                        drawNode=drawAgNode,
                        newPlot=TRUE){
 
@@ -85,11 +97,13 @@ weightLabels <- function(object) {
                   ## likely called from something like plot.graph
                   ## which has already called (and can't avoid)
                   ## calling plot.new().
-                  if (newPlot)
+                  if (newPlot) {
+                      sz <- getGraphSize(x)
+                      x11(width=sz[1], height=sz[2])
                       plot.new()
+                  }
 
-                  if (missing(attrs))
-                      attrs <- getDefaultAttrs(layoutType(x))
+                  attrs <- getDefaultAttrs(attrs, layoutType(x))
                   checkAttrs(attrs)
 
                   nNodes <- length(AgNode(x))
@@ -168,25 +182,27 @@ drawAgNode <- function(node, ur) {
     lw <- getNodeLW(node)
     height <- getNodeHeight(node)
 
+    rad <- convertRadius(rw, ur)
+
     fg <- color(node)
     bg <- fillcolor(node)
 
     shape <- shape(node)
 
     switch(shape,
-           "circle"=drawCircleNode(nodeX, nodeY, ur, rw, fg, bg),
+           "circle"=drawCircleNode(nodeX, nodeY, ur, rad, fg, bg),
            "ellipse"=ellipse(nodeX, nodeY, height=height, width=rw*2,
                              fg=fg, bg=bg),
            "box"=,
            "rect"=,
            "rectangle"=rect(nodeX-lw, nodeY-(height/2), nodeX+rw,
                             nodeY+(height/2), col=bg, border=fg),
-           stop("Unimplemented shape"))
+           stop("Unimplemented node shape"))
 
-    drawTxtLabel(txtLabel(node), nodeX, nodeY)
+    drawTxtLabel(txtLabel(node), nodeX, nodeY, width=rad*2)
 }
 
-drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
+drawTxtLabel <- function(txtLabel, xLoc, yLoc, width) {
     if ((!is.null(txtLabel))&&(length(labelText(txtLabel)) > 0)) {
         loc <- labelLoc(txtLabel)
         if (missing(xLoc)) {
@@ -200,7 +216,48 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
         if (missing(yLoc))
             yLoc <- getY(loc)
 
-        text(xLoc, yLoc, labelText(txtLabel), col=labelColor(txtLabel))
+        ## Get the font size that Graphviz believes this to be
+        op <- par()
+        on.exit(par(ps=op$ps), add=TRUE)
+        par(ps=labelFontsize(txtLabel))
+
+        ## FIXME:
+        ## Due to scaling down to the specified size, the labels
+        ## also need to be scaled.  Graphviz does this post-layout,
+        ## so we need to as well.  Not sure how best to go about this,
+        ## but for now using this bad hack -> basically the idea
+        ## is to keep trying smaller and smaller values of 'cex'
+        ## to get the string small enough for the node.  If we hit the
+        ## minimum font size, don't output the label and signal a
+        ## warning.
+
+        ## This won't be uniform though - not sure exactly how
+        ## Graphviz takes care of this, they get a uniform scaling,
+        ## whereas this will have different font sizes for different
+        ## nodes based on the length of the string
+
+
+        strW <- width+1
+        cex <- par("cex")
+        width <- width * .8
+        count <- 0
+        while (strW > width) {
+            x <- strwidth(labelText(txtLabel), "inches", cex)
+            if (x == strW) {
+                count <- count + 1
+                if (count == 5) {
+                    warning("Label ", labelText(txtLabel),
+                            " is too large for node")
+                    return()
+                }
+            }
+            strW <- x
+            if (strW > width)
+                cex <- cex * .9
+        }
+
+        text(xLoc, yLoc, labelText(txtLabel),
+             col=labelColor(txtLabel), cex=cex)
     }
 }
 
@@ -227,8 +284,14 @@ convertRadius <- function(rad, ur) {
 
 drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
 
-    rad <- convertRadius(rad, ur)
+#    rad <- convertRadius(rad, ur)
 
     invisible(symbols(nodeX, nodeY, circles=rad, inches=max(rad),
                       fg=fg, bg=bg,add=TRUE))
+}
+
+getGraphSize <- function(graph) {
+    sizeStr <- getGraphAttr(graph, "size")
+    splitSize <- strsplit(sizeStr, ",")[[1]]
+    return(as.numeric(splitSize))
 }

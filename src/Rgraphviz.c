@@ -246,6 +246,19 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     return(buildRagraph(g));    
 }
 
+SEXP Rgraphviz_getAttr(SEXP graph, SEXP attr) {
+    Agraph_t *g;
+    SEXP slotTmp;
+
+    PROTECT(slotTmp = GET_SLOT(graph, install("agraph")));
+    CHECK_Rgraphviz_graph(slotTmp);
+    g = R_ExternalPtrAddr(slotTmp);
+    UNPROTECT(1);
+
+    return(R_scalarString(agget(g, STR(attr))));
+}
+    
+
 SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Will perform a Graphviz layout on a graph */
     Agraph_t *g;
@@ -281,6 +294,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		error("Invalid layout type\n");
 	    }
 	}
+
 	/* Here we want to extract information for the resultant S4
 	   object */
 	PROTECT(nLayout = getNodeLayouts(g));
@@ -295,6 +309,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	SET_SLOT(graph,Rf_install("boundBox"), bb);
 	UNPROTECT(4);
     }
+
     return(graph);
 }
 
@@ -407,10 +422,14 @@ SEXP getNodeLayouts(Agraph_t *g) {
 	    
 	    SET_SLOT(curLab, Rf_install("labelColor"),
 		     R_scalarString(node->u.label->fontcolor));
+	    
+	    SET_SLOT(curLab, Rf_install("labelFontsize"),
+ 		     R_scalarReal(node->u.label->fontsize));
+    
 	}
 	SET_SLOT(curNL, Rf_install("txtLabel"), curLab);
 	UNPROTECT(1);
-
+	
 	SET_ELEMENT(outLst, i, curNL);
 	node = agnxtnode(g,node);
 	    
