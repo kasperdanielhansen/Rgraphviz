@@ -11,6 +11,16 @@
 \alias{numSplines}
 \alias{head}
 \alias{tail}
+\alias{endArrow,AgEdge-method}
+\alias{ep,AgEdge-method}
+\alias{getSpline,AgEdge-method}
+\alias{head,AgEdge-method}
+\alias{numSplines,AgEdge-method}
+\alias{sp,AgEdge-method}
+\alias{splines,AgEdge-method}
+\alias{startArrow,AgEdge-method}
+\alias{tail,AgEdge-method}
+\alias{txtLabel,AgEdge-method}
 \title{Class "AgEdge": A class to describe an edge for a Ragraph object}
 \description{  This class is used to represent edges for the
   \code{Ragraph} class.  One can retrieve various pieces of information

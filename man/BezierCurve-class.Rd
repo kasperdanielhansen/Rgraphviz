@@ -6,6 +6,9 @@
 \alias{pointList}
 \alias{bezierPoints}
 \alias{bezier}
+\alias{bezierPoints,BezierCurve-method}
+\alias{pointList,BezierCurve-method}
+\alias{cPoints,BezierCurve-method}
 \title{Class "BezierCurve": A class to describe a Bezier curve}
 \description{  This class is used to represent a Bezier curve in R,
   which can then be used for other applications, plotted, etc}

@@ -4,6 +4,8 @@
 \alias{boundingBox}
 \alias{botLeft}
 \alias{upRight}
+\alias{botLeft,boundingBox-method}
+\alias{upRight,boundingBox-method}
 \title{Class "boundingBox": A class to describe the bounding box of a
   Ragraph}
 \description{The \code{boundingBox} class is used to describe the
