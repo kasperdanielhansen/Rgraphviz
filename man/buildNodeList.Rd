@@ -21,7 +21,7 @@ buildEdgeList(graph, recipEdges=c("combined", "distinct"),
   \item{edgeAttrs}{A list of attributes for specific edges}
   \item{subGList}{A list of any subgraphs to be used in Graphviz}
   \item{recipEdges}{How to deal with reciprocated edges}
-  \item{defAttrs}{A list of attributes used to specify defaults}
+  \item{defAttrs}{A list of attributes used to specify defaults.}
 }
 \details{
   These functions will take either the nodes or the edges of the
@@ -58,6 +58,12 @@ buildEdgeList(graph, recipEdges=c("combined", "distinct"),
   The \code{defAttrs} list is a list used to specify any default values
   that one wishes to use.  The element names corresponde to the
   attribute and the value is the default for that particular attribute.
+
+  If there is no default specified in \code{defAttrs} for an attribute
+  declared in \code{nodeAttrs} or \code{edgeAttrs}, then the latter must
+  have a value for every node or edge in the graph.  Otherwise, if a
+  default is supplied, that value is used for any node or edge not
+  explicitly defined for a particular attribute.
 }
 \value{
   A list of class \code{pNode} or \code{pEdge} objects.
