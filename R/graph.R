@@ -27,7 +27,8 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
 .initRgraphvizPlotMethods <- function() {
 
     setMethod("plot", "graphNEL",
-              function(x, y, ..., nodeLabels,nodeShape="circle",
+              function(x, y, ..., nodeLabels, edgeLabels,
+                       nodeShape="circle",
                        defNodeCol=par("bg"), nodeCols=character(),
                        defTextCol=par("fg"), textCols=character(),
                        defEdgeCol=par("col"),edgeCols=list(),
@@ -117,16 +118,46 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                       subGList <- list()
 
                   g <- agopen(x, "ABC", nL, agKind,  layout=TRUE,
-                              layoutType=y, attrs=attrs, subGList)
+                              layoutType=y, attrs=attrs, subGList,
+                              edgeLabels=edgeLabels)
                   invisible(plot(g,attrs=attrs, nodeLabels=nodeLabels, xlab=xlab,
                                  ylab=ylab, nodeCols=nC, textCols=tC,
-                                 edgeCols=edgeCols, defEdgeCol=defEdgeCol))
+                                 edgeCols=edgeCols,
+                                 defEdgeCol=defEdgeCol, newPlot=FALSE))
               })
 
 
         setMethod("plot", "Ragraph",
-              function(x, y, ..., attrs, nodeLabels, xlab, ylab, nodeCols,
-              textCols, edgeCols, defEdgeCol){
+              function(x, y, ..., attrs, nodeLabels, xlab, ylab,
+                       nodeCols=character(), textCols=character(),
+                       edgeCols=list() , defEdgeCol=par("col"),
+                       newPlot=TRUE){
+
+                  ## If this is a new plot, we need to call 'plot.new'
+                  ## Otherwise we should not because we were most
+                  ## likely called from something like plot.graph
+                  ## which has already called (and can't avoid)
+                  ## calling plot.new().
+                  if (newPlot)
+                      plot.new()
+
+                  ## Make sure there is an attrs list, and if one was
+                  ## provided, sanity check that list
+                  if (missing(attrs)) {
+                      attrs <- vector(length=3,mode="list")
+                      names(attrs) <- c("graph","node","edge")
+                  }
+                  else {
+                      if (length(attrs) != 3)
+                          stop("attrs must be of length 3")
+                      if (!all(names(attrs) %in%
+                               c("graph","node","edge")))
+                          stop(paste("Names of attrs must be 'graph',",
+                                     "'node', and 'edge'"))
+                  }
+                  if (is.null(attrs$node$shape))
+                      attrs$node$shape <- "circle"
+
 
                   nNodes <- length(nodes(x))
 
@@ -165,7 +196,7 @@ setMethod("graph2graphviz", "graphNEL", function(object) {
                       ## !! probably want to change that over time.
                       plot.window(xlim=c(0,getX(ur)),
                                   ylim=c(0,getY(ur)),
-                                  log="",asp=NA,...)
+                                  log="",asp=NA, ...)
                       xy <- xy.coords(NA, NA, xlab, ylab, "")
                       ## !! Also still hardcoding 'type'
                       plot.xy(xy, type="n", ...)

@@ -342,7 +342,16 @@ setMethod("labelWidth","AgTextLabel", function(object)
               if (!is.null(label)) {
                   ## This edge has a label, need to display it
                   ## !! For now, just plot text at X/Y
+                  loc <- labelLoc(label)
 
+                  justMod <- switch(labelJust(label),
+                                    "l" = 0,
+                                    "n" = -0.5,
+                                    "r" = -1)
+
+                  xLoc <- getX(loc) + (justMod * labelWidth(label))
+
+                  text(xLoc, getY(loc), labelText(label))
 
               }
 

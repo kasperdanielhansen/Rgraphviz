@@ -44,6 +44,23 @@ SEXP getListElement(SEXP list, char *str) {
     return(elmt);
 }
 
+int getVectorPos(SEXP vector, char *str) {
+    /* Returns position in a vector that matches string name */
+    /* Returns -1 if not found */
+    
+    SEXP names = getAttrib(vector, R_NamesSymbol);
+    int i;
+
+    for (i = 0; i < length(vector); i++)
+	if (strcmp(CHAR(STRING_ELT(names,i)),str) == 0)
+	    break;
+
+    if (i == length(vector))
+	i = -1;
+
+    return(i);
+}
+
 static SEXP Rgraphviz_graph_type_tag;
 
 #define CHECK_Rgraphviz_graph(s) do { \
@@ -151,16 +168,16 @@ SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
     
 
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
-		      SEXP nodeLabels, SEXP from,
+		      SEXP nodeLabels, SEXP edgeLabels, SEXP from,
 		      SEXP to, SEXP weights, SEXP edgeSubs,
-		      SEXP nodeSubs,
-		      SEXP subGs) {
+		      SEXP nodeSubs, SEXP subGs) {
     Agraph_t *g, *tmpGraph;
     Agraph_t **sgs;
     Agnode_t *head, *tail, *tmp;
     Agedge_t *curEdge;
+    SEXP curEdgeLabels;
     int ag_k = 0;
-    int i, curNode;
+    int i, curNode, curLabel;
     int curSubG;
     
     if (!isInteger(kind))
@@ -212,7 +229,10 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     /* now fill in the edges */
     for (i = 0; i < length(from); i++) {
 	curNode = INTEGER(from)[i];
-	tail = agfindnode(g, CHAR(STRING_ELT(nodes,curNode-1)));
+	tail = agfindnode(g, CHAR(STRING_ELT(nodes, curNode-1)));
+	PROTECT(curEdgeLabels = 
+		getListElement(edgeLabels, CHAR(STRING_ELT(nodes, 
+							   curNode-1))));
 	if (tail == NULL)
 	    error("Missing tail node");
 	/* Get weights for these edges */
@@ -221,6 +241,11 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	if (head == NULL)
 	    error("Missing head node");
 
+	/* Get the appropriate label */
+	curLabel = getVectorPos(curEdgeLabels, 
+				CHAR(STRING_ELT(nodes, curNode-1)));
+	
+	
 	curSubG = INTEGER(edgeSubs)[i];
 	if (curSubG > 0) {
 	    tmpGraph = sgs[curSubG-1];
@@ -232,6 +257,10 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	if (agfindedge(tmpGraph, head, tail) == NULL) {
 	    curEdge = agedge(tmpGraph, tail, head);
 	    curEdge->u.weight = INTEGER(weights)[i];
+
+	    if (curLabel > -1)
+		agset(curEdge,"label",
+		      CHAR(STRING_ELT(curEdgeLabels, curLabel)));
 	}
 	else {
 	    if (ag_k == AGDIGRAPH) {
@@ -239,6 +268,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 		agset(curEdge,"dir","both");
 	    }
 	}
+	UNPROTECT(1);
     }
 
     return(buildRagraph(g));    
@@ -525,6 +555,8 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
     else
 	agedgeattr(g, "dir", "none");
     agedgeattr(g, "weight", "1.0");
+
+    agedgeattr(g, "label", "");
 
     /* Neato spline type */
 

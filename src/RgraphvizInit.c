@@ -5,7 +5,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {"Rgraphviz_agset", (DL_FUNC)&Rgraphviz_agset, 2},
     {"Rgraphviz_agread", (DL_FUNC)&Rgraphviz_agread, 1},
     {"Rgraphviz_agwrite", (DL_FUNC)&Rgraphviz_agwrite, 2},
-    {"Rgraphviz_agopen", (DL_FUNC)&Rgraphviz_agopen, 10},
+    {"Rgraphviz_agopen", (DL_FUNC)&Rgraphviz_agopen, 11},
     {"Rgraphviz_doLayout", (DL_FUNC)&Rgraphviz_doLayout, 2},
     {"buildRagraph", (DL_FUNC)&buildRagraph, 1},
     {"getBoundBox", (DL_FUNC)&getBoundBox, 1},
