@@ -9,6 +9,10 @@
 
 \documentclass{article}
 \usepackage{hyperref}
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
 \author{Jeff Gentry}
 \begin{document}
 \title{HowTo Render A Graph Using Rgraphviz}
@@ -16,8 +20,8 @@
 
 \section{Overview}
 This article will demonstrate how to easily render a graph from R into
-various formats using the \verb+Rgraphviz+ package.  To do this,
-first we need to generate a R graph using the \verb+graph+ package:
+various formats using the \Rpackage{Rgraphviz}.  To do this,
+first we need to generate a R graph using the \Rpackage{graph} package:
 
 <<createGraph>>=
 library(Rgraphviz)
@@ -31,24 +35,17 @@ g1
 \section{Plotting in R}
 
 It is quite simple to generate a R plot window to display your graph.
-Once you have your graph object, the function \em{plotGraph} can be
-used.  The arguments for \em{plotGraph} are as follows:
+Once you have your graph object, simply use the \Rfunction{plot}
+method:
 
-\begin{verbatim}
-plotGraph(graph, name="graph")
-
-graph:  A graph object
-name:   Name of the graph.  Currently does nothing.
-\end{verbatim}
-
-<<plotGraph, fig=TRUE>>=
-plotGraph(g1)
+<<plot graph, fig=TRUE>>=
+plot(g1)
 @
 
 \section{Generating Postscript}
 
 Your graph can also be written out to a postscript file using
-the \em{graph2ps} function.  \em{graph2ps} has the following
+the \Rfunction{graph2ps} function.  \Rfunction{graph2ps} has the following
 set of arguments:
 
 \begin{verbatim}
