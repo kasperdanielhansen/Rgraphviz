@@ -3,7 +3,7 @@
 % Biobase.tex file will get overwritten.
 %
 %\VignetteIndexEntry{HOWTO layout pathways}
-%\VignetteDepends{Rgraphviz, graph}
+%\VignetteDepends{Rgraphviz, graph, geneplotter, fibroEset, hgu95av2}
 %\VignetteKeywords{tools, graphs}
 %\VignettePackage{Rgraphviz}
  
@@ -181,6 +181,46 @@ the graph, and while not neatly stacked on the left hand side the
 membrane nodes are to the left side of the rest.  We can also see the
 F-actin group in the lower left portion of the graph, representing one
 of the clusters.  
+
+\section{Working with the layout}
+
+One of the benefits of using \Rpackage{Rgraphviz} to perform your
+layout as opposed to using the static layouts provided by sites like
+KEGG, is the ability to work with outside data and visualize it using
+your graph.  The \Rfunction{plotExpressionGraph} function in
+\Rpackage{geneplotter} can be used to take expression data and then
+color nodes based on the level of expression.  By default, this
+function will color nodes blue, green or red, corresponding to
+expression levels of 0-100, 101-500, and 501+ respectively.  Here we
+will use this function along with the \Rpackage{fibroEset} and
+\Rpackage{hgu95av2} data packages and the
+\Robject{IMCAAttrs\$IMCALocuLink} data which maps the nodes to their
+LocusLink ID values.
+
+<<expressionGraph, fig=TRUE>>=
+require("geneplotter")
+require("fibroEset")
+require("hgu95av2")
+data("fibroEset")
+plotExpressionGraph(IMCAGraph, IMCAAttrs$LocusLink, exprs(fibroEset)[,1], hgu95av2LOCUSID, attrs=IMCAAttrs$defAttrs, subGList=IMCAAttrs$subGList, nodeAttrs=IMCAAttrs$nodeAttrs)
+@
+
+One can also simply choose to layout the pathway based on the needs
+and desires of a particular situation.  For instance, the following
+layout could be used in situations where the node names are the
+important visual cue, as opposed to the previous example where the
+nodes themselves are being used to demonstrate values:
+
+<<VJCGraph>>=
+z <- IMCAGraph
+nodes(z)[39] <- c("phosphati.\nsign. sys.")
+nag <- agopen(z, name="nag",
+attrs= list(node=list(color="white",
+fontcolor="white"), edge=list(arrowsize=2.8, minlen=3)))
+nagxy <- getNodeXY( nag )
+plot( nag )
+text( nagxy, label=nodes(z), cex=.8 )
+@
 
 \section{Conclusions}
 
