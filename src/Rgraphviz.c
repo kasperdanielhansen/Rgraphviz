@@ -23,7 +23,7 @@ SEXP Rgraphviz_fin(SEXP s) {
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_doLayout(SEXP graph) {
+SEXP Rgraphviz_dotLayout(SEXP graph) {
     Agraph_t *g;
 
     CHECK_Rgraphviz_graph(graph);
@@ -40,8 +40,10 @@ SEXP Rgraphviz_doLayout(SEXP graph) {
     dotneato_postprocess(g, dot_nodesize);
 
     Rprintf("Layout complete.\n");
-    graph = R_MakeExternalPtr(g, Rgraphviz_graph_type_tag, R_NilValue);
+    PROTECT(graph = R_MakeExternalPtr(g, Rgraphviz_graph_type_tag,
+				      R_NilValue)) ;
     R_RegisterCFinalizer(graph, (R_CFinalizer_t)Rgraphviz_fin);
+    UNPROTECT(1);
     return(graph);
 }
 
@@ -124,10 +126,10 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
 	agnode(g, CHAR(STRING_ELT(names,i)));
     /* now fill in the edges */
     for (i = 0; i < length(nelist); i++) {
-	PROTECT(elmt = VECTOR_ELT(nelist, i));
+	elmt = VECTOR_ELT(nelist, i);
 	head = agfindnode(g, CHAR(STRING_ELT(names,i)));
 	/* Get weights for these edges */
-	PROTECT(curWeight = VECTOR_ELT(weightList,i));
+	curWeight = VECTOR_ELT(weightList,i);
 	PROTECT(weightNames = getAttrib(curWeight, R_NamesSymbol));
 	PROTECT(weightVals = AS_INTEGER(curWeight));
 	for (j = 0; j < length(elmt); j++) {
@@ -135,7 +137,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
 	    curEdge = agedge(g, tail, head);
 	    curEdge->u.weight = INTEGER(curWeight)[j];
 	}
-	UNPROTECT(4);
+	UNPROTECT(2);
     }
     UNPROTECT(1);
     graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,

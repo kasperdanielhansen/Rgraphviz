@@ -11,7 +11,7 @@ agopen <- function(graph, name, kind=0) {
 }
 
 dotLayout <- function(g) {
-    g <- .Call("Rgraphviz_doLayout", g)
+    g <- .Call("Rgraphviz_dotLayout", g)
     return(g)
 }
 
