@@ -1,5 +1,4 @@
 .initRgraphvizPlotMethods <- function() {
-
     setMethod("plot", "graph",
               function(x, y, ..., subGList=list(),
                        attrs=list(),
