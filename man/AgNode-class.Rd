@@ -1,6 +1,16 @@
 \name{AgNode-class}
 \docType{class}
 \alias{AgNode-class}
+\alias{AgNode}
+\alias{arrowhead}
+\alias{arrowtail}
+\alias{color}
+\alias{fillcolor}
+\alias{name}
+\alias{shape}
+\alias{getNodeRW}
+\alias{getNodeCenter}
+\alias{getNodeHeight}
 \alias{color,AgNode-method}
 \alias{fillcolor,AgNode-method}
 \alias{getNodeCenter,AgNode-method}
