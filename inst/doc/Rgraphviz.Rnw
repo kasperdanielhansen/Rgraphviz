@@ -125,11 +125,39 @@ sg3
 @
 
 To plot using the subgraphs, one must use the \Rfunction{subGList}
-argument which accepts a list of every subgraph.  The subgraphs in the
-list must be named.
+argument which is a list of lists, with each sublist having three
+elements: 
+
+\begin{itemize}
+\item \Robject{graph} : The actual \Robject{graph} object for this
+subgraph.
+\item \Robject{cluster} : A logical value noting if this is a \texttt{cluster}
+or a \texttt{subgraph}.  A value of \Robject{TRUE} (the default, if
+this element is not used) indicates a \texttt{cluster}.  In Graphviz,
+\texttt{subgraphs} are used as an organizational mechanism but are not
+necessarily laid out in such a way that they are visually together.
+Clusters are laid out as a separate graph, and thus Graphviz will tend
+to keep nodes of a cluster together.  Typically for
+\Rpackage{Rgraphviz} users, a \texttt{cluster} is what one wants to
+use.
+\item \Robject{attrs} : A named vector of attributes, where the names are the
+attribute and the elements are the value.  For more information about
+attributes, see the section \texttt{Attributes} below.
+\end{itemize}
+
+Please note that only the \Robject{graph} element is required.  If the
+\Robject{cluster} element is not specified, the subgraph is assumed to
+be a \texttt{cluster} and if there are no attributes to specify for
+this subgrpah then \Robject{attrs} is unecessary.
+
 
 <<subGplot, fig=TRUE>>=
-plot(g1, subGList=list(sg1=sg1, sg2=sg2, sg3=sg3))
+subGList <- vector(mode="list", length=3)
+subGList[[1]] <- list(graph=sg1)
+subGList[[2]] <- list(graph=sg2, cluster=FALSE)
+subGList[[3]] <- list(graph=sg3)
+
+plot(g1, subGList=subGList)
 @
 
 To demonstrate the differences that will appear with different
@@ -138,7 +166,7 @@ subgraph patterns, another example is provided:
 <<subGPlot2, fig=TRUE>>=
 sg1 <- subGraph(c("a","c","d","e","j"), g1)
 sg2 <- subGraph(c("f","h","i"), g1)
-plot(g1, subGList=list(sg1=sg1, sg2=sg2))
+plot(g1, subGList=list(list(graph=sg1), list(graph=sg2)))
 @
 
 \subsection{A Note About Edge Names}
@@ -320,12 +348,6 @@ defAttrs$node$shape <- "ellipse"
 nAttrs$shape <- c(e="box", g="circle", j="box", d="plaintext")
 plot(g1, attrs=defAttrs, nodeAttrs=nAttrs)
 @
-
-\section{Attributes for subgraphs}
-
-Subgraphs have their attributes set via the argument
-\Robject{subGAttrs}, which operates identically to \Robject{nodeAttrs}
-except that the name of the appropriate subgraph is used and not a node.
 
 \section{Setting attributes via node and edge lists}
 

@@ -3,7 +3,6 @@
               function(x, y, ..., subGList=list(),
                        attrs=list(),
                        nodeAttrs=list(), edgeAttrs=list(),
-                       subGAttrs=list(),
                        xlab="", ylab="", main=NULL, sub=NULL,
                        recipEdges=c("combined", "distinct")){
                   if (!validGraph(x))
@@ -16,7 +15,7 @@
                   g <- agopen(x, "ABC", layout=TRUE, layoutType=y,
                               attrs=attrs, nodeAttrs=nodeAttrs,
                               edgeAttrs=edgeAttrs, subGList=subGList,
-                              recipEdges=recipEdges, subGAttrs=subGAttrs)
+                              recipEdges=recipEdges)
 
                   invisible(plot(g, xlab=xlab,
                                  ylab=ylab, main=main, sub=sub))
@@ -26,7 +25,7 @@
     setMethod("plot", "Ragraph",
               function(x, y, ..., xlab="", ylab="", main=NULL, sub=NULL,
                        drawNode=drawAgNode, nodeAttrs=list(),
-                       edgeAttrs=list(), subGAttrs=list()) {
+                       edgeAttrs=list()) {
                   plot.new()
 
                   ## !!!!
