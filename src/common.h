@@ -45,7 +45,7 @@ SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP,
 		      SEXP, SEXP, SEXP);
 SEXP getNodeLayouts(Agraph_t *);
 SEXP buildRagraph(Agraph_t *);
-void checkGraphvizVers(void);
+SEXP Rgraphviz_graphvizVersion(void);
 Agraph_t *dotLayout(Agraph_t *);
 Agraph_t *neatoLayout(Agraph_t *);
 Agraph_t *twopiLayout(Agraph_t *);

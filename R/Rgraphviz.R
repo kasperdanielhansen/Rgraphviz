@@ -142,3 +142,8 @@ layoutGraph <- function(graph, layoutType=c("dot","neato","twopi")[1]) {
         return(graph)
     }
 }
+
+graphvizVersion <- function() {
+    z <- .Call("Rgraphviz_graphvizVersion")
+    z
+}
