@@ -67,6 +67,10 @@ setMethod("getNodeXY", "Ragraph",  function(object) {
     out
 })
 
+getNodeLocs <- function(object) {
+    .Deprecated("getNodeXY")
+    getNodeXY(object)
+}
 
 getNodeNames <- function(object) {
     if (!is(object, "Ragraph"))
