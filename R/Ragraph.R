@@ -10,10 +10,7 @@ setClass("Ragraph", representation(agraph="externalptr",
                                    edgemode="character",
                                    AgNode="list",
                                    AgEdge="list",
-                                   boundBox="boundingBox",
-                                   nodes="list",
-                                   edges="list"
-                                   ))
+                                   boundBox="boundingBox"))
 
 if (is.null(getGeneric("agraph")))
     setGeneric("agraph", function(object)
@@ -56,13 +53,6 @@ if (is.null(getGeneric("AgNode")))
                standardGeneric("AgNode"))
 setMethod("AgNode", "Ragraph", function(object)
           object@AgNode)
-
-if (is.null(getGeneric("nodes")))
-    setGeneric("nodes", function(object)
-               standardGeneric("nodes"))
-setMethod("nodes", "Ragraph", function(object)
-          object@nodes)
-
 
 getNodeLocs <- function(object) {
     if (! is(object, "Ragraph"))
@@ -348,12 +338,6 @@ if (is.null(getGeneric("labelWidth")))
 setMethod("labelWidth","AgTextLabel", function(object)
           object@labelWidth)
 
-if (is.null(getGeneric("AgNode")))
-    setGeneric("AgNode", function(object)
-               standardGeneric("AgNode"))
-setMethod("AgNode", "Ragraph", function(object)
-          object@AgNode)
-
 
 .initRgraphvizShowMethods <- function() {
     setMethod("show", "Ragraph", function(object) {
@@ -405,7 +389,7 @@ setMethod("AgNode", "Ragraph", function(object)
               curP <- spPoints[[1]]
               curSp <- sp(x)
               arrowtail <- arrowtail(x)
-              if (arrowtail == "normal")
+              if (arrowtail == "open")
                   arrows(getX(curP), getY(curP), getX(curSP),
                          getY(curSP), col=col, length=len,
                          lty=lty, lwd=lwd)
@@ -413,6 +397,7 @@ setMethod("AgNode", "Ragraph", function(object)
                   if (arrowtail != "none")
                       stop("Unsupported arrowtail type: ", arrowtail)
 
+              browser()
 
               ## Fill in the gap at the head of the edge
               epPoints <- cPoints(z[[length(z)]])
@@ -421,7 +406,7 @@ setMethod("AgNode", "Ragraph", function(object)
               curEP <- ep(x)
               arrowhead <- arrowhead(x)
 
-              if (arrowhead == "normal")
+              if (arrowhead == "open")
                   arrows(getX(curP), getY(curP), getX(curEP),
                          getY(curEP), col=col, length=len,
                          lty=lty, lwd=lwd)

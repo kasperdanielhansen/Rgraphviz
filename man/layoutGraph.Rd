@@ -28,6 +28,5 @@ g1 <- randomGraph(V, M, .2)
 z <- agopen(g1,"foo",layout=FALSE)
 x <- z
 a <- layoutGraph(z)
-z <- layoutGraph(x, "neato")
 }
 \keyword{utilities}
