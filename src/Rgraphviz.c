@@ -84,13 +84,24 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     return(graph);
 }
 
+SEXP Rgraphviz_agread(SEXP filename) {
+    Agraph_t *g;
+    FILE *dotFile;
+
+    dotFile = fopen(STR(filename),"r");
+    if (dotFile == NULL) {
+	error("Requested file does not exit");
+    }
+    aginit();
+    g = agread(dotFile);
+    return(buildRagraph(g));
+}
 
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
 		      SEXP to, SEXP weights) {
     Agraph_t *g;
     Agnode_t *head, *tail;
     Agedge_t *curEdge;
-    SEXP graphRef, obj, klass;
     int ag_k = 0;
     int i, curNode;
     
@@ -140,20 +151,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
 	}
     }
 
-    PROTECT(graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
-				 R_NilValue));
-    R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin);
-
-    klass = MAKE_CLASS("Ragraph");
-    PROTECT(obj = NEW_OBJECT(klass));
-    
-    SET_SLOT(obj, Rf_install("agraph"), graphRef);
-    SET_SLOT(obj, Rf_install("laidout"), R_scalarLogical(FALSE));
-    SET_SLOT(obj, Rf_install("numEdges"), R_scalarInteger(agnedges(g)));
-
-    UNPROTECT(2);
-
-    return(obj);
+    return(buildRagraph(g));
 }
 
 SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
@@ -204,6 +202,26 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     }
     return(graph);
 }
+
+SEXP buildRagraph(Agraph_t *g) {
+    SEXP graphRef, klass, obj;
+
+    PROTECT(graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
+				 R_NilValue));
+    R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin);
+
+    klass = MAKE_CLASS("Ragraph");
+    PROTECT(obj = NEW_OBJECT(klass));
+    
+    SET_SLOT(obj, Rf_install("agraph"), graphRef);
+    SET_SLOT(obj, Rf_install("laidout"), R_scalarLogical(FALSE));
+    SET_SLOT(obj, Rf_install("numEdges"), R_scalarInteger(agnedges(g)));
+
+    UNPROTECT(2);
+
+    return(obj);
+}
+
 
 SEXP getBoundBox(Agraph_t *g) {
     SEXP bbClass, xyClass, curBB, LLXY, URXY;

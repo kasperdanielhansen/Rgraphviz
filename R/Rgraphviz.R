@@ -31,6 +31,20 @@
         return(g)
 }
 
+agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
+                   layout=TRUE) {
+    ## First check that the file exists
+    if (!file.exists(filename))
+        stop(paste("Request file",filename,"does not exist"))
+
+    g <- .Call("Rgraphviz_agread", as.character(filename))
+
+    if (layout)
+        return(layoutGraph(g,layoutType))
+    else
+        return(g)
+}
+
 agset <- function(graph, attrs) {
     if (!is.list(attrs))
         stop("Malformed attrs argument, must be a list")
