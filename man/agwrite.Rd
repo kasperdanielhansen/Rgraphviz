@@ -18,5 +18,10 @@ agwrite(graph, filename)
 \author{Jeff Gentry}
 \seealso{\code{\link{agopen}}, \code{\link{agread}}}
 \examples{
+V <- letters[1:10]
+M <- 1:4
+g1 <- randomGraph(V, M, .2)
+z <- agopen(g1,"foo",layout=FALSE)
+agwrite(z,tempfile())
 }
 \keyword{utilities}
