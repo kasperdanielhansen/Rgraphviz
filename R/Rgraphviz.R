@@ -206,8 +206,30 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     if (! any(unlist(lapply(pEdges, inherits, "pEdge"))))
         pEdges <- unlist(pEdges, recursive=FALSE)
 
-    edgeNames <- edgeNames(graph)
+    ## Even if recipEdges is 'combined', it saves a lot of work
+    ## when trying to figure out the arrowtail stuff if all of
+    ## the pEdge objects are named.
+    edgeNames <- edgeNames(graph, "distinct")
     names(pEdges) <- edgeNames
+
+    if (recipEdges == "combined") {
+        removedEdges <- removedEdges(graph)
+        edgeNames <- edgeNames[-removedEdges]
+        if (length(removedEdges) > 0) {
+            if (edgemode == "directed") {
+                ## Add in the arrowtails if this was a directed graph
+                for (i in 1:length(removedEdges)) {
+                    rf <- from(pEdges[[removedEdges[i]]])
+                    rt <- to(pEdges[[removedEdges[i]]])
+                    revName <- paste(rt, rf, sep="~")
+                    if (is.null(pEdges[[revName]]@attrs$arrowtail))
+                        pEdges[[revName]]@attrs$arrowtail <- "open"
+                }
+            }
+            pEdges <- pEdges[-removedEdges]
+        }
+    }
+
 
     subGEdgeNames <- lapply(subGList, buildSubGEdgeNames)
 
@@ -216,45 +238,62 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
         names <- names(edgeAttrs[[j]])
 
         for (k in seq(along=edgeAttrs[[j]])) {
+            if (! names[k] %in% edgeNames)
+                next
             pEdges[[ names[k] ]]@attrs[[ attrNames[j] ]] <-
                 as.character(edgeAttrs[[j]][k])
         }
     }
 
-    handled <- character()
-    remove <- numeric()
-    for (i in 1:length(edgeNames)) {
-        revName <- paste(to(pEdges[[i]]), from(pEdges[[i]]),
-                         sep="~")
-
-        if ((recipEdges == "distinct") || (! revName %in% handled)) {
-            handled <- c(handled, edgeNames[i])
+    if (length(subGList) > 0) {
+        for (i in 1:length(edgeNames)) {
             ## See if this edge is in a subgraph
-            if (length(subGList) > 0) {
-                subGs <- which(unlist(lapply(subGEdgeNames, function(x,y)
-                                         {y %in% x}, edgeNames[i])))
-                if (length(subGs) == 1)
-                    pEdges[[i]]@subG <- subGs
-                else if (length(subGs) == 2)
-                    stop("Edge ", edgeNames[i], " is in multiple subgraphs")
-            }
-        }
-        else {
-            remove <- c(remove, i)
-            if ((is.null(pEdges[[revName]]@attrs$arrowtail))
-                &&(edgemode == "directed"))
-                pEdges[[revName]]@attrs$arrowtail <- "open"
+            subGs <- which(unlist(lapply(subGEdgeNames, function(x,y)
+                                     {y %in% x}, edgeNames[i])))
+            if (length(subGs) == 1)
+                pEdges[[i]]@subG <- subGs
+            else if (length(subGs) == 2)
+                stop("Edge ", edgeNames[i], " is in multiple subgraphs")
         }
     }
-
-    if (length(remove) > 0)
-        pEdges <- pEdges[-remove]
 
     pEdges
 }
 
+removedEdges <- function(graph) {
+    if ((!is(graph, "graph")) && (!is(graph,"Ragraph")))
+        stop("removedEdges only accepts objects of class ",
+             "'graph' or 'Ragraph'")
 
-setMethod("edgeNames", "Ragraph", function(object) {
-    sapply(AgEdge(object), function(x) paste(tail(x), head(x), sep="~"))
+    allEdges <- edgeNames(graph, "distinct")
+    combEdges <- edgeNames(graph, "combined")
+    which(! allEdges %in% combEdges)
+}
+
+
+setMethod("edgeNames", "Ragraph", function(object,
+                                           recipEdges=c("combined",
+                                           "distinct")) {
+    recipEdges <- match.arg(recipEdges)
+
+    edgeNames <- sapply(AgEdge(object), function(x) paste(tail(x), head(x), sep="~"))
+
+    if (recipEdges == "combined") {
+        revNames <- sapply(AgEdge(object), function(x) paste(head(x),
+                                                             tail(x), sep="~"))
+
+        handled <- character()
+        remove <- numeric()
+        for (i in 1:length(edgeNames)) {
+            if ((recipEdges == "distinct") || (! revNames[i] %in% handled))
+                handled <- c(handled, edgeNames[i])
+            else
+                remove <- c(remove, i)
+        }
+        if (length(remove) > 0)
+            edgeNames <- edgeNames[-remove]
+    }
+    edgeNames
 })
+
 

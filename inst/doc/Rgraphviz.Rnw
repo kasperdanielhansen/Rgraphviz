@@ -98,6 +98,14 @@ they are showed separately.
 plot(rEG, recipEdges="distinct")
 @
 
+The function \Rfunction{removedEdges} can be used to return a numerical vector detailing
+which edges (if any) would be removed by the combining of edges.
+
+<<removedEdges>>=
+a <- removedEdges(g1)
+a
+@
+
 \section{SubGraphs}
 
 Rgraphviz supports the ability to define specific clustering of
@@ -129,6 +137,23 @@ subgraph patterns, another example is provided:
 sg1 <- subGraph(c("a","c","d","e","j"), g1)
 sg2 <- subGraph(c("f","h","i"), g1)
 plot(g1, subGList=list(sg1, sg2))
+@
+
+\subsection{A Note About Edge Names}
+
+While internal node naming is quite straight forward (it is simply
+taken from the \Robject{graph} object), \Rpackage{Rgraphviz} needs to
+be able to uniquely identify edges by name.  End users as well will
+need to be able to do this to correctly assign attributes (see
+\verb+Attributes+).  The name of an edge is \verb+x~y+ where \verb+x+ is the tail
+node and \verb+y+ is the head node.  The method \Rfunction{edgeNames} can be
+used to obtain a vector of all edge names, and takes the argument
+\Rfunction{recipEdges} so that the output correctly matches which
+edges will be used by \Rpackage{Rgraphviz}.  
+
+<<edgeNames>>=
+edgeNames(g1)
+edgeNames(g1, recipEdges="distinct")
 @
 
 \section{Attributes}
@@ -177,21 +202,22 @@ are set in the same basic manner - the attributes are set using a list
 where the names of the elements are the attributes, and each element
 contains a named vector.  The names of this vector correspond to
 either node names or edge names, and the values of the vector are the
-values to set the attribute to for that node or edge.  The one place
-to take care about is with the edge names in that the name of an edge
-is x~y where x is the 'from' node and y is the 'to' node.  Note that
-even with an undirected graph that x~y is not the same thing as y~x as
-it depends on how the edge was explicitly defined.  These lists are
-then passed in to \Rfunction{plot} as the arguments \Robject{nodeAttrs}
-and \Robject{edgeAttrs}.  The following sections will demonstrate how to
-set per-node and per-edge attributes for commonly desired tasks.  For
-these we will construct two lists, \Robject{nAttrs} and \Robject{eAttrs}
-to pass in to \Rfunction{plot}.
+values to set the attribute to for that node or edge.  The following
+sections will demonstrate how to set per-node and per-edge attributes
+for commonly desired tasks.  For these we will construct two lists,
+\Robject{nAttrs} and \Robject{eAttrs} to pass in to \Rfunction{plot}.
+
 
 <<baseLists>>=
 nAttrs <- list()
 eAttrs <- list()
 @
+
+Please note to take care with edge names.  If \Robject{recipEdges} is
+set to \Robject{combined}, then only one of any pair of reciprocal
+edges will actually be used.  Users should utilize the
+\Rfunction{edgeNames} method to be sure that they are setting
+attributes for the right edge names.
 
 \section{Labels}
 
@@ -203,7 +229,7 @@ attributes.
 nAttrs$label <- c(a="lab1", b="lab2", g="lab3")
 nAttrs
 
-eAttrs$label <- c("a~h"="test", "h~c"="test2")
+eAttrs$label <- c("a~h"="test", "c~h"="test2")
 eAttrs
 
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
@@ -212,14 +238,22 @@ plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 \subsection{Using Edge Weights For Labels}
 
 A common desire for edge weights is to use the edge weights of the
-edges for the labels on a plotted graph.  This can easily be done with
-just a couple of extra steps, utilizing the \Rfunction{edgeNames}
-function and \Rfunction{unlist} to format the output of
-\Rfunction{edgeWeights} appropriately for the attribute list.
+edges for the labels on a plotted graph.  This can be done with
+just a couple of extra steps.  First we will get the edge weights, and
+unlist them, to provide them in vector format.  Then, first we will
+determine which of those to remove (this step is only necessary if
+\Robject{recipEdges} is set to \Robject{TRUE}, which is default
+behavior for both undirected and directed graphs) and remove those
+positions from our vector.  Finally, we will get the set of edge names
+which will be used for plotting and bundle that into the appropriate
+structure for plotting.
 
 <<edgeWeightLabels, fig=TRUE>>=
 ew <- edgeWeights(g1)
 lw <- unlist(unlist(ew))
+toRemove <- removedEdges(g1)
+if (length(toRemove) > 0)
+  lw <- lw[-toRemove]
 names(lw) <- edgeNames(g1)
 eAttrs$label <- lw
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
@@ -238,14 +272,14 @@ labels can also be specified with the \Robject{fontcolor} attribute.
 nAttrs$color <- c(a="red", b="red", g="green", d="blue")
 
 ## Specify edge drawing color
-eAttrs$color <- c("a~d"="blue", "h~c"="purple")
+eAttrs$color <- c("a~d"="blue", "c~h"="purple")
 
 ## Specify node fill color
 nAttrs$fillcolor <- c(j="yellow")
 
 ## label color
 nAttrs$fontcolor <- c(e="green", f="red")
-eAttrs$fontcolor <- c("a~h"="green", "h~c"="brown")
+eAttrs$fontcolor <- c("a~h"="green", "c~h"="brown")
 
 nAttrs
 eAttrs
