@@ -73,6 +73,8 @@ and if no 'centerNode' is specified the system will attempt to
 determine a suitable default:
 
 <<twopiCenter, fig=TRUE>>=
+print("need a new example, broken")
+
 z <- plot(g2,"twopi",centerNode="r")
 @
 
@@ -83,6 +85,40 @@ z <- plot(g2,"dot")
 @
 <<g2neato, fig=TRUE>>=
 z <- plot(g2,"neato")
+@
+
+\section{Labels}
+
+Users can specify both node and edge labels to the plot.  Node labels
+are provided using the argument "nodeLabels" and consist of a
+character vector which must be equal in length to the number of nodes
+in the graph.  The first node label in the vector corresponds to the
+first node, etc.  If no nodeLabels argument is provided, the graph
+will simply use the node names as labels.
+
+Edge labels are slightly more complex, and are represented as a list.
+This list elements correspond to the 'tail' ('from') nodes.  Each
+element contains a named character vector where the elements of the
+vector are the edge labels and the names of said vector are the 'head'
+('to') node that corresponds with that edge.  As an example: 
+
+<<edgeLabels>>=
+edgeLabs <- vector(length=length(nodes(g1)), mode="list")
+names(edgeLabs) <- names(edges(g1))
+for (i in 1:10)
+    edgeLabs[[i]] <- vector(mode="character")
+aLabs <- c("test", "foo", "blah", "hmmm")
+names(aLabs) <- c("b", "d", "e", "h")
+edgeLabs$a <- aLabs
+edgeLabs$a
+@
+
+This set up the initial empty list and then filled in labels for each
+edge connecting to node 'a' in this graph.  These labels can then be
+used in the plot:
+
+<<edgeLabelPlot, fig=TRUE>>=
+plot(g1, edgeLabels=edgeLabs)
 @
 
 \section{Adding Some Color}

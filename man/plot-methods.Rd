@@ -13,7 +13,7 @@
   A plot method for \code{graph} objects.
 }
 \section{Usage}{
-\code{plot(x, y, ..., nodeLabels, nodeShape="circle",
+\code{plot(x, y, ..., nodeLabels, edgeLabels, nodeShape="circle",
     defNodeCol=par("bg"), nodeCols=character(), defTextCol=par("fg"),
     textCols=character(), defEdgeCol=par("col"), edgeCols=list(),
     fixedNodeSize=TRUE, subGList,attrs)}
@@ -25,6 +25,8 @@
   \item{nodeLabels}{A character vector containing labels for the nodes.
     If not provided, the plot will use the node names.  If provided, the
     vector must have length equal to the number of nodes}
+  \item{edgeLabels}{A list providing labels for edges.  If not provided,
+    no edge labels will be used.}
   \item{nodeShape}{The shape of the nodes.  Currently can be one of
     'circle' or 'ellipse'}
   \item{defNodeCol}{This is the default color to use for nodes}
@@ -53,6 +55,11 @@
   This method is currently only implemented for the \code{graphNEL}
   subclass of \code{graph}.
 
+  The \code{edgeLabels} list format is such that each list element
+  corresponds to a tail ('from') node.  Contained in that element will
+  be a named vector, with the elements being the labels and the names of
+  the elements corresponding to the head ('to') node.
+  
   The \code{attrs} list requires a particular format.  It must be of
   length 3 with names \code{graph}, \code{node}, and \code{edge}.  Each
   of these elements themselves are lists - such that an element of
