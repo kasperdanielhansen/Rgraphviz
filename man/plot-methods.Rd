@@ -49,8 +49,9 @@
   graph.  This method will extract necessary information from the object
   and use it to plot the graph.
 
-  Users can specify arbitrary drawing functions for the nodes of this
-  graph, although caution is urged.  The default drawing function for
+  Users can specify arbitrary drawing functions for the nodes of the
+  \code{Ragraph} with the \code{drawNode} argument, although caution is
+  urged.  The default drawing function for 
   all nodes is \code{\link{drawAgNode}}, which will draw a basic circle,
   ellipse or rectangle according to the layout specifications for each
   node. If supplying a custom function, users are encouraged to look at
