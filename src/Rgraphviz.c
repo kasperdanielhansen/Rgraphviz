@@ -23,13 +23,18 @@ SEXP Rgraphviz_fin(SEXP s) {
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_dotLayout(SEXP graph) {
+SEXP Rgraphviz_graph2ps(SEXP graph, SEXP outFile) {
     Agraph_t *g;
+    FILE* of;
 
     CHECK_Rgraphviz_graph(graph);
     g = R_ExternalPtrAddr(graph);
 
+    if (!isString(outFile))
+	error("outFile must be a file name");
+
     graph_init(g);    
+
     g->u.drawing->engine = DOT;
     dot_init_node_edge(g);
     dot_rank(g);
@@ -40,54 +45,21 @@ SEXP Rgraphviz_dotLayout(SEXP graph) {
     dotneato_postprocess(g, dot_nodesize);
 
     Rprintf("Layout complete.\n");
-    PROTECT(graph = R_MakeExternalPtr(g, Rgraphviz_graph_type_tag,
-				      R_NilValue)) ;
-    R_RegisterCFinalizer(graph, (R_CFinalizer_t)Rgraphviz_fin);
-    UNPROTECT(1);
-    return(graph);
-}
-
-SEXP Rgraphviz_getDotfile(SEXP graph) {
-    /* !! Currently writes to stdout */
-    Agraph_t *g;
-
-    CHECK_Rgraphviz_graph(graph);
-    g = R_ExternalPtrAddr(graph);
-
-    graph_init(g);
-    aginit();
-
-    attach_attrs(g);
-    agwrite(g,stdout);
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_emitGraph(SEXP graph, SEXP outFile) {
-    Agraph_t *g;
-    FILE* of;
-
-    CHECK_Rgraphviz_graph(graph);
-    g = R_ExternalPtrAddr(graph);
-
-    if (!isString(outFile))
-	error("outFile must be a file name");
 
     of = fopen(STR(outFile),"w");
     if (of == NULL) 
 	error("Error opening file");
-
-    graph_init(g);
-
+    
     Output_lang = POSTSCRIPT;
     Output_file = of;
-
     CodeGen = &PS_CodeGen;
+    
     dotneato_set_margins(g);
     Rprintf("Now outputting graph to %s\n", STR(outFile));
     emit_graph(g,0);  
-     
-    dot_cleanup(g); 
-
+    dot_cleanup(g);
+    fclose(of);
+    emit_reset(g);
     return(R_NilValue);
 }
 
@@ -97,8 +69,9 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
     Agnode_t *head, *tail;
     Agedge_t *curEdge;
     SEXP graphRef, elmt, names, curWeight, weightVals, weightNames;
-    int ag_k, i,j;
-
+    int ag_k = 0;
+    int i,j;
+ 
     if (!isInteger(kind))
 	error("kind must be an integer value");
     else
@@ -122,28 +95,104 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
     PROTECT(names = getAttrib(nelist, R_NamesSymbol));
 
     /* Get the nodes created */
-    for (i = 0; i < length(names); i++)
+    for (i = 0; i < length(names); i++) {
 	agnode(g, CHAR(STRING_ELT(names,i)));
+    }
+
     /* now fill in the edges */
     for (i = 0; i < length(nelist); i++) {
-	elmt = VECTOR_ELT(nelist, i);
+	PROTECT(elmt = AS_CHARACTER(VECTOR_ELT(nelist, i)));
 	head = agfindnode(g, CHAR(STRING_ELT(names,i)));
+	if (head == NULL)
+	    error("Missing head node");
 	/* Get weights for these edges */
 	curWeight = VECTOR_ELT(weightList,i);
 	PROTECT(weightNames = getAttrib(curWeight, R_NamesSymbol));
 	PROTECT(weightVals = AS_INTEGER(curWeight));
 	for (j = 0; j < length(elmt); j++) {
 	    tail = agfindnode(g,CHAR(STRING_ELT(elmt,j)));
-	    curEdge = agedge(g, tail, head);
-	    curEdge->u.weight = INTEGER(curWeight)[j];
+	    if (tail == NULL)
+		error("Missing tail node");
+	    if (agfindedge(g,head,tail) == NULL) {  
+		curEdge = agedge(g, tail, head);
+		curEdge->u.weight = INTEGER(curWeight)[j];
+	    }  
 	}
-	UNPROTECT(2);
+	UNPROTECT(3);
     }
     UNPROTECT(1);
-    graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
-				 R_NilValue);
+    PROTECT(graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
+				 R_NilValue));
     R_RegisterCFinalizer(graphRef, (R_CFinalizer_t)Rgraphviz_fin);
-
+    UNPROTECT(1);
     return(graphRef);
 }
 
+SEXP Rgraphviz_dotLayout(SEXP graph) {
+    Agraph_t *g;
+    SEXP newG;
+
+    CHECK_Rgraphviz_graph(graph);
+    g = R_ExternalPtrAddr(graph);
+
+    graph_init(g);    
+
+    g->u.drawing->engine = DOT;
+    dot_init_node_edge(g);
+    dot_rank(g);
+    dot_mincross(g);
+    dot_position(g);
+    dot_sameports(g);
+    dot_splines(g);
+    dotneato_postprocess(g, dot_nodesize);
+
+    Rprintf("Layout complete.\n");
+    PROTECT(newG = R_MakeExternalPtr(g, Rgraphviz_graph_type_tag,
+				      R_NilValue)) ;
+    R_RegisterCFinalizer(newG, (R_CFinalizer_t)Rgraphviz_fin);
+    UNPROTECT(1);
+    return(newG);
+}
+
+SEXP Rgraphviz_getDotfile(SEXP graph) {
+    /* !! Currently writes to stdout */
+    Agraph_t *g;
+
+    CHECK_Rgraphviz_graph(graph);
+    g = R_ExternalPtrAddr(graph);
+
+    graph_init(g);
+    aginit();
+
+    attach_attrs(g);
+    agwrite(g,stdout);
+    return(R_NilValue);
+}
+
+SEXP Rgraphviz_emitGraph(SEXP graph, SEXP outFile) {
+    Agraph_t *g;
+    FILE* of;
+
+    CHECK_Rgraphviz_graph(graph);
+    g = R_ExternalPtrAddr(graph);
+    if (!isString(outFile))
+	error("outFile must be a file name");
+
+    of = fopen(STR(outFile),"w");
+    if (of == NULL) 
+	error("Error opening file");
+
+    graph_init(g);  
+
+    Output_lang = POSTSCRIPT;
+    Output_file = of;
+    CodeGen = &PS_CodeGen;
+
+    dotneato_set_margins(g);
+    Rprintf("Now outputting graph to %s\n", STR(outFile));
+    emit_graph(g,0);  
+    dot_cleanup(g);
+    fclose(of);
+    emit_reset(g);
+    return(R_NilValue);
+}

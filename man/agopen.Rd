@@ -27,7 +27,7 @@ agopen(graph, name, kind = 0)
 }
 \references{http://www.research.att.com/sw/tools/graphviz/}
 \author{Jeff Gentry}
-\seealso{\code{\link{dotLayout}}, \code{\link{emitGraph}}, \code{\link{getDotfile}}}
+\seealso{\code{\link{graph2ps}}}
 
 \examples{
 set.seed(123)
