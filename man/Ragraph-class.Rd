@@ -17,8 +17,12 @@ Objects can be created by calls to the function \code{agopen}.
       based structure containing the libgraph information}
     \item{\code{laidout}:}{Object of class \code{"logical"}: Whether or
       not this graph has been laid out or not.}
-    \item{\code{nodeLocs}:}{Object of class \code{"matrix"}: X/Y
-      coordinates for the nodes (if the graph has been laid out)}
+    \item{\code{nodes}:}{Object of class \code{"list"}: A list of
+      \code{NodePosition} objects.}
+    \item{\code{AgEdge}:}{Object of class \code{"list"}: A list of
+      \code{AgEdge} objects.}
+    \item{\code{boundBox}:}{Object of class \code{"boundBox"}: Defines
+      the bounding box of the plot.}
   }
 }
 
@@ -30,9 +34,15 @@ Objects can be created by calls to the function \code{agopen}.
       external libgraph pointer}
     \item{laidout}{\code{signature(object = "Ragraph")}: Returns the
       \code{laidout} slot}
-    \item{nodeLocs}{\code{signature(object = "Ragraph")}: Returns the
-      node location matrix}
-    }
+    \item{nodes}{\code{signature(object = "Ragraph")}: Returns the node
+      list.}
+    \item{boundBox}{\code{signature(object = "Ragraph")}: Returns the
+      bounding box.}
+    \item{AgEdge}{\code{signature(object = "Ragraph")}: Returns the edge
+      list.}
+    \item{getNodeLocs}{\code{signature(object = "Ragraph")}: Returns a
+      list with X and Y positions of all nodes, used as a convenience}
+  }
 }
 \author{Jeff Gentry}
 

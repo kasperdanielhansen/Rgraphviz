@@ -6,10 +6,11 @@
   perform a libgraph layout on the graph locations.
 }
 \usage{
-layoutGraph(graph)
+layoutGraph(graph,layoutType=c("dot","neato","twopi")[1])
 }
 \arguments{
   \item{graph}{An object of type \code{Ragraph}}
+  \item{layoutType}{What layout engine to use, defaults to dot}
 }
 \details{
   If the graph has already been laid out, this function merely returns
@@ -26,6 +27,8 @@ V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
 z <- agopen(g1,"foo",layout=FALSE)
+x <- z
 a <- layoutGraph(z)
+z <- layoutGraph(x, "neato")
 }
 \keyword{utilities}

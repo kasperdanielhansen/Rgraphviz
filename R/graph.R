@@ -19,15 +19,19 @@
         gvMtrx
     }, where=where)
 
-    setMethod("plot", c("graphNEL", "missing"),
+
+    setMethod("plot", "graphNEL",
               function(x, y, ..., nodeLabels){
+                  if (missing(y))
+                      y <- "dot"
+
                   ## Get edgemode of graph
                   edgeMode <- edgemode(x)
                   agKind <- switch(edgeMode,
                                    "undirected"="AGRAPH",
                                    "directed"="AGDIGRAPH",
                                    "AGRAPH")
-                  g = agopen(x, "ABC", agKind, layout=TRUE)
+                  g = agopen(x, "ABC", agKind, layout=TRUE, layoutType=y)
                   edges <- edges(x)
                   if(missing(nodeLabels) )
                       nodeLabels <- nodes(x)

@@ -1,5 +1,5 @@
 #include "common.h"
-
+#include "circle.h"
 SEXP R_scalarReal(double v) {
     SEXP ans = allocVector(REALSXP,1);
     REAL(ans)[0] = v;
@@ -19,6 +19,18 @@ R_scalarLogical(Rboolean v)
   SEXP  ans = allocVector(LGLSXP, 1);
   LOGICAL(ans)[0] = v;
   return(ans);
+}
+
+SEXP getListElement(SEXP list, char *str) {
+    SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol);
+    int i;
+
+    for (i = 0; i < length(list); i++)
+	if (strcmp(CHAR(STRING_ELT(names,i)), str) == 0) {
+	    elmt = VECTOR_ELT(list, i);
+	    break;
+	}
+    return(elmt);
 }
 
 static SEXP Rgraphviz_graph_type_tag;
@@ -44,33 +56,32 @@ SEXP Rgraphviz_fin(SEXP s) {
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_graph2ps(SEXP graph, SEXP outFile) {
+SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     Agraph_t *g;
-    SEXP slotTmp;
-    FILE* of;
+    int i;
+    Rboolean laidout;
+    SEXP slotTmp, elmt, graphNames;
+
+    /* !!!! Need to check the neames on attrs */
+
+    laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
+    if (laidout == TRUE)
+	error("graph is already laid out");
 
     slotTmp = GET_SLOT(graph, install("agraph"));
     CHECK_Rgraphviz_graph(slotTmp);
     g = R_ExternalPtrAddr(slotTmp);
+    
+    /* Currently only handling graph-wide attributes */
+    PROTECT(elmt = getListElement(attrs, "graph"));
+    /* Now elmt is a list of attributes to set */
+    graphNames = getAttrib(elmt, R_NamesSymbol);
+    for (i = 0; i < length(elmt); i++) {
 	
-    if (!isString(outFile))
-	error("outFile must be a file name");
+    }
 
-    of = fopen(STR(outFile),"w");
-    if (of == NULL) 
-	error("Error opening file");
-    
-    Output_lang = POSTSCRIPT;
-    Output_file = of;
-    CodeGen = &PS_CodeGen;
-    
-    dotneato_set_margins(g);
-    Rprintf("Now outputting graph to %s\n", STR(outFile));
-    emit_graph(g,0);  
-    dot_cleanup(g);
-    fclose(of);
-    emit_reset(g);
-    return(R_NilValue);
+    UNPROTECT(1);
+    return(graph);
 }
 
 
@@ -79,7 +90,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
     Agraph_t *g;
     Agnode_t *head, *tail;
     Agedge_t *curEdge;
-    SEXP graphRef, elmt, obj, klass;
+    SEXP graphRef, obj, klass;
     int ag_k = 0;
     int i, curNode;
     
@@ -98,10 +109,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
     g = agopen(STR(name), ag_k);
 
     /* Set default attributes */
-    /* !!!! This is somewhat temporary until we allow */
-    /* !!!! for all attributes to be settable in R */
-    if (!agfindattr(g->proto->n,"shape"))
-	agnodeattr(g,"shape","circle");
+    g = setDefaultAttrs(g);
 
     /* Get the nodes created */
     for (i = 0; i < length(nodes); i++) {
@@ -118,9 +126,16 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
 	head = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
 	if (head == NULL)
 	    error("Missing head node");
-	if ((ag_k == AGDIGRAPH) || (agfindedge(g,head,tail) == NULL)) {  
-		curEdge = agedge(g, tail, head);
-		curEdge->u.weight = INTEGER(weights)[i];
+	
+	if (agfindedge(g, head, tail) == NULL) {
+	    curEdge = agedge(g, tail, head);
+	    curEdge->u.weight = INTEGER(weights)[i];
+	}
+	else {
+	    if (ag_k == AGDIGRAPH) {
+		curEdge = agfindedge(g, head, tail);
+		agset(curEdge,"dir","both");
+	    }
 	}
     }
 
@@ -140,7 +155,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, SEXP from,
     return(obj);
 }
 
-SEXP Rgraphviz_doDotLayout(SEXP graph) {
+SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     Agraph_t *g;
     Rboolean laidout;
     SEXP slotTmp, nLayout, cPoints, bb;
@@ -151,14 +166,31 @@ SEXP Rgraphviz_doDotLayout(SEXP graph) {
 	CHECK_Rgraphviz_graph(slotTmp);
 	g = R_ExternalPtrAddr(slotTmp);
 	
-	g = dotLayout(g);
+	if (!isInteger(layoutType))
+	    error("layoutType must be an integer value");
+	else {
+	    switch(INTEGER(layoutType)[0]) {
+	    case DOTLAYOUT:
+		g = dotLayout(g);
+		break;
+	    case NEATOLAYOUT:
+		g = neatoLayout(g);
+		break;
+	    case TWOPILAYOUT:
+		g = twopiLayout(g);
+		break;
+	    default:
+		error("Invalid layout type\n");
+	    }
+	}
+	
 	PROTECT(nLayout = getNodeLayouts(g));
 	PROTECT(bb = getBoundBox(g));
 	PROTECT(cPoints= 
 		getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
 						Rf_install("numEdges")))[0]));
 	PROTECT(slotTmp = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
-					     R_NilValue));
+					    R_NilValue));
 	R_RegisterCFinalizer(slotTmp, (R_CFinalizer_t)Rgraphviz_fin);
 	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 	SET_SLOT(graph,Rf_install("nodes"),nLayout);
@@ -227,7 +259,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     Agnode_t *node;
     Agedge_t *edge;
     bezier bez;
-    int nodes, numEl;
+    int nodes;
     int i,k,l,pntLstEl;
     int curEle = 0;
 
@@ -316,4 +348,82 @@ Agraph_t *dotLayout(Agraph_t *g) {
     return(g);
 }
 
+Agraph_t *neatoLayout(Agraph_t *g) {
+    int nG;
+    char *p;
+    attrsym_t* sym;
 
+    sym = agfindattr(g,"rankdir");
+    if (sym)
+	agxset(g, sym->index, "");
+
+    agset(g, "overlap", "scale");
+    agset(g, "splines", "true");
+	
+
+    graph_init(g);
+    g->u.drawing->engine = NEATO;
+    neato_init_node_edge(g);
+    nG = scan_graph(g);
+    
+    p = agget(g,"model");
+    if (p && (streq(p,"circuit")))
+	circuit_model(g,nG);
+    else
+	shortest_path(g, nG);
+
+    initial_positions(g, nG);
+    diffeq_model(g, nG);
+    solve_model(g, nG);
+    final_energy(g, nG);
+    adjustNodes(g);
+    spline_edges(g);
+    dotneato_postprocess(g, dot_nodesize);
+   
+    return(g);
+}
+
+Agraph_t *twopiLayout(Agraph_t *g) {
+    Agnode_t* ctr;
+/*
+    g->u.drawing->engine = TWOPI
+    ctr = agfstnode(g);
+    twopi_init_graph(g);
+    circleLayout(g,ctr);
+    adjustNodes(g);
+    spline_edges(g);
+    dotneato_postprocess(g,twopi_nodesize);
+*/    
+    return(g);
+}
+
+Agraph_t *setDefaultAttrs(Agraph_t *g) {
+    /* While attributes have default values already,  */
+    /* if we want to dynamically set them, we need */
+    /* to have defined defaults manually */
+
+    /*** GRAPH ATTRS ***/
+    /* Neato overlap type */
+    agraphattr(g, "overlap", "");
+    agraphattr(g, "splines", "false");
+    agraphattr(g, "model", "");
+
+    /*** NODE ATTRS ***/
+    /* !!!! This is somewhat temporary until we allow */
+    /* !!!! for all attributes to be settable in R */
+    if (!agfindattr(g->proto->n,"shape"))
+	agnodeattr(g,"shape","circle");
+
+    /*** EDGE ATTRS ***/
+    /* Arrow direction */
+    if (AG_IS_DIRECTED(g)) 
+	agedgeattr(g, "dir", "forward");
+    else
+	agedgeattr(g, "dir", "none");
+    agedgeattr(g, "weight", "1.0");
+
+
+    /* Neato spline type */
+
+    return(g);
+}
