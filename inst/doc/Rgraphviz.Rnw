@@ -32,7 +32,7 @@ g1 <- randomGraph(V, M, .2)
 g1
 @
 
-\section{Plotting in R}
+\section{Plotting in R Using Different Layout Methods}
 
 It is quite simple to generate a R plot window to display your graph.
 Once you have your graph object, simply use the \Rfunction{plot}
@@ -44,7 +44,7 @@ z <- plot(g1)
 
 The \Rpackage{Rgraphviz} package allows you to specify varying layout
 engines, such as "dot" (the default), "neato", and "twopi".  This can
-be done using the call to plot:
+be done using the call to \Rfunction{plot}:
 
 <<plotNeato, fig=TRUE>>=
 z <- plot(g1, "neato")
@@ -66,6 +66,16 @@ isConnected(g2)
 z <- plot(g2,"twopi")
 @
 
+Note that the "twopi" layout method is heavily dependent on what is
+specified to be the central node.  This can be defined by using the
+'centerNode' argument to the plot (only useful for "twopi" layouts),
+and if no 'centerNode' is specified the system will attempt to
+determine a suitable default:
+
+<<twopiCenter, fig=TRUE>>=
+z <- plot(g2,"twopi",centerNode="n")
+@
+
 And finally, to demonstrate how the differing layout methods work on
 this second graph:
 <<g2dot, fig=TRUE>>=
@@ -74,4 +84,88 @@ z <- plot(g2,"dot")
 <<g2neato, fig=TRUE>>=
 z <- plot(g2,"neato")
 @
+
+\section{Adding Some Color}
+
+Many aspects of the plotted graph can be colorized to help highlight
+certain features.  Nodes, edges and text labels can all be colorized
+in the same manner as most other plotting commands.  To specify node
+colors, "nodeCols" is used for \Rfunction{plot}.  Likewise,
+\Rfunction{edgeCols} and \Rfunction{textCols} are used for edge and
+text colors respectively.  In all three cases one can pass in a single
+value (causing all of the appropriate objects to receive that color),
+or a vector of colors can be passed in, which will be cycled in the
+same manner as other plotting functions.
+
+Adding node color:
+<<nodeColor, fig=TRUE>>=
+gR <- new("graphNEL", nodes=letters[1:4], edgeL=list(
+      a=list(edges=4), b=list(edges=3), c=list(edges=c(2,1)), d=list(edges=1)),
+      edgemode="directed")
+
+plot(gR, nodeCols=c("yellow","orange","green"))
+@
+
+Adding edge color:
+<<edgeColor, fig=TRUE>>=
+plot(gR, edgeCols=c("red","blue","purple"))
+@
+
+Adding text color:
+<<textColor,fig=TRUE>>=
+plot(gR, textCols=c("red","blue","green","black"))
+@
+
+\section{Example Graphs}
+
+Here are some other examples of graphs that can be drawn:
+
+Unix history, using "dot" and "neato" layouts ...
+
+<<unixHistory,fig=TRUE>>=
+z <- new("graphNEL", nodes=c("5th Edition","6th Edition","Interdata",
+"7th Edition", "V7M", "8th Edition", "1 BSD", "2 BSD", "2.8 BSD",
+"32V", "3 BSD", "4 BSD", "4.1 BSD", "4.2 BSD", "PWB 1.0", "USG 1.0", 
+"CB Unix 1", "CB Unix 2", "CB Unix 3", "USG 2.0", "USG 3.0", 
+"PWB 2.0", "Unix/TS 1.0", "Unix/TS 3.0", "Unix/TS++",  
+"TS 4.0", "System V.0", "System V.2", "LSX", "Mini Unix",
+"Wollongong", "Ultrix-11", "Xenix", "UniPlus+", "9th Edition", 
+"2.9 BSD", "Ultirx-32", "PDP-11 Sys V", "System V.3","4.3 BSD",
+"PWB 1.2"), edgeL=list(
+"5th Edition"=list(edges=c(2,15)), 
+"6th Edition"=list(edges=c(29,7,30,31,3)),
+"Interdata"=list(edges=c(24,22,4)), 
+"7th Edition"=list(edges=c(6,10,5,32,33,34)), "V7M"=list(edges=32),
+"8th Edition"=list(edges=35), "1 BSD"=list(edges=8), 
+"2 BSD"=list(edges=9), "2.8 BSD"=list(edges=c(32,36)),
+"32V"=list(edges=11), "3 BSD"=list(edges=12), "4 BSD"=list(edges=13),
+"4.1 BSD"=list(edges=c(14,9,6)), "4.2 BSD"=list(edges=c(40,37)),
+"PWB 1.0"=list(edges=c(41, 16)), "PWB 1.2"=list(edges=22),
+"USG 1.0"=list(edges=c(17, 20)), "CB Unix 1"=list(edges=18),
+"CB Unix 2"=list(edges=19), "CB Unix 3"=list(edges=c(25,38)),
+"USG 2.0"=list(edges=21), "USG 3.0"=list(edges=24), 
+"PWB 2.0"=list(edges=24), "Unix/TS 1.0"=list(edges=24),
+"Unix/TS 3.0"=list(edges=26), "Unix/TS++"=list(edges=26),
+"TS 4.0"=list(edges=27),
+"System V.0"=list(edges=28), "System V.2"=list(edges=39)),
+edgemode="directed")
+a <- plot(z,nodeCols=c("orange","yellow"))
+@
+
+<<unixHistoryNeato,fig=TRUE>>=
+a <- plot(z,"neato",nodeCols=c("orange","yellow"),edgeCols=c("red","green","blue"))
+@
+
+An OS Process Model, using "neato":
+<<processModel, fig=TRUE>>=
+z <- new("graphNEL", nodes=c("run","intr","runbl","kernel",
+	"zombie", "sleep", "runmem", "swap", "runswap", "new"),
+	edgeL=list("run"=list(edges=c(2,4)), "intr"=list(edges=3),
+	"runbl"=list(edges=1), "kernel"=list(edges=c(5,6,7)),
+	"sleep"=list(edges=c(8,7)), "runswap"=list(edges=c(10,7)),
+	"new"=list(edges=7)))
+plot(z,"neato",nodeCols=c("seagreen","lightblue"),textCols=c("red","black"))
+@
+
+
 \end{document}
