@@ -152,20 +152,4 @@ edgemode="directed")
 a <- plot(z,nodeCols=c("orange","yellow"))
 @
 
-<<unixHistoryNeato,fig=TRUE>>=
-a <- plot(z,"neato",nodeCols=c("orange","yellow"),edgeCols=c("red","green","blue"))
-@
-
-An OS Process Model, using "neato":
-<<processModel, fig=TRUE>>=
-z <- new("graphNEL", nodes=c("run","intr","runbl","kernel",
-	"zombie", "sleep", "runmem", "swap", "runswap", "new"),
-	edgeL=list("run"=list(edges=c(2,4)), "intr"=list(edges=3),
-	"runbl"=list(edges=1), "kernel"=list(edges=c(5,6,7)),
-	"sleep"=list(edges=c(8,7)), "runswap"=list(edges=c(10,7)),
-	"new"=list(edges=7)))
-plot(z,"neato",nodeCols=c("seagreen","lightblue"),textCols=c("red","black"))
-@
-
-
 \end{document}

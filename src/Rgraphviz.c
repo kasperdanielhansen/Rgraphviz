@@ -42,7 +42,6 @@ static SEXP Rgraphviz_graph_type_tag;
 } while (0)
 
 SEXP Rgraphviz_init(void) {
-    freopen ("/dev/null", "w", stderr);
     Rgraphviz_graph_type_tag = install("RGRAPH_TYPE_TAG");
     checkGraphvizVers();
     return(R_NilValue);
@@ -274,7 +273,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 	SET_SLOT(curXY,Rf_install("x"),R_scalarInteger(node->u.coord.x));
 	SET_SLOT(curXY,Rf_install("y"),R_scalarInteger(node->u.coord.y));
 	SET_SLOT(curNL,Rf_install("center"),curXY);
-	SET_SLOT(curNL,Rf_install("height"),R_scalarInteger(node->u.ht));
+	SET_SLOT(curNL,Rf_install("height"),R_scalarReal(node->u.height));
 	SET_SLOT(curNL,Rf_install("rWidth"),R_scalarInteger(node->u.rw));
 	SET_SLOT(curNL,Rf_install("lWidth"),R_scalarInteger(node->u.lw));
 	SET_ELEMENT(outLst, i, curNL);

@@ -93,9 +93,9 @@
         setGeneric("NodePosition", function(object)
                    standardGeneric("NodePosition"), where=where)
     setClass("NodePosition", representation(center="xyPoint",
-                                          height="integer",
-                                          rWidth="integer",
-                                          lWidth="integer"))
+                                            height="numeric",
+                                            rWidth="integer",
+                                            lWidth="integer"))
     if (is.null(getGeneric("getNodeCenter")))
         setGeneric("getNodeCenter", function(object)
                    standardGeneric("getNodeCenter"), where=where)
@@ -119,7 +119,6 @@
                   standardGeneric("getNodeLW"), where=where)
     setMethod("getNodeLW", "NodePosition", function(object)
               object@lWidth, where=where)
-
 }
 
 .initAgEdge <- function(where) {
@@ -187,7 +186,7 @@
     }, where=where)
 
     setMethod("lines","AgEdge",
-              function(x,...,col=par("col")) {
+              function(x,...,col=par("col"),len=0.25) {
                   z <- splines(x)
                   lapply(z,lines,col=col)
 
@@ -199,7 +198,7 @@
                       ## get the edge's ep
                       curSP <- sp(x)
                       arrows(getX(curP), getY(curP), getX(curSP),
-                             getY(curSP), col=col)
+                             getY(curSP), col=col, length=len)
                   }
                   if (endArrow(x)) {
                       ## Draw start arrow
@@ -209,7 +208,7 @@
                       ## get the edge's sp
                       curEP <- ep(x)
                       arrows(getX(curP), getY(curP), getX(curEP),
-                             getY(curEP), col=col)
+                             getY(curEP), col=col, length=len)
                   }
 
                   return(NULL)
