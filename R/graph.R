@@ -25,8 +25,8 @@
 
     setMethod("plot", "graphNEL",
               function(x, y, ..., nodeLabels, centerNode, nodeShape,
-                       defNodeCol=par("bg"), nodeCols,
-                       defTextCol=par("fg"), textCols,
+                       defNodeCol=par("bg"), nodeCols=character(),
+                       defTextCol=par("fg"), textCols=character(),
                        defEdgeCol=par("col"),edgeCols=list(),
                        rankDir, fixedSize=TRUE){
                   if (missing(y))
@@ -42,6 +42,10 @@
                   edges <- edges(x)
                   if(missing(nodeLabels) )
                       nodeLabels <- nodes
+                  else
+                      if (length(nodeLabels) != length(nodes))
+                          stop(paste("nodeLabels must be the same",
+                                     "length as the number of nodes"))
 
                   ## Generate an attrs list (currently just
                   ## center)
@@ -50,53 +54,27 @@
 
                   ## First make sure that center exists in
                   ## nodeLabels
-                  if (!missing(centerNode)) {
-                      if ((centerNode %in% nodeLabels)&&
-                          (length(centerNode) == 1)){
-                          attrs$graph$center <- centerNode
-                      }
-                      else
-                          stop("Invalid center supplied, must be a single node in the graph")
-                  }
+                  if (!missing(centerNode))
+                      attrs$graph$center <- checkCenterNode(centerNode)
 
                   ## Check node shapes
                   if (missing(nodeShape))
-                      nodeShape <- "circle"
-
-                  ## First check to see if it is a valid shape,
-                  ## currently only allow "circle" or "ellipse"
-                  validShapes <- c("ellipse", "circle")
-                  if (nodeShape %in% validShapes)
-                      attrs$node$shape <- nodeShape
+                      attrs$node$shape <- "circle"
                   else
-                      stop(paste("Invalid node shape supplied, must be one of:",
-                                 paste(validShapes, collapse=", ")))
+                      attrs$node$shape <- checkNodeShape(nodeShape)
 
                   ## If this is a dot layout, check the rankdir
                   if (y == "dot") {
                       if (missing(rankDir))
-                          rankDir <- "TB"
-                      else {
-                          if (!(rankDir %in% c("TB","LR")))
-                             stop("Invalid rankDir parameter, must be 'TB' or 'LR'!")
-                      }
-                      attrs$graph$rankdir <- rankDir
+                          attrs$graph$rankdir <- "TB"
+                      else
+                          attrs$graph$rankdir <- checkRankDir(rankDir)
                   }
 
-                  ## Check on nodeCols.  If it is a named vector, it
-                  ## needs to be in the same order as the node names
-                  nC <- rep(defNodeCol,length(nodes))
-                  names(nC) <- nodes
-                  if (!missing(nodeCols))
-                      nC[match(names(nodeCols),names(nC))] <- nodeCols
+                  ## Setup the node and text color vectors
+                  nC <- getCols(defNodeCol, nodeCols, nodes)
+                  tC <- getCols(defTextCol, textCols, nodes)
 
-                  ## Now setup the textCols
-                  tC <- rep(defTextCol, length(nodes))
-                  print(tC)
-                  names(tC) <- nodes
-                  if (!missing(textCols))
-                      tC[match(names(textCols), names(tC))] <- textCols
-                  print(tC)
                   nL <- nodeLabels
                   if (fixedSize)
                       nL <- rep(nL[match(max(nchar(nL)), nchar(nL))],
@@ -130,7 +108,7 @@
                            type="n",main=NULL,xlab="",ylab="",xaxt="n",
                            yaxt="n",bty="n",...)
 
-                      rad <- switch(nodeShape,
+                      rad <- switch(attrs$node$shape,
                                    circle=drawCircleNodes(nodeX, nodeY, ur,
                                                          rad, nC),
                                    ellipse=drawEllipseNodes(nodeX, nodeY,
@@ -186,4 +164,36 @@ drawEllipseNodes <- function(nodeX, nodeY, heights, widths, nodeCols)
         ellipse(nodeX[i], nodeY[i], heights[i], widths[i])
     }
     return(min(widths)/72)
+}
+
+checkNodeShape <- function(nodeShape) {
+    validShapes <- c("ellipse", "circle")
+    if (nodeShape %in% validShapes)
+        return(nodeShape)
+    else
+        stop(paste("Invalid node shape supplied, must be one of:",
+                   paste(validShapes, collapse=", ")))
+}
+
+checkCenterNode <- function(centerNode) {
+    if ((centerNode %in% nodeLabels)&&
+        (length(centerNode) == 1)){
+        return(centerNode)
+    }
+    else
+        stop("Invalid center supplied, must be a single node in the graph")
+}
+
+checkRankDir <- function(rankDir) {
+    if (!(rankDir %in% c("TB","LR")))
+        stop("Invalid rankDir parameter, must be 'TB' or 'LR'!")
+    else
+        return(rankDir)
+}
+
+getCols <- function(defCol, cols, names) {
+    nC <- rep(defCol,length(names))
+    names(nC) <- names
+    nC[match(names(cols),names(nC))] <- cols
+    nC
 }
