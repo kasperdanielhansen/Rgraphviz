@@ -180,7 +180,15 @@ setClass("AgEdge", representation(splines="list",
                                   tail="character",
                                   arrowhead="character",
                                   arrowtail="character",
+                                  color="character",
                                   txtLabel="AgTextLabel"))
+
+if (is.null(getGeneric("color")))
+    setGeneric("color", function(object)
+               standardGeneric("color"))
+setMethod("color","AgEdge", function(object)
+          object@color)
+
 
 if (is.null(getGeneric("arrowhead")))
     setGeneric("arrowhead", function(object)
@@ -417,7 +425,7 @@ setMethod("labelWidth","AgTextLabel", function(object)
     })
 
     setMethod("lines","AgEdge",
-          function(x,...,col=par("col"),len=0.25,lty=par("lty"),
+          function(x,..., len=0.25,lty=par("lty"),
                    lwd=par("lwd"), edgemode="undirected") {
               z <- splines(x)
 
@@ -428,7 +436,7 @@ setMethod("labelWidth","AgTextLabel", function(object)
               arrowheads[length(z)] <- arrowhead(x)
 
               mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
-                     MoreArgs=list(len=len, col=col,
+                     MoreArgs=list(len=len, col=color(x),
                      lty=lty, lwd=lwd, ...))
 
               drawTxtLabel(txtLabel(x))
