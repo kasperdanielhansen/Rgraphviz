@@ -171,8 +171,6 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	}
     }
 
-    edgeDir = (char *)malloc(20 * sizeof(char));
-
     /* Set default attributes */
     g = setDefaultAttrs(g,attrs);
 
@@ -255,7 +253,6 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	UNPROTECT(1);
     }
 
-    free(edgeDir);
     return(buildRagraph(g));    
 }
 
