@@ -46,11 +46,15 @@ weightLabels <- function(object) {
               function(x, y, ..., subGList=list(),
                        attrs=getDefaultAttrs(y),
                        nodeAttrs=list(), edgeAttrs=list(),
-                       xlab="", ylab="", main=NULL, sub=NULL){
+                       xlab="", ylab="", main=NULL, sub=NULL,
+                       recipEdges=c("combined", "distinct")){
                   if (!validGraph(x))
                       stop("The graph to be plotted is not a valid graph structure")
                   if (missing(y))
                       y <- "dot"
+
+                      recipEdges <- match.arg(recipEdges)
+
 
                   ## Need to call plot.new before getting the default
                   ## attributes as it uses par("pin") and must be
@@ -60,7 +64,8 @@ weightLabels <- function(object) {
 
                   g <- agopen(x, "ABC", layout=TRUE, layoutType=y,
                               attrs=attrs, nodeAttrs=nodeAttrs,
-                              edgeAttrs=edgeAttrs, subGList=subGList)
+                              edgeAttrs=edgeAttrs, subGList=subGList,
+                              recipEdges=recipEdges)
 
                   invisible(plot(g,attrs=attrs, xlab=xlab,
                                  ylab=ylab, main=main, sub=sub,
@@ -74,6 +79,7 @@ weightLabels <- function(object) {
                        drawNode=drawAgNode,
                        newPlot=TRUE){
 
+                  recipEdges=c("combined", "distinct")
                   ## If this is a new plot, we need to call 'plot.new'
                   ## Otherwise we should not because we were most
                   ## likely called from something like plot.graph
@@ -123,8 +129,7 @@ weightLabels <- function(object) {
                           for (i in 1:nNodes) {
                               curDrawFun <- drawNode[[i]]
                               curDrawFun(nodes[[i]], ur)
-                          }
-                      }
+                          }                      }
                       else
                           stop("Length of the drawNode parameter",
                                " must be either length 1 or the",

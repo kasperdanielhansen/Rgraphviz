@@ -11,7 +11,8 @@ agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
        layoutType=c("dot","neato","twopi")[1],
        attrs=getDefaultAttrs(layoutType),
        nodeAttrs=list(), edgeAttrs=list(),
-       subGList, edgeMode=edgemode(graph))
+       subGList, edgeMode=edgemode(graph),
+       recipEdges=c("combined", "distinct"))
 }
 \arguments{
   \item{graph}{An object of class \code{graphNEL}}
@@ -26,6 +27,8 @@ agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
   \item{edgeAttrs}{A list of specific edge attributes}
   \item{subGList}{A list describing subgraphs for the graph parameter}
   \item{edgeMode}{Whether the graph is directed or undirected}
+  \item{recipEdges}{How to handle reciprocated edges, defaults to
+    \code{combined}}
 }
 \details{
   \code{graph} is from the package \code{\link{graph-class}}.
@@ -66,6 +69,14 @@ agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
 
   For a description of \code{attrs}, \code{nodeAttrs} and
   \code{edgeAttrs}, see the \code{\link{Ragraph}} man page.
+
+  The \code{recipEdges} argument can be used to specify how to handle
+  reciprocal edges.  The default value, \code{combined} will combine any
+  reciprocated edges into a single edge (and if the graph is directed,
+  will by default place an arrowhead on both ends of the edge), while
+  the other option is \code{distinct} which will draw to separate
+  edges.  Note that in the case of an undirected graph, every edge of a
+  \code{graphNEL} is going to be reciprocal due to implementation issues.
 }
 \value{
   An object of class \code{Ragraph}
