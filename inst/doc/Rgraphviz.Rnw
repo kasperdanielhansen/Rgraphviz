@@ -163,8 +163,8 @@ attribute.  An example of this structure can be seen with the default
 list provided by \Rfunction{getDefaultAttrs}:
 
 <<defAttrs>>=
-z <- getDefaultAttrs()
-z
+defAttrs <- getDefaultAttrs()
+defAttrs
 @
 
 Users can also set attributes per-node and per-edge.  In this case, if
@@ -236,6 +236,21 @@ eAttrs
 
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 @
+
+\section{Node Shapes}
+
+The \Rpackage{Rgraphviz} package allows you to specify different
+shapes for your nodes.  Currently, the only shapes allowed are
+\Robject{circle} (the default), \Robject{ellipse} and \Robject{box}.
+As with previous attributes, the shape can be set globally or for
+specific nodes.
+
+<<nodeShapes, fig=TRUE>>=
+defAttrs$node$shape <- "ellipse"
+nAttrs$shape <- c(e="box", g="circle", j="box", d="circle")
+plot(g1, attrs=defAttrs, nodeAttrs=nAttrs)
+@
+
 
 \section{Setting attributes via node and edge lists}
 
