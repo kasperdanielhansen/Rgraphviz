@@ -1,6 +1,6 @@
 .initGraphPlotClasses <- function(where) {
     .initRagraph(where)
-    .initEdgePoints(where)
+    .initAgEdge(where)
     .initNodePosition(where)
     .initBezierCurve(where)
     .initBoundingBox(where)
@@ -22,7 +22,7 @@
     setClass("Ragraph", representation(agraph="externalptr",
                                        laidout="logical",
                                        nodes="list",
-                                       edgePoints="list",
+                                       AgEdge="list",
                                        boundBox="boundingBox"
                                        ),
              where=where)
@@ -51,11 +51,11 @@
     setMethod("boundBox", "Ragraph", function(object)
               object@boundBox, where=where)
 
-    if (is.null(getGeneric("edgePoints")))
-        setGeneric("edgePoints", function(object)
-                   standardGeneric("edgePoints"), where=where)
-    setMethod("edgePoints", "Ragraph", function(object)
-              object@edgePoints, where=where)
+    if (is.null(getGeneric("AgEdge")))
+        setGeneric("AgEdge", function(object)
+                   standardGeneric("AgEdge"), where=where)
+    setMethod("AgEdge", "Ragraph", function(object)
+              object@AgEdge, where=where)
 
     if (is.null(getGeneric("getNodeLocs")))
         setGeneric("getNodeLocs", function(object)
@@ -130,11 +130,11 @@
 }
 
 .initEdgePoints <- function(where) {
-    if (is.null(getGeneric("edgePoints")))
-        setGeneric("edgePoints", function(object)
-                   standardGeneric("edgePoints"), where=where)
+    if (is.null(getGeneric("AgEdge")))
+        setGeneric("AgEdge", function(object)
+                   standardGeneric("AgEdge"), where=where)
     ## !!! Will want to include edgeID here
-    setClass("edgePoints", representation(splines="list",
+    setClass("AgEdge", representation(splines="list",
                                           startArrow="logical",
                                           endArrow="logical",
                                           sp="xyPoint",
@@ -143,55 +143,55 @@
     if (is.null(getGeneric("splines")))
         setGeneric("splines", function(object)
                    standardGeneric("splines"), where=where)
-    setMethod("splines", "edgePoints", function(object)
+    setMethod("splines", "AgEdge", function(object)
               object@splines, where=where)
 
     if (is.null(getGeneric("startArrow")))
         setGeneric("startArrow", function(object)
                   standardGeneric("startArrow"), where=where)
-    setMethod("startArrow", "edgePoints", function(object)
+    setMethod("startArrow", "AgEdge", function(object)
               object@startArrow, where=where)
     if (is.null(getGeneric("endArrow")))
         setGeneric("endArrow", function(object)
                   standardGeneric("endArrow"), where=where)
-    setMethod("endArrow", "edgePoints", function(object)
+    setMethod("endArrow", "AgEdge", function(object)
               object@endArrow, where=where)
 
     if (is.null(getGeneric("sp")))
         setGeneric("sp", function(object)
                    standardGeneric("sp"), where=where)
-    setMethod("sp", "edgePoints", function(object)
+    setMethod("sp", "AgEdge", function(object)
               object@sp, where=where)
     if (is.null(getGeneric("ep")))
         setGeneric("ep", function(object)
                    standardGeneric("ep"), where=where)
-    setMethod("ep", "edgePoints", function(object)
+    setMethod("ep", "AgEdge", function(object)
               object@ep, where=where)
 
 
     if (is.null(getGeneric("numSplines")))
         setGeneric("numSplines", function(object)
                    standardGeneric("numSplines"), where=where)
-    setMethod("numSplines", "edgePoints", function(object)
+    setMethod("numSplines", "AgEdge", function(object)
               length(object@splines), where=where)
 
     if (is.null(getGeneric("getSpline")))
         setGeneric("getSpline", function(object, pos)
                    standardGeneric("getSpline"), where=where)
-    setMethod("getSpline", "edgePoints", function(object, pos) {
+    setMethod("getSpline", "AgEdge", function(object, pos) {
         if ((pos > 0)&&(pos <= numSplines(object)))
             return(object@splines[[pos]])
         else
             return(NULL)
     }, where=where)
 
-    setMethod("show", "edgePoints", function(object) {
+    setMethod("show", "AgEdge", function(object) {
         z <- splines(object)
         for (i in seq(along=z))
             show(z[[i]])
     }, where=where)
 
-    setMethod("lines","edgePoints",
+    setMethod("lines","AgEdge",
               function(x,...) {
                   z <- splines(x)
                   lapply(z,lines)
@@ -199,7 +199,7 @@
               }, where=where)
 }
 
-arrows.edgePoints <- function(x,...) {
+arrows.AgEdge <- function(x,...) {
     z <- splines(x)
     lapply(z, lines)
 
