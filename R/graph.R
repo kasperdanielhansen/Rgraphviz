@@ -56,10 +56,8 @@
                            yaxt="n",bty="n",...)
                       symbols(nodeX, nodeY, circles=rad, inches=FALSE,
                               bg="white",add=TRUE)
-                      if (edgeMode == "undirected")
-                          q <- lapply(AgEdge(g), lines)
-                      else
-                          q <- lapply(AgEdge(g), arrows.AgEdge)
+                      ## Plot the edges
+                      q <- lapply(AgEdge(g), lines)
                       text(nodeX,nodeY, nodeLabels)
                   }
                   else {
