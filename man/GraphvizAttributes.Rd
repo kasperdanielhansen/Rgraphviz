@@ -461,7 +461,7 @@
   }
 \references{\url{http://www.research.att.com/~erg/graphviz/info/attrs.html}}
 \author{Jeff Gentry}
-\seealso{\code{\link{plot.graph}}, \code{\link{agopen}}}
+\seealso{\code{\link{plot.graph}}, \code{\link{agopen}}, \code{\link{GraphvizLayouts}}}
 \examples{
 
 }
