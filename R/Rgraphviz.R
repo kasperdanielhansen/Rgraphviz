@@ -1,126 +1,66 @@
-  agopen <- function(graph, name, nodeLabels=nodes(graph),
-                     kind=NULL, layout=TRUE,
-                     layoutType=c("dot","neato","twopi")[1],
-                     attrs=getDefaultAttrs(layoutType,
-                     edgemode(graph)), subGList,
-                     edgeLabels=list()) {
+
+buildTestNodes <- function() {
+       nodes <- list()
+      nodes[[1]] <- new("pNode",name="foo")
+      nodes[[2]] <- new("pNode", name="blah", label="blah2")
+      nodes[[3]] <- new("pNode", name="bar")
+      nodes[[4]] <- new("pNode", name="blat")
+      nodes[[5]] <- new("pNode", name="5")
+      nodes[[6]] <- new("pNode", name="6")
+      nodes[[7]] <- new("pNode", name="7")
+       nodes[[8]] <- new("pNode", name="8", label="test")
+       nodes[[9]] <- new("pNode", name="9", label="chirac")
+       nodes[[10]] <- new("pNode", name="10", label="jacques")
+nodes
+   }
+
+buildTestEdges <- function() {
+      edges <- list()
+      edges[[1]] <- new("pEdge", from="foo", to="blah", label="test")
+      edges[[2]] <- new("pEdge", from="foo", to="bar")
+      edges[[3]] <- new("pEdge", from="bar", to="blat")
+      edges[[4]] <- new("pEdge", from="5", to="6")
+      edges[[5]] <- new("pEdge", from="7", to="bar")
+      edges[[6]] <- new("pEdge", from="bar", to="7")
+      edges[[7]] <- new("pEdge", from="blat", to="8", label="new edge")
+      edges[[8]] <- new("pEdge", from="blah", to="8", label="another")
+      edges[[9]] <- new("pEdge", from="9", to="10")
+      edges[[10]] <- new("pEdge", from="10", to="9")
+      edges[[11]] <- new("pEdge", from="9", to="5")
+      edges[[12]] <- new("pEdge", from="10", to="foo")
+      edges[[13]] <- new("pEdge", from="9", to="7")
+      edges[[14]] <- new("pEdge", from="7", to="blah")
+      edges
+  }
+
+agopen <- function(graph, name, kind=NULL, layout=TRUE,
+                   layoutType=c("dot","neato","twopi")[1],
+                   attrs=getDefaultAttrs(layoutType), subGList) {
 
       checkAttrs(attrs)
 
-      ##FIXME: briefly explain what each type is
+      ## !!!!!!
+      nodes <- buildTestNodes()
+      edges <- buildTestEdges()
+
       if (is.null(kind)) {
           ## Determine kind from the graph object
           outK <- switch(edgemode(graph),
-                         "undirected"=0,
-                         "directed"=1,
+                         "undirected"=0,  ## AGRAPH
+                         "directed"=1,    ## AGDIGRAPH
                          0)
       }
       else {
           ## Use the specified 'kind' parameter.
           outK <- switch(kind,
-                         "AGRAPH"=0,
-                         "AGDIGRAPH"=1,
-                         "AGRAPHSTRICT"=2,
-                         "AGDIGRAPHSTRICT"=3,
+                         "AGRAPH"=0,   ##Undirected Graph
+                         "AGDIGRAPH"=1,   ## directed graph
+                         "AGRAPHSTRICT"=2,   ## no self arcs or multiedges
+                         "AGDIGRAPHSTRICT"=3, ## directed strict graph
                          stop(paste("Incorrect kind parameter:",kind)))
       }
 
-      edgeMtrx <- graph2graphviz(graph)
-
-      nodes <- nodes(graph)
-
-      ## We allow for users to pass in either 1
-      ## label which is used for all nodes, or a vector
-      ## with length equal to the length of nodes,
-      ## specifying the labels in order.
-      nNL <- length(nodeLabels)
-
-      if (nNL == 1)
-          nodeLabels <- rep(nodeLabels, length(nodes))
-      else
-          if (length(nodeLabels) != length(nodes))
-              stop(paste("nodeLabels must be the same",
-                         "length as the number of nodes"))
-
-      nL <- nodeLabels
-      if (attrs$node$fixedsize)
-          nL <- rep(nL[match(max(nchar(nL)), nchar(nL))],
-                    length(nodes))
-
-      if ((is.list(edgeLabels))&&(length(edgeLabels) == length(nodes))) {
-          if (!all(unlist(lapply(edgeLabels,is.character))))
-              stop("edgeLabel list can only contain character vectors")
-      }
-      else if (length(edgeLabels) > 1)
-          stop("edgeLabels must be either ",
-               "empty, length one, or a list with the length of nodes")
-      else if (length(edgeLabels) == 1)
-          edgeLabels <- repEdgeLabels(edgeLabels, graph)
-
-      subGs <- vector(mode="character")
-
-      ## A vector to map nodes to subgraphs
-      nodeSubs <- vector(length=length(nodes), mode="numeric")
-      names(nodeSubs) <- nodes
-
-      ## A vector to map edges to subgraphs
-      edgeSubs <- rep(0,length(unlist(edges(graph))))
-
-      ## Store these in an environment to facilitate lapply() and
-      ## friends in the subgraph calculations
-      arrEnv <- new.env()
-      assign("nodeSubs",nodeSubs,env=arrEnv)
-      assign("edgeSubs",edgeSubs,env=arrEnv)
-
-      if ((!missing(subGList))&&(length(subGList) > 0)) {
-          ## graphviz expects the names of clusters to start with
-          ## 'cluster', so create proper names for the subgrpahs
-          subGs <- paste("cluster_",1:length(subGList),sep="")
-
-          edgeFromTo <- edgeMtrx[1:2,]
-          for (i in 1:length(subGList)) {
-              subNodes <- nodes(subGList[[i]])
-              ## Calculate which nodes belong to which subgraph
-              ## and track that information in the nodeSubs vector
-              lapply(subNodes,function(x,arrEnv,i) {
-                  nodeSubs <- get("nodeSubs",arrEnv)
-                  if (nodeSubs[x] != 0)
-                      stop("Duplicated nodes in subgraphs")
-                  else {
-                      nodeSubs[x] <- i
-                      assign("nodeSubs",nodeSubs,env=arrEnv)
-                  }
-                  return(NULL)
-              },arrEnv,i)
-
-              ## Now do the edges
-              subEdgeL <- edgeL(subGList[[i]])
-              fromEdgeNames <- names(subEdgeL)
-              for (j in 1:length(subEdgeL)) {
-                  toEdges <- subEdgeL[[j]]$edges
-                  curEdgeNum <- as.integer(match(fromEdgeNames[j],
-                                           nodes))
-                  lapply(toEdges,
-                         function(x, arrEnv, toEdges,
-                                  curEdgeNum, edgeFromTo, i) {
-                             tmp <- matrix(c(curEdgeNum,x),nrow=2,ncol=1)
-                             tmpMatches <- apply(edgeFromTo,2,"==",tmp)
-                             tmpMatches <- apply(tmpMatches,2,all)
-                             if (any(tmpMatches)) {
-                                 whichEdge <- which(tmpMatches)[1]
-                                 edgeSubs <- get("edgeSubs",arrEnv)
-                                 if (edgeSubs[whichEdge] != 0)
-                                     stop("Duplicated edges in subgraphs")
-                                 else {
-                                     edgeSubs[whichEdge] <- i
-                                     assign("edgeSubs",edgeSubs,env=arrEnv)
-                                 }
-                             }
-                             return(NULL)
-                         }, arrEnv, toEdges, curEdgeNum, edgeFromTo, i)
-              }
-          }
-      }
+      ### FIXME: Subgraph stuff needs to go here.
 
       ## all attrs must be character strings going into C,
       ## graphviz wants all attrs to be char*
@@ -128,21 +68,15 @@
       attrs <- lapply(attrs, function(x){lapply(x,as.character)})
 
       g <- .Call("Rgraphviz_agopen", as.character(name),
-                 as.integer(outK), as.vector(nodes),
-                 as.character(nodeLabels), as.list(edgeLabels),
-                 as.integer(edgeMtrx[1,]), as.integer(edgeMtrx[2,]),
-                 as.double(edgeMtrx[3,]),
-                 as.integer(get("edgeSubs",env=arrEnv)),
-                 as.integer(get("nodeSubs",env=arrEnv)),
-                 as.character(subGs), as.list(attrs))
+                 as.integer(outK), as.list(nodes),
+                 as.list(edges), as.list(attrs))
       g@layoutType <- layoutType
       g@edgemode <- edgemode(graph)
-      g@nodeLabels <- nodeLabels
-      g@edgeLabels <- edgeLabels
-      g@nodeNames <- nodes
+      g@nodes <- nodes
+      g@edges <- edges
 
       if (layout)
-          return(layoutGraph(g,layoutType))
+          return(layoutGraph(g))
       else
           return(g)
   }
@@ -167,13 +101,13 @@ agwrite <- function(graph, filename) {
 }
 
 
-layoutGraph <- function(graph, layoutType=c("dot","neato","twopi")[1]) {
+layoutGraph <- function(graph) {
     if (inherits(graph,"graphNEL"))
         stop("Please use function agopen() for graphNEL objects")
     if (!inherits(graph,"Ragraph"))
         stop("Object is not of class Ragraph")
 
-    type <- switch(layoutType,
+    type <- switch(layoutType(graph),
                    "dot"=0,
                    "neato"=1,
                    "twopi"=2,

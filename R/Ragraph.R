@@ -7,13 +7,12 @@ setGeneric("Ragraph", function(object)
 setClass("Ragraph", representation(agraph="externalptr",
                                    laidout="logical",
                                    layoutType="character",
-                                   nodeLabels="character",
-                                   edgeLabels="list",
                                    edgemode="character",
-                                   nodes="list",
-                                   nodeNames="character",
+                                   nodePos="list",
                                    AgEdge="list",
-                                   boundBox="boundingBox"
+                                   boundBox="boundingBox",
+                                   nodes="list",
+                                   edges="list"
                                    ))
 
 if (is.null(getGeneric("agraph")))
@@ -40,24 +39,6 @@ if (is.null(getGeneric("layoutType")))
 setMethod("layoutType", "Ragraph", function(object)
           object@layoutType)
 
-if (is.null(getGeneric("nodeLabels")))
-    setGeneric("nodeLabels", function(object)
-               standardGeneric("nodeLabels"))
-setMethod("nodeLabels", "Ragraph", function(object)
-          object@nodeLabels)
-
-if (is.null(getGeneric("edgeLabels")))
-    setGeneric("edgeLabels", function(object)
-               standardGeneric("edgeLabels"))
-setMethod("edgeLabels", "Ragraph", function(object)
-          object@edgeLabels)
-
-if (is.null(getGeneric("nodeNames")))
-    setGeneric("nodeNames", function(object)
-               standardGeneric("nodeNames"))
-setMethod("nodeNames", "Ragraph", function(object)
-          object@nodeNames)
-
 if (is.null(getGeneric("boundBox")))
     setGeneric("boundBox", function(object)
                standardGeneric("boundBox"))
@@ -70,18 +51,36 @@ if (is.null(getGeneric("AgEdge")))
 setMethod("AgEdge", "Ragraph", function(object)
           object@AgEdge)
 
-if (is.null(getGeneric("getNodeLocs")))
-        setGeneric("getNodeLocs", function(object)
-                   standardGeneric("getNodeLocs"))
-setMethod("getNodeLocs", "Ragraph", function(object) {
+if (is.null(getGeneric("nodes")))
+    setGeneric("nodes", function(object)
+               standardGeneric("nodes"))
+setMethod("nodes", "Ragraph", function(object)
+          object@nodes)
+
+
+getNodeLocs <- function(object) {
+    if (! is(object, "Ragraph"))
+        stop("need a Ragraph object")
+
     out <- vector(mode="list",length=2)
     names(out) <- c("x","y")
-    xys <- lapply(object@nodes,getNodeCenter)
+    xys <- lapply(object@nodePos,getNodeCenter)
     out[[1]] <- unlist(lapply(xys,getX))
     out[[2]] <- unlist(lapply(xys,getY))
     out
-})
+}
 
+getNodeNames <- function(object) {
+    if (!is(object, "Ragraph"))
+        stop("Need a Ragraph object")
+    unlist(lapply(object@nodes, name))
+}
+
+getNodeLabels <- function(object) {
+    if (!is(object, "Ragraph"))
+        stop("Need a Ragraph object")
+    unlist(lapply(object@nodes, label))
+}
 
 ### Class boundingBox
 
@@ -300,20 +299,16 @@ if (is.null(getGeneric("labelWidth")))
 setMethod("labelWidth","AgTextLabel", function(object)
           object@labelWidth)
 
-
-
-.initgraphMethods <- function() {
-    if (is.null(getGeneric("nodes")))
-        setGeneric("nodes", function(object)
-                   standardGeneric("nodes"))
-    setMethod("nodes", "Ragraph", function(object)
-              object@nodes)
-}
+if (is.null(getGeneric("nodePos")))
+    setGeneric("nodePos", function(object)
+               standardGeneric("nodePos"))
+setMethod("nodePos", "Ragraph", function(object)
+          object@nodePos)
 
 
 .initRgraphvizShowMethods <- function() {
     setMethod("show", "Ragraph", function(object) {
-        print(paste("A graph with",length(nodes(object)),
+        print(paste("A graph with",length(nodePos(object)),
                     "nodes."))
     })
 

@@ -75,9 +75,8 @@ static SEXP Rgraphviz_graph_type_tag;
 SEXP Rgraphviz_init(void) {
     Rgraphviz_graph_type_tag = install("RGRAPH_TYPE_TAG");
 
-/* Need to comment this out until a better mechanism is found for
-   version checking */
-/*    checkGraphvizVers(); */
+    /* Stifle graphviz warning messages, only return errors */
+    agseterr(AGERR);
 
     return(R_NilValue);
 }
@@ -131,20 +130,21 @@ SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
     
 
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
-		      SEXP nodeLabels, SEXP edgeLabels, SEXP from,
-		      SEXP to, SEXP weights, SEXP edgeSubs,
-		      SEXP nodeSubs, SEXP subGs, SEXP attrs) {
+		     SEXP edges, SEXP attrs) {
     /* Will create a new Agraph_t* object in graphviz and then */
     /* a Ragraph S4 object around it, returning it to R */
     Agraph_t *g, *tmpGraph;
     Agraph_t **sgs;
     Agnode_t *head, *tail, *tmp;
     Agedge_t *curEdge;
-    SEXP curEdgeLabels;
     int ag_k = 0;
-    int i, curNode, curLabel;
+    int i;
     int curSubG;
-    char *edgeDir;
+
+    SEXP pNode, curPN, pEdge, curPE;
+
+    pNode = MAKE_CLASS("pNode");
+    pEdge = MAKE_CLASS("pEdge");
     
     if (!isInteger(kind))
 	error("kind must be an integer value");
@@ -161,95 +161,85 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     g = agopen(STR(name), ag_k);
 
     /* Allocate space in the subgraph array */
-    sgs = (Agraph_t **)malloc(length(subGs) * sizeof(Agraph_t *));
+/*    sgs = (Agraph_t **)malloc(length(subGs) * sizeof(Agraph_t *));
 
-    if (length(subGs) > 0) {
+      if (length(subGs) > 0) { */
 	/* Create any subgraphs, if necessary */
-	
+    /*
 	for (i = 0; i < length(subGs); i++) {
 	    sgs[i] = agsubg(g,CHAR(STRING_ELT(subGs,i)));
 	}
     }
-
+*/
     /* Set default attributes */
     g = setDefaultAttrs(g,attrs);
 
     /* Get the nodes created */
     for (i = 0; i < length(nodes); i++) {
+	PROTECT(curPN = VECTOR_ELT(nodes, i));
+
 	/* Need to check the node # against the subG vector */
-	/* And assign it to the proper grpah, not necessarily 'g' */
-	curSubG = INTEGER(nodeSubs)[i];
-	if (curSubG > 0) {
-	    /* Point tmpGraph to the appropriate current graph */
+	/* And assign it to the proper graph, not necessarily 'g' */
+	/* !!! Deal with SubGs later 
+	 curSubG = INTEGER(nodeSubs)[i];
+	 if (curSubG > 0) {
+	*/	    /* Point tmpGraph to the appropriate current graph */
 	    /* Remember that in R they're numbered 1->X and in */
 	    /* C it is 0-(X-1) */
-	    tmpGraph = sgs[curSubG-1];
-	}
-	else
-	    tmpGraph = g;
-
-	tmp = agnode(tmpGraph, CHAR(STRING_ELT(nodes,i))); 
- 	agset(tmp, "label", CHAR(STRING_ELT(nodeLabels,i)));
+	/*    tmpGraph = sgs[curSubG-1];
+ 	}
+	else */
+  	    tmpGraph = g;
+	    
+	tmp = agnode(tmpGraph, STR(GET_SLOT(curPN, 
+					     Rf_install("name"))));
+	agset(tmp, "label", STR(GET_SLOT(curPN,
+					  Rf_install("label")))); 
+	agset(tmp, "shape", STR(GET_SLOT(curPN,
+					  Rf_install("shape"))));
+	UNPROTECT(1);
     }
 
     /* now fill in the edges */
-    for (i = 0; i < length(from); i++) {
-	curNode = INTEGER(from)[i];
-	tail = agfindnode(g, CHAR(STRING_ELT(nodes, curNode-1)));
+    for (i = 0; i < length(edges); i++) {
+	PROTECT(curPE = VECTOR_ELT(edges, i));
 
-	/* Get the set of edge labels for this node */
-	PROTECT(curEdgeLabels = 
-		getListElement(edgeLabels, CHAR(STRING_ELT(nodes, 
-							   curNode-1))));
+	/* !!! Deal w/ SubG's later */
+/*	curSubG = INTEGER(edgeSubs)[i];
+ 	if (curSubG > 0) {
+	     tmpGraph = sgs[curSubG-1];
+	 }
+	 else { */
+	tmpGraph = g;
+/*	 } */
+
+
+	tail = agfindnode(g, STR(GET_SLOT(curPE,
+					  Rf_install("from"))));
 	if (tail == NULL)
 	    error("Missing tail node");
-	/* Get weights for these edges */
-	curNode = INTEGER(to)[i];
-	head = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
+
+	head = agfindnode(g, STR(GET_SLOT(curPE, 
+					   Rf_install("to"))));
 	if (head == NULL)
 	    error("Missing head node");
 
-	/* Get the appropriate label */
-	curLabel = getVectorPos(curEdgeLabels, 
-				CHAR(STRING_ELT(nodes, curNode-1)));
-	
-	curSubG = INTEGER(edgeSubs)[i];
-	if (curSubG > 0) {
-	    tmpGraph = sgs[curSubG-1];
-	}
-	else {
-	    tmpGraph = g;
-	}
+	curEdge = agedge(tmpGraph, tail, head);
+	agset(curEdge, "weight", INTEGER(GET_SLOT(curPE,
+						  Rf_install("weight")))[0]);
+	agset(curEdge, "label", STR(GET_SLOT(curPE, 
+					      Rf_install("label"))));
+	agset(curEdge, "arrowhead", STR(GET_SLOT(curPE,
+					      Rf_install("arrowhead"))));
+	agset(curEdge, "dir", STR(GET_SLOT(curPE,
+					    Rf_install("dir"))));
+	agset(curEdge, "fontname", STR(GET_SLOT(curPE,
+						 Rf_install("fontname"))));
+	agset(curEdge, "headclip", 
+	      (int)LOGICAL(GET_SLOT(curPE, Rf_install("headclip")))[0]);
+	agset(curEdge, "tailclip",
+	      (int)LOGICAL(GET_SLOT(curPE, Rf_install("tailclip")))[0]);
 
-	/* Setup the edge in the graph.  If the opposite edge already */
-	/* exists then handle it differently */ 
-	if (agfindedge(tmpGraph, head, tail) == NULL) {
-	    curEdge = agedge(tmpGraph, tail, head);
-	    curEdge->u.weight = INTEGER(weights)[i];
-
-	    if (curLabel > -1)
-		agset(curEdge,"label",
-		      CHAR(STRING_ELT(curEdgeLabels, curLabel)));
-	}
-	else {
-	    /* If the opposite edge already exists, we only care if we */
-	    /* have a directed graph.  In that case, how we handle */
-	    /* depends on the edge direction attribute - in some */
-	    /* cases a second edge is defined, in others not */
-	    if (ag_k == AGDIGRAPH) {
-		curEdge = agfindedge(tmpGraph, head, tail);
-		edgeDir = agget(curEdge, "dir");
-		if ((strcmp(edgeDir, "forward") == 0)||
-		    (strcmp(edgeDir, "back") == 0)) {
-		    /* Create a new edge */
-		    curEdge = agedge(tmpGraph, tail, head);
-		    curEdge->u.weight = INTEGER(weights)[i];
-		    if (curLabel > -1)
-			agset(curEdge,"label",
-			      CHAR(STRING_ELT(curEdgeLabels, curLabel)));
-		}
-	    }
-	}
 	UNPROTECT(1);
     }
 
@@ -299,7 +289,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
 						Rf_install("numEdges")))[0]));
 	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
-	SET_SLOT(graph,Rf_install("nodes"),nLayout);
+	SET_SLOT(graph,Rf_install("nodePos"),nLayout);
 	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
 	SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
 	SET_SLOT(graph,Rf_install("boundBox"), bb);
