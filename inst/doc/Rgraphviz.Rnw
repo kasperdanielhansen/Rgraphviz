@@ -12,7 +12,7 @@
 
 \newcommand{\Rfunction}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
-\newcomand{\Robject}[1]{{\textit{#1}}}
+\newcommand{\Robject}[1]{{\textit{#1}}}
 
 \author{Jeff Gentry}
 \begin{document}
@@ -41,7 +41,7 @@ method:
 
 <<plotDot, fig=TRUE, echo=FALSE>>=
     z <- plot(g1)
-@	
+@       
 
 The \Rpackage{Rgraphviz} package allows you to specify varying layout
 engines, such as "dot" (the default), "neato", and "twopi".  This can
