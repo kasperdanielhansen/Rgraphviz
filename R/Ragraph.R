@@ -388,46 +388,22 @@ setMethod("lines", "BezierCurve", function(x,...,col=par("col"),
     lines(z[,1],z[,2],col=col,lty=lty,lwd=lwd)
 })
 
-setMethod("lines","AgEdge",
-          function(x,..., len=0.25,lty=par("lty"),
-                   lwd=par("lwd"), edgemode="undirected",
-                   attrs=list()) {
-                  edgeName <- paste(tail(x),head(x),sep="~")
-                  attrNames <- names(attrs)
+setMethod("lines", "AgEdge",
+  function(x, ...,
+           len,
+           lty=par("lty"), lwd=par("lwd")) {
+    z <- splines(x)
 
-                  z <- splines(x)
+    arrowtails <- c(arrowtail(x), rep("none", length(z)-1))
+    arrowheads <- c(rep("none", length(z)-1), arrowhead(x))
 
-                  arrowtails <- rep("none", length(z))
-                  if (("arrowtail" %in% attrNames)&&
-                      (edgeName %in% names(attrs$arrowtail)))
-                      arrowtails[1] <- as.character(attrs$arrowtail[edgeName])
-                  else
-                      arrowtails[1] <- arrowtail(x)
-
-                  arrowheads <- rep("none", length(z))
-                  if (("arrowhead" %in% attrNames)&&
-                      (edgeName %in% names(attrs$arrowhead)))
-                      arrowheads[length(z)] <- as.character(attrs$arrowhead[edgeName])
-                  else
-                      arrowheads[length(z)] <- arrowhead(x)
-
-                  if (("color" %in% attrNames)&&
-                      (edgeName %in% names(attrs$color)))
-                      edgeColor <- as.character(attrs$color[edgeName])
-                  else
-                      edgeColor <- color(x)
-
-                  ## Adjust arrowhead size according to attr
-                  len <- len * as.numeric(arrowsize(x))
-
-                  mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
-                         MoreArgs=list(len=len, col=edgeColor,
+    len <- len * as.numeric(arrowsize(x))
+    mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
+           MoreArgs=list(len=len, col=color(x),
                          lty=lty, lwd=lwd, ...))
 
-                  drawTxtLabel(txtLabel(x), objName=edgeName, objAttrs=attrs)
-
-                  return(NULL)
-              })
+    drawTxtLabel(txtLabel(x))
+  })
 
 ### Class Ragraph
 setGeneric("Ragraph", function(object)
