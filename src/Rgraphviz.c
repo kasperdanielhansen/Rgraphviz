@@ -352,6 +352,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     Rboolean laidout;
     SEXP slotTmp, nLayout, cPoints, bb;
 
+    
     /* First make sure that hte graph is not already laid out */
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
     if (laidout == FALSE) {
@@ -505,7 +506,6 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
     int i, j, nSubG;
     int nEdges = length(edgeNames);
 
-    
     if (length(edgeL) == 0)
 	return(allocVector(VECSXP, 0));
     
