@@ -1,26 +1,36 @@
 AgEdge-class            Class "AgEdge": A class to describe an edge
                         for a Ragraph object
+AgNode-class            Class "AgNode": A class to describe a node for
+                        a Ragraph object
+agopen                  A function to obtain a libgraph object
 AgTextLabel-class       Class "AgTextLabel": Represents a graphviz
                         text label
+agwrite                 A function to write a Ragraph object to a file
 BezierCurve-class       Class "BezierCurve": A class to describe a
                         Bezier curve
-NodePosition-class      Class "NodePosition": A class to describe the
-                        location and size of a node
-Ragraph-class           Class "Ragraph": A class to handle libgraph
-                        representations
-agopen                  A function to obtain a libgraph object
-agwrite                 A function to write a Ragraph object to a file
 boundingBox-class       Class "boundingBox": A class to describe the
                         bounding box of a Ragraph
-checkAttrs              A function to check graph attributes
-ellipse                 A function to plot ellipses
-graph2graphviz-methods
-                        A method for transforming a graph into
-                        graphviz format
+buildNodeList           A function to build lists of node and edge
+                        objects
+getDefaultAttrs         Functions to generate and check global
+                        attribute lists
+GraphvizAttributes      Graph Attributes for Rgraphviz
+GraphvizLayouts         Graphviz Layout Methods
 graphvizVersion         A function to determine graphviz library
                         version
+imageMap-methods        Write an HTML IMG tag together with a MAP
+                        image map.
 layoutGraph             A function to layout graph locations
-plot-methods            Plot a graph object - methods
-weightLabels-methods    A method for providing edge weights for labels
+makeNodeAttrs           make a list of character vectors that can be
+                        used as a value for the nodeAttrs argument in
+                        agopen
+pEdge-class             Class "pEdge": A class to represent an edge
+pieGlyph                A function to plot pie graphs as a glyph
+plot.graphNEL           Plot a graph object - methods
+pNode-class             Class "pNode": A class to plot nodes
+Ragraph-class           Class "Ragraph": A class to handle libgraph
+                        representations
+removedEdges            A Function To List Removed Edges
+toDot-methods           A Generic For Converting Objects To Dot
 xyPoint-class           Class "xyPoint": A class to represent a X/Y
                         coordinate.
