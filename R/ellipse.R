@@ -3,7 +3,7 @@
 # begin ellipse
 ellipse <- function(x,y,
                     width,height=width,theta=2*pi,
-                    npoints=100,plot=T) {
+                    npoints=100,plot=TRUE) {
   # x = x coordinate of center
   # y = y coordinate of center
   # width = length of major axis
