@@ -457,7 +457,7 @@ if( require("Biobase") ) {
         }
 
         plot(curPlot, drawNode=drawing, main="Example Pie Chart Plot")
-        legend(310, 100, legend=c("No Data", "0-100", "101-500", "500+"),
+        legend(240, 100, legend=c("No Data", "0-100", "101-500", "500+"),
                fill=c("white", "blue", "green", "red"))
     }
     plotPieChart(pgLayout, counts)
@@ -474,5 +474,66 @@ added with a line such as \Robject{drawTxtLabel(txtLabel(node),
 getX(nodeCenter), getY(nodeCenter))} in the \Rfunction{buildDrawing}
 sub-function above.  The \Rfunction{drawAgNode} should be used as a
 guide for basic activities such as this.
+
+\section{Other types of graphs}
+
+Up to this point, we have only been working with objects of class
+\Robject{graphNEL}, but the other subclasses of graph (such as
+\Robject{distGraph} and \Robject{clusterGraph}) will work as well
+(provided that they support the \Rfunction{nodes} method as well as
+have an \Rfunction{edgeL} method defined to generate an edge list like
+the one for \Robject{graphNEL}).
+
+In this section, we'll demonstrate a few examples of using graphs of
+classes other then \Robject{graphNEL}.  Users should not notice a
+difference in the actual interface, but this will also provide some
+visual examples as to how these types of graphs will appear.
+
+For our first set of examples, we will create an object of class
+\Robject{clusterGraph} and then plot it using all three layout
+methods:
+
+<<clusterGraph1, fig=TRUE>>=
+  cG <- new("clusterGraph", clusters=list(a=c(1:10), b=c(11:13),
+					   c=c(14:20), d=c(21, 22)))
+  cG
+  plot(cG)
+@
+
+And now the same graph using "twopi":
+
+<<cgTwopi, fig=TRUE>>=
+  plot(cG, "twopi")
+@
+
+And finally, again in "neato":
+
+<<cgNeato, fig=TRUE>>=
+  plot(cG, "neato")
+@
+
+The same demonstration is now given with a \Robject{distGraph} object:
+
+<<distGraph1, fig=TRUE>>=
+    x <- rnorm(26)
+    names(x) <- letters
+    d1 <- dist(x)
+    dG <- new("distGraph", Dist=d1)
+    dG
+
+    plot(dG)
+@
+
+Again using "twopi":
+
+<<dgTwopi, fig=TRUE>>=
+  plot(dG, "twopi")
+@
+
+And finally using "neato":
+
+<<dgNeato, fig=TRUE>>=
+  plot(dG, "neato")
+@
 
 \end{document}

@@ -119,8 +119,8 @@ graphvizVersion <- function() {
 
 buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
                           defAttrs=list()) {
-    pNodes <- .Call("Rgraphviz_buildNodeList", graph, nodeAttrs, subGList,
-                   defAttrs, PACKAGE="Rgraphviz")
+    .Call("Rgraphviz_buildNodeList", nodes(graph), nodeAttrs,
+                          subGList, defAttrs, PACKAGE="Rgraphviz")
 }
 
 
@@ -137,8 +137,9 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
         removed <- character()
 
     ## Generate the list of pEdge objects
-    .Call("Rgraphviz_buildEdgeList", graph, subGList, edgeNames,
-          removed, edgeAttrs, defAttrs, PACKAGE="Rgraphviz")
+    .Call("Rgraphviz_buildEdgeList", edgeL(graph), edgemode(graph),
+          subGList, edgeNames, removed, edgeAttrs, defAttrs,
+          PACKAGE="Rgraphviz")
 }
 
 setMethod("edgeNames", "Ragraph", function(object,
@@ -176,3 +177,47 @@ removedEdges <- function(graph) {
     combEdges <- edgeNames(graph, "combined")
     which(! allEdges %in% combEdges)
 }
+
+setMethod("edgeL", "clusterGraph", function(graph, index) {
+    ## temporary function, just a placeholder until I put in
+    ## something better (most likely in C)
+
+    clusters <- connComp(graph)
+    nodes <- nodes(graph)
+    edgeL <- list()
+
+    cur <- 1
+    for (i in seq(along=clusters)) {
+        curClust <- clusters[[i]]
+        for (j in seq(along = curClust)) {
+            edgeL[[cur]] <- list(edges=match(curClust[-j], nodes))
+            cur <- cur + 1
+        }
+    }
+    names(edgeL) <- nodes
+
+    if (! missing(index))
+        edgeL <- edgeL[[index]]
+
+    edgeL
+})
+
+setMethod("edgeL", "distGraph", function(graph, index) {
+    ## Just like the clusterGraph edgeL method, this should be
+    ## considered a poor place holder for now.
+    edges <- edges(graph)
+    edgeL <- mapply(function(x, y, nodes) {
+        out <- list(edges=match(x, nodes), weights=y)
+    }, edges, edgeWeights(graph), MoreArgs=list(nodes=nodes(graph)),
+                    SIMPLIFY=FALSE)
+    names(edgeL) <- names(edges)
+
+    if (! missing(index))
+        edgeL <- edgeL[[index]]
+
+    edgeL
+})
+
+
+
+
