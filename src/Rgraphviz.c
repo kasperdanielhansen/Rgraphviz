@@ -153,7 +153,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     Agedge_t *curEdge;
     char *subGName;
     int ag_k = 0;
-    int i,j, attrPos;
+    int i,j;
     int whichSubG;
     SEXP pNode, curPN, pEdge, curPE;
     SEXP attrNames, curAttrs, curSubG, curSubGEle;

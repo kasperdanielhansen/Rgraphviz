@@ -69,11 +69,6 @@ agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
         return(g)
 }
 
-getGraphAttr <- function(graph, attr) {
-    .Call("Rgraphviz_getAttr", graph, as.character(attr),
-          PACKAGE="Rgraphviz")
-}
-
 agwrite <- function(graph, filename) {
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename),
                PACKAGE="Rgraphviz")
