@@ -6,15 +6,15 @@
 %\VignetteDepends{Rgraphviz, graph, geneplotter, fibroEset, hgu95av2}
 %\VignetteKeywords{tools, graphs}
 %\VignettePackage{Rgraphviz}
- 
+
 \documentclass{article}
 \usepackage{hyperref}
 \usepackage{graphicx}
- 
+
 \newcommand{\Rfunction}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
 \newcommand{\Robject}[1]{{\textit{#1}}}
- 
+
 \author{Jeff Gentry}
 \begin{document}
 \title{HowTo layout a pathway}
@@ -27,7 +27,7 @@ layout and render pathways, such as the ones available at KEGG
 (\url{http://www.genome.ad.jp/kegg/pathway/}).  For demonstration
 purposes, we will be working with the \Robject{hsa041510} pathway from
 KEGG (\url{http://www.genome.ad.jp/kegg/pathway/hsa/hsa04510.html}),
-which is available as a \Robject{graph} object from the 
+which is available as a \Robject{graph} object from the
 \Rpackage{graph} package as the \Robject{integrinMediatedCellAdhesion}
 dataset.  This dataset contains the graph as well as a list of
 attributes that can be used for plotting.  The pathway graph as
@@ -72,7 +72,7 @@ want to use the \Robject{dot} layout, as that will provide the closest
 base to work off.  Likewise, the \Robject{rankdir} attribute should be
 set to \Robject{LR}, to give us the left to right look of the graph.
 To see our starting point, here is the \Robject{IMCAGraph} with just
-those settings. 
+those settings.
 
 <<initial, fig=TRUE>>=
 plot(IMCAGraph, attrs=list(graph=list(rankdir="LR")))
@@ -126,7 +126,7 @@ subgraph which is laid out as a separate graph and then introduced
 into the main graph.  This provides a much stronger guarantee of
 having the nodes clustered together visually.  For a description of
 how to specify subgraphs in \Rpackage{Rgraphviz}, please see the
-vignette \texttt{HowTo Render A Graph Using Rgraphviz}.  
+vignette \texttt{HowTo Render A Graph Using Rgraphviz}.
 
 So here we will define four subgraphs: One will be the membrane nodes,
 one will be the output nodes, one will be the F-actin block and the
@@ -180,7 +180,7 @@ the pathway.  We can see the output nodes are now to the right end of
 the graph, and while not neatly stacked on the left hand side the
 membrane nodes are to the left side of the rest.  We can also see the
 F-actin group in the lower left portion of the graph, representing one
-of the clusters.  
+of the clusters.
 
 \section{Working with the layout}
 
@@ -202,7 +202,9 @@ require("geneplotter")
 require("fibroEset")
 require("hgu95av2")
 data("fibroEset")
-plotExpressionGraph(IMCAGraph, IMCAAttrs$LocusLink, exprs(fibroEset)[,1], hgu95av2LOCUSID, attrs=IMCAAttrs$defAttrs, subGList=IMCAAttrs$subGList, nodeAttrs=IMCAAttrs$nodeAttrs)
+plotExpressionGraph(IMCAGraph, IMCAAttrs$LocusLink,
+exprs(fibroEset)[,1], hgu95av2LOCUSID, attrs=IMCAAttrs$defAttrs,
+subGList=IMCAAttrs$subGList, nodeAttrs=IMCAAttrs$nodeAttrs)
 @
 
 One can also simply choose to layout the pathway based on the needs
@@ -218,6 +220,9 @@ nag <- agopen(z, name="nag",
 attrs= list(node=list(color="white",
 fontcolor="white"), edge=list(arrowsize=2.8, minlen=3)))
 nagxy <- getNodeXY( nag )
+@
+
+<<VJCfig, fig=TRUE>>=
 plot( nag )
 text( nagxy, label=nodes(z), cex=.8 )
 @
