@@ -278,6 +278,44 @@ setMethod("bezierPoints", "BezierCurve", function(object) {
     out
 })
 
+    if (is.null(getGeneric("bLines")))
+        setGeneric("bLines", function(x, ...)
+                   standardGeneric("bLines"))
+setMethod("bLines", "BezierCurve", function(x,...,col=par("col"),
+                                                len=0.25, lty=par("lty"),
+                                                lwd=par("lwd"),
+                                                arrowtail="none",
+                                                arrowhead="none") {
+    z <- bezierPoints(x)
+
+        numSegs <- nrow(z)
+        lines(z[2:(numSegs-1),1], z[2:(numSegs-1),2],
+              col=col, lty=lty, lwd=lwd)
+
+        tailStart <- z[2,]
+        tailEnd <- z[1,]
+        switch(arrowtail,
+               "none"=lines(c(tailStart[1], tailEnd[1]),
+                            c(tailStart[2], tailEnd[2]), col=col, lty=lty,
+                            lwd=lwd),
+               "open"=arrows(tailStart[1], tailStart[2], tailEnd[1],
+                             tailEnd[2], col=col, length=len, lty=lty,
+                             lwd=lwd),
+               stop("Unsupported arrowtail type: ", arrowtail))
+
+        headStart <- z[numSegs-1,]
+        headEnd <- z[numSegs,]
+        switch(arrowhead,
+               "none"=lines(c(headStart[1], headEnd[1]),
+                            c(headStart[2], headEnd[2]), col=col, lty=lty,
+                            lwd=lwd),
+               "open"=arrows(headStart[1], headStart[2], headEnd[1],
+                             headEnd[2], col=col, length=len, lty=lty,
+                             lwd=lwd),
+               stop("Unsupported arrowhead type: ", arrowhead))
+
+    })
+
 
 ### CLass xyPoint
 setClass("xyPoint", representation(x="numeric",
@@ -382,38 +420,16 @@ setMethod("labelWidth","AgTextLabel", function(object)
           function(x,...,col=par("col"),len=0.25,lty=par("lty"),
                    lwd=par("lwd"), edgemode="undirected") {
               z <- splines(x)
-              lapply(z,lines,col=col,lty=lty,lwd=lwd,...)
 
-              ## Fill in the gap at the tail of the edge
-              spPoints <- cPoints(z[[1]])
-              curP <- spPoints[[1]]
-              curSp <- sp(x)
-              arrowtail <- arrowtail(x)
-              if (arrowtail == "open")
-                  arrows(getX(curP), getY(curP), getX(curSP),
-                         getY(curSP), col=col, length=len,
-                         lty=lty, lwd=lwd)
-              else
-                  if (arrowtail != "none")
-                      stop("Unsupported arrowtail type: ", arrowtail)
+              arrowtails <- rep("none", length(z))
+              arrowtails[1] <- arrowtail(x)
 
-              browser()
+              arrowheads <- rep("none", length(z))
+              arrowheads[length(z)] <- arrowhead(x)
 
-              ## Fill in the gap at the head of the edge
-              epPoints <- cPoints(z[[length(z)]])
-              curP <- epPoints[[length(epPoints)]]
-              ## get the edge's sp
-              curEP <- ep(x)
-              arrowhead <- arrowhead(x)
-
-              if (arrowhead == "open")
-                  arrows(getX(curP), getY(curP), getX(curEP),
-                         getY(curEP), col=col, length=len,
-                         lty=lty, lwd=lwd)
-              else
-                  if (arrowhead != "none")
-                     stop("Unsupported arrowhead type: ", arrowhead)
-
+              mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
+                     MoreArgs=list(len=len, col=col,
+                     lty=lty, lwd=lwd, ...))
 
               drawTxtLabel(txtLabel(x))
 
