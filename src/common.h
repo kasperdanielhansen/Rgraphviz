@@ -42,7 +42,7 @@ SEXP getEdgeLocs(Agraph_t *,int);
 SEXP Rgraphviz_agset(SEXP, SEXP);
 SEXP Rgraphviz_agread(SEXP);
 SEXP Rgraphviz_agwrite(SEXP, SEXP);
-SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP,
+SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP,
 		      SEXP, SEXP, SEXP);
 SEXP getNodeLayouts(Agraph_t *);
 SEXP buildRagraph(Agraph_t *);
@@ -50,5 +50,5 @@ void checkGraphvizVers(void);
 Agraph_t *dotLayout(Agraph_t *);
 Agraph_t *neatoLayout(Agraph_t *);
 Agraph_t *twopiLayout(Agraph_t *);
-Agraph_t *setDefaultAttrs(Agraph_t *);
+Agraph_t *setDefaultAttrs(Agraph_t *, SEXP);
 #endif

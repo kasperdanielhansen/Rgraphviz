@@ -94,10 +94,8 @@
                  as.character(nodeLabels), as.list(edgeLabels),
                  as.integer(edgeMtrx[,1]), as.integer(edgeMtrx[,2]),
                  as.integer(edgeMtrx[,3]), as.integer(get("edgeSubs",env=arrEnv)),
-                 as.integer(get("nodeSubs",env=arrEnv)), as.character(subGs))
-
-      if ((is.list(attrs))&&(length(attrs)>0))
-          g <- agset(g, attrs)
+                 as.integer(get("nodeSubs",env=arrEnv)),
+                 as.character(subGs), as.list(attrs))
 
       if (layout)
           return(layoutGraph(g,layoutType))
@@ -121,20 +119,6 @@ agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
 
 agwrite <- function(graph, filename) {
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename))
-}
-
-agset <- function(graph, attrs) {
-    if (!is.list(attrs))
-        stop("Malformed attrs argument, must be a list")
-    if (is(graph,"graphNEL"))
-        stop("Please use function agopen() for graphNEL objects")
-    if (laidout(graph) == TRUE)
-        stop("Graph is already laid out")
-    if (!is(graph,"Ragraph"))
-        stop("Object is not of class Ragraph")
-
-    g <- .Call("Rgraphviz_agset", graph, as.list(attrs))
-    return(g)
 }
 
 layoutGraph <- function(graph, layoutType=c("dot","neato","twopi")[1]) {

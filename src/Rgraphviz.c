@@ -130,7 +130,10 @@ SEXP Rgraphviz_agset(SEXP graph, SEXP attrs) {
     /* Lastly do edge-wide */
     PROTECT(elmt = getListElement(attrs, "edge"));
     PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
+    printf("Num elements: %d\n", length(elmt));
     for (i = 0; i < length(elmt); i++) {
+	printf("Testing edge: |%s|, |%s|\n",
+	       CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
 	agedgeattr(g, CHAR(STRING_ELT(attrNames,i)),
 		   STR(VECTOR_ELT(elmt,i)));
     }
@@ -181,7 +184,7 @@ SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
 		      SEXP nodeLabels, SEXP edgeLabels, SEXP from,
 		      SEXP to, SEXP weights, SEXP edgeSubs,
-		      SEXP nodeSubs, SEXP subGs) {
+		      SEXP nodeSubs, SEXP subGs, SEXP attrs) {
     /* Will create a new Agraph_t* object in graphviz and then */
     /* a Ragraph S4 object around it, returning it to R */
     Agraph_t *g, *tmpGraph;
@@ -192,6 +195,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     int ag_k = 0;
     int i, curNode, curLabel;
     int curSubG;
+    char *edgeDir;
     
     if (!isInteger(kind))
 	error("kind must be an integer value");
@@ -218,8 +222,10 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	}
     }
 
+    edgeDir = (char *)malloc(20 * sizeof(char));
+
     /* Set default attributes */
-    g = setDefaultAttrs(g);
+    g = setDefaultAttrs(g,attrs);
 
     /* Get the nodes created */
     for (i = 0; i < length(nodes); i++) {
@@ -280,12 +286,22 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	else {
 	    if (ag_k == AGDIGRAPH) {
 		curEdge = agfindedge(tmpGraph, head, tail);
-		agset(curEdge,"dir","both");
+		edgeDir = agget(curEdge, "dir");
+		if ((strcmp(edgeDir, "forward") == 0)||
+		    (strcmp(edgeDir, "back") == 0)) {
+		    /* Create a new edge */
+		    curEdge = agedge(tmpGraph, tail, head);
+		    curEdge->u.weight = INTEGER(weights)[i];
+		    if (curLabel > -1)
+			agset(curEdge,"label",
+			      CHAR(STRING_ELT(curEdgeLabels, curLabel)));
+		}
 	    }
 	}
 	UNPROTECT(1);
     }
 
+    free(edgeDir);
     return(buildRagraph(g));    
 }
 
@@ -545,33 +561,53 @@ void checkGraphvizVers(void) {
     }
 }
 
-Agraph_t *setDefaultAttrs(Agraph_t *g) {
+Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     /* While attributes have default values already,  */
     /* if we want to dynamically set them, we need */
     /* to have defined defaults manually */
+    int i;
+    SEXP attrNames, elmt;
 
     /* Note that not all defaults are exactly as in normal graphviz */
-
     /*** GRAPH ATTRS ***/
     /* Neato overlap type */
     agraphattr(g, "overlap", "");
     agraphattr(g, "splines", "true");
     agraphattr(g, "model", "");
-
     /*** NODE ATTRS ***/
     agnodeattr(g,"label",NODENAME_ESC);
-
     /*** EDGE ATTRS ***/
-    /* Arrow direction */
-    if (AG_IS_DIRECTED(g)) 
-	agedgeattr(g, "dir", "forward");
-    else
-	agedgeattr(g, "dir", "none");
     agedgeattr(g, "weight", "1.0");
-
     agedgeattr(g, "label", "");
 
-    /* Neato spline type */
+    /* Now set user defined attributes */
+    /* Set the graph level attributes */
+    PROTECT(elmt = getListElement(attrs, "graph"));
+    /* Now elmt is a list of attributes to set */
+    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
+    for (i = 0; i < length(elmt); i++) {
+	agraphattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
+    }
+    
+    UNPROTECT(2);
+
+    /* Now do node-wide */
+    PROTECT(elmt = getListElement(attrs, "node"));
+    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
+    for (i = 0; i < length(elmt); i++) {
+	agnodeattr(g, CHAR(STRING_ELT(attrNames,i)), STR(VECTOR_ELT(elmt,i)));
+    }
+    UNPROTECT(2);
+
+    /* Lastly do edge-wide */
+    PROTECT(elmt = getListElement(attrs, "edge"));
+    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
+    for (i = 0; i < length(elmt); i++) {
+	agedgeattr(g, CHAR(STRING_ELT(attrNames,i)),
+		   STR(VECTOR_ELT(elmt,i)));
+    }
+    UNPROTECT(2);
+
 
     return(g);
 }
