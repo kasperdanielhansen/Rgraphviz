@@ -160,21 +160,25 @@ drawAgNode <- function(node, ur) {
                   fg=fg, bg=bg),
                   stop("Unimplemented shape"))
 
-    drawTxtLabel(txtLabel(node))
+    drawTxtLabel(txtLabel(node), nodeX, nodeY)
     out
 }
 
-drawTxtLabel <- function(txtLabel) {
+drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
     if (!is.null(txtLabel)) {
         loc <- labelLoc(txtLabel)
-        justMod <- switch(labelJust(txtLabel),
-                          "l" = 0,
-                          "n" = -0.5,
-                          "r" = -1)
+        if (missing(xLoc)) {
+            justMod <- switch(labelJust(txtLabel),
+                              "l" = 0,
+                              "n" = -0.5,
+                              "r" = -1)
 
-        xLoc <- getX(loc) + (justMod * labelWidth(txtLabel))
+            xLoc <- getX(loc) + (justMod * labelWidth(txtLabel))
+        }
+        if (missing(yLoc))
+            yLoc <- getY(loc)
 
-        text(xLoc, getY(loc), labelText(txtLabel))
+        text(xLoc, yLoc, labelText(txtLabel))
     }
 }
 

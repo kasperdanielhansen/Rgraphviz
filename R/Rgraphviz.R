@@ -155,8 +155,14 @@ buildEdgeList <- function(graph, edgeAttrs=list(), subGList=list()) {
 
     from <- names(to)
 
-    pEdges <- unlist(mapply(buildPEList, from, to),
-                     recursive=FALSE)
+    ## FIXME: Sometimes the Mapply has a list of lists,
+    ## and sometimes just a list of length unlist(edges(graph))
+    ## In the former case it needs to be unlisted, the latter
+    ## it doesn't.  Why the difference?  NEed to sort this out.
+    pEdges <- mapply(buildPEList, from, to)
+
+    if (! any(unlist(lapply(pEdges, inherits, "pEdge"))))
+        pEdges <- unlist(pEdges, recursive=FALSE)
 
     edgemode <- edgemode(graph)
 
