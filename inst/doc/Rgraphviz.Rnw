@@ -43,16 +43,6 @@ method:
     z <- plot(g1)
 @
 
-Note that this is graph has undirected edges, and due to the way
-\Rpackage{Rgraphviz} works and the way we went about plotting this,
-each single edge is being plotted as two separate undirected edges.
-The reason for this is that the \Robject{graphNEL} class notes an edge
-from node X to node Y and vice versa in the case of an undirected edge
-between nodes X and Y, and \Rpackage{Rgraphviz} will dutifully plot
-every edge it is told exists (and since the graph is 'undirected' they
-both have no arrows).  This is easily remedied, and will be discussed
-in the section 'Setting attributes via node and edge lists'.
-
 The \Rpackage{Rgraphviz} package allows you to specify varying layout
 engines, such as "dot" (the default), "neato", and "twopi".  This can
 be done using the call to \Rfunction{plot}:
@@ -86,7 +76,65 @@ z <- plot(g2,"dot")
 z <- plot(g2,"neato")
 @
 
-\section{Setting attributes via node and edge lists}
+Note that there is an option, \Robject{recipEdges} that details how to
+deal with reciprocated edges in a graph.  The two options are
+\Robject{combined} (the default) and \Robject{distinct}.  This is
+mostly useful in directed graphs that have reciprocating edges - the
+\Robject{combined} option will display them as a single edge with an
+arrow on both ends while \Robject{distinct} shows them as two separate edges.
+
+<<recipEdgesComb, fig=TRUE>>=
+rEG <- new("graphNEL", nodes=c("A", "B"), edgemode="directed")
+rEG <- addEdge("A", "B", rEG, 1)
+rEG <- addEdge("B", "A", rEG, 1)
+
+plot(rEG)
+@
+
+In this first example above, the edges were combined, whereas below
+they are showed separately.
+
+<<recipEdgesSep, fig=TRUE>>=
+plot(rEG, recipEdges="distinct")
+@
+
+\section{SubGraphs}
+
+Rgraphviz supports the ability to define specific clustering of
+nodes.  This will instruct the layout algorithm to attempt to keep the
+clustered nodes close together.  To do this, one must first generate
+the desired set (one or more) of subgraphs with the \Robject{graph}
+object.
+
+<<getSubgraphs>>=
+sg1 <- subGraph(c("a","d","j","i"), g1)
+sg1
+sg2 <- subGraph(c("b","e","h"), g1)
+sg2
+sg3 <- subGraph(c("c","f","g"), g1)
+sg3
+@
+
+To plot using the subgraphs, one must use the \Rfunction{subGList}
+argument which accepts a list of every subgraph.
+
+<<subGplot, fig=TRUE>>=
+plot(g1, subGList=list(sg1, sg2, sg3))
+@
+
+To demonstrate the differences that will appear with different
+subgraph patterns, another example is provided:
+
+<<subGPlot2, fig=TRUE>>=
+sg1 <- subGraph(c("a","c","d","e","j"), g1)
+sg2 <- subGraph(c("f","h","i"), g1)
+plot(g1, subGList=list(sg1, sg2))
+@
+
+\section{Attributes}
+
+\section{The Attributes List}
+
 There are many visualization options in Graphviz that can be set beyond those
 which are given explicit options using Rgraphviz - such as colors of
 nodes and edges, which node to center on for twopi plots, node labels,
@@ -95,96 +143,7 @@ available attributes is accessible online at:
 http://www.research.att.com/~erg/graphviz/info/attrs.html".  (Note
 that there are some differences between default values and also some
 attributes will not have an effect in Rgraphviz.  Please see the man
-page for \Rfunction{graphvizAttributes} for more details).  
-
-In many cases, the user will not want to have the graph rendered
-exactly as represented by the \Rpackage{graph} package.  For
-instance, in the first example it was discussed how undirected graphs
-will plot oddly by default in \Rpackage{Rgraphviz}, and this is
-something that is easily fixed via this method.  The functions
-\Rfunction{buildNodeList} and \Rfunction{buildEdgeList} will generate
-a list of \Robject{pNode} and \Robject{pEdge} objects respectively.
-These are used to provide the information for the actual Graphviz
-layout (and by default are generated automatically).  By generating
-these manually before the layout, one can edit these objects and
-perform the layout with these edited lists.
-
-For example:
-
-<<getLists>>=
-nodes <- buildNodeList(g1)
-edges <- buildEdgeList(g1)
-nodes[[1]]
-edges[[1]]
-@
-
-You can now see the contents of the first \Robject{pNode} and first
-\Robject{pEdge} objects in their respective lists.  Now, to
-demonstrate some simple attribute examples such as node and edge
-color, perhaps we'd like to have the "c" node be blue and the between
-"a" and "b" to be colored green, we can set it up as such:
-
-<<colorLists>>=
-nodes$"c"@attrs$fillcolor <- "blue"
-nodes$"c"
-edges$"a~b"@attrs$color <- "green"
-edges$"a~b"
-@
-
-You can see that the \Robject{attrs} slot now has a 'color' element to
-it.  To remove the double edges, we need to make sure that we are only
-reporting one of the two edges representing each proper edge and need
-to remove the reciprocated edge from the edge list.
-
-<<removeDoubles>>=
-for (i in c("d~a", "b~a", "e~a", "h~a", "c~h", "h~b", "h~f", "f~e",
-            "e~d", "d~b", "d~f", "d~h", "e~h", "b~e", "b~f", "f~a"))
-    edges[[i]] <- NULL
-@
-
-It does not matter which edge you remove, however take note that if we
-had just removed edge "a~b" we'd have lost the green edge as the "b~a"
-edge was not colored in the example above.  To plot this graph, one
-needs to perform a layout with \Rfunction{agopen} and then plot the
-resulting \Robject{Ragraph} object:
-
-<<plotListGraph1, fig=TRUE>>=
-  vv <- agopen(name="test1", nodes=nodes, edges=edges,
-               edgeMode="undirected")
-  plot(vv)
-@
-
-In many of the remaining examples of this document, we will be
-removing the double edges.
-
-Note that the name argument is required by Graphviz but is not
-currently used for anything in \Rpackage{Rgraphviz}.  The edgeMode
-argument is required in this case because Graphviz needs to know if
-this graph is directed or not and \Rpackage{Rgraphviz} can't
-necessarily determine the status of the graph from the node and edge
-lists.  One could suggest to look at the arrowhead/tails (or lack
-thereof) and derive it that way, but the arrowhead/tails are
-completely independent from the edgemode of the graph:
-
-<<addArrows, fig=TRUE>>=
-edges$"a~e"@attrs$arrowhead <- "open"
-edges$"a~h"@attrs$arrowhead <- "open"
-edges$"a~h"@attrs$arrowtail <- "open"
-vv <- agopen(name="test1", nodes=nodes, edges=edges,
-               edgeMode="undirected")
-plot(vv) 
-@
-
-Here we've added our own arrowheads to the a~e and a~h edges as well
-as added an arrowtail to the graph - while visually indicating
-direction, these will have no bearing on the layout itself as Graphviz
-will view these edges as undirected.  This same technique can be used
-in the case where a directed graph has reciprocated edges and one
-wants to combine those edges into single edges with arrows in both
-directions.
-
-
-\section{The Attributes List}
+page for \Rfunction{graphvizAttributes} for more details)
 
 Attributes can be set both globally (for the entire graph, for all
 edges, all nodes, etc) as well as on a per-node and per-edge basis.
@@ -250,9 +209,6 @@ eAttrs
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 @
 
-Note that using an attribute list is functionally equivalent to the
-node and edge lists presented in the previous section.
-
 \section{Adding Some Color}
 
 There are many areas where color can be specified to the plotted
@@ -281,46 +237,75 @@ eAttrs
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs)
 @
 
-\section{SubGraphs}
+\section{Setting attributes via node and edge lists}
 
-Rgraphviz supports the ability to define specific clustering of
-nodes.  This will instruct the layout algorithm to attempt to keep the
-clustered nodes close together.  To do this, one must first generate
-the desired set (one or more) of subgraphs with the \Robject{graph}
-object.
+The user can take a different direction in setting up attributes and
+laying out the graph then the one presented above.  The following
+method can be used to replicate exactly the same sorts of behaviour
+described above, but can be more flexible in some other cases. The functions
+\Rfunction{buildNodeList} and \Rfunction{buildEdgeList} will generate
+a list of \Robject{pNode} and \Robject{pEdge} objects respectively.
+These are used to provide the information for the actual Graphviz
+layout (and by default are generated automatically).  By generating
+these manually before the layout, one can edit these objects and
+perform the layout with these edited lists.
 
-<<getSubgraphs>>=
-sg1 <- subGraph(c("a","d","j","i"), g1)
-sg1
-sg2 <- subGraph(c("b","e","h"), g1)
-sg2
-sg3 <- subGraph(c("c","f","g"), g1)
-sg3
-@
+For example:
 
-To plot using the subgraphs, one must use the \Rfunction{subGList}
-argument which accepts a list of every subgraph.
-
-<<subGplot, fig=TRUE>>=
+<<getLists>>=
+nodes <- buildNodeList(g1)
 edges <- buildEdgeList(g1)
-for (i in c("d~a", "b~a", "e~a", "h~a", "c~h", "h~b", "h~f", "f~e",
-            "e~d", "d~b", "d~f", "d~h", "e~h", "b~e", "b~f", "f~a"))
-    edges[[i]] <- NULL
-
-sgLayout1 <- agopen(g1, "testSG1", edges=edges, subGList=list(sg1, sg2, sg3))
-plot(sgLayout1)
+nodes[[1]]
+edges[[1]]
 @
 
-To demonstrate the differences that will appear with different
-subgraph patterns, another example is provided:
+You can now see the contents of the first \Robject{pNode} and first
+\Robject{pEdge} objects in their respective lists.  Now, to
+demonstrate some simple attribute examples such as node and edge
+color, perhaps we'd like to have the "c" node be blue and the between
+"a" and "b" to be colored green, we can set it up as such:
 
-<<subGPlot2, fig=TRUE>>=
-sg1 <- subGraph(c("a","c","d","e","j"), g1)
-sg2 <- subGraph(c("f","h","i"), g1)
-sgLayout2 <- agopen(g1, "testSG2", edges=edges, subGList=list(sg1, sg2))
-plot(sgLayout2)
+<<colorLists>>=
+nodes$"c"@attrs$fillcolor <- "blue"
+nodes$"c"
+edges$"a~b"@attrs$color <- "green"
+edges$"a~b"
 @
 
+You can see that the \Robject{attrs} slot now has a 'color' element to
+it.  
+
+<<plotListGraph1, fig=TRUE>>=
+  vv <- agopen(name="test1", nodes=nodes, edges=edges,
+               edgeMode="undirected")
+  plot(vv)
+@
+
+Note that the name argument is required by Graphviz but is not
+currently used for anything in \Rpackage{Rgraphviz}.  The edgeMode
+argument is required in this case because Graphviz needs to know if
+this graph is directed or not and \Rpackage{Rgraphviz} can't
+necessarily determine the status of the graph from the node and edge
+lists.  One could suggest to look at the arrowhead/tails (or lack
+thereof) and derive it that way, but the arrowhead/tails are
+completely independent from the edgemode of the graph:
+
+<<addArrows, fig=TRUE>>=
+edges$"a~e"@attrs$arrowhead <- "open"
+edges$"a~h"@attrs$arrowhead <- "open"
+edges$"a~h"@attrs$arrowtail <- "open"
+vv <- agopen(name="test1", nodes=nodes, edges=edges,
+               edgeMode="undirected")
+plot(vv) 
+@
+
+Here we've added our own arrowheads to the a~e and a~h edges as well
+as added an arrowtail to the graph - while visually indicating
+direction, these will have no bearing on the layout itself as Graphviz
+will view these edges as undirected.  This same technique can be used
+in the case where a directed graph has reciprocated edges and one
+wants to combine those edges into single edges with arrows in both
+directions.
 
 \section{Plotting with non-standard nodes}
 
@@ -357,6 +342,7 @@ exprSet and draw each node with a pie chart representing the
 expression levels of the samples in the exprSet for that probe.
 
 <<pieChart, fig=TRUE>>=
+
 require("Biobase") || stop("Biobase needed for this example")
 data(eset)
 
@@ -367,19 +353,8 @@ probes <- rownames(exprs)
 set.seed(123)
 pieGraph <- randomGraph(probes, 1:4, .2)
 
-pgEdges <- buildEdgeList(pieGraph)
-for (i in c("31339_at~31340_at", "31339_at~31342_at",
-	    "31339_at~31343_at", "31339_at~31344_at",
-	    "31339_at~31346_at", "31340_at~31344_at",
-	    "31340_at~31342_at", "31340_at~31343_at",
-            "31340_at~31346_at", "31341_at~31346_at", 
-	    "31342_at~31343_at", "31342_at~31344_at",
-	    "31342_at~31346_at", "31343_at~31344_at",
-            "31343_at~31346_at", "31344_at~31346_at"))
-    pgEdges[[i]] <- NULL
-
 ## Do a layout of the graph, but don't plot it yet
-pgLayout <- agopen(pieGraph, "foo", edges=pgEdges)
+pgLayout <- agopen(pieGraph, "foo")
 
 counts <-  apply(exprs, 1, function(x) {
               table(cut(x, breaks=c(-Inf, 100, 500, Inf)))
