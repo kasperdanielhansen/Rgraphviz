@@ -11,6 +11,7 @@
 
 #include <Rinternals.h>
 #include <Rdefines.h>
+#include <Rmath.h>
 #include <R_ext/RConverters.h>
 #include <R_ext/Rdynload.h>
 #ifndef WIN32
