@@ -55,7 +55,6 @@ layoutGraph <- function(graph, layoutType=c("dot","neato","twopi")[1]) {
 
     if (laidout(graph) == FALSE) {
         z <- .Call("Rgraphviz_doLayout", graph, as.integer(type));
-        print("test2")
         return(z)
     }
     else {
