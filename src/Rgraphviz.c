@@ -503,19 +503,8 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     return(outList);
 }
 
-void checkGraphvizVers(void) {
-    char *out;
-    int ret;
-
-    /* Compare the current version, Info[1] w/ MINGRAPHVIZVER */
-    /* Throw an error if it isn't at least equal to min ver */
-    ret = strcmp(Info[1], MINGRAPHVIZVER);
-    if (ret < 0) {
-	out = (char *)R_alloc(100+strlen(MINGRAPHVIZVER),sizeof(char));
-	sprintf(out,
-		"Your graphviz installation is out of date, please use version %s or newer", MINGRAPHVIZVER);
-	error(out);
-    }
+SEXP Rgraphviz_graphvizVersion(void) {
+    return(R_scalarString(Info[1]));
 }
 
 Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {

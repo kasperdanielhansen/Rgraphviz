@@ -10,7 +10,7 @@ static const R_CallMethodDef R_CallDef[] = {
     {"getBoundBox", (DL_FUNC)&getBoundBox, 1},
     {"getNodeLayouts", (DL_FUNC)&getNodeLayouts, 1},
     {"getEdgeLocs", (DL_FUNC)&getEdgeLocs, 2},
-    {"checkGraphvizVers", (DL_FUNC)&checkGraphvizVers, 0},
+    {"Rgraphviz_graphvizVersion", (DL_FUNC)&Rgraphviz_graphvizVersion, 0},
     {"setDefaultAttrs", (DL_FUNC)&setDefaultAttrs, 1},
     {NULL, NULL, 0},
 };
