@@ -67,12 +67,6 @@ setMethod("getNodeXY", "Ragraph",  function(object) {
     out
 })
 
-setMethod("getNodeXY", "AgNode", function(object) {
-    cen <- getNodeCenter(object)
-    out <- list(x=getX(cen), y=getY(cen))
-    out
-})
-
 
 getNodeNames <- function(object) {
     if (!is(object, "Ragraph"))
@@ -198,6 +192,11 @@ if (is.null(getGeneric("txtLabel")))
 setMethod("txtLabel", "AgNode", function(object)
           object@txtLabel)
 
+setMethod("getNodeXY", "AgNode", function(object) {
+    cen <- getNodeCenter(object)
+    out <- list(x=getX(cen), y=getY(cen))
+    out
+})
 
 ### Class AgEdge
 

@@ -388,7 +388,7 @@ argument to \Rfunction{plot} to define how the nodes are drawn.  This
 argument can be either of length one (in which case all nodes are
 drawn with it) or a list of length equal to the number of nodes in the
 graph (in which case the first element of the list is used to draw the
-first node, etc).  To work correctly, the function will take three
+first node, etc).  To work correctly, the function will take four
 arguments - the first \Robject{node} is an object of class
 \Robject{AgNode}, which describes the node's location and other
 information and the second parameter, \Robject{ur} is of class
@@ -396,8 +396,11 @@ information and the second parameter, \Robject{ur} is of class
 bounding box (where the lower left is 0,0).  The third parameter,
 \Robject{attrs}, is a node attribute list as discussed in the
 "Attributes" section and represents post-layout attribute changes
-where the user wants to override values present in the layout.  A
-custom drawing function is free to ignore these values, but the
+where the user wants to override values present in the layout.  
+The fourth argument, \Robject{radConv} is used by \Rpackage{Rgraphviz}
+to convert Graphviz units to R plotting units.  This argument will
+probably not need to be specified by any custom drawing function, but
+does need to exist.   A custom drawing function is free to ignore these values, but the
 argument must exist in the function declaration to at least accept the
 value being passed in.  The default function for node drawing on all
 nodes is \Rfunction{drawAgNode}, so if one wants to use a custom

@@ -90,9 +90,9 @@ agwrite <- function(graph, filename) {
 }
 
 layoutGraph <- function(graph) {
-    if (inherits(graph,"graphNEL"))
+    if (is(graph,"graphNEL"))
         stop("Please use function agopen() for graphNEL objects")
-    if (!inherits(graph,"Ragraph"))
+    if (!is(graph,"Ragraph"))
         stop("Object is not of class Ragraph")
 
     type <- switch(layoutType(graph),
@@ -183,6 +183,15 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     }
 
 
+    edgeNames <- edgeNames(graph, "distinct")
+
+    ## Make sure that het attributes in the vectors of the
+    ## list elements are in the same order as the edgenames
+    edgeAttrs <- lapply(edgeAttrs, function(x) {
+        out <- x[edgeNames];
+        out[!is.na(out)]
+    })
+
     edgemode <- edgemode(graph)
 
     to <- edges(graph)
@@ -198,13 +207,12 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     ## and sometimes just a list of length unlist(edges(graph))
     ## In the former case it needs to be unlisted, the latter
     ## it doesn't.  Why the difference?  Need to sort this out.
-    if (! any(unlist(lapply(pEdges, inherits, "pEdge"))))
+    if (! any(unlist(lapply(pEdges, is, "pEdge"))))
         pEdges <- unlist(pEdges, recursive=FALSE)
 
     ## Even if recipEdges is 'combined', it saves a lot of work
     ## when trying to figure out the arrowtail stuff if all of
     ## the pEdge objects are named.
-    edgeNames <- edgeNames(graph, "distinct")
     names(pEdges) <- edgeNames
 
     if (recipEdges == "combined") {
@@ -240,11 +248,30 @@ assignAttrs <- function(attrList, objList, defAttrs) {
         return(objList)
 
     attrNames <- names(attrList)
+
     defAttrs <- defAttrs[attrNames]
+
+
     ## If there's no default, the requested attr won't work
     ## anyways, and this can currently only cause problems,
     ## so weed them out
-    defAttrs <- defAttrs[!is.na(names(defAttrs))]
+    defAttrs <- defAttrs[!sapply(defAttrs, is.null)]
+
+    ## If there are no defaults provided, every specified
+    ## attribute must be of length 'n', where 'n' is the length
+    ## of the objList
+    if (length(defAttrs) == 0) {
+        lens <- sapply(attrList, length)
+        oLen <- length(objList)
+        bad <- which(lens != oLen)
+        out <- paste("Attribute", attrNames[bad],
+                     "has no default and is not specified for all objects.",
+                     collapse="\n")
+        warning(out)
+        attrList <- attrList[!bad]
+        if (length(attrList) == 0)
+            return(objList)
+    }
 
     ## Create a list containing all of the default values
     attrs <- lapply(defAttrs, function(x, y) {
