@@ -7,6 +7,11 @@
 \alias{nodes}
 \alias{boundBox}
 \alias{getNodeLocs}
+\alias{AgEdge,Ragraph-method}
+\alias{agraph,Ragraph-method}
+\alias{boundBox,Ragraph-method}
+\alias{getNodeLocs,Ragraph-method}
+\alias{laidout,Ragraph-method}
 \title{Class "Ragraph": A class to handle libgraph representations}
 \description{Class \code{Ragraph} is used to handle libgraph
   representations of R graph objects.}

@@ -5,6 +5,9 @@
 \alias{getX}
 \alias{getY}
 \alias{getPoints}
+\alias{getPoints,xyPoint-method}
+\alias{getX,xyPoint-method}
+\alias{getY,xyPoint-method}
 \title{Class "xyPoint": A class to represent a X/Y coordinate.}
 \description{This class is used to describe a coordinate in
   2-dimensional (X/Y) space}
