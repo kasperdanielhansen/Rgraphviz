@@ -127,10 +127,12 @@
                    standardGeneric("AgEdge"), where=where)
     ## !!! Will want to include edgeID here
     setClass("AgEdge", representation(splines="list",
-                                          startArrow="logical",
-                                          endArrow="logical",
-                                          sp="xyPoint",
-                                          ep="xyPoint"))
+                                      startArrow="logical",
+                                      endArrow="logical",
+                                      sp="xyPoint",
+                                      ep="xyPoint",
+                                      head="character",
+                                      tail="character"))
 
     if (is.null(getGeneric("splines")))
         setGeneric("splines", function(object)
@@ -159,6 +161,18 @@
                    standardGeneric("ep"), where=where)
     setMethod("ep", "AgEdge", function(object)
               object@ep, where=where)
+
+    if (is.null(getGeneric("head")))
+        setGeneric("head", function(object,...)
+                   standardGeneric("head"), where=where)
+    setMethod("head", "AgEdge", function(object, ...)
+              object@head, where=where)
+
+    if (is.null(getGeneric("tail")))
+        setGeneric("tail", function(object, ...)
+                   standardGeneric("tail"), where=where)
+    setMethod("tail", "AgEdge", function(object, ...)
+              object@tail, where=where)
 
 
     if (is.null(getGeneric("numSplines")))

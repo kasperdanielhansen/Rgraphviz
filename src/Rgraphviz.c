@@ -21,6 +21,18 @@ R_scalarLogical(Rboolean v)
   return(ans);
 }
 
+SEXP 
+R_scalarString(const char *v)
+{
+  SEXP ans = allocVector(STRSXP, 1);
+  PROTECT(ans);
+  if(v)
+    SET_STRING_ELT(ans, 0, mkChar(v));
+  UNPROTECT(1);
+  return(ans);
+}
+
+
 SEXP getListElement(SEXP list, char *str) {
     SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol);
     int i;
@@ -144,22 +156,19 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 
     /* Get the nodes created */
     for (i = 0; i < length(nodes); i++) {
-/*	tmp = agnode(g, CHAR(STRING_ELT(nodes,i))); */
-	tmp = agnode(g, CHAR(STRING_ELT(nodeLabels,i)));
-/*	agset(tmp, "label", CHAR(STRING_ELT(nodeLabels,i)));
-	printf("Setting label to |%s|\n", CHAR(STRING_ELT(nodeLabels,i)));
-*/
+	tmp = agnode(g, CHAR(STRING_ELT(nodes,i))); 
+ 	agset(tmp, "label", CHAR(STRING_ELT(nodeLabels,i)));
     }
 
     /* now fill in the edges */
     for (i = 0; i < length(from); i++) {
 	curNode = INTEGER(from)[i];
-	tail = agfindnode(g, CHAR(STRING_ELT(nodeLabels,curNode-1)));
+	tail = agfindnode(g, CHAR(STRING_ELT(nodes,curNode-1)));
 	if (tail == NULL)
 	    error("Missing tail node");
 	/* Get weights for these edges */
 	curNode = INTEGER(to)[i];
-	head = agfindnode(g,CHAR(STRING_ELT(nodeLabels,curNode-1)));
+	head = agfindnode(g,CHAR(STRING_ELT(nodes,curNode-1)));
 	if (head == NULL)
 	    error("Missing head node");
 	
@@ -301,7 +310,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     SEXP outList, curCP, curEP, pntList, pntSet, curXY;
     SEXP epClass, cpClass, xyClass;
-    Agnode_t *node;
+    Agnode_t *node, *head;
     Agedge_t *edge;
     bezier bez;
     int nodes;
@@ -365,6 +374,12 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		     R_scalarInteger(bez.ep.y));
 	    SET_SLOT(curEP, Rf_install("ep"), curXY);
 	    UNPROTECT(1);	    
+
+	    SET_SLOT(curEP, Rf_install("tail"), 
+		     R_scalarString(node->name));
+	    head = edge->head;
+	    SET_SLOT(curEP, Rf_install("head"),
+		     R_scalarString(head->name));
 	
 	    SET_ELEMENT(outList, curEle++, curEP);
 	    UNPROTECT(2);
@@ -406,9 +421,10 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
     agraphattr(g, "model", "");
 
     /*** NODE ATTRS ***/
+    agnodeattr(g,"label",NODENAME_ESC);
 /*    agnodeattr(g, "height", "0.71");
-    agnodeattr(g, "width", "2.83");
-    agnodeattr(g, "fixedsize", "true");
+     agnodeattr(g, "width", "2.83");
+     agnodeattr(g, "fixedsize", "true");
 */
     /*** EDGE ATTRS ***/
     /* Arrow direction */
