@@ -160,6 +160,8 @@ buildEdgeList <- function(graph, edgeAttrs=list(), subGList) {
     pEdges <- unlist(mapply(buildPEList, from, to),
                      recursive=FALSE)
 
+    edgemode <- edgemode(graph)
+
     edgeNames <- unlist(lapply(pEdges, function(x) {
         paste(from(x), to(x), sep="~")}))
     names(pEdges) <- edgeNames
@@ -188,6 +190,20 @@ buildEdgeList <- function(graph, edgeAttrs=list(), subGList) {
             if (!is.na(curVal))
                 curAttrs[[ attrNames[j] ]] <- as.character(curVal)
         }
+
+        ## Since we're using the arrowhead/arrowtail
+        ## to specify if arrows are beign drawn or not,
+        ## the default relies on the edgemode
+        if (is.null(curAttrs$arrowtail))
+            curAttrs$arrowtail <- "none"
+        if (is.null(curAttrs$arrowhead)) {
+            if (edgemode == "directed") {
+                curAttrs$arrowhead <- "normal"
+            } else {
+                curAttrs$arrowhead <- "none"
+            }
+        }
+
         ## FIXME: Need replace method
         pEdges[[i]]@attrs <- curAttrs
     }

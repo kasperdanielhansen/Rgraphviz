@@ -188,7 +188,21 @@ setClass("AgEdge", representation(splines="list",
                                   ep="xyPoint",
                                   head="character",
                                   tail="character",
+                                  arrowhead="character",
+                                  arrowtail="character",
                                   txtLabel="AgTextLabel"))
+
+if (is.null(getGeneric("arrowhead")))
+    setGeneric("arrowhead", function(object)
+               standardGeneric("arrowhead"))
+setMethod("arrowhead", "AgEdge", function(object)
+          object@arrowhead)
+
+if (is.null(getGeneric("arrowtail")))
+    setGeneric("arrowtail", function(object)
+               standardGeneric("arrowtail"))
+setMethod("arrowtail", "AgEdge", function(object)
+          object@arrowtail)
 
 if (is.null(getGeneric("txtLabel")))
     setGeneric("txtLabel", function(object)
@@ -386,36 +400,35 @@ setMethod("AgNode", "Ragraph", function(object)
               z <- splines(x)
               lapply(z,lines,col=col,lty=lty,lwd=lwd,...)
 
-              ## Fill in the gap at the start of the edge
+              ## Fill in the gap at the tail of the edge
               spPoints <- cPoints(z[[1]])
               curP <- spPoints[[1]]
               curSp <- sp(x)
-              lines(c(getX(curP), getX(curSp)),
-                    c(getY(curP), getY(curSp)),
-                    col=col, lty=lty, lwd=lwd)
+              arrowtail <- arrowtail(x)
+              if (arrowtail == "normal")
+                  arrows(getX(curP), getY(curP), getX(curSP),
+                         getY(curSP), col=col, length=len,
+                         lty=lty, lwd=lwd)
+              else
+                  if (arrowtail != "none")
+                      stop("Unsupported arrowtail type: ", arrowtail)
 
-              ## Fill in the gap at the end of the edge, either
-              ## arrow or line
-              if (edgemode == "directed") {
-                  ## get the last point of the last spline
-                  epPoints <- cPoints(z[[length(z)]])
-                  curP <- epPoints[[length(epPoints)]]
-                  ## get the edge's sp
-                  curEP <- ep(x)
+
+              ## Fill in the gap at the head of the edge
+              epPoints <- cPoints(z[[length(z)]])
+              curP <- epPoints[[length(epPoints)]]
+              ## get the edge's sp
+              curEP <- ep(x)
+              arrowhead <- arrowhead(x)
+
+              if (arrowhead == "normal")
                   arrows(getX(curP), getY(curP), getX(curEP),
                          getY(curEP), col=col, length=len,
                          lty=lty, lwd=lwd)
-              }
-              else {
-                  ## Fill in the blank space as Graphviz thinks an
-                  ## arrowhead is coming here
-                  epPoints <- cPoints(z[[length(z)]])
-                  curP <- epPoints[[length(epPoints)]]
-                  curEP <- ep(x)
-                  lines(c(getX(curP),getX(curEP)),
-                        c(getY(curP),getY(curEP)), col=col,
-                        lty=lty, lwd=lwd)
-              }
+              else
+                  if (arrowhead != "none")
+                     stop("Unsupported arrowhead type: ", arrowhead)
+
 
               drawTxtLabel(txtLabel(x))
 
@@ -423,7 +436,6 @@ setMethod("AgNode", "Ragraph", function(object)
           })
 
 }
-
 
 
 bezier <- function(pnts, n, t) {
