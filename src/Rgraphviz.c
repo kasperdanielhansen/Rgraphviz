@@ -400,6 +400,9 @@ Agraph_t *setDefaultAttrs(Agraph_t *g) {
 
     /*** NODE ATTRS ***/
     agnodeattr(g,"shape","circle");
+    agnodeattr(g,"fixedsize","true");
+    /* We're handling the labels ourselves */
+    agnodeattr(g, "label","");
 
     /*** EDGE ATTRS ***/
     /* Arrow direction */
