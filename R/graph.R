@@ -71,7 +71,7 @@ weightLabels <- function(object) {
               function(x, y, ...,
                        attrs, xlab="", ylab="",
                        nodeCols=character(), textCols=character(),
-                       edgeCols=list(), newPlot=TRUE){
+                       edgeCols=list(), drawNode=drawAgNode, newPlot=TRUE){
 
                   ## If this is a new plot, we need to call 'plot.new'
                   ## Otherwise we should not because we were most
@@ -113,17 +113,34 @@ weightLabels <- function(object) {
                       ## !! Also still hardcoding 'type'
                       plot.xy(xy, type="n", ...)
 
-                      rad <- min(unlist(lapply(AgNode(x), drawAgNode, ur)))
+                      if (length(drawNode) == 1)
+                          rad <- min(unlist(lapply(AgNode(x), drawAgNode, ur)))
+                      else if (length(drawNode) == nNodes) {
+                          nodes <- AgNode(x)
+                          rad <- numeric()
+                          for (i in 1:nNodes) {
+                              curDrawFun <- drawNode[[i]]
+                              rad <- c(rad,curDrawFun(nodes[[i]],
+                                                      ur=ur))
+                          }
+                          rad <- min(rad)
+                      }
+                      else
+                          stop("Length of the drawNode parameter",
+                               " must be either length 1 or the",
+                               " number of nodes.")
 
                       ## Plot the edges
-                      q <- lapply(AgEdge(x), function(x, rad, edgemode) {
+                      q <- lapply(AgEdge(x), function(x, rad,
+                                                      edgemode, ur) {
                           ## See if there's a specified edgeCol for this
                           if (!is(x,"AgEdge"))
                               stop(paste("Class:",class("AgEdge")))
+                          rad <- convertRadius(rad, ur)
                           tail <- tail(x)
                           head <- head(x)
                           lines(x, len=(rad / 3), edgemode=edgemode)
-                      }, rad, edgemode(x))
+                      }, rad, edgemode(x), ur)
                   }
                   else {
                       stop("No nodes in graph")
@@ -134,13 +151,13 @@ weightLabels <- function(object) {
 }
 
 drawAgNode <- function(node, ur) {
-
-    ## First get X/Y
+## First get X/Y
     nodeCenter <- getNodeCenter(node)
     nodeX <- getX(nodeCenter)
     nodeY <- getY(nodeCenter)
 
-    rad <- getNodeRW(node)
+    rw <- getNodeRW(node)
+    lw <- getNodeLW(node)
     height <- getNodeHeight(node)
 
     fg <- color(node)
@@ -148,14 +165,19 @@ drawAgNode <- function(node, ur) {
 
     shape <- shape(node)
 
-    out <- switch(shape,
-                  "circle"=drawCircleNode(nodeX, nodeY, ur, rad, fg, bg),
-                  "ellipse"=ellipse(nodeX, nodeY, height=height, width=rad*2,
-                  fg=fg, bg=bg),
-                  stop("Unimplemented shape"))
+    switch(shape,
+           "circle"=drawCircleNode(nodeX, nodeY, ur, rw, fg, bg),
+           "ellipse"=ellipse(nodeX, nodeY, height=height, width=rw*2,
+           fg=fg, bg=bg),
+           "box",
+           "rect",
+           "rectangle"=rect(nodeX-lw, nodeY-(height/2), nodeX+rw,
+                            nodeY+(height/2), col=bg, bofder=fg),
+           stop("Unimplemented shape"))
 
     drawTxtLabel(txtLabel(node), nodeX, nodeY)
-    out
+
+    rw
 }
 
 drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
@@ -176,11 +198,11 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
     }
 }
 
-
-drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
+convertRadius <- function(rad, ur) {
     outX <- getX(ur)
     outY <- getY(ur)
     outLim <- max(outY, outX)
+
     pin <- par("pin")
     if (pin[1] == pin[2]) {
         ## Here we have a square plotting region
@@ -194,10 +216,18 @@ drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
         conv <- outY/pin[2]
     }
 
-    rad <- rad/conv
-
-    symbols(nodeX, nodeY, circles=rad, inches=max(rad),
-            fg=fg, bg=bg,add=TRUE)
-    rad
+    rad/conv
 }
 
+drawCircleNode <- function(nodeX, nodeY, ur, rad, fg, bg) {
+
+    rad <- convertRadius(rad, ur)
+
+    invisible(symbols(nodeX, nodeY, circles=rad, inches=max(rad),
+                      fg=fg, bg=bg,add=TRUE))
+##    rad
+}
+
+
+##    pieGlyph(rep(1,8), nodeX, nodeY, col=rainbow(8), radius=rad)
+##    rad/conv
