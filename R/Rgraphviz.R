@@ -47,6 +47,10 @@ agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
         return(g)
 }
 
+agwrite <- function(graph, filename) {
+    g <- .Call("Rgraphviz_agwrite", graph, as.character(filename))
+}
+
 agset <- function(graph, attrs) {
     if (!is.list(attrs))
         stop("Malformed attrs argument, must be a list")
@@ -76,6 +80,7 @@ layoutGraph <- function(graph, layoutType=c("dot","neato","twopi")[1]) {
 
     if (laidout(graph) == FALSE) {
         z <- .Call("Rgraphviz_doLayout", graph, as.integer(type));
+        print("Done layout, back in R")
         return(z)
     }
     else {
