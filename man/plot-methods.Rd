@@ -10,10 +10,10 @@
 }
 \section{Usage}{
   \code{'graph': plot(x, y, ..., subGList=list(), attrs=getDefaultAttrs(y),
-    nodeAttrs=list(), edgeAttrs=list(), xlab="", ylab="")}
+    nodeAttrs=list(), edgeAttrs=list(), xlab="", ylab="", main=NULL, sub=sub)}
 
-  \code{'Ragraph': plot(x, y, ..., attrs, xlab="", ylab="", drawNode=drawAgNode,
-        newPlot=TRUE)}
+  \code{'Ragraph': plot(x, y, ..., attrs, xlab="", ylab="", main=NULL,
+    sub=sub, drawNode=drawAgNode, newPlot=TRUE)}
 }
 \section{arguments}{
   \item{x}{The \code{graph} object to plot}
@@ -27,6 +27,8 @@
   \item{edgeAttrs}{A list of attributes for specific edges}
   \item{xlab}{Label for the x axis of the plot}
   \item{ylab}{Label for the y axis of the plot}
+  \item{main}{Main label for the plot}
+  \item{sub}{Subtitle for the plot}
   \item{drawNode}{Function to draw the nodes.  The default is
     \code{\link{drawAgNode}}}
   \item{newPlot}{Whether or not this is a new plot.  When
