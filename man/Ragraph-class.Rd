@@ -4,7 +4,8 @@
 \alias{Ragraph}
 \alias{laidout}
 \alias{agraph}
-\alias{nodeLocs}
+\alias{nodes}
+\alias{boundBox}
 \title{Class "Ragraph": A class to handle libgraph representations}
 \description{Class \code{Ragraph} is used to handle libgraph
   representations of R graph objects.}

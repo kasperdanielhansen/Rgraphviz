@@ -5,14 +5,6 @@
     .initBezierCurve(where)
     .initBoundingBox(where)
     .initXYPoint(where)
-
-    .initRgraphvizPlot(where)
-}
-
-.initRgraphvizPlot <- function(where) {
-    setClass("RgraphvizPlot", representation(), where=where)
-
-
 }
 
 .initRagraph <- function(where) {
@@ -266,17 +258,6 @@
                      collapse=" ")
         print(out)
     }, where=where)
-}
-
-arrows.BezierCurve <- function(x,...) {
-    ## Draws lines on all but the final segment
-    z <- bezierPoints(x)
-    zLen <- nrow(z)
-    if (zLen > 2) {
-        a <- z[1:zLen-1,,drop=FALSE]
-        lines(a[,1],a[,2])
-    }
-    arrows(z[zLen-1,1],z[zLen-1,2],z[zLen,1],z[zLen,2])
 }
 
 .initXYPoint <- function(where) {
