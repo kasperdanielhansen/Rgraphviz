@@ -18,9 +18,14 @@ agopen(graph, name, kind = 0)
 \details{
   \code{graph} is from the package \link{graph}.
 
-  The \code{kind} attribute can be one of: AGRAPH, AGRAPHSTRICT, AGDIGRAPH,
-  or AGDIGRAPHSTRICT.  Strict graphs cannot have  self-arcs  or
-  multi-edges.
+  The kind parameter works as follows:
+  0 - An undirected graph
+  1 - A directed graph
+  2 - A strict undirected graph
+  3 - A strict directed graph
+
+  Strict graphs do not allow self arcs or multi-edges.
+
 }
 \value{
   An external reference to the libgraph representation.

@@ -10,9 +10,15 @@ agopen <- function(graph, name, kind=0) {
     return(g)
 }
 
-graph2ps <- function(graph, fileName="graph.ps") {
+libgraph2ps <- function(graph, fileName="graph.ps") {
     .Call("Rgraphviz_graph2ps",graph,as.character(fileName))
 }
+
+graph2ps <- function(graph, name, kind=0, fileName="graph.ps") {
+    g <- agopen(graph, name, kind)
+    libgraph2ps(g,fileName)
+}
+
 
 ##dotLayout <- function(g) {
 ##    g <- .Call("Rgraphviz_dotLayout", g)

@@ -71,7 +71,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nelist,
     SEXP graphRef, elmt, names, curWeight, weightVals, weightNames;
     int ag_k = 0;
     int i,j;
- 
+
     if (!isInteger(kind))
 	error("kind must be an integer value");
     else
