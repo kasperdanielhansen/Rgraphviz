@@ -164,7 +164,6 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
         weights <- as.character(weights)
         names(weights) <- wtNames
 
-        ## FIXME: Make these mapply and feed in the weights
         if (edgemode == "directed")
             mapply(function(z, w) {new("pEdge", from=as.character(x),
                                        to=as.character(z),
