@@ -169,8 +169,6 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	if (!isInteger(layoutType))
 	    error("layoutType must be an integer value");
 	else {
-	    printf("Switching on type\n");
-	    fflush(stdout);
 	    switch(INTEGER(layoutType)[0]) {
 	    case DOTLAYOUT:
 		g = dotLayout(g);
@@ -185,8 +183,6 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		error("Invalid layout type\n");
 	    }
 	}
-	printf("Main layout complete\n");
-	fflush(stdout);
 	PROTECT(nLayout = getNodeLayouts(g));
 	PROTECT(bb = getBoundBox(g));
 	PROTECT(cPoints= 
@@ -388,11 +384,8 @@ Agraph_t *twopiLayout(Agraph_t *g) {
     twopi_init_graph(g);
     circleLayout(g,ctr);
     adjustNodes(g);
-    printf("f\n");
     spline_edges(g);
-    printf("g\n");
     dotneato_postprocess(g,twopi_nodesize);
-    printf("h\n");
     return(g);
 }
 
