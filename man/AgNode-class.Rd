@@ -79,7 +79,7 @@ Objects can be created by calls of the form \code{new("AgNode", ...)}.
 V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
-z <- agopen(g1,"foo")
+z <- agopen(g1,name="foo")
 x <- AgNode(z) ## list of AgNode objects
 x[[1]]
 }

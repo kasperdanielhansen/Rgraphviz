@@ -1,53 +1,66 @@
-agopen <- function(graph, name, kind=NULL, layout=TRUE,
-                   layoutType=c("dot","neato","twopi")[1],
+agopen <- function(graph,  name, nodes, edges, kind=NULL,
+                   layout=TRUE, layoutType=c("dot","neato","twopi")[1],
                    attrs=getDefaultAttrs(layoutType),
                    nodeAttrs=list(), edgeAttrs=list(),
-                   subGList=list()) {
+                   subGList=list(), edgeMode=edgemode(graph)) {
 
-      checkAttrs(attrs)
 
-      nodes <- buildNodeList(graph, nodeAttrs, subGList)
-      edges <- buildEdgeList(graph, edgeAttrs, subGList)
 
-      if (length(subGList) > 0)
-          subGs <- paste("cluster_",1:length(subGList), sep="")
-      else
-          subGs <- character()
+    checkAttrs(attrs)
 
-      if (is.null(kind)) {
-          ## Determine kind from the graph object
-          outK <- switch(edgemode(graph),
-                         "undirected"=0,  ## AGRAPH
-                         "directed"=1,    ## AGDIGRAPH
-                         0)
-      }
-      else {
-          ## Use the specified 'kind' parameter.
-          outK <- switch(kind,
-                         "AGRAPH"=0,   ##Undirected Graph
-                         "AGDIGRAPH"=1,   ## directed graph
-                         "AGRAPHSTRICT"=2,   ## no self arcs or multiedges
-                         "AGDIGRAPHSTRICT"=3, ## directed strict graph
-                         stop(paste("Incorrect kind parameter:",kind)))
-      }
+    if ((missing(graph)) && (missing(edgeMode)))
+        stop("Must pass in either 'graph' or 'edgeMode'")
 
-      ## all attrs must be character strings going into C,
-      ## graphviz wants all attrs to be char*
-      ## FIXME: so shouldn't we do that in C?
-      attrs <- lapply(attrs, function(x){lapply(x,as.character)})
+    if (missing(nodes)) {
+        if (missing(graph))
+            stop("Must supply either parameter 'graph' or 'nodes'")
+        nodes <- buildNodeList(graph, nodeAttrs, subGList)
+    }
+    if (missing(edges)) {
+        if (missing(graph))
+            stop("Must supply either parameter 'graph' or 'edges'")
+        edges <- buildEdgeList(graph, edgeAttrs, subGList)
+    }
 
-      g <- .Call("Rgraphviz_agopen", as.character(name),
-                 as.integer(outK), as.list(nodes),
-                 as.list(edges), as.list(attrs),
-                 as.character(subGs))
-      g@layoutType <- layoutType
-      g@edgemode <- edgemode(graph)
+    if (length(subGList) > 0)
+        subGs <- paste("cluster_",1:length(subGList), sep="")
+    else
+        subGs <- character()
 
-      if (layout)
-          return(layoutGraph(g))
-      else
-          return(g)
-  }
+    if (is.null(kind)) {
+        ## Determine kind from the graph object
+        outK <- switch(edgeMode,
+                       "undirected"=0,  ## AGRAPH
+                       "directed"=1,    ## AGDIGRAPH
+                       0)
+    }
+    else {
+        ## Use the specified 'kind' parameter.
+        outK <- switch(kind,
+                       "AGRAPH"=0,   ##Undirected Graph
+                       "AGDIGRAPH"=1,   ## directed graph
+                       "AGRAPHSTRICT"=2,   ## no self arcs or multiedges
+                       "AGDIGRAPHSTRICT"=3, ## directed strict graph
+                       stop(paste("Incorrect kind parameter:",kind)))
+    }
+
+    ## all attrs must be character strings going into C,
+    ## graphviz wants all attrs to be char*
+    ## FIXME: so shouldn't we do that in C?
+    attrs <- lapply(attrs, function(x){lapply(x,as.character)})
+
+    g <- .Call("Rgraphviz_agopen", as.character(name),
+               as.integer(outK), as.list(nodes),
+               as.list(edges), as.list(attrs),
+               as.character(subGs))
+    g@layoutType <- layoutType
+    g@edgemode <- edgeMode
+
+    if (layout)
+        return(layoutGraph(g))
+    else
+        return(g)
+}
 
 
 agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
