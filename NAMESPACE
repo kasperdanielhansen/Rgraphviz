@@ -3,7 +3,8 @@ importFrom("methods", "show")
 
 export(agopen, agwrite, agread, graphvizVersion, buildNodeList,
        buildEdgeList, removedEdges, getDefaultAttrs, getNodeLocs,
-       getNodeNames, getNodeLabels, checkAttrs, layoutGraph, pieGlyph)
+       getNodeNames, getNodeLabels, checkAttrs, layoutGraph, pieGlyph,
+	getRadiusDiv)
 
 exportClasses("Ragraph", "boundingBox", "AgNode", "AgEdge",
 	      "BezierCurve", "xyPoint", "AgTextLabel", "pNode", "pEdge")
