@@ -178,7 +178,7 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
         if (missing(yLoc))
             yLoc <- getY(loc)
 
-        text(xLoc, yLoc, labelText(txtLabel))
+        text(xLoc, yLoc, labelText(txtLabel), col=labelColor(txtLabel))
     }
 }
 
