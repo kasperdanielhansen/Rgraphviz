@@ -9,7 +9,7 @@
   language.  Currently, only the \code{graph} class is supported.
 }
 \usage{
-\code{'graph' : toDot(graph, filename, ...)}
+  toDot(graph, filename, ...)
 }
 \section{arguments}{
   \item{graph}{The \code{graph} to output to Dot}
