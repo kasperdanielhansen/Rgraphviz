@@ -11,7 +11,7 @@
 \usage{
   toDot(graph, filename, ...)
 }
-\section{arguments}{
+\arguments{
   \item{graph}{The \code{graph} to output to Dot}
   \item{filename}{The name of the file to output to.}
   \item{\dots}{Any arguments to pass on to \code{\link{agopen}}}
