@@ -108,6 +108,14 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
                           subGList, defAttrs, PACKAGE="Rgraphviz")
 }
 
+#Katz, May 2005, more fixes to come later
+fne <- function(el) {
+
+  if ((class(el) != "list") && (length(el) == 0))
+    return(list(edges=numeric()))
+  else
+    return(el)
+}
 
 buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
                           edgeAttrs=list(), subGList=list(), defAttrs=list()) {
@@ -121,8 +129,11 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     else
         removed <- character()
 
+    aa <- edgeL(graph)
+    aa<-lapply(aa,fne)
+
     ## Generate the list of pEdge objects
-    .Call("Rgraphviz_buildEdgeList", edgeL(graph), edgemode(graph),
+    .Call("Rgraphviz_buildEdgeList", aa, edgemode(graph),
           subGList, edgeNames, removed, edgeAttrs, defAttrs,
           PACKAGE="Rgraphviz")
 }

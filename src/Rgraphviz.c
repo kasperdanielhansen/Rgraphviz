@@ -556,6 +556,9 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 	PROTECT(curFrom = allocVector(STRSXP, 1));
 	SET_VECTOR_ELT(curFrom, 0, VECTOR_ELT(from, x));
 	
+	if (length(VECTOR_ELT(edgeL, x)) == 0)
+	  error("Invalid edgeList element given to buildEdgeList in Rgraphviz, is NULL");
+
 	curTo = coerceVector(VECTOR_ELT(VECTOR_ELT(edgeL, x), 0),
 			     INTSXP);
 	if (length(VECTOR_ELT(edgeL, x)) > 1)
