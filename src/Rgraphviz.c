@@ -1,5 +1,6 @@
 #include "common.h"
-#include "circle.h"
+#include <circle.h>
+
 SEXP R_scalarReal(double v) {
     SEXP ans = allocVector(REALSXP,1);
     REAL(ans)[0] = v;
@@ -942,9 +943,25 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     return(outList);
 }
 
+/*
+ * <FIXME>
+ * dotneato.c in the graphviz sources defines char* Info[], but does
+ * not make it extern.  We declare it extern in
+ * Rgraphviz/src/common.h, but this doesn't seem to work on Windows.
+ * So for now, we hard code the version of graphviz that we
+ * hand-built.
+ */
+#ifdef Win32
+SEXP Rgraphviz_graphvizVersion(void) {
+    return(R_scalarString("2.2.1"));
+}
+#else
 SEXP Rgraphviz_graphvizVersion(void) {
     return(R_scalarString(Info[1]));
 }
+#endif
+/* </FIXME> */
+
 
 Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     /* While attributes have default values already,  */
