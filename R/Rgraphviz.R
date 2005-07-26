@@ -110,16 +110,17 @@ buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
 
 #Katz, May 2005, more fixes to come later
 fne <- function(el) {
-
-  if ((class(el) != "list") && (length(el) == 0))
-    return(list(edges=numeric()))
-  else
-    return(el)
+    ## If there's some sort of empty element,
+    ## return a list with an empty numeric vector
+    ## so as to properly work w/ the C code
+    if (length(el) == 0)
+        list(edges=numeric())
+    else
+        el
 }
 
 buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
                           edgeAttrs=list(), subGList=list(), defAttrs=list()) {
-
     recipEdges <- match.arg(recipEdges)
 
     edgeNames <- edgeNames(graph, "distinct")
