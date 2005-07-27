@@ -19,17 +19,23 @@
 #endif
 
 #include <math.h>
+
+#ifdef GRAPHVIZGT_2_4
+#include <gvc.h>
+#else
 #include <render.h>
 #include <graph.h>
 #include <dotprocs.h>
 #include <neatoprocs.h>
 #include <adjust.h>
+#include <renderprocs.h>
+#endif
 
-#include <gvrender.h>
+/*#include <gvrender.h> */
 
 extern char *Info[];
 
-#ifdef GRAPHVIZ_1_12
+#ifndef GRAPHVIZ_1_16
 static GVC_t *gvc;
 #endif
 

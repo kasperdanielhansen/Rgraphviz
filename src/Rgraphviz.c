@@ -1,5 +1,7 @@
 #include "common.h"
+#ifndef GRAPHVIZGT_2_4
 #include <circle.h>
+#endif
 
 SEXP R_scalarReal(double v) {
     SEXP ans = allocVector(REALSXP,1);
@@ -91,7 +93,12 @@ SEXP Rgraphviz_init(void) {
 
 #ifdef GRAPHVIZ_1_12
     gvc = gvNEWcontext(Info, "");
+#else
+#ifdef GRAPHVIZGT_2_4
+	gvc = gvContext();
 #endif
+#endif
+
 
     return(R_NilValue);
 }
@@ -373,9 +380,14 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 
 SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Will perform a Graphviz layout on a graph */
-    Agraph_t *g;
-    Rboolean laidout;
-    SEXP slotTmp, nLayout, cPoints, bb;
+    
+#ifdef GRAPHVIZGT_2_4
+	static char *layouts[] = { "dot", "neato", "twopi" };
+#endif
+	
+	Agraph_t *g;
+	Rboolean laidout;
+	SEXP slotTmp, nLayout, cPoints, bb;
     
     /* First make sure that hte graph is not already laid out */
     laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
@@ -392,19 +404,23 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	    /* Note that we're using the standard dotneato */
 	    /* layout commands for layouts and not the ones */
 	    /* provided below.  This is a test */
-	    switch(INTEGER(layoutType)[0]) {
-	    case DOTLAYOUT:
-		dot_layout(g);
-		break;
-	    case NEATOLAYOUT:
-		neato_layout(g);
-		break;
-	    case TWOPILAYOUT:
-		twopi_layout(g);
-		break;
-	    default:
-		error("Invalid layout type\n");
-	    }
+	    #ifndef GRAPHVIZGT_2_4
+		switch(INTEGER(layoutType)[0]) {
+		case DOTLAYOUT:
+			dot_layout(g);
+			break;
+		case NEATOLAYOUT:
+			neato_layout(g);
+			break;
+		case TWOPILAYOUT:
+			twopi_layout(g);
+			break;
+		default:
+			error("Invalid layout type\n");
+		}
+            #else
+		gvLayout(gvc, g, layouts[INTEGER(layoutType)[0]]);
+            #endif
 	}
 
 	/* Here we want to extract information for the resultant S4
