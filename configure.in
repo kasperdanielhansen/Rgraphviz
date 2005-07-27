@@ -51,9 +51,19 @@ if test "${DOTNEATO_CONFIG}" != "not found"; then
 	      --with-graphviz=DIR)   
            fi        
 	fi
-else
+else 
+	if test -z "${PKG_CONFIG}" ; then
+		AC_PATH_PROG(PKG_CONFIG, pkg-config)
+	fi
+	if test -z "${PKG_CONFIG}" ; then
      AC_MSG_RESULT(failed)
-     AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR)
+     AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 or 'pkg-config' if you have graphviz >= 2.4, using --with-graphviz=DIR)
+	 exit 1
+	fi
+	GVIZ_DEFS="-DGRAPHVIZGT_2_4"
+	GRAPHVIZ_CONFIG="$PKG_CONFIG libgvc"
+	PKG_CPPFLAGS="`${GRAPHVIZ_CONFIG} --cflags`"
+	PKG_LIBS="`${GRAPHVIZ_CONFIG} --libs`"
 fi])
 
 CHECK_GRAPHVIZ

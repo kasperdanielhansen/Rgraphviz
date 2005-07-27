@@ -13,6 +13,13 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     if ((missing(graph)) && (missing(edgeMode)))
         stop("Must pass in either 'graph' or 'edgeMode'")
 
+    if ((layoutType == "neato")&&
+        (!isConnected(graph))&&(graphvizVersion() == "2.4"))
+        stop("Rgraphviz is currently having problems with ",
+             "graphs which are not fully connected using ",
+             "neato.  We are working to resolve this issue.")
+
+
     if (missing(nodes)) {
         if (missing(graph))
             stop("Must supply either parameter 'graph' or 'nodes'")
