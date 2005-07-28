@@ -12,11 +12,10 @@ setMethod("plot", "graph",
 
     recipEdges <- match.arg(recipEdges)
 
-    g <- agopen(x, name=name, layout=TRUE, layoutType=y, 
+    g <- agopen(x, name=name, layout=TRUE, layoutType=y,
                 attrs=attrs, nodeAttrs=nodeAttrs,
                 edgeAttrs=edgeAttrs, subGList=subGList,
                 recipEdges=recipEdges)
-
     invisible(plot(g, ...))
   })
 
@@ -24,19 +23,19 @@ setMethod("plot", "graph",
 setMethod("plot", "Ragraph",
   function(x, y, ...,
            main=NULL, cex.main=NULL, col.main="black",
-           sub=NULL, cex.sub=NULL, col.sub="black", 
+           sub=NULL, cex.sub=NULL, col.sub="black",
            drawNode=drawAgNode, xlab, ylab) {
 
     plot.new()
-    
+
     ## eliminate all plot borders
     old.mai=par(mai=0.01+c(0.83*(!is.null(sub)), 0, 0.83*(!is.null(main)), 0))
     on.exit(par(mai=old.mai), add=TRUE)
-    
+
     ## Get the upper right X,Y point of the bounding
     ## box for the graph
     ur <- upRight(boundBox(x))
-    
+
     ## Set up the plot region.  We need
     ## to emulate what happens in 'plot.default' as
     ## we called plot.new() above, and for the same
@@ -77,7 +76,7 @@ setMethod("plot", "Ragraph",
       old.cex <- par(cex=cex)
       on.exit(par(cex=old.cex), add=TRUE)
     }
-    
+
     ## -----------
     ## draw
     ## -----------
@@ -89,18 +88,18 @@ setMethod("plot", "Ragraph",
           drawNode[[i]](agn[[i]])
         }
       } else {
-        stop(paste("Length of the drawNode parameter is ", length(drawNode), 
+        stop(paste("Length of the drawNode parameter is ", length(drawNode),
                    ", it must be either length 1 or the number of nodes.", sep=""))
       } ## else
     } ## else
-    
-    ## Use the smallest node radius as a means to scale the size of 
+
+    ## Use the smallest node radius as a means to scale the size of
     ## the arrowheads -- in INCHES! see man page for "arrows", which is called
     ## from bLines, which is called from lines.
     arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * min(nodeDims) / pi
     ## Plot the edges
     lapply(AgEdge(x), lines, len=arrowLen, edgemode=edgemode)
-    
+
     invisible(x)
   })
 
@@ -116,25 +115,25 @@ drawAgNode <- function(node) {
   height <- getNodeHeight(node)
   fg     <- color(node)
   bg     <- fillcolor(node)
-  
+
   switch(shape(node),
          "circle"    = Rgraphviz:::drawCircleNode(x=nodeX, y=nodeY,
                                       rad=rad, fg=fg, bg=bg),
-         
+
          "ellipse"   = Rgraphviz:::ellipse(x=nodeX, y=nodeY,
                     height=height, width=rad*2, fg=fg, bg=bg),
          "box"=,
          "rect"=,
          "rectangle" = rect(nodeX-lw, nodeY-(height/2), nodeX+rw,
            nodeY+(height/2), col=bg, border=fg),
-         
+
          "plaintext"= { if (style(node) == "filled")
                           rect(nodeX-lw, nodeY-(height/2),
                                nodeX+rw, nodeY+(height/2),
                                col=bg, border=FALSE) },
          stop("Unimplemented node shape: ", shape)
          ) ## switch
-  
+
   drawTxtLabel(txtLabel(node), xLoc=nodeX, yLoc=nodeY)
 }
 
@@ -147,7 +146,7 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
 
   if(xor(missing(xLoc), missing(yLoc)))
     stop("'xLoc' and 'yLoc' must be either be both specified or both missing.")
-  if(missing(xLoc)) {  
+  if(missing(xLoc)) {
     loc <- labelLoc(txtLabel)
     justMod <- switch(labelJust(txtLabel),
                       "l" = 0,
@@ -156,7 +155,7 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
     xLoc <-  getX(loc) + (justMod * labelWidth(txtLabel))
     yLoc <-  getY(loc)
   }
-  
+
   text(xLoc, yLoc, txt, col=labelColor(txtLabel))
 }
 
@@ -166,7 +165,7 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
 ## }
 
 drawCircleNode <- function(x, y, rad, fg, bg) {
-    invisible(symbols(x, y, circles=rad, inches=FALSE, 
+    invisible(symbols(x, y, circles=rad, inches=FALSE,
                       fg=fg, bg=bg, add=TRUE))
 }
 

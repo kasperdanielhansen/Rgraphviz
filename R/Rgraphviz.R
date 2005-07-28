@@ -13,11 +13,22 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     if ((missing(graph)) && (missing(edgeMode)))
         stop("Must pass in either 'graph' or 'edgeMode'")
 
-    if ((layoutType == "neato")&&
-        (!isConnected(graph))&&(graphvizVersion() == "2.4"))
-        stop("Rgraphviz is currently having problems with ",
-             "graphs which are not fully connected using ",
-             "neato.  We are working to resolve this issue.")
+    ## FIXME: For now, in graphviz 2.4 on a neato graph w/
+    ##  singleton nodes, it will segfault.  The root cause
+    ##  of this is in Graphviz proper and has been fixed in
+    ##  the 2.5 devel branch (and thus 2.6).  Try and work
+    ##  around this in a less hassling manner.
+    if ((graphvizVersion() == "2.4")&&(layoutType == "neato")) {
+        singletonGraph <- any(sapply(connComp(graph), function(x)
+                                     length(x) <= 1))
+        if (singletonGraph == TRUE)
+            stop("There is a bad interaction between ",
+                 "Rgraphviz and Graphviz 2.4 involving ",
+                 "graphs with singleton nodes laid out with neato.\n",
+                 "Hopefully we can find a workaround for ",
+                 "this situation, but until then you can ",
+                 "use Graphviz versions earlier or later than 2.4.")
+    }
 
 
     if (missing(nodes)) {
@@ -62,16 +73,18 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
         return(g)
 }
 
-agread <- function(filename, layoutType=c("dot","neato","twopi")[1],
+agread <- function(filename, layoutType=c("dot","neato","twopi"),
                    layout=TRUE) {
+    layoutType <- match.arg(layoutType)
     ## First check that the file exists
     if (!file.exists(filename))
         stop(paste("Request file",filename,"does not exist"))
 
     g <- .Call("Rgraphviz_agread", as.character(filename), PACKAGE="Rgraphviz")
+    g@layoutType <- layoutType
 
     if (layout)
-        return(layoutGraph(g,layoutType))
+        return(layoutGraph(g))
     else
         return(g)
 }
