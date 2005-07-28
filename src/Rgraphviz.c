@@ -3,6 +3,8 @@
 #include <circle.h>
 #endif
 
+extern boolean Verbose;
+
 SEXP R_scalarReal(double v) {
     SEXP ans = allocVector(REALSXP,1);
     REAL(ans)[0] = v;
@@ -95,9 +97,9 @@ SEXP Rgraphviz_init(void) {
     gvc = gvNEWcontext(Info, "");
 #else
 #ifdef GRAPHVIZGT_2_4
-	gvc = gvContext();
-#endif
-#endif
+    gvc = gvContext();
+#endif /* GRAPHVIZGT_2_4 */
+#endif /* GRAPHVIZ_1_12 */
 
 
     return(R_NilValue);
@@ -125,6 +127,7 @@ SEXP Rgraphviz_agread(SEXP filename) {
     }
     aginit();
     g = agread(dotFile);
+
     return(buildRagraph(g));
 }
 
@@ -384,61 +387,60 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 #ifdef GRAPHVIZGT_2_4
 	static char *layouts[] = { "dot", "neato", "twopi" };
 #endif
-	
 	Agraph_t *g;
 	Rboolean laidout;
 	SEXP slotTmp, nLayout, cPoints, bb;
-    
-    /* First make sure that hte graph is not already laid out */
-    laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
-    if (laidout == FALSE) {
-	/* Extract the Agraph_t pointer from the S4 object */
-	PROTECT(slotTmp = GET_SLOT(graph, install("agraph")));
-	CHECK_Rgraphviz_graph(slotTmp);
-	g = R_ExternalPtrAddr(slotTmp);
 
-	/* Call the appropriate Graphviz layout routine */
-	if (!isInteger(layoutType))
-	    error("layoutType must be an integer value");
-	else {
-	    /* Note that we're using the standard dotneato */
-	    /* layout commands for layouts and not the ones */
-	    /* provided below.  This is a test */
-	    #ifndef GRAPHVIZGT_2_4
-		switch(INTEGER(layoutType)[0]) {
-		case DOTLAYOUT:
-			dot_layout(g);
-			break;
-		case NEATOLAYOUT:
-			neato_layout(g);
-			break;
-		case TWOPILAYOUT:
-			twopi_layout(g);
-			break;
-		default:
-			error("Invalid layout type\n");
+	/* First make sure that hte graph is not already laid out */
+	laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
+	if (laidout == FALSE) {
+		/* Extract the Agraph_t pointer from the S4 object */
+		PROTECT(slotTmp = GET_SLOT(graph, install("agraph")));
+		CHECK_Rgraphviz_graph(slotTmp);
+		g = R_ExternalPtrAddr(slotTmp);
+
+		/* Call the appropriate Graphviz layout routine */
+		if (!isInteger(layoutType))
+			error("layoutType must be an integer value");
+		else {
+			/* Note that we're using the standard dotneato */
+			/* layout commands for layouts and not the ones */
+			/* provided below.  This is a test */
+#ifndef GRAPHVIZGT_2_4
+			switch(INTEGER(layoutType)[0]) {
+			case DOTLAYOUT:
+				dot_layout(g);
+				break;
+			case NEATOLAYOUT:
+				neato_layout(g);
+				break;
+			case TWOPILAYOUT:
+				twopi_layout(g);
+				break;
+			default:
+				error("Invalid layout type\n");
+			}
+#else
+			gvLayout(gvc, g, layouts[INTEGER(layoutType)[0]]);
+#endif
 		}
-            #else
-		gvLayout(gvc, g, layouts[INTEGER(layoutType)[0]]);
-            #endif
+		
+		/* Here we want to extract information for the resultant S4
+		   object */
+		PROTECT(nLayout = getNodeLayouts(g));
+		PROTECT(bb = getBoundBox(g));
+		PROTECT(cPoints= 
+			getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
+							Rf_install("numEdges")))[0]));
+		SET_SLOT(graph, Rf_install("agraph"), slotTmp);
+		SET_SLOT(graph,Rf_install("AgNode"),nLayout);
+		SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
+		SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
+		SET_SLOT(graph,Rf_install("boundBox"), bb);
+		UNPROTECT(4);
 	}
-
-	/* Here we want to extract information for the resultant S4
-	   object */
-	PROTECT(nLayout = getNodeLayouts(g));
-	PROTECT(bb = getBoundBox(g));
-	PROTECT(cPoints= 
-		getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
-						Rf_install("numEdges")))[0]));
-	SET_SLOT(graph, Rf_install("agraph"), slotTmp);
-	SET_SLOT(graph,Rf_install("AgNode"),nLayout);
-	SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
-	SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
-	SET_SLOT(graph,Rf_install("boundBox"), bb);
-	UNPROTECT(4);
-    }
-
-    return(graph);
+	
+	return(graph);
 }
 
 SEXP Rgraphviz_bezier(SEXP Rpnts, SEXP Rn, SEXP Rt) {
