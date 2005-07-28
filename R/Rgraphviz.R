@@ -1,5 +1,5 @@
 agopen <- function(graph,  name, nodes, edges, kind=NULL,
-                   layout=TRUE, layoutType=c("dot","neato","twopi"),
+                   layout=TRUE, layoutType=c("dot","neato","twopi","circo","fdp"),
                    attrs=list(),
                    nodeAttrs=list(), edgeAttrs=list(),
                    subGList=list(), edgeMode=edgemode(graph),
@@ -73,7 +73,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
         return(g)
 }
 
-agread <- function(filename, layoutType=c("dot","neato","twopi"),
+agread <- function(filename, layoutType=c("dot","neato","twopi","circo","fdp"),
                    layout=TRUE) {
     layoutType <- match.arg(layoutType)
     ## First check that the file exists
@@ -104,6 +104,8 @@ layoutGraph <- function(graph) {
                    "dot"=0,
                    "neato"=1,
                    "twopi"=2,
+                   "circo"=3,
+                   "fdp"=4,
                    stop(paste("Invalid layout type:",layoutType))
                    )
 

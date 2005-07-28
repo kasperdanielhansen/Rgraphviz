@@ -20,8 +20,9 @@
 }
 \section{arguments}{
   \item{x}{The \code{graph} object to plot}
-  \item{y}{The layout method to use: One of \code{dot}, \code{neato}, and
-    \code{twopi}.  The default is \code{dot}}
+  \item{y}{The layout method to use: One of \code{\link{dot}},
+    \code{\link{neato}}, \code{\link{twopi}}, \code{\link{circo}}, and
+    \code{\link{fdp}}.  The default is \code{\link{dot}}} 
   \item{subGList}{A list of subgraphs taken from the primary
     \code{graph} object to be plotted.  If provided, these subgraphs
     will be clustered visually.  If not provided, no clusters will be used.}
