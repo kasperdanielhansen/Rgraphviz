@@ -3,6 +3,8 @@
 \alias{dot}
 \alias{twopi}
 \alias{neato}
+\alias{circo}
+\alias{fdp}
 \title{Graphviz Layout Methods}
 \description{
   The following describes the different layout methods that can be used
@@ -89,6 +91,29 @@
   looking layout.  The \code{root} node of the layout, as mentioned
   before, can have a profound effect on the outcome of the layout and
   care should be taken to select an appropriate one.
+}
+\section{The circo layout}{
+   The \code{circo} layout method draws graphs using a circular layout
+   (see Six and Tollis, GD '99 and ALENEX '99, and Kaufmann and Wiese,
+   GD '02.)  The tool identifies biconnected components and draws the
+   nodes of the component on a circle.  The block-cutpoint tree is then
+   laid out using a recursive radial algorithm.  Edge crossings within a
+   circle are minimized by placing as many edges on the circle's
+   perimeter as possible.  In particular, if the component is
+   outerplanar, the component will have a planar layout.
+
+   If a node belongs to multiple non-trivial biconnected components, the
+   layout puts the node in one of them.  By default, this is the first
+   non-trivial component found in the search from the root component.
+}
+\section{The fdp layout}{
+  The \code{fdp} layout draws undirected graphs using a spring model
+  similar to \code{neato}.  It relies on a force-directed approach in
+  the spirit of Fruchterman and Reingold.  The \code{fdp} model uses
+  springs only between nodes connected with an edge, and an electrical
+  repulsive force between all pairs of nodes.  Also, it achieves a
+  layout by minimizing the forces rather than the energy of the system.
+
 }
 \details{
   Portions of the layout descriptions were taken from documents provided

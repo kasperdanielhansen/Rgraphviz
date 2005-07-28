@@ -9,7 +9,7 @@
 }
 \usage{
 getDefaultAttrs(curAttrs = list(), layoutType = c("dot", "neato",
-                 "twopi")[1])
+                 "twopi","circo","fdp"))
 checkAttrs(attrs)
 }
 \arguments{

@@ -385,7 +385,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Will perform a Graphviz layout on a graph */
     
 #ifdef GRAPHVIZGT_2_4
-	static char *layouts[] = { "dot", "neato", "twopi" };
+	static char *layouts[] = { "dot", "neato", "twopi", "circo", "fdp"};
 #endif
 	Agraph_t *g;
 	Rboolean laidout;
@@ -416,6 +416,12 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 				break;
 			case TWOPILAYOUT:
 				twopi_layout(g);
+				break;
+			case CIRCOLAYOUT:
+				circo_layout(g);
+				break;
+			case FDPLAYOUT:
+				fdp_layout(g);
 				break;
 			default:
 				error("Invalid layout type\n");

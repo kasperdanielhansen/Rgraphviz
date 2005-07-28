@@ -1,5 +1,6 @@
 getDefaultAttrs <- function(curAttrs=list(),
-                            layoutType=c("dot","neato","twopi")[1]) {
+                            layoutType=c("dot","neato","twopi","circo","fdp")) {
+    layoutType <- match.arg(layoutType)
     if (length(curAttrs) == 0)
         curAttrs <- list(graph=list(), cluster=list(),
                          node=list(), edge=list())
