@@ -3,8 +3,6 @@
 #include <circle.h>
 #endif
 
-extern boolean Verbose;
-
 SEXP R_scalarReal(double v) {
     SEXP ans = allocVector(REALSXP,1);
     REAL(ans)[0] = v;
