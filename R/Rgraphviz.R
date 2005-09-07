@@ -18,7 +18,8 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     ##  of this is in Graphviz proper and has been fixed in
     ##  the 2.5 devel branch (and thus 2.6).  Try and work
     ##  around this in a less hassling manner.
-    if ((graphvizVersion() == "2.4")&&(layoutType == "neato")) {
+    ## FIXME: This seems to still be around in 2.6
+    if (((graphvizVersion() == "2.4")||(graphvizVersion() == "2.6"))&&(layoutType == "neato")) {
         singletonGraph <- any(sapply(connComp(graph), function(x)
                                      length(x) <= 1))
         if (singletonGraph == TRUE)
