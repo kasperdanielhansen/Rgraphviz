@@ -24,6 +24,10 @@
 
 #ifdef GRAPHVIZGT_2_4
 #include <gvc.h>
+#include <gvplugin.h>
+#include <gvcext.h>
+#include <gvcint.h>
+#include <globals.h>
 #else
 #include <render.h>
 #include <graph.h>
@@ -35,7 +39,9 @@
 
 /*#include <gvrender.h> */
 
+#ifndef GRAPHVIZGT_2_4
 extern char *Info[];
+#endif
 
 #ifndef GRAPHVIZ_1_16
 static GVC_t *gvc;

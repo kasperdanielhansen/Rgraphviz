@@ -978,7 +978,11 @@ SEXP Rgraphviz_graphvizVersion(void) {
 }
 #else
 SEXP Rgraphviz_graphvizVersion(void) {
+#ifndef GRAPHVIZGT_2_4
     return(R_scalarString(Info[1]));
+#else
+    return(R_scalarString(gvc->info[1]));
+#endif
 }
 #endif
 /* </FIXME> */
