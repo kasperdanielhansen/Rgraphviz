@@ -418,9 +418,11 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 			case CIRCOLAYOUT:
 				circo_layout(g);
 				break;
+#ifndef Win32
 			case FDPLAYOUT:
 				fdp_layout(g);
 				break;
+#endif
 			default:
 				error("Invalid layout type\n");
 			}
