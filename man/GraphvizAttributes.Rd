@@ -456,7 +456,7 @@
    modified for rendering in R.
 
   }
-\references{\url{http://www.research.att.com/~erg/graphviz/info/attrs.html}}
+\references{\url{http://www.graphviz.org/pub/scm/graphviz2/doc/info/attrs.html}}
 \author{Jeff Gentry}
 \seealso{\code{\link{plot.graph}}, \code{\link{agopen}}, \code{\link{GraphvizLayouts}}}
 \examples{
