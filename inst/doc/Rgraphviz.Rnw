@@ -126,7 +126,7 @@ sg3
 
 To plot using the subgraphs, one must use the \Rfunction{subGList}
 argument which is a list of lists, with each sublist having three
-elements: 
+elements:
 
 \begin{itemize}
 \item \Robject{graph} : The actual \Robject{graph} object for this
@@ -195,7 +195,7 @@ which are given explicit options using Rgraphviz - such as colors of
 nodes and edges, which node to center on for twopi plots, node labels,
 edge labels, edge weights, arrow heads and tails, etc.  A list of all
 available attributes is accessible online at:
-\url{http://www.research.att.com/~erg/graphviz/info/attrs.html}.  Note
+\url{http://www.graphviz.org/pub/scm/graphviz2/doc/info/attrs.html}.  Note
 that there are some differences between default values and also some
 attributes will not have an effect in Rgraphviz.  Please see the man
 page for \Rfunction{graphvizAttributes} for more details.
@@ -411,7 +411,7 @@ to customize your plot.
 data(graphExamples)
 z <- graphExamples[[17]]
 nNodes <- length(nodes(z))
- 
+
 nA <- list()
 nA$fixedSize<-rep(FALSE, nNodes)
 nA$height <- nA$width <- rep("1", nNodes)
@@ -445,7 +445,7 @@ information and the second parameter, \Robject{ur} is of class
 bounding box (where the lower left is 0,0).  The third parameter,
 \Robject{attrs}, is a node attribute list as discussed in the
 "Attributes" section and represents post-layout attribute changes
-where the user wants to override values present in the layout.  
+where the user wants to override values present in the layout.
 The fourth argument, \Robject{radConv} is used by \Rpackage{Rgraphviz}
 to convert Graphviz units to R plotting units.  This argument will
 probably not need to be specified by any custom drawing function, but
@@ -583,7 +583,7 @@ And finally using "neato":
 
 <<dgNeato, fig=TRUE>>=
   plot(dG, "neato")
-@ 
+@
 
 
 \end{document}
