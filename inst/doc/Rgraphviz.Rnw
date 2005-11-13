@@ -190,15 +190,15 @@ edgeNames(g1, recipEdges="distinct")
 
 \section{The Attributes List}
 
-There are many visualization options in Graphviz that can be set beyond those
-which are given explicit options using Rgraphviz - such as colors of
-nodes and edges, which node to center on for twopi plots, node labels,
-edge labels, edge weights, arrow heads and tails, etc.  A list of all
-available attributes is accessible online at:
-\url{http://www.graphviz.org/pub/scm/graphviz2/doc/info/attrs.html}.  Note
-that there are some differences between default values and also some
-attributes will not have an effect in Rgraphviz.  Please see the man
-page for \Rfunction{graphvizAttributes} for more details.
+There are many visualization options in Graphviz that can be set
+beyond those which are given explicit options using Rgraphviz - such
+as colors of nodes and edges, which node to center on for twopi plots,
+node labels, edge labels, edge weights, arrow heads and tails, etc.  A
+list of all available attributes is accessible online at:
+\url{http://www.graphviz.org/pub/scm/graphviz2/doc/info/attrs.html}.
+Note that there are some differences between default values and also
+some attributes will not have an effect in Rgraphviz.  Please see the
+man page for \Rfunction{graphvizAttributes} for more details.
 
 Attributes can be set both globally (for the entire graph, for all
 edges, all nodes, etc) as well as on a per-node and per-edge basis.
@@ -542,48 +542,106 @@ For our first set of examples, we will create an object of class
 \Robject{clusterGraph} and then plot it using all three layout
 methods:
 
-<<clusterGraph1, fig=TRUE>>=
+<<clusterGraph1>>=
   cG <- new("clusterGraph", clusters=list(a=c(1:10), b=c(11:13),
 					   c=c(14:20), d=c(21, 22)))
   cG
-  plot(cG)
 @
 
-And now the same graph using "twopi":
+In Figure~\ref{fig:cGdot} we show the same graph, \Robject{cG} laid
+out using three different algorithms.
 
-<<cgTwopi, fig=TRUE>>=
-  plot(cG, "twopi")
+\begin{figure}[tp]
+\begin{center}
+<<cGdot, fig=TRUE, include=FALSE, echo=FALSE, results=hide, width=4.5>>=
+plot(cG, main="Dot Layout")
+@
+<<cGtwopi, fig=TRUE, include=FALSE, echo=FALSE, results=hide, width=4.5>>=
+plot(cG, "twopi", main="Twopi Layout")
+@
+<<cGneato, fig=TRUE, include=FALSE, echo=FALSE, results=hide, width=4.5>>=
+plot(cG, "neato", main="Neato Layout")
+@
+\includegraphics[width=0.32\textwidth]{Rgraphviz-cGdot}
+\includegraphics[width=0.32\textwidth]{Rgraphviz-cGtwopi}
+\includegraphics[width=0.32\textwidth]{Rgraphviz-cGneato}
+\end{center}
+\caption{\label{fig:cGdot}%
+A cluster graph laid out using the three layout algorithm.}
+\end{figure}
+%
+
+%The same demonstration is now given with a \Robject{distGraph} object:
+%
+%<<distGraph1, fig=TRUE>>=
+%    x <- rnorm(26)
+%    names(x) <- letters
+%    d1 <- dist(x)
+%    dG <- new("distGraph", Dist=d1)
+%    dG
+%
+%    plot(dG)
+%@
+%
+%Again using "twopi":
+%
+%<<dgTwopi, fig=TRUE>>=
+%  plot(dG, "twopi")
+%%@
+%
+%And finally using "neato":
+%
+%<<dgNeato, fig=TRUE>>=
+%  plot(dG, "neato")
+%@
+%%
+
+\section{Laying out a bipartite graph}
+
+Here we provide a simple example of laying out a bipartite graph. There
+ are two types of nodes, and edges go only from one type to the other.
+We first construct the bipartite graph and set various node attributes.
+We want to have color for the nodes, and we want to lay the graph out
+from left to right, rather than vertically.
+
+<<bipartite>>=
+library("RColorBrewer")
+twocolors <- c(brewer.pal(11,"RdYlGn")[7], brewer.pal(11,"RdYlBu")[7])
+
+myNodes <- c('m1', 'm2', 'm3', 'm4', "r1", "r2")
+myEdges <- list(m1=list(edges=c('r1')),
+                m2=list(edges=c('r1')),
+                m3=list(edges=c('r2')),
+                m4=list(edges=c('r2')),
+                r1=list(edges=c('m3')),
+                r2 = list())
+g <- new('graphNEL', nodes=myNodes, edgeL=myEdges, edgemode='directed')
+g
+@
+Next we set up the node attributes and create subgraphs so that we can
+better control the layout.
+<<bpglayout>>=
+nA = makeNodeAttrs(g, fillcolor = twocolors[1])
+sg1 = subGraph(c("r1", "r2"), g)
+v1 = "sink"; names(v1) = "rank"
+sgL = list(list(graph=sg1, cluster = FALSE, attrs = v1))
+
+defA = list(graph = list(rankdir = "LR", rank = ""))
+
 @
 
-And finally, again in "neato":
-
-<<cgNeato, fig=TRUE>>=
-  plot(cG, "neato")
+Finally, in Figure~\ref{fig:bpg} we plot the bipartite graph.
+\begin{figure}[tp]
+\begin{center}
+<<plotbpg, fig=TRUE, include=FALSE, echo=FALSE, results=hide, width=4.5>>=
+plot(g, attrs = defA, nodeAttrs=nA, subGList = sgL)
 @
+\includegraphics{Rgraphviz-plotbpg}
+\end{center}
+\caption{\label{fig:bpg} A bipartite graph.}
+\end{figure}
+%
 
-The same demonstration is now given with a \Robject{distGraph} object:
-
-<<distGraph1, fig=TRUE>>=
-    x <- rnorm(26)
-    names(x) <- letters
-    d1 <- dist(x)
-    dG <- new("distGraph", Dist=d1)
-    dG
-
-    plot(dG)
-@
-
-Again using "twopi":
-
-<<dgTwopi, fig=TRUE>>=
-  plot(dG, "twopi")
-@
-
-And finally using "neato":
-
-<<dgNeato, fig=TRUE>>=
-  plot(dG, "neato")
-@
 
 
 \end{document}
