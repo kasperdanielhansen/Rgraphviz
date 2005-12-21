@@ -106,7 +106,7 @@ getDefaultAttrs <- function(curAttrs=list(),
     if (is.null(curAttrs$edge$dir))
         curAttrs$edge$dir <- "both"
     if (is.null(curAttrs$edge$weight))
-        curAttrs$edge$weight <- 1.0
+        curAttrs$edge$weight <- "1.0"
     if (is.null(curAttrs$edge$label))
         curAttrs$edge$label <- ""
     if (is.null(curAttrs$edge$fontcolor))

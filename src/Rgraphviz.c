@@ -324,9 +324,9 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 	PROTECT(attrsSlot = GET_SLOT(curObj, Rf_install("attrs")));
 	for (j = 0; j < length(attrList); j++) {
 	    PROTECT(curSTR = allocVector(STRSXP, 1));
-
 	    PROTECT(curAttrs = coerceVector(VECTOR_ELT(attrList, j), STRSXP));
 	    PROTECT(attrPos = getListElement(curAttrs, CHAR(STRING_ELT(objNames, i))));
+
 	    if (attrPos == R_NilValue) {
 		/* We need to use the default value here */
 		UNPROTECT(1);
@@ -338,7 +338,6 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 			  STR(GET_SLOT(curObj, Rf_install("name"))));
 		}
 	    }
-	    
 	    /* Now we have attrVal and need to add this to the node */
 	    namePos = getVectorPos(attrsSlot,
 				   CHAR(STRING_ELT(attrNames, j)));
@@ -363,8 +362,8 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 		UNPROTECT(4);
 	    }
 	    else {
-		SET_VECTOR_ELT(curSTR, 0, attrPos);
-		SET_VECTOR_ELT(attrsSlot, namePos, curSTR);
+		    SET_VECTOR_ELT(curSTR, 0, attrPos);
+		    SET_VECTOR_ELT(attrsSlot, namePos, curSTR);
 	    }
 	    UNPROTECT(3);
 	}
@@ -702,9 +701,10 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 	UNPROTECT(2);
     }
     setAttrib(peList, R_NamesSymbol, goodEdgeNames);
-    peList = assignAttrs(edgeAttrs, peList, defAttrs);
+    peList = assignAttrs(edgeAttrs, peList, defAttrs); 
 
     UNPROTECT(6);
+
     return(peList);
 }
 
