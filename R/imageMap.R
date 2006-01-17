@@ -1,9 +1,10 @@
 if (is.null(getGeneric("imageMap")))
-    setGeneric("imageMap", function(object, ...)
+    setGeneric("imageMap", function(object, con, tags, imgname, ...)
                standardGeneric("imageMap"))
 
 setMethod("imageMap",
-  signature=c("Ragraph", "connection", "list", "character"),
+  signature=signature(object="Ragraph", con="connection", tags="list",
+    imgname="character"),
   definition=function(object, con, tags, imgname, width, height, usr = par("usr")) {
 
   if(any(par("mai")!=0))
