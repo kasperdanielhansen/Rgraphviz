@@ -8,9 +8,6 @@ setClass("pNode", representation(name="character",
                                  subG="integer"),
          prototype=list(subG=as.integer(0)))
 
-if (is.null(getGeneric("name")))
-    setGeneric("name", function(object)
-               standardGeneric("name"))
 setMethod("name", "pNode", function(object)
           object@name)
 
@@ -23,15 +20,13 @@ setClass("pEdge", representation(from="character",
          prototype=list(subG=as.integer(0))
 )
 
-if (is.null(getGeneric("from")))
-    setGeneric("from", function(object)
-               standardGeneric("from"))
+setGeneric("from", function(object)
+           standardGeneric("from"))
 setMethod("from", "pEdge", function(object)
           object@from)
 
-if (is.null(getGeneric("to")))
-    setGeneric("to", function(object)
-               standardGeneric("to"))
+setGeneric("to", function(object)
+           standardGeneric("to"))
 setMethod("to", "pEdge", function(object)
           object@to)
 

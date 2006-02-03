@@ -239,9 +239,8 @@ setMethod("edgeL", "distGraph", function(graph, index) {
 })
 
 
-if (is.null(getGeneric("toDot")))
-    setGeneric("toDot", function(graph, filename, ...)
-               standardGeneric("toDot"))
+setGeneric("toDot", function(graph, filename, ...)
+           standardGeneric("toDot"))
 
 setMethod("toDot", "graph", function(graph, filename, ...) {
     z <- agopen(graph, name = "foo", ...)
