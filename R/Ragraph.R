@@ -352,17 +352,29 @@ setMethod("lines", "AgEdge",
            lty=par("lty"), lwd=par("lwd")) {
     z <- splines(x)
 
-    arrowtails <- c(arrowtail(x), rep("none", length(z)-1))
-    arrowheads <- c(rep("none", length(z)-1), arrowhead(x))
+    curArrowTail <- arrowtail(x)
+    if (curArrowTail == "")
+        curArrowTail <- "none"
+    curArrowHead <- arrowhead(x)
+    if (curArrowHead == "")
+        curArrowHead <- "none"
+    edgeColor <- color(x)
+    if (edgeColor == "")
+        edgeColor <- "black"
+
+    arrowtails <- c(curArrowTail, rep("none", length(z)-1))
+    arrowheads <- c(rep("none", length(z)-1), curArrowHead)
 
     if(length(x@lty)>0)
       lty=x@lty[1]
     if(length(x@lwd)>0)
       lwd=x@lwd[1]
 
+
+
     len <- len * as.numeric(arrowsize(x))
     mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
-           MoreArgs=list(len=len, col=color(x),
+           MoreArgs=list(len=len, col=edgeColor,
                          lty=lty, lwd=lwd, ...))
 
     drawTxtLabel(txtLabel(x))
