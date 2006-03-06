@@ -114,9 +114,14 @@ drawAgNode <- function(node) {
   rad    <- (lw+rw)/2
   height <- getNodeHeight(node)
   fg     <- color(node)
+  if (fg == "")
+      fg <- "black"
   bg     <- fillcolor(node)
+  if (bg == "")
+      bg <- "transparent"
 
   switch(shape(node),
+         "",
          "circle"    = Rgraphviz:::drawCircleNode(x=nodeX, y=nodeY,
                                       rad=rad, fg=fg, bg=bg),
 
@@ -131,7 +136,7 @@ drawAgNode <- function(node) {
                           rect(nodeX-lw, nodeY-(height/2),
                                nodeX+rw, nodeY+(height/2),
                                col=bg, border=FALSE) },
-         stop("Unimplemented node shape: ", shape)
+         stop("Unimplemented node shape: ", shape(node))
          ) ## switch
 
   drawTxtLabel(txtLabel(node), xLoc=nodeX, yLoc=nodeY)
