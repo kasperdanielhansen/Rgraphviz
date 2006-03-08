@@ -114,14 +114,23 @@ drawAgNode <- function(node) {
   rad    <- (lw+rw)/2
   height <- getNodeHeight(node)
   fg     <- color(node)
+  style <- style(node)
+  shape <- shape(node)
+  if (shape =="")
+      shape <- "ellipse" ## Normal Rgraphviz defaults to circle
+                         ## but DOT defaults to ellipse
+
   if (fg == "")
       fg <- "black"
   bg     <- fillcolor(node)
-  if (bg == "")
-      bg <- "transparent"
+  if (bg == "") {
+      if (style == "filled")
+          bg <- "grey"
+      else
+          bg <- "transparent"
+  }
 
-  switch(shape(node),
-         "",
+  switch(shape,
          "circle"    = Rgraphviz:::drawCircleNode(x=nodeX, y=nodeY,
                                       rad=rad, fg=fg, bg=bg),
 
@@ -132,7 +141,7 @@ drawAgNode <- function(node) {
          "rectangle" = rect(nodeX-lw, nodeY-(height/2), nodeX+rw,
            nodeY+(height/2), col=bg, border=fg),
 
-         "plaintext"= { if (style(node) == "filled")
+         "plaintext"= { if (style == "filled")
                           rect(nodeX-lw, nodeY-(height/2),
                                nodeX+rw, nodeY+(height/2),
                                col=bg, border=FALSE) },
