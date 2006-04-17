@@ -31,7 +31,7 @@ agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
     \code{combined}}
 }
 \details{
-  \code{graph} is from the package \code{\link{graph-class}}.
+  \code{graph} is from the package \code{\link[graph]{graph-class}}.
 
   The user can specify either the \code{graph} parameter and/or a
   combination of \code{nodes} and \code{edges}.  If either of the latter

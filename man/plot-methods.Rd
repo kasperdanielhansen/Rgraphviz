@@ -102,7 +102,7 @@
   The \code{Ragraph} object used for plotting
 }
 \section{author}{Jeff Gentry}
-\section{seealso}{\code{\link{graphNEL-class}}, \code{\link{graph-class}}}
+\section{seealso}{\code{\link[graph]{graphNEL-class}}, \code{\link[graph]{graph-class}}}
 \examples{
 #  WHY DOES THIS NOT WORK IN CHECK?
 #  V <- letters[1:10]

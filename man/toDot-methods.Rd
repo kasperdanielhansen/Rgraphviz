@@ -27,7 +27,7 @@
 }
 \section{author}{Jeff Gentry}
 \section{seealso}{\code{\link{agopen}}, \code{\link{agwrite}},
-  \code{\link{graph-class}}}
+  \code{\link[graph]{graph-class}}}
 \examples{
   set.seed(123)
   V <- letters[1:10]
