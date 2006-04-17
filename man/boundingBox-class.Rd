@@ -29,7 +29,7 @@ Objects can be created by calls of the form \code{new("boundingBox", ...)}.
     }
 }
 \author{Jeff Gentry}
-\seealso{ \code{\link{Ragraph}}, \code{\link{graph-class}}}
+\seealso{ \code{\link{Ragraph}}, \code{\link[graph]{graph-class}}}
 
 \examples{
 V <- letters[1:10]
