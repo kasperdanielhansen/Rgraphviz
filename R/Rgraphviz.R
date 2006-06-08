@@ -13,22 +13,21 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     if ((missing(graph)) && (missing(edgeMode)))
         stop("Must pass in either 'graph' or 'edgeMode'")
 
-    ## FIXME: For now, in graphviz 2.4 on a neato graph w/
+    ## FIXME: For now, in graphviz 2.4 and 2.6 on a neato graph w/
     ##  singleton nodes, it will segfault.  The root cause
     ##  of this is in Graphviz proper and has been fixed in
     ##  the 2.5 devel branch (and thus 2.6).  Try and work
     ##  around this in a less hassling manner.
     ## FIXME: This seems to still be around in 2.6
-    if (((graphvizVersion() == "2.4")||(graphvizVersion() == "2.6"))&&(layoutType == "neato")) {
-        singletonGraph <- any(sapply(connComp(graph), function(x)
-                                     length(x) <= 1))
-        if (singletonGraph == TRUE)
+    if ((graphvizVersion() %in% c("2.4","2.6")) && (layoutType == "neato")) {
+        singletonGraph <- any(sapply(connComp(graph), length)<=1)
+        if (singletonGraph)
             stop("There is a bad interaction between ",
-                 "Rgraphviz and Graphviz 2.4 involving ",
+                 "Rgraphviz and Graphviz 2.4 and 2.6 involving ",
                  "graphs with singleton nodes laid out with neato.\n",
-                 "Hopefully we can find a workaround for ",
-                 "this situation, but until then you can ",
-                 "use Graphviz versions earlier or later than 2.4.")
+                 "Hopefully we can find a solution, ",
+                 "but until then you can ",
+                 "use Graphviz versions earlier than 2.4.")
     }
 
 
