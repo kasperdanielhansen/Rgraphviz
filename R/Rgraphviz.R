@@ -67,10 +67,24 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     g@layoutType <- layoutType
     g@edgemode <- edgeMode
 
+    ## Allows lwd (line width) and lty (line type) to be set in same manner
+    ## color is set
     if (layout)
-        return(layoutGraph(g))
-    else
-        return(g)
+      g <- layoutGraph(g)
+    
+    if (!is.null(edgeAttrs$lwd)) {
+        for (i in seq(along=edgeAttrs$lwd)) {   
+            attr(attr(g, "AgEdge")[[i]], "lwd") <- edgeAttrs$lwd[i]
+        }
+    }
+        
+    if (!is.null(edgeAttrs$lty)) {
+        for (i in seq(along=edgeAttrs$lty)) {   
+            attr(attr(g, "AgEdge")[[i]], "lty") <- edgeAttrs$lty[i]
+        }
+    }
+
+    return(g)
 }
 
 agread <- function(filename, layoutType=c("dot","neato","twopi","circo","fdp"),
