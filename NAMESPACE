@@ -1,5 +1,6 @@
 importFrom("graphics", "plot", "lines")
 importFrom("methods", "show")
+importFrom("geneplotter", "imageMap")
                                                                                 
 export(agopen, agwrite, agread, graphvizVersion, buildNodeList,
         buildEdgeList, removedEdges, getDefaultAttrs, 

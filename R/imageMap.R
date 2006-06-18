@@ -1,5 +1,8 @@
-setGeneric("imageMap", function(object, con, tags, imgname, ...)
-           standardGeneric("imageMap"))
+
+## we import the generic from geneplotter, which we depend on
+
+##setGeneric("imageMap", function(object, con, tags, imgname, ...)
+##          standardGeneric("imageMap"))
 
 setMethod("imageMap",
   signature=signature(object="Ragraph", con="connection", tags="list",
