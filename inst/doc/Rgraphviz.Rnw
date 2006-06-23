@@ -1,8 +1,7 @@
-%
 % NOTE -- ONLY EDIT Rgraphviz.Rnw!!!
 % Biobase.tex file will get overwritten.
 %
-%\VignetteIndexEntry{HOWTO Rendering}
+%\VignetteIndexEntry{How To Plot A Graph Using Rgraphviz}
 %\VignetteDepends{Rgraphviz, graph, Biobase}
 %\VignetteKeywords{tools, graphs}
 %\VignettePackage{Rgraphviz}
@@ -22,9 +21,9 @@
  \end{center} \end{figure}
 }
 
-\author{Jeff Gentry, contributions from Robert Gentleman, Wolfgang Huber}
+\author{Jeff Gentry, Robert Gentleman, Wolfgang Huber}
 \begin{document}
-\title{HowTo Render A Graph Using Rgraphviz}
+\title{How To Plot A Graph Using Rgraphviz}
 \maketitle
 \tableofcontents
 
@@ -757,9 +756,9 @@ the nodes.
 <<dummyPlots>>=
 outdir=tempdir()
 nd = nodes(IMCAGraph)
-plotFiles = file.path(outdir, paste(seq(along=nd), 'png', sep='.'))
+plotFiles = paste(seq(along=nd), 'png', sep='.')
 for(i in seq(along=nd)) {
-  png(plotFiles[i], width=400, height=600)
+  png(file.path(outdir, plotFiles[i]), width=400, height=600)
   plot(cumsum(rnorm(100)), type='l', col='blue', lwd=2, main=nd[i])
   dev.off()
 }
