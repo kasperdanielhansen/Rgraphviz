@@ -335,7 +335,7 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 		PROTECT(names = allocVector(STRSXP, leno+1));
 		PROTECT(newASlot = allocVector(VECSXP, leno+1));
 		for (k = 0; k < leno; k++) {
-		    SET_VECTOR_ELT(newASlot, k, STRING_ELT(oattrs, k));
+		    SET_VECTOR_ELT(newASlot, k, VECTOR_ELT(oattrs, k));
 		    SET_VECTOR_ELT(names, k, STRING_ELT(onames, k));
 		}
 
@@ -449,7 +449,7 @@ SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
 
     for (i = 0; i < length(nodes); i++) {
 	PROTECT(tmpStr = allocVector(STRSXP, 1));
-	SET_STRING_ELT(tmpStr, 0, STRING_ELT(nodes, i));
+	SET_STRING_ELT(tmpStr, 0, VECTOR_ELT(nodes, i));
 	PROTECT(curPN = NEW_OBJECT(pnClass));
 	SET_SLOT(curPN, Rf_install("name"), tmpStr);
 
@@ -466,7 +466,7 @@ SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
 
 	    for (k = 0; k < length(subGNodes); k++) {
 		if (strcmp(CHAR(STRING_ELT(subGNodes, k)),
-			   CHAR(STRING_ELT(nodes, i))) == 0)
+			   CHAR(VECTOR_ELT(nodes, i))) == 0)
 		    break;
 	    }
 	    if (k == length(subGNodes))
@@ -523,8 +523,8 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
     PROTECT(attrNames = allocVector(STRSXP, 2));
 
 
-    SET_VECTOR_ELT(attrNames, 0, mkChar("arrowhead"));
-    SET_VECTOR_ELT(attrNames, 1, mkChar("weight"));
+    SET_STRING_ELT(attrNames, 0, mkChar("arrowhead"));
+    SET_STRING_ELT(attrNames, 1, mkChar("weight"));
     setAttrib(curAttrs, R_NamesSymbol, attrNames);
 
     PROTECT(from = getAttrib(edgeL, R_NamesSymbol));
@@ -551,7 +551,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 	}
 
 	for (y = 0; y < length(curTo); y++) {
-	    PROTECT(toName = STRING_ELT(from, INTEGER(curTo)[y]-1));
+	    PROTECT(toName = VECTOR_ELT(from, INTEGER(curTo)[y]-1));
 	    edgeName = (char *)malloc((strlen(STR(curFrom))+
 				       strlen(CHAR(toName)) + 2) *
 				      sizeof(char));
@@ -619,18 +619,18 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 	    PROTECT(tmpToSTR = allocVector(STRSXP, 1));
 	    PROTECT(curPE = NEW_OBJECT(peClass));
 	    SET_SLOT(curPE, Rf_install("from"), curFrom);
-	    SET_VECTOR_ELT(tmpToSTR, 0, toName);
+	    SET_STRING_ELT(tmpToSTR, 0, toName);
 	    SET_SLOT(curPE, Rf_install("to"), tmpToSTR);
 	    if (strcmp(STR(edgeMode), "directed") == 0)
 		SET_VECTOR_ELT(curAttrs, 0, R_scalarString("open"));
 	    else 
 		SET_VECTOR_ELT(curAttrs, 0, R_scalarString("none"));
 	    PROTECT(tmpWtSTR = allocVector(STRSXP, 1));
-	    SET_VECTOR_ELT(tmpWtSTR, 0, 
+	    SET_STRING_ELT(tmpWtSTR, 0, 
 			   asChar(R_scalarReal(REAL(curWeights)[y])));
 	    SET_VECTOR_ELT(curAttrs, 1, tmpWtSTR);
 	    SET_SLOT(curPE, Rf_install("attrs"), curAttrs);
-	    SET_VECTOR_ELT(goodEdgeNames, curEle, mkChar(edgeName));
+	    SET_STRING_ELT(goodEdgeNames, curEle, mkChar(edgeName));
 	    SET_VECTOR_ELT(peList, curEle, curPE);
 	    curEle++;
 	    for (i = 0; i < nSubG; i++) {
