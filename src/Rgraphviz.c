@@ -1,7 +1,4 @@
 #include "common.h"
-#ifndef GRAPHVIZGT_2_4
-#include <circle.h>
-#endif
 
 SEXP R_scalarReal(double v) {
     SEXP ans = allocVector(REALSXP,1);
@@ -91,14 +88,7 @@ SEXP Rgraphviz_init(void) {
     /* Stifle graphviz warning messages, only return errors */
     agseterr(AGERR);
 
-#ifdef GRAPHVIZ_1_12
-    gvc = gvNEWcontext(Info, "");
-#else
-#ifdef GRAPHVIZGT_2_4
     gvc = gvContext();
-#endif /* GRAPHVIZGT_2_4 */
-#endif /* GRAPHVIZ_1_12 */
-
 
     return(R_NilValue);
 }
@@ -284,10 +274,6 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	UNPROTECT(3);
     }
 
-#ifdef GRAPHVIZ_1_12
-    gvc->g = g;
-    GD_gvc(g) = gvc;
-#endif
     UNPROTECT(2);
     return(buildRagraph(g));    
 }
@@ -381,9 +367,7 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Will perform a Graphviz layout on a graph */
     
-#ifdef GRAPHVIZGT_2_4
 	static char *layouts[] = { "dot", "neato", "twopi", "circo", "fdp"};
-#endif
 	Agraph_t *g;
 	Rboolean laidout;
 	SEXP slotTmp, nLayout, cPoints, bb;
@@ -401,33 +385,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 			error("layoutType must be an integer value");
 		else {
 			/* Note that we're using the standard dotneato */
-			/* layout commands for layouts and not the ones */
-			/* provided below.  This is a test */
-#ifndef GRAPHVIZGT_2_4
-			switch(INTEGER(layoutType)[0]) {
-			case DOTLAYOUT:
-				dot_layout(g);
-				break;
-			case NEATOLAYOUT:
-				neato_layout(g);
-				break;
-			case TWOPILAYOUT:
-				twopi_layout(g);
-				break;
-			case CIRCOLAYOUT:
-				circo_layout(g);
-				break;
-#ifndef Win32
-			case FDPLAYOUT:
-				fdp_layout(g);
-				break;
-#endif
-			default:
-				error("Invalid layout type\n");
-			}
-#else
 			gvLayout(gvc, g, layouts[INTEGER(layoutType)[0]]);
-#endif
 		}
 		
 		/* Here we want to extract information for the resultant S4
@@ -980,11 +938,7 @@ SEXP Rgraphviz_graphvizVersion(void) {
 }
 #else
 SEXP Rgraphviz_graphvizVersion(void) {
-#ifndef GRAPHVIZGT_2_4
-    return(R_scalarString(Info[1]));
-#else
     return(R_scalarString(gvc->info[1]));
-#endif
 }
 #endif
 /* </FIXME> */
