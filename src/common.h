@@ -22,30 +22,14 @@
 
 #include <math.h>
 
-#ifdef GRAPHVIZGT_2_4
 #include <gvc.h>
 #include <gvplugin.h>
 #include <gvcext.h>
 #include <gvcint.h>
 #include <globals.h>
-#else
-#include <render.h>
-#include <graph.h>
-#include <dotprocs.h>
-#include <neatoprocs.h>
-#include <adjust.h>
-#include <renderprocs.h>
-#endif
 
-/*#include <gvrender.h> */
-
-#ifndef GRAPHVIZGT_2_4
-extern char *Info[];
-#endif
-
-#ifndef GRAPHVIZ_1_16
 static GVC_t *gvc;
-#endif
+
 
 #define AGRAPH_T(x) ((agraph_t *)DATAPTR(x))
 #define STR(SE) CHAR(STRING_ELT(SE,0))
@@ -74,11 +58,6 @@ SEXP Rgraphviz_buildNodeList(SEXP, SEXP, SEXP, SEXP);
 SEXP Rgraphviz_buildEdgeList(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP generatePNodes(SEXP, SEXP);
 
-#ifndef GRAPHVIZGT_1_16
-Agraph_t *dotLayout(Agraph_t *);
-Agraph_t *neatoLayout(Agraph_t *);
-Agraph_t *twopiLayout(Agraph_t *);
-#endif
 
 Agraph_t *setDefaultAttrs(Agraph_t *, SEXP);
 #endif

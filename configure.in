@@ -1,75 +1,54 @@
 AC_INIT(src/Rgraphviz.c)
 AC_PREREQ(2.13)
-AC_REVISION($Revision: 1.12 $)
-# AC_CONFIG_SRCDIR(src/Rgraphviz.c)
 
-AC_DEFUN([CHECK_GRAPHVIZ],
-[AC_MSG_CHECKING(for graphviz)
 AC_ARG_WITH(graphviz,
-[ --with-graphviz=DIR root directory of graphviz installation
-[defaults to /usr/local]],
-[if test x"$withval" != no ; then
-	DOTNEATO_CONFIG="$withval/bin/dotneato-config"
- else
-	DOTNEATO_CONFIG="not found"
- fi],
-[AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config, [not found])])
+            [ --with-graphviz=DIR      root directory of graphviz installation 
+                          (defaults to /usr/local/)],
+GRAPHVIZ_DIR="${with_graphviz}",
+GRAPHVIZ_DIR="")
 
-if test "${DOTNEATO_CONFIG}" != "not found"; then
-	AC_MSG_RESULT(${DOTNEATO_CONFIG})
-	PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
-
-	MAJOR=`${DOTNEATO_CONFIG} --version`
-	MAJOR=`echo [${MAJOR}] | cut -f1 -d"."`
-	
-	MINOR=`${DOTNEATO_CONFIG} --version`
-	MINOR=`echo [${MINOR}] | cut -f2 -d"."`
-
-	if test ${MAJOR} -eq "1"; then
-	   if test ${MINOR} -lt "12"; then
-		AC_MSG_RESULT(failed)
-		AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 using --with-graphviz=DIR)
-	   fi
-	   if test ${MINOR} -eq "12"; then
-		GVIZ_DEFS="-DGRAPHVIZ_1_12"
-	   fi
-	   if test ${MINOR} -lt "16"; then
-		PKG_LIBS="-Wl `${DOTNEATO_CONFIG} --libs` -lm"
-           else
-		GVIZ_DEFS="-DGRAPHVIZGT_1_16"
-		PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
-	   fi
-	else
-	   if test ${MAJOR} -eq "2"; then
-                GVIZ_DEFS="-DGRAPHVIZGT_1_16"
-		PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
-		   
-           else
-              AC_MSG_RESULT(failed)
-              AC_MSG_ERROR(please specify a valid path to
-	      'dotneato-config' version >= 1.12 using
-	      --with-graphviz=DIR)   
-           fi        
-	fi
+dnl Use pkg-config if user doesn't specify --with-graphviz arg
+if test -z "${GRAPHVIZ_DIR}"; then
+   if test -z "${PKG_CONFIG}" ; then
+      AC_PATH_PROG(PKG_CONFIG, pkg-config)
+   fi
+   if test -z "${PKG_CONFIG}" ; then
+      AC_MSG_RESULT(failed)
+      AC_MSG_ERROR(pkg-config was not found, please specify the prefix for your graphviz installation using --with-graphviz=DIR.)
+      exit 1
+   fi
+   GVIZ_DEFS="-DGRAPHVIZGT_2_4 -DGRAPHVIZGT_1_16"
+   GRAPHVIZ_CONFIG="$PKG_CONFIG libgvc"
+   PKG_CPPFLAGS="`${GRAPHVIZ_CONFIG} --cflags || echo ''`"
+   if test -z "${PKG_CPPFLAGS}"; then
+      AC_MSG_RESULT(failed)
+      AC_MSG_ERROR(pkg-config was not able to find graphviz.  Verify graphviz is installed and that PKG_CONFIG_PATH is correct.)
+      exit 1
+   fi
+   PKG_LIBS="`${GRAPHVIZ_CONFIG} --libs`"
+   VERSTR="`${GRAPHVIZ_CONFIG} --modversion`"
+   AC_MSG_NOTICE(Found graphviz $VERSTR)
 else 
-	if test -z "${PKG_CONFIG}" ; then
-		AC_PATH_PROG(PKG_CONFIG, pkg-config)
-	fi
-	if test -z "${PKG_CONFIG}" ; then
-     AC_MSG_RESULT(failed)
-     AC_MSG_ERROR(please specify a valid path to 'dotneato-config' version >= 1.12 or 'pkg-config' if you have graphviz >= 2.4, using --with-graphviz=DIR)
-	 exit 1
-	fi
-	GVIZ_DEFS="-DGRAPHVIZGT_2_4"
-	GRAPHVIZ_CONFIG="$PKG_CONFIG libgvc"
-	PKG_CPPFLAGS="`${GRAPHVIZ_CONFIG} --cflags`"
-	PKG_LIBS="`${GRAPHVIZ_CONFIG} --libs`"
-fi])
-
-CHECK_GRAPHVIZ
+    dnl User specified --with-graphviz DIR
+    DOT="${GRAPHVIZ_DIR}/bin/dot"
+    if ! test -x "${DOT}"; then
+       AC_MSG_ERROR($DOT not found.)
+       exit 1
+    fi
+    VERSTR=`${DOT} -V 2>&1 | cut -f3 -d" "`
+    MAJOR=`echo ${VERSTR} | cut -f1 -d"."`
+    MINOR=`echo ${VERSTR} | cut -f2 -d"."`
+    AC_MSG_NOTICE(Found graphviz $VERSTR)
+    if test ${MAJOR} -lt "2" || test ${MINOR} -lt "4"; then
+       AC_MSG_ERROR("Need graphviz >= 2.4")
+       exit 1
+    fi
+    GVIZ_DEFS="-DGRAPHVIZGT_2_4 -DGRAPHVIZGT_1_16"
+    PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
+    PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -lgvc"
+fi
 
 AC_SUBST(GVIZ_DEFS)
 AC_SUBST(PKG_CPPFLAGS)
 AC_SUBST(PKG_LIBS)
 AC_OUTPUT(src/Makevars)
-	
