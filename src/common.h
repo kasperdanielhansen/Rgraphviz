@@ -43,9 +43,7 @@
 extern char *Info[];
 #endif
 
-#ifndef GRAPHVIZ_1_16
 static GVC_t *gvc;
-#endif
 
 #define AGRAPH_T(x) ((agraph_t *)DATAPTR(x))
 #define STR(SE) CHAR(STRING_ELT(SE,0))
@@ -73,12 +71,6 @@ SEXP Rgraphviz_bezier(SEXP, SEXP, SEXP);
 SEXP Rgraphviz_buildNodeList(SEXP, SEXP, SEXP, SEXP);
 SEXP Rgraphviz_buildEdgeList(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP generatePNodes(SEXP, SEXP);
-
-#ifndef GRAPHVIZGT_1_16
-Agraph_t *dotLayout(Agraph_t *);
-Agraph_t *neatoLayout(Agraph_t *);
-Agraph_t *twopiLayout(Agraph_t *);
-#endif
 
 Agraph_t *setDefaultAttrs(Agraph_t *, SEXP);
 #endif
