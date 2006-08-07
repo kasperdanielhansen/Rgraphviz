@@ -47,7 +47,13 @@ SEXP getListElement(SEXP list, char *str) {
 
     for (i = 0; i < length(list); i++) {
 	if (strcmp(CHAR(STRING_ELT(names,i)), str) == 0) {
-	    elmt = VECTOR_ELT(list, i);
+            if (TYPEOF(list) == VECSXP)
+                elmt = VECTOR_ELT(list, i);
+            else if (TYPEOF(list) == STRSXP)
+                elmt = STRING_ELT(list, i);
+            else
+                error("expecting VECSXP or STRSXP, got %s", 
+                      Rf_type2char(TYPEOF(list)));
 	    break;
 	}
     }
@@ -341,19 +347,19 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 		PROTECT(newASlot = allocVector(VECSXP, leno+1));
 		for (k = 0; k < leno; k++) {
 		    SET_VECTOR_ELT(newASlot, k, VECTOR_ELT(oattrs, k));
-		    SET_VECTOR_ELT(names, k, STRING_ELT(onames, k));
+		    SET_STRING_ELT(names, k, STRING_ELT(onames, k));
 		}
 
 		/* Assign the new element */
-		SET_VECTOR_ELT(curSTR, 0, attrPos);
+		SET_STRING_ELT(curSTR, 0, attrPos);
 		SET_VECTOR_ELT(newASlot, leno, curSTR);
-		SET_VECTOR_ELT(names, leno, STRING_ELT(attrNames, j));
+		SET_STRING_ELT(names, leno, STRING_ELT(attrNames, j));
 		setAttrib(newASlot, R_NamesSymbol, names);
 		attrsSlot = newASlot;
 		UNPROTECT(4);
 	    }
 	    else {
-		    SET_VECTOR_ELT(curSTR, 0, attrPos);
+		    SET_STRING_ELT(curSTR, 0, attrPos);
 		    SET_VECTOR_ELT(attrsSlot, namePos, curSTR);
 	    }
 	    UNPROTECT(3);
@@ -478,11 +484,11 @@ SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
     PROTECT(pNodes = allocVector(VECSXP, length(nodes)));
 
     PROTECT(attrNames = allocVector(STRSXP, 1));
-    SET_VECTOR_ELT(attrNames, 0, mkChar("label"));
+    SET_STRING_ELT(attrNames, 0, mkChar("label"));
 
     for (i = 0; i < length(nodes); i++) {
 	PROTECT(tmpStr = allocVector(STRSXP, 1));
-	SET_STRING_ELT(tmpStr, 0, VECTOR_ELT(nodes, i));
+	SET_STRING_ELT(tmpStr, 0, STRING_ELT(nodes, i));
 	PROTECT(curPN = NEW_OBJECT(pnClass));
 	SET_SLOT(curPN, Rf_install("name"), tmpStr);
 
@@ -499,7 +505,7 @@ SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
 
 	    for (k = 0; k < length(subGNodes); k++) {
 		if (strcmp(CHAR(STRING_ELT(subGNodes, k)),
-			   CHAR(VECTOR_ELT(nodes, i))) == 0)
+			   CHAR(STRING_ELT(nodes, i))) == 0)
 		    break;
 	    }
 	    if (k == length(subGNodes))
@@ -569,7 +575,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 
     for (x = 0; x < length(from); x++) {
 	PROTECT(curFrom = allocVector(STRSXP, 1));
-	SET_VECTOR_ELT(curFrom, 0, VECTOR_ELT(from, x));
+	SET_STRING_ELT(curFrom, 0, STRING_ELT(from, x));
 	if (length(VECTOR_ELT(edgeL, x)) == 0)
 	  error("Invalid edgeList element given to buildEdgeList in Rgraphviz, is NULL");
 
@@ -584,7 +590,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 	}
 
 	for (y = 0; y < length(curTo); y++) {
-	    PROTECT(toName = VECTOR_ELT(from, INTEGER(curTo)[y]-1));
+	    PROTECT(toName = STRING_ELT(from, INTEGER(curTo)[y]-1));
 	    edgeName = (char *)malloc((strlen(STR(curFrom))+
 				       strlen(CHAR(toName)) + 2) *
 				      sizeof(char));
@@ -631,13 +637,13 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 		    for (j = 0; j < length(recipAttrs); j++) {
 			SET_VECTOR_ELT(newRecipAttrs, j,
 				       VECTOR_ELT(recipAttrs, j));
-			SET_VECTOR_ELT(newRecipAttrNames, j, 
-				       VECTOR_ELT(recipAttrNames, j));
+			SET_STRING_ELT(newRecipAttrNames, j, 
+				       STRING_ELT(recipAttrNames, j));
 		    }
 
 		    SET_VECTOR_ELT(newRecipAttrs, j,
 				   R_scalarString("open"));
-		    SET_VECTOR_ELT(newRecipAttrNames, j,
+		    SET_STRING_ELT(newRecipAttrNames, j,
 				   mkChar("arrowtail"));
 		    setAttrib(newRecipAttrs, R_NamesSymbol, newRecipAttrNames);
 		    
