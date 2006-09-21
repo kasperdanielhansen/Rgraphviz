@@ -795,7 +795,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 
 
 	PROTECT(curLab = NEW_OBJECT(labClass));
-	if (node->u.label != NULL && node->u.label->u.txt.line != NULL) {
+	if (node->u.label->u.txt.line != NULL) {
 	    SET_SLOT(curLab, Rf_install("labelText"),
 		     R_scalarString(node->u.label->u.txt.line->str));
 	    snprintf(tmpString, 2, "%c",node->u.label->u.txt.line->just);
@@ -861,7 +861,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 
     for (i = 0; i < nodes; i++) {
 	edge = agfstout(g, node);
-	while (edge != NULL && edge->u.spl != NULL) {
+	while (edge != NULL) {
 	    PROTECT(curEP = NEW_OBJECT(epClass));
 	    bez = edge->u.spl->list[0];
 	    PROTECT(pntList = allocVector(VECSXP, 
