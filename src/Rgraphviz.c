@@ -49,11 +49,31 @@ SEXP getListElement(SEXP list, char *str) {
 	if (strcmp(CHAR(STRING_ELT(names,i)), str) == 0) {
             if (TYPEOF(list) == VECSXP)
                 elmt = VECTOR_ELT(list, i);
-            else if (TYPEOF(list) == STRSXP)
-                elmt = STRING_ELT(list, i);
             else
-                error("expecting VECSXP or STRSXP, got %s", 
+                error("expecting VECSXP, got %s", 
                       Rf_type2char(TYPEOF(list)));
+	    break;
+	}
+    }
+    return(elmt);
+}
+
+SEXP stringEltByName(SEXP strv, char *str) {
+    /* Given STRSXP (character vector in R) and a string, return the
+     * element of the strv (CHARSXP) which has the name that
+     * corresponds to the string.
+     */
+    SEXP elmt = R_NilValue;
+    SEXP names = GET_NAMES(strv);
+    int i;
+
+    if (names == R_NilValue)
+	error("the character vector must have names");
+
+    /* simple linear search */
+    for (i = 0; i < length(strv); i++) {
+	if (strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
+            elmt = STRING_ELT(strv, i);
 	    break;
 	}
     }
@@ -242,11 +262,11 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 	tmp = agnode(tmpGraph, STR(GET_SLOT(curPN, 
 					     Rf_install("name"))));
 
-	PROTECT(curAttrs = GET_SLOT(curPN, Rf_install("attrs")));
-	PROTECT(attrNames = getAttrib(curAttrs, R_NamesSymbol));
+	PROTECT(curAttrs = coerceVector(GET_SLOT(curPN, Rf_install("attrs")), STRSXP));
+	PROTECT(attrNames = coerceVector(getAttrib(curAttrs, R_NamesSymbol), STRSXP));
 	for (j = 0; j < length(curAttrs); j++) {
 	    agset(tmp,  CHAR(STRING_ELT(attrNames,j)),
-		  STR(VECTOR_ELT(curAttrs,j)));
+		  CHAR(STRING_ELT(curAttrs,j)));
 	}
 
 	UNPROTECT(3);
@@ -308,6 +328,7 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
     /* to slots of the objects listed in objList            */
     int i, j, k, namePos, leno;
     SEXP curAttrs, curObj, attrNames, objNames;
+    char* curObjName;
     SEXP attrsSlot, newASlot, oattrs;
     SEXP names, onames;
     SEXP attrPos;
@@ -315,20 +336,21 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 
     PROTECT(attrNames = getAttrib(attrList, R_NamesSymbol));
     PROTECT(objNames = getAttrib(objList, R_NamesSymbol));
-
+    PROTECT(defAttrs = coerceVector(defAttrs, STRSXP));
     for (i = 0; i < length(objList); i++) {
 	curObj = VECTOR_ELT(objList, i);
 	PROTECT(attrsSlot = GET_SLOT(curObj, Rf_install("attrs")));
+        curObjName = CHAR(STRING_ELT(objNames, i));
 	for (j = 0; j < length(attrList); j++) {
 	    PROTECT(curSTR = allocVector(STRSXP, 1));
 	    PROTECT(curAttrs = coerceVector(VECTOR_ELT(attrList, j), STRSXP));
-	    PROTECT(attrPos = getListElement(curAttrs, CHAR(STRING_ELT(objNames, i))));
-
+	    PROTECT(attrPos = stringEltByName(curAttrs, curObjName));
 	    if (attrPos == R_NilValue) {
 		/* We need to use the default value here */
 		UNPROTECT(1);
-		PROTECT(attrPos = STRING_ELT(getListElement(defAttrs,
-							    CHAR(STRING_ELT(attrNames, j))), 0));
+		attrPos = stringEltByName(defAttrs,
+                                          CHAR(STRING_ELT(attrNames, j)));
+                PROTECT(attrPos);
 		       
 		if (attrPos == R_NilValue) {
 		    error("No attribute or default was assigned for %s",
@@ -369,7 +391,7 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
 	UNPROTECT(1);
     }
 
-    UNPROTECT(2);
+    UNPROTECT(3);
 
     return(objList);
 }
