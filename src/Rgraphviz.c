@@ -3,29 +3,37 @@
 #include <circle.h>
 #endif
 
-SEXP R_scalarReal(double v) {
+static SEXP Rgraphviz_fin(SEXP);
+static SEXP getBoundBox(Agraph_t *);
+static SEXP getNodeLayouts(Agraph_t *);
+static SEXP buildRagraph(Agraph_t *);
+static SEXP Rgraphviz_getAttr(SEXP, SEXP);
+static SEXP assignAttrs(SEXP, SEXP, SEXP);
+static Agraph_t *setDefaultAttrs(Agraph_t *, SEXP);
+static SEXP getEdgeLocs(Agraph_t *,int);
+
+
+static SEXP R_scalarReal(double v) {
     SEXP ans = allocVector(REALSXP,1);
     REAL(ans)[0] = v;
     return(ans);
 }
 
-SEXP R_scalarInteger(int v)
+static SEXP R_scalarInteger(int v)
 {
   SEXP  ans = allocVector(INTSXP, 1);
   INTEGER(ans)[0] = v;
   return(ans);
 }
 
-SEXP
-R_scalarLogical(Rboolean v)
+static SEXP R_scalarLogical(Rboolean v)
 {
   SEXP  ans = allocVector(LGLSXP, 1);
   LOGICAL(ans)[0] = v;
   return(ans);
 }
 
-SEXP 
-R_scalarString(const char *v)
+static SEXP R_scalarString(const char *v)
 {
   SEXP ans = allocVector(STRSXP, 1);
   PROTECT(ans);
@@ -35,7 +43,7 @@ R_scalarString(const char *v)
   return(ans);
 }
 
-SEXP getListElement(SEXP list, char *str) {
+static SEXP getListElement(SEXP list, char *str) {
     /* Given a R list and a character string, will return the */
     /* element of the list which has the name that corresponds to the */
     /*   string */
@@ -51,14 +59,15 @@ SEXP getListElement(SEXP list, char *str) {
                 elmt = VECTOR_ELT(list, i);
             else
                 error("expecting VECSXP, got %s", 
-                      Rf_type2char(TYPEOF(list)));
+                      Rf_type2char(TYPEOF(list))); 
+			// TODO: mod this Rf_ call (rev. 18855 -> 19051)
 	    break;
 	}
     }
     return(elmt);
 }
 
-SEXP stringEltByName(SEXP strv, char *str) {
+static SEXP stringEltByName(SEXP strv, char *str) {
     /* Given STRSXP (character vector in R) and a string, return the
      * element of the strv (CHARSXP) which has the name that
      * corresponds to the string.
@@ -80,7 +89,7 @@ SEXP stringEltByName(SEXP strv, char *str) {
     return(elmt);
 }
 
-int getVectorPos(SEXP vector, char *str) {
+static int getVectorPos(SEXP vector, char *str) {
     /* Returns position in a named vector where the name matches string*/
     /* Returns -1 if not found */
     
@@ -124,7 +133,7 @@ SEXP Rgraphviz_init(void) {
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_fin(SEXP s) { 
+static SEXP Rgraphviz_fin(SEXP s) { 
     /* Finalizer for the external reference */
     Agraph_t *g;
 
@@ -309,7 +318,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     return(buildRagraph(g));    
 }
 
-SEXP Rgraphviz_getAttr(SEXP graph, SEXP attr) {
+static SEXP Rgraphviz_getAttr(SEXP graph, SEXP attr) {
     Agraph_t *g;
     SEXP slotTmp;
 
@@ -322,7 +331,7 @@ SEXP Rgraphviz_getAttr(SEXP graph, SEXP attr) {
 }
 
 
-SEXP assignAttrs(SEXP attrList, SEXP objList,
+static SEXP assignAttrs(SEXP attrList, SEXP objList,
 			   SEXP defAttrs) {
     /* Assign attributes defined by attrList (and defAttrs) */
     /* to slots of the objects listed in objList            */
@@ -727,7 +736,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
     return(peList);
 }
 
-SEXP buildRagraph(Agraph_t *g) {
+static SEXP buildRagraph(Agraph_t *g) {
     SEXP graphRef, klass, obj;
 
     PROTECT(graphRef = R_MakeExternalPtr(g,Rgraphviz_graph_type_tag,
@@ -747,7 +756,7 @@ SEXP buildRagraph(Agraph_t *g) {
 }
 
 
-SEXP getBoundBox(Agraph_t *g) {
+static SEXP getBoundBox(Agraph_t *g) {
     /* Determine the graphviz determiend bounding box and */
     /* assign it to the appropriate Ragraph structure */
     SEXP bbClass, xyClass, curBB, LLXY, URXY;
@@ -771,7 +780,7 @@ SEXP getBoundBox(Agraph_t *g) {
     return(curBB);
 }
 
-SEXP getNodeLayouts(Agraph_t *g) {
+static SEXP getNodeLayouts(Agraph_t *g) {
     Agnode_t *node;
     SEXP outLst, nlClass, xyClass, curXY, curNL;
     SEXP curLab, labClass;
@@ -855,7 +864,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
     return(outLst);
 }
 
-SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
+static SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     SEXP outList, curCP, curEP, pntList, pntSet, curXY, curLab;
     SEXP epClass, cpClass, xyClass, labClass;
     Agnode_t *node, *head;
@@ -1009,7 +1018,7 @@ SEXP Rgraphviz_graphvizVersion(void) {
 /* </FIXME> */
 
 
-Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
+static Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     /* While attributes have default values already,  */
     /* if we want to dynamically set them, we need */
     /* to have defined defaults manually */
