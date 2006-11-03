@@ -1,6 +1,45 @@
 #include "common.h"
 #include "util.h"
 
+static Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
+    /* While attributes have default values already,  */
+    /* if we want to dynamically set them, we need */
+    /* to have defined defaults manually */
+    int i;
+    SEXP attrNames, elmt;
+
+    /* Now set user defined attributes */
+    /* Set the graph level attributes */
+    PROTECT(elmt = getListElement(attrs, "graph"));
+    /* Now elmt is a list of attributes to set */
+    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
+    for (i = 0; i < length(elmt); i++) {
+	agraphattr(g, CHAR(STRING_ELT(attrNames,i)),
+		   STR(coerceVector(VECTOR_ELT(elmt,i), STRSXP)));
+    }
+    
+    UNPROTECT(2);
+
+    /* Now do node-wide */
+    PROTECT(elmt = getListElement(attrs, "node"));
+    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
+    for (i = 0; i < length(elmt); i++) {
+	agnodeattr(g, CHAR(STRING_ELT(attrNames,i)),
+		   STR(coerceVector(VECTOR_ELT(elmt,i), STRSXP)));
+    }
+    UNPROTECT(2);
+
+    /* Lastly do edge-wide */
+    PROTECT(elmt = getListElement(attrs, "edge"));
+    PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
+    for (i = 0; i < length(elmt); i++) {
+	agedgeattr(g, CHAR(STRING_ELT(attrNames,i)),
+		   STR(coerceVector(VECTOR_ELT(elmt,i), STRSXP)));
+   }
+    UNPROTECT(2);
+    return(g);
+}
+
 SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes, 
 		     SEXP edges, SEXP attrs, SEXP subGs) {
     /* Will create a new Agraph_t* object in graphviz and then */
