@@ -175,31 +175,17 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
           PACKAGE="Rgraphviz")
 }
 
-setMethod("edgeNames", "Ragraph", function(object,
-                                           recipEdges=c("combined",
-                                           "distinct")) {
-    recipEdges <- match.arg(recipEdges)
+getNodeNames <- function(object) {
+    if (!is(object, "Ragraph"))
+        stop("Need a Ragraph object")
+    unlist(lapply(object@AgNode, name))
+}
 
-    edgeNames <- sapply(AgEdge(object), function(x) paste(tail(x), head(x), sep="~"))
-
-    if (recipEdges == "combined") {
-        revNames <- sapply(AgEdge(object), function(x) paste(head(x),
-                                                             tail(x), sep="~"))
-
-        handled <- character()
-        remove <- numeric()
-        for (i in 1:length(edgeNames)) {
-            if ((recipEdges == "distinct") || (! revNames[i] %in% handled))
-                handled <- c(handled, edgeNames[i])
-            else
-                remove <- c(remove, i)
-        }
-        if (length(remove) > 0)
-            edgeNames <- edgeNames[-remove]
-    }
-    edgeNames
-})
-
+getNodeLabels <- function(object) {
+    if (!is(object, "Ragraph"))
+        stop("Need a Ragraph object")
+    unlist(lapply(object@AgNode, function(x) labelText(x@txtLabel)))
+}
 
 removedEdges <- function(graph) {
     if ((!is(graph, "graph")) && (!is(graph,"Ragraph")))
@@ -210,54 +196,4 @@ removedEdges <- function(graph) {
     combEdges <- edgeNames(graph, "combined")
     which(! allEdges %in% combEdges)
 }
-
-setMethod("edgeL", "clusterGraph", function(graph, index) {
-    ## temporary function, just a placeholder until I put in
-    ## something better (most likely in C)
-
-    clusters <- connComp(graph)
-    nodes <- nodes(graph)
-    edgeL <- list()
-
-    cur <- 1
-    for (i in seq(along=clusters)) {
-        curClust <- clusters[[i]]
-        for (j in seq(along = curClust)) {
-            edgeL[[cur]] <- list(edges=match(curClust[-j], nodes))
-            cur <- cur + 1
-        }
-    }
-    names(edgeL) <- nodes
-
-    if (! missing(index))
-        edgeL <- edgeL[[index]]
-
-    edgeL
-})
-
-setMethod("edgeL", "distGraph", function(graph, index) {
-    ## Just like the clusterGraph edgeL method, this should be
-    ## considered a poor place holder for now.
-    edges <- edges(graph)
-    edgeL <- mapply(function(x, y, nodes) {
-        out <- list(edges=match(x, nodes), weights=y)
-    }, edges, edgeWeights(graph), MoreArgs=list(nodes=nodes(graph)),
-                    SIMPLIFY=FALSE)
-    names(edgeL) <- names(edges)
-
-    if (! missing(index))
-        edgeL <- edgeL[[index]]
-
-    edgeL
-})
-
-
-setGeneric("toDot", function(graph, filename, ...)
-           standardGeneric("toDot"))
-
-setMethod("toDot", "graph", function(graph, filename, ...) {
-    z <- agopen(graph, name = "foo", ...)
-    agwrite(z, filename)
-})
-
 
