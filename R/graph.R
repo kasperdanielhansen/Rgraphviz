@@ -104,6 +104,55 @@ setMethod("plot", "Ragraph",
   })
 
 
+setMethod("edgeL", "clusterGraph", function(graph, index) {
+    ## temporary function, just a placeholder until I put in
+    ## something better (most likely in C)
+
+    clusters <- connComp(graph)
+    nodes <- nodes(graph)
+    edgeL <- list()
+
+    cur <- 1
+    for (i in seq(along=clusters)) {
+        curClust <- clusters[[i]]
+        for (j in seq(along = curClust)) {
+            edgeL[[cur]] <- list(edges=match(curClust[-j], nodes))
+            cur <- cur + 1
+        }
+    }
+    names(edgeL) <- nodes
+
+    if (! missing(index))
+        edgeL <- edgeL[[index]]
+
+    edgeL
+})
+
+setMethod("edgeL", "distGraph", function(graph, index) {
+    ## Just like the clusterGraph edgeL method, this should be
+    ## considered a poor place holder for now.
+    edges <- edges(graph)
+    edgeL <- mapply(function(x, y, nodes) {
+        out <- list(edges=match(x, nodes), weights=y)
+    }, edges, edgeWeights(graph), MoreArgs=list(nodes=nodes(graph)),
+                    SIMPLIFY=FALSE)
+    names(edgeL) <- names(edges)
+
+    if (! missing(index))
+        edgeL <- edgeL[[index]]
+
+    edgeL
+})
+
+setGeneric("toDot", function(graph, filename, ...)
+           standardGeneric("toDot"))
+
+setMethod("toDot", "graph", function(graph, filename, ...) {
+    z <- agopen(graph, name = "foo", ...)
+    agwrite(z, filename)
+})
+
+
 drawAgNode <- function(node) {
   nodeCenter <- getNodeCenter(node)
   nodeX <- getX(nodeCenter)
@@ -173,41 +222,8 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
   text(xLoc, yLoc, txt, col=labelColor(txtLabel))
 }
 
-## Not sure what this is good for:
-## getRadiusDiv <- function(ur) {
-##   return(max(c(getX(ur), getY(ur))/par("pin")))
-## }
-
+## not exported
 drawCircleNode <- function(x, y, rad, fg, bg) {
     invisible(symbols(x, y, circles=rad, inches=FALSE,
                       fg=fg, bg=bg, add=TRUE))
 }
-
-identifyGraph <- function(plotGraph, ...) {
-
-    ## Get the information for the nodes (x, y, labels)
-    xy <- getNodeXY(plotGraph)
-    nodes <- sapply(AgNode(plotGraph), name)
-
-    ## Now get the edges
-    edges <- AgEdge(plotGraph)
-    edgeNames <- sapply(edges, function(x) paste(tail(x),
-                                                 head(x), sep="~"))
-
-    edgeLabels <- character()
-    vals <- matrix(nrow = 0, ncol = 2)
-
-    for (i in 1:length(edges)) {
-        for (j in 1:numSplines(edges[[i]])) {
-            cur <- bezierPoints(getSpline(edges[[i]], j))
-            edgeLabels <- c(edgeLabels, rep(edgeNames[i], nrow(cur)))
-            vals <- rbind(vals, cur)
-        }
-    }
-
-    labels <- c(nodes, edgeLabels)
-    sel <- identify(c(xy$x, vals[,1]), c(xy$y, vals[,2]), labels, ...)
-
-    list(points=sel, labels=labels)
-}
-

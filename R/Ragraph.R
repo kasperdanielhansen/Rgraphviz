@@ -57,19 +57,6 @@ setGeneric("labelFontsize", function(object)
 setMethod("labelFontsize", "AgTextLabel", function(object)
           object@labelFontsize)
 
-
-getNodeNames <- function(object) {
-    if (!is(object, "Ragraph"))
-        stop("Need a Ragraph object")
-    unlist(lapply(object@AgNode, name))
-}
-
-getNodeLabels <- function(object) {
-    if (!is(object, "Ragraph"))
-        stop("Need a Ragraph object")
-    unlist(lapply(object@AgNode, function(x) labelText(x@txtLabel)))
-}
-
 ### Class boundingBox
 
 setGeneric("boundingBox", function(object)
@@ -478,3 +465,30 @@ setMethod("show", "Ragraph", function(object) {
     print(paste("A graph with",length(AgNode(object)),
                 "nodes."))
 })
+
+
+setMethod("edgeNames", "Ragraph", function(object,
+                                           recipEdges=c("combined",
+                                           "distinct")) {
+    recipEdges <- match.arg(recipEdges)
+
+    edgeNames <- sapply(AgEdge(object), function(x) paste(tail(x), head(x), sep="~"))
+
+    if (recipEdges == "combined") {
+        revNames <- sapply(AgEdge(object), function(x) paste(head(x),
+                                                             tail(x), sep="~"))
+
+        handled <- character()
+        remove <- numeric()
+        for (i in 1:length(edgeNames)) {
+            if ((recipEdges == "distinct") || (! revNames[i] %in% handled))
+                handled <- c(handled, edgeNames[i])
+            else
+                remove <- c(remove, i)
+        }
+        if (length(remove) > 0)
+            edgeNames <- edgeNames[-remove]
+    }
+    edgeNames
+})
+
