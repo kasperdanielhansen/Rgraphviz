@@ -1,22 +1,15 @@
-require("graph") || stop("Rgraphviz requires package graph")
 ### CLass xyPoint
-setClass("xyPoint", representation(x="numeric",
-                                   y="numeric"))
+setClass("xyPoint", representation(x="numeric", y="numeric"))
 
-setGeneric("getX", function(object)
-           standardGeneric("getX"))
-setMethod("getX", "xyPoint", function(object)
-          object@x)
+setGeneric("getX", function(object) standardGeneric("getX"))
+setMethod("getX", "xyPoint", function(object) object@x)
 
-setGeneric("getY", function(object)
-           standardGeneric("getY"))
-setMethod("getY", "xyPoint", function(object)
-          object@y)
+setGeneric("getY", function(object) standardGeneric("getY"))
+setMethod("getY", "xyPoint", function(object) object@y)
 
-setGeneric("getPoints", function(object)
-           standardGeneric("getPoints"))
-setMethod("getPoints", "xyPoint", function(object)
-          c(object@x, object@y))
+setGeneric("getPoints", function(object) standardGeneric("getPoints"))
+setMethod("getPoints", "xyPoint", function(object) c(object@x, object@y))
+
 
 ### Class AgTextLabel
 ## used to represent a 'textlabel_t' and related information
@@ -26,58 +19,36 @@ setClass("AgTextLabel", representation(labelText="character",
                                        labelWidth="integer",
                                        labelColor="character",
                                        labelFontsize="numeric"))
-setGeneric("labelText", function(object)
-           standardGeneric("labelText"))
-setMethod("labelText", "AgTextLabel", function(object)
-          object@labelText)
+setGeneric("labelText", function(object) standardGeneric("labelText"))
+setMethod("labelText", "AgTextLabel", function(object) object@labelText)
 
-setGeneric("labelColor", function(object)
-           standardGeneric("labelColor"))
-setMethod("labelColor", "AgTextLabel", function(object)
-          object@labelColor)
+setGeneric("labelColor", function(object) standardGeneric("labelColor"))
+setMethod("labelColor", "AgTextLabel", function(object) object@labelColor)
 
-setGeneric("labelLoc", function(object)
-           standardGeneric("labelLoc"))
-setMethod("labelLoc", "AgTextLabel", function(object)
-          object@labelLoc)
+setGeneric("labelLoc", function(object) standardGeneric("labelLoc"))
+setMethod("labelLoc", "AgTextLabel", function(object) object@labelLoc)
 
-setGeneric("labelJust", function(object)
-           standardGeneric("labelJust"))
-setMethod("labelJust", "AgTextLabel", function(object)
-          object@labelJust)
+setGeneric("labelJust", function(object) standardGeneric("labelJust"))
+setMethod("labelJust", "AgTextLabel", function(object) object@labelJust)
 
-setGeneric("labelWidth", function(object)
-           standardGeneric("labelWidth"))
-setMethod("labelWidth","AgTextLabel", function(object)
-          object@labelWidth)
+setGeneric("labelWidth", function(object) standardGeneric("labelWidth"))
+setMethod("labelWidth","AgTextLabel", function(object) object@labelWidth)
 
-setGeneric("labelFontsize", function(object)
-           standardGeneric("labelFontsize"))
+setGeneric("labelFontsize", function(object) standardGeneric("labelFontsize"))
+setMethod("labelFontsize", "AgTextLabel", function(object) object@labelFontsize)
 
-setMethod("labelFontsize", "AgTextLabel", function(object)
-          object@labelFontsize)
 
 ### Class boundingBox
+setClass("boundingBox", representation(botLeft="xyPoint", upRight="xyPoint"))
 
-setGeneric("boundingBox", function(object)
-           standardGeneric("boundingBox"))
-setClass("boundingBox", representation(botLeft="xyPoint",
-                                       upRight="xyPoint"))
+setGeneric("botLeft", function(object) standardGeneric("botLeft"))
+setMethod("botLeft", "boundingBox", function(object) object@botLeft)
 
-setGeneric("botLeft", function(object)
-           standardGeneric("botLeft"))
-setMethod("botLeft", "boundingBox", function(object)
-          object@botLeft)
+setGeneric("upRight", function(object) standardGeneric("upRight"))
+setMethod("upRight", "boundingBox", function(object) object@upRight)
 
-setGeneric("upRight", function(object)
-           standardGeneric("upRight"))
-setMethod("upRight", "boundingBox", function(object)
-          object@upRight)
 
 ### Class AgNode
-
-setGeneric("AgNode", function(object)
-           standardGeneric("AgNode"))
 setClass("AgNode", representation(center="xyPoint",
                                   name="character",
                                   txtLabel="AgTextLabel",
@@ -89,74 +60,45 @@ setClass("AgNode", representation(center="xyPoint",
                                   shape="character",
                                   style="character"))
 
-setGeneric("shape", function(object)
-           standardGeneric("shape"))
-setMethod("shape", "AgNode", function(object)
-          object@shape)
+setGeneric("shape", function(object) standardGeneric("shape"))
+setMethod("shape", "AgNode", function(object) object@shape)
 
-setGeneric("style", function(object)
-           standardGeneric("style"))
-setMethod("style", "AgNode", function(object)
-          object@style)
+setGeneric("style", function(object) standardGeneric("style"))
+setMethod("style", "AgNode", function(object) object@style)
 
+setGeneric("color", function(object) standardGeneric("color"))
+setMethod("color","AgNode", function(object) object@color)
 
-setGeneric("color", function(object)
-           standardGeneric("color"))
-setMethod("color","AgNode", function(object)
-          object@color)
+setGeneric("fillcolor", function(object) standardGeneric("fillcolor"))
+setMethod("fillcolor", "AgNode", function(object) object@fillcolor)
 
-setGeneric("fillcolor", function(object)
-           standardGeneric("fillcolor"))
-setMethod("fillcolor", "AgNode", function(object)
-          object@fillcolor)
+setGeneric("getNodeCenter", function(object) standardGeneric("getNodeCenter"))
+setMethod("getNodeCenter", "AgNode", function(object) object@center)
 
-setGeneric("getNodeCenter", function(object)
-           standardGeneric("getNodeCenter"))
-setMethod("getNodeCenter", "AgNode", function(object)
-          object@center)
+setGeneric("getNodeHeight", function(object) standardGeneric("getNodeHeight"))
+setMethod("getNodeHeight", "AgNode", function(object) object@height)
 
-setGeneric("getNodeHeight", function(object)
-           standardGeneric("getNodeHeight"))
-setMethod("getNodeHeight", "AgNode", function(object)
-          object@height)
+setGeneric("getNodeRW", function(object) standardGeneric("getNodeRW"))
+setMethod("getNodeRW", "AgNode", function(object) object@rWidth)
 
-setGeneric("getNodeRW", function(object)
-           standardGeneric("getNodeRW"))
-setMethod("getNodeRW", "AgNode", function(object)
-          object@rWidth)
+setGeneric("getNodeLW", function(object) standardGeneric("getNodeLW"))
+setMethod("getNodeLW", "AgNode", function(object) object@lWidth)
 
+setGeneric("name", function(object) standardGeneric("name"))
+setMethod("name", "AgNode", function(object) object@name)
 
-setGeneric("getNodeLW", function(object)
-           standardGeneric("getNodeLW"))
-setMethod("getNodeLW", "AgNode", function(object)
-          object@lWidth)
+setGeneric("txtLabel", function(object) standardGeneric("txtLabel"))
+setMethod("txtLabel", "AgNode", function(object) object@txtLabel)
 
-setGeneric("name", function(object)
-           standardGeneric("name"))
-
-setMethod("name", "AgNode", function(object)
-          object@name)
-
-setGeneric("txtLabel", function(object)
-           standardGeneric("txtLabel"))
-setMethod("txtLabel", "AgNode", function(object)
-          object@txtLabel)
-
-setGeneric("getNodeXY", function(object)
-           standardGeneric("getNodeXY"))
-
-
+setGeneric("getNodeXY", function(object) standardGeneric("getNodeXY"))
 setMethod("getNodeXY", "AgNode", function(object) {
     cen <- getNodeCenter(object)
     out <- list(x=getX(cen), y=getY(cen))
     out
 })
 
+
 ### Class AgEdge
-
-setGeneric("AgEdge", function(object)
-           standardGeneric("AgEdge"))
-
 setClass("AgEdge", representation(splines="list",
                                   sp="xyPoint",
                                   ep="xyPoint",
@@ -170,59 +112,38 @@ setClass("AgEdge", representation(splines="list",
                                   lwd="numeric",
                                   txtLabel="AgTextLabel"))
 
-setMethod("color","AgEdge", function(object)
-          object@color)
+setMethod("color","AgEdge", function(object) object@color)
 
-setGeneric("arrowsize", function(object)
-           standardGeneric("arrowsize"))
-setMethod("arrowsize", "AgEdge", function(object)
-          object@arrowsize)
+setGeneric("arrowsize", function(object) standardGeneric("arrowsize"))
+setMethod("arrowsize", "AgEdge", function(object) object@arrowsize)
 
-setGeneric("arrowhead", function(object)
-           standardGeneric("arrowhead"))
-setMethod("arrowhead", "AgEdge", function(object)
-          object@arrowhead)
+setGeneric("arrowhead", function(object) standardGeneric("arrowhead"))
+setMethod("arrowhead", "AgEdge", function(object) object@arrowhead)
 
-setGeneric("arrowtail", function(object)
-           standardGeneric("arrowtail"))
-setMethod("arrowtail", "AgEdge", function(object)
-          object@arrowtail)
+setGeneric("arrowtail", function(object) standardGeneric("arrowtail"))
+setMethod("arrowtail", "AgEdge", function(object) object@arrowtail)
 
-setMethod("txtLabel", "AgEdge", function(object)
-          object@txtLabel)
+setMethod("txtLabel", "AgEdge", function(object) object@txtLabel)
 
-setGeneric("splines", function(object)
-           standardGeneric("splines"))
-setMethod("splines", "AgEdge", function(object)
-          object@splines)
+setGeneric("splines", function(object) standardGeneric("splines"))
+setMethod("splines", "AgEdge", function(object) object@splines)
 
-setGeneric("sp", function(object)
-           standardGeneric("sp"))
-setMethod("sp", "AgEdge", function(object)
-          object@sp)
+setGeneric("sp", function(object) standardGeneric("sp"))
+setMethod("sp", "AgEdge", function(object) object@sp)
 
-setGeneric("ep", function(object)
-           standardGeneric("ep"))
-setMethod("ep", "AgEdge", function(object)
-          object@ep)
+setGeneric("ep", function(object) standardGeneric("ep"))
+setMethod("ep", "AgEdge", function(object) object@ep)
 
-setGeneric("head", function(x,...)
-           standardGeneric("head"))
-setMethod("head", "AgEdge", function(x, ...)
-          x@head)
+setGeneric("head", function(x,...) standardGeneric("head"))
+setMethod("head", "AgEdge", function(x, ...) x@head)
 
-setGeneric("tail", function(x, ...)
-           standardGeneric("tail"))
-setMethod("tail", "AgEdge", function(x, ...)
-          x@tail)
+setGeneric("tail", function(x, ...) standardGeneric("tail"))
+setMethod("tail", "AgEdge", function(x, ...) x@tail)
 
-setGeneric("numSplines", function(object)
-               standardGeneric("numSplines"))
-setMethod("numSplines", "AgEdge", function(object)
-          length(object@splines))
+setGeneric("numSplines", function(object) standardGeneric("numSplines"))
+setMethod("numSplines", "AgEdge", function(object) length(object@splines))
 
-setGeneric("getSpline", function(object, pos)
-           standardGeneric("getSpline"))
+setGeneric("getSpline", function(object, pos) standardGeneric("getSpline"))
 setMethod("getSpline", "AgEdge", function(object, pos) {
     if ((pos > 0)&&(pos <= numSplines(object)))
         return(object@splines[[pos]])
@@ -231,25 +152,21 @@ setMethod("getSpline", "AgEdge", function(object, pos) {
 
 })
 
-### Class BezierCurve
 
+### Class BezierCurve
 setClass("BezierCurve", representation(cPoints="list"))
 
-setGeneric("cPoints", function(object)
-           standardGeneric("cPoints"))
-setMethod("cPoints", "BezierCurve", function(object)
-          object@cPoints)
+setGeneric("cPoints", function(object) standardGeneric("cPoints"))
+setMethod("cPoints", "BezierCurve", function(object) object@cPoints)
 
-setGeneric("pointList", function(object)
-           standardGeneric("pointList"))
+setGeneric("pointList", function(object) standardGeneric("pointList"))
 setMethod("pointList", "BezierCurve", function(object) {
     z <- cPoints(object)
     out <- lapply(z, getPoints)
     out
 })
 
-setGeneric("bezierPoints", function(object)
-           standardGeneric("bezierPoints"))
+setGeneric("bezierPoints", function(object) standardGeneric("bezierPoints"))
 setMethod("bezierPoints", "BezierCurve", function(object) {
     z <- pointList(object)
     out <- vector("list", length=11)
@@ -261,28 +178,23 @@ setMethod("bezierPoints", "BezierCurve", function(object) {
     out
 })
 
-setGeneric("bLines", function(x, ...)
-           standardGeneric("bLines"))
-setMethod("bLines", "BezierCurve", function(x,...,col=par("col"),
-                                                len=0.25, lty=par("lty"),
-                                                lwd=par("lwd"),
-                                                arrowtail="none",
-                                                arrowhead="none") {
+setGeneric("bLines", function(x, ...) standardGeneric("bLines"))
+setMethod("bLines", "BezierCurve", 
+		function(x,...,col=par("col"), len=0.25, lty=par("lty"),
+                         lwd=par("lwd"), arrowtail="none", arrowhead="none") {
     z <- bezierPoints(x)
 
     numSegs <- nrow(z)
-    lines(z[2:(numSegs-1),1], z[2:(numSegs-1),2],
-          col=col, lty=lty, lwd=lwd)
+    lines(z[2:(numSegs-1),1], z[2:(numSegs-1),2], col=col, lty=lty, lwd=lwd)
 
     tailStart <- z[2,]
     tailEnd <- z[1,]
     switch(arrowtail,
            "none"=lines(c(tailStart[1], tailEnd[1]),
-                            c(tailStart[2], tailEnd[2]), col=col, lty=lty,
-           lwd=lwd),
-           "open"=arrows(tailStart[1], tailStart[2], tailEnd[1],
-                             tailEnd[2], col=col, length=len, lty=lty,
-           lwd=lwd),
+                        c(tailStart[2], tailEnd[2]), 
+			col=col, lty=lty, lwd=lwd),
+           "open"=arrows(tailStart[1], tailStart[2], tailEnd[1], tailEnd[2], 
+			col=col, length=len, lty=lty, lwd=lwd),
            stop("Unsupported arrowtail type: ", arrowtail))
 
     headStart <- z[numSegs-1,]
@@ -290,28 +202,24 @@ setMethod("bLines", "BezierCurve", function(x,...,col=par("col"),
 
     switch(arrowhead,
            "none"=lines(c(headStart[1], headEnd[1]),
-           c(headStart[2], headEnd[2]), col=col, lty=lty,
-           lwd=lwd),
-           "open"=arrows(headStart[1], headStart[2], headEnd[1],
-           headEnd[2], col=col, length=len, lty=lty,
-           lwd=lwd),
+                        c(headStart[2], headEnd[2]), 
+			col=col, lty=lty, lwd=lwd),
+           "open"=arrows(headStart[1], headStart[2], headEnd[1], headEnd[2], 
+			col=col, length=len, lty=lty, lwd=lwd),
            stop("Unsupported arrowhead type: ", arrowhead))
-
 })
 
 
-
-
-
+## show
 setMethod("show", "xyPoint", function(object)
-          cat(paste("x: ", object@x, ", y: ",
-                    object@y, "\n", sep="")))
+          cat(paste("x: ", object@x, ", y: ", object@y, "\n", sep="")))
 
 setMethod("show", "AgEdge", function(object) {
     z <- splines(object)
     out <- paste("An edge between", head(object),
                  "and", tail(object),
-                 "with",numSplines(object),"BezierCurve objects:")
+                 "with",numSplines(object),
+		 "BezierCurve objects:")
     cat(out,"\n")
     for (i in seq(along=z))
         show(z[[i]])
@@ -320,57 +228,44 @@ setMethod("show", "AgEdge", function(object) {
 setMethod("show", "BezierCurve", function(object) {
     z <- cPoints(object)
     out <- paste(unlist(lapply(z,
-                               function(x){paste(getPoints(x),
-                                                 collapse=",")})),
-                 collapse=" ")
+                 function(x){paste(getPoints(x), collapse=",")})), collapse=" ")
     out <- paste(out,"\n")
     cat(out)
 })
 
-setMethod("lines", "BezierCurve", function(x,...,col=par("col"),
-                                           lty=par("lty"), lwd=par("lwd")) {
+
+## lines
+setMethod("lines", "BezierCurve", 
+		function(x,...,col=par("col"), lty=par("lty"), lwd=par("lwd")) {
     z <- bezierPoints(x)
     lines(z[,1],z[,2],col=col,lty=lty,lwd=lwd)
 })
 
 setMethod("lines", "AgEdge",
-  function(x, ...,
-           len,
-           lty=par("lty"), lwd=par("lwd")) {
+  		function(x, ..., len, lty=par("lty"), lwd=par("lwd")) {
     z <- splines(x)
 
     curArrowTail <- arrowtail(x)
-    if (curArrowTail == "")
-        curArrowTail <- "none"
+    if (curArrowTail == "") curArrowTail <- "none"
     curArrowHead <- arrowhead(x)
-    if (curArrowHead == "")
-        curArrowHead <- "none"
+    if (curArrowHead == "") curArrowHead <- "none"
     edgeColor <- color(x)
-    if (edgeColor == "")
-        edgeColor <- "black"
+    if (edgeColor == "") edgeColor <- "black"
 
     arrowtails <- c(curArrowTail, rep("none", length(z)-1))
     arrowheads <- c(rep("none", length(z)-1), curArrowHead)
 
-    if(length(x@lty)>0)
-      lty=x@lty[1]
-    if(length(x@lwd)>0)
-      lwd=x@lwd[1]
-
-
+    if(length(x@lty)>0) lty=x@lty[1]
+    if(length(x@lwd)>0) lwd=x@lwd[1]
 
     len <- len * as.numeric(arrowsize(x))
     mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
-           MoreArgs=list(len=len, col=edgeColor,
-                         lty=lty, lwd=lwd, ...))
+           MoreArgs=list(len=len, col=edgeColor, lty=lty, lwd=lwd, ...))
 
     drawTxtLabel(txtLabel(x))
-  })
+})
 
 ### Class Ragraph
-setGeneric("Ragraph", function(object)
-           standardGeneric("Ragraph"))
-
 setClass("Ragraph", representation(agraph="externalptr",
                                    laidout="logical",
                                    layoutType="character",
@@ -379,59 +274,41 @@ setClass("Ragraph", representation(agraph="externalptr",
                                    AgEdge="list",
                                    boundBox="boundingBox"))
 
-setGeneric("agraph", function(object)
-           standardGeneric("agraph"))
-setMethod("agraph", "Ragraph", function(object)
-          object@agraph)
+setGeneric("agraph", function(object) standardGeneric("agraph"))
+setMethod("agraph", "Ragraph", function(object) object@agraph)
 
-setMethod("edgemode", "Ragraph", function(object)
-          object@edgemode)
+setMethod("edgemode", "Ragraph", function(object) object@edgemode)
 
-setGeneric("laidout", function(object)
-           standardGeneric("laidout"))
-setMethod("laidout", "Ragraph", function(object)
-          object@laidout)
+setGeneric("laidout", function(object) standardGeneric("laidout"))
+setMethod("laidout", "Ragraph", function(object) object@laidout)
 
-setGeneric("layoutType", function(object)
-           standardGeneric("layoutType"))
-setMethod("layoutType", "Ragraph", function(object)
-          object@layoutType)
+setGeneric("layoutType", function(object) standardGeneric("layoutType"))
+setMethod("layoutType", "Ragraph", function(object) object@layoutType)
 
-setGeneric("boundBox", function(object)
-           standardGeneric("boundBox"))
-setMethod("boundBox", "Ragraph", function(object)
-              object@boundBox)
+setGeneric("boundBox", function(object) standardGeneric("boundBox"))
+setMethod("boundBox", "Ragraph", function(object) object@boundBox)
 
 
 ##------------------------------------------------------------
 ## accessor and replacement methods for AgEdge slot
 ##------------------------------------------------------------
+setGeneric("AgEdge", function(object) standardGeneric("AgEdge"))
+setMethod("AgEdge", "Ragraph", function(object) object@AgEdge)
 
-setGeneric("AgEdge", function(object)
-           standardGeneric("AgEdge"))
-setMethod("AgEdge", "Ragraph", function(object)
-          object@AgEdge)
-
-setGeneric("AgEdge<-", function(object, value)
-           standardGeneric("AgEdge<-"))
-setReplaceMethod("AgEdge", "Ragraph",
-                 function(object, value) {
+setGeneric("AgEdge<-", function(object, value) standardGeneric("AgEdge<-"))
+setReplaceMethod("AgEdge", "Ragraph", function(object, value) {
                    object@AgEdge = value
                    return(object)
-                 })
+})
 
 ##------------------------------------------------------------
 ## accessor and replacement methods for AgNode slot
 ##------------------------------------------------------------
-setGeneric("AgNode", function(object)
-           standardGeneric("AgNode"))
-setMethod("AgNode", "Ragraph", function(object)
-          object@AgNode)
+setGeneric("AgNode", function(object) standardGeneric("AgNode"))
+setMethod("AgNode", "Ragraph", function(object) object@AgNode)
 
-setGeneric("AgNode<-", function(object, value)
-           standardGeneric("AgNode<-"))
-setReplaceMethod("AgNode", "Ragraph",
-                 function(object, value) {
+setGeneric("AgNode<-", function(object, value) standardGeneric("AgNode<-"))
+setReplaceMethod("AgNode", "Ragraph", function(object, value) {
                    object@AgNode = value
                    return(object)
                  })
@@ -462,21 +339,20 @@ setMethod("getNodeLW", "Ragraph", function(object) {
    })
 
 setMethod("show", "Ragraph", function(object) {
-    print(paste("A graph with",length(AgNode(object)),
-                "nodes."))
+    print(paste("A graph with",length(AgNode(object)), "nodes."))
 })
 
 
-setMethod("edgeNames", "Ragraph", function(object,
-                                           recipEdges=c("combined",
-                                           "distinct")) {
+setMethod("edgeNames", "Ragraph", 
+                    function(object, recipEdges=c("combined", "distinct")) {
     recipEdges <- match.arg(recipEdges)
 
-    edgeNames <- sapply(AgEdge(object), function(x) paste(tail(x), head(x), sep="~"))
+    edgeNames <- sapply(AgEdge(object), 
+			function(x) paste(tail(x), head(x), sep="~"))
 
     if (recipEdges == "combined") {
-        revNames <- sapply(AgEdge(object), function(x) paste(head(x),
-                                                             tail(x), sep="~"))
+        revNames <- sapply(AgEdge(object), 
+			   function(x) paste(head(x), tail(x), sep="~"))
 
         handled <- character()
         remove <- numeric()
@@ -486,8 +362,7 @@ setMethod("edgeNames", "Ragraph", function(object,
             else
                 remove <- c(remove, i)
         }
-        if (length(remove) > 0)
-            edgeNames <- edgeNames[-remove]
+        if (length(remove) > 0) edgeNames <- edgeNames[-remove]
     }
     edgeNames
 })
