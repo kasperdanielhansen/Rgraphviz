@@ -347,7 +347,7 @@ setMethod("edgeNames", "Ragraph",
                     function(object, recipEdges=c("combined", "distinct")) {
     recipEdges <- match.arg(recipEdges)
 
-    edgeNames <- sapply(AgEdge(object), 
+    LedgeNames <- sapply(AgEdge(object), 
 			function(x) paste(tail(x), head(x), sep="~"))
 
     if (recipEdges == "combined") {
@@ -356,14 +356,14 @@ setMethod("edgeNames", "Ragraph",
 
         handled <- character()
         remove <- numeric()
-        for (i in 1:length(edgeNames)) {
+        for (i in 1:length(LedgeNames)) {
             if ((recipEdges == "distinct") || (! revNames[i] %in% handled))
-                handled <- c(handled, edgeNames[i])
+                handled <- c(handled, LedgeNames[i])
             else
                 remove <- c(remove, i)
         }
-        if (length(remove) > 0) edgeNames <- edgeNames[-remove]
+        if (length(remove) > 0) LedgeNames <- LedgeNames[-remove]
     }
-    edgeNames
+    LedgeNames
 })
 
