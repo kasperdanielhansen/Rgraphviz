@@ -4,37 +4,52 @@ importFrom("geneplotter", "imageMap")
 import("methods")
                                                                                 
 export(
-        agopen,
-        agread,
-        agwrite,
-        buildEdgeList,
-        buildNodeList,
-        checkAttrs,
-        drawAgNode,
-        drawTxtLabel,
-        getDefaultAttrs,
-        getNodeLabels,
-        getNodeNames,
-        graphvizVersion,
-        layoutGraph,
-        makeNodeAttrs,
-        pieGlyph,
-        removedEdges
+        agopen,			# Rgraphviz
+        agread,			# Rgraphviz
+        agwrite,		# Rgraphviz
+        buildEdgeList,		# Rgraphviz
+        buildNodeList,		# Rgraphviz
+        checkAttrs,		# defaultAttrs
+        drawAgNode,		# graph
+        drawTxtLabel,		# graph
+        getDefaultAttrs,	# defaultAttrs
+        getNodeLabels,		# Rgraphviz
+        getNodeNames,		# Rgraphviz
+        graphvizVersion,	# Rgraphviz
+        layoutGraph,		# Rgraphviz
+        makeNodeAttrs,		# own
+        pieGlyph,		# own
+        removedEdges,		# Rgraphviz
+
+	LLgetAttrsGraph,
+	LLgetDefAttrsGraph,
+	LLsetAttrsGraph,
+
+	LLgetAttrsNode,
+	LLgetDefAttrsNode,
+	LLsetAttrsNode,
+
+	LLgetAttrsEdge,
+	LLgetDefAttrsEdge,
+	LLsetAttrsEdge,
+
+	LLgetDefAttrs,
+	LLtoFile
 	)
 
-exportClasses(
+exportClasses(			# Ragraph
                 "AgEdge",
                 "AgNode",
                 "AgTextLabel",
                 "BezierCurve",
                 "boundingBox",
-                "pEdge",
-                "pNode",
+                "pEdge",	# plot, related to buildEdgeList only
+                "pNode",	# plot, related to buildNodeList only
                 "Ragraph",
                 "xyPoint"
 	)
 
-exportMethods(
+exportMethods(		# Ragraph +
                 "AgEdge<-",
                 "AgEdge",
                 "AgNode<-",
@@ -49,12 +64,12 @@ exportMethods(
                 "boundBox",
                 "color",
                 "cPoints",
-                "edgeL",
+                "edgeL",		# graph only
                 "edgemode",
                 "edgeNames",
                 "ep",
                 "fillcolor",
-                "from",
+                "from",			# plot only
                 "getNodeCenter",
                 "getNodeHeight",
                 "getNodeLW",
@@ -66,7 +81,7 @@ exportMethods(
                 "getX",
                 "getY",
                 "head",
-                "imageMap",
+                "imageMap",		# imageMap only
                 "labelColor",
                 "labelFontsize",
                 "labelJust",
@@ -76,9 +91,9 @@ exportMethods(
                 "laidout",
                 "layoutType",
                 "lines",
-                "name",
+                "name",			# plot
                 "numSplines",
-                "plot",
+                "plot",			# graph only
                 "pointList",
                 "shape",
                 "show",
@@ -86,8 +101,8 @@ exportMethods(
                 "splines",
                 "style",
                 "tail",
-                "to",
-                "toDot",
+                "to",			# plot only
+                "toDot",		# graph only
                 "txtLabel",
                 "upRight"
 	)

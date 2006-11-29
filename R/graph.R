@@ -7,8 +7,8 @@ setMethod("plot", "graph",
            recipEdges=c("combined", "distinct")){
     if (!validGraph(x))
       stop("The graph to be plotted is not a valid graph structure")
-    if (missing(y))
-      y <- "dot"
+
+    if (missing(y)) y <- "dot"
 
     recipEdges <- match.arg(recipEdges)
 
@@ -49,28 +49,32 @@ setMethod("plot", "Ragraph",
                 ylim=c(0,getY(ur)),
                 log="", asp=NA, ...)
     xy <- xy.coords(NA, NA)
+
     ## !! Also still hardcoding 'type'
     plot.xy(xy, type="n", ...)
 
     if(!missing(xlab) && !missing(ylab))
       stop("Arguments 'xlab' and 'ylab' are not handled.")
+
     if(!is.null(sub)||!is.null(main))
-      title(main, sub, cex.main=cex.main, col.main=col.main, cex.sub=cex.sub, col.sub=col.sub)
+      title(main, sub, cex.main=cex.main, col.main=col.main, 
+		       cex.sub=cex.sub, col.sub=col.sub)
 
     ## -----------------------------------------------------------------------
     ## determine whether node labels fit into nodes and set "cex" accordingly
     ## -----------------------------------------------------------------------
     agn <- AgNode(x)
-    nodeDims <- sapply(agn, function(n) { c(getNodeRW(n)+getNodeLW(n), getNodeHeight(n)) })
+    nodeDims <- sapply(agn, function(n) 
+			    { c(getNodeRW(n)+getNodeLW(n), getNodeHeight(n)) })
     strDims  <- sapply(agn, function(n) {
-      s  <- labelText(txtLabel(n))
-      if(length(s)==0) {
-        rv <- c(strwidth(" "), strheight(" "))
-      } else {
-        rv <- c(strwidth(s)*1.1, strheight(s)*1.4)
-      }
-      return(rv)
-    } )
+      			s  <- labelText(txtLabel(n))
+      			if(length(s)==0) {
+        			rv <- c(strwidth(" "), strheight(" "))
+      			} else {
+        			rv <- c(strwidth(s)*1.1, strheight(s)*1.4)
+      			}
+      			return(rv)
+    			} )
     cex <- min(nodeDims / strDims)
     if(is.finite(cex)) {
       old.cex <- par(cex=cex)
@@ -97,12 +101,98 @@ setMethod("plot", "Ragraph",
     ## the arrowheads -- in INCHES! see man page for "arrows", which is called
     ## from bLines, which is called from lines.
     arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * min(nodeDims) / pi
+
     ## Plot the edges
     lapply(AgEdge(x), lines, len=arrowLen, edgemode=edgemode)
 
     invisible(x)
   })
 
+setGeneric("toDot", function(graph, filename, ...) standardGeneric("toDot"))
+setMethod("toDot", "graph", function(graph, filename, ...) {
+    z <- agopen(graph, name = "foo", ...)
+    agwrite(z, filename)
+})
+
+
+drawAgNode <- function(node) {
+  nodeCenter <- getNodeCenter(node)
+  nodeX <- getX(nodeCenter)
+  nodeY <- getY(nodeCenter)
+
+  lw     <- getNodeLW(node)
+  rw     <- getNodeRW(node)
+  rad    <- (lw+rw)/2
+  height <- getNodeHeight(node)
+  fg     <- color(node)
+  style <- style(node)
+  shape <- shape(node)
+
+  ## Normal Rgraphviz defaults to circle, but DOT defaults to ellipse
+  if (shape =="") shape <- "ellipse" 
+
+  if (fg == "") fg <- "black"
+  bg <- fillcolor(node)
+  if (bg == "") {
+      if (style == "filled") bg <- "grey"
+      else bg <- "transparent"
+  }
+
+  switch(shape,
+         "circle"    = Rgraphviz:::drawCircleNode(x=nodeX, y=nodeY,
+                                      rad=rad, fg=fg, bg=bg),
+
+         "ellipse"   = Rgraphviz:::ellipse(x=nodeX, y=nodeY,
+                    		   height=height, width=rad*2, fg=fg, bg=bg),
+         "box"=,
+         "rect"=,
+         "rectangle" = rect(nodeX-lw, nodeY-(height/2), 
+			    nodeX+rw, nodeY+(height/2), 
+			    col=bg, border=fg),
+
+         "plaintext"= { if (style == "filled")
+                          rect(nodeX-lw, nodeY-(height/2),
+                               nodeX+rw, nodeY+(height/2),
+                               col=bg, border=FALSE) },
+         stop("Unimplemented node shape: ", shape(node))
+         ) ## switch
+
+  drawTxtLabel(txtLabel(node), xLoc=nodeX, yLoc=nodeY)
+}
+
+drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
+  txt <- labelText(txtLabel)
+
+  if(length(txt)>1) stop("'labelText(txtLabel)' must have length 1.")
+
+  if(length(txt)==0) return(invisible(NULL))
+
+  if(xor(missing(xLoc), missing(yLoc)))
+    stop("'xLoc' and 'yLoc' must be either be both specified or both missing.")
+
+  if(missing(xLoc)) {
+    loc <- labelLoc(txtLabel)
+    justMod <- switch(labelJust(txtLabel),
+                      "l" = 0,
+                      "n" = -0.5,
+                      "r" = -1)
+    xLoc <-  getX(loc) + (justMod * labelWidth(txtLabel))
+    yLoc <-  getY(loc)
+  }
+
+  text(xLoc, yLoc, txt, col=labelColor(txtLabel))
+}
+
+## not exported
+drawCircleNode <- function(x, y, rad, fg, bg) {
+    invisible(symbols(x, y, circles=rad, inches=FALSE, fg=fg, bg=bg, add=TRUE))
+}
+
+
+# TODO:
+#    "edgeL" is defined in graph/R/methods-graph.R for "graph"
+#    probably could obsolete these two
+#    doc in buildNodeList.Rd
 
 setMethod("edgeL", "clusterGraph", function(graph, index) {
     ## temporary function, just a placeholder until I put in
@@ -144,86 +234,3 @@ setMethod("edgeL", "distGraph", function(graph, index) {
     edgeL
 })
 
-setGeneric("toDot", function(graph, filename, ...)
-           standardGeneric("toDot"))
-
-setMethod("toDot", "graph", function(graph, filename, ...) {
-    z <- agopen(graph, name = "foo", ...)
-    agwrite(z, filename)
-})
-
-
-drawAgNode <- function(node) {
-  nodeCenter <- getNodeCenter(node)
-  nodeX <- getX(nodeCenter)
-  nodeY <- getY(nodeCenter)
-
-  lw     <- getNodeLW(node)
-  rw     <- getNodeRW(node)
-  rad    <- (lw+rw)/2
-  height <- getNodeHeight(node)
-  fg     <- color(node)
-  style <- style(node)
-  shape <- shape(node)
-  if (shape =="")
-      shape <- "ellipse" ## Normal Rgraphviz defaults to circle
-                         ## but DOT defaults to ellipse
-
-  if (fg == "")
-      fg <- "black"
-  bg     <- fillcolor(node)
-  if (bg == "") {
-      if (style == "filled")
-          bg <- "grey"
-      else
-          bg <- "transparent"
-  }
-
-  switch(shape,
-         "circle"    = Rgraphviz:::drawCircleNode(x=nodeX, y=nodeY,
-                                      rad=rad, fg=fg, bg=bg),
-
-         "ellipse"   = Rgraphviz:::ellipse(x=nodeX, y=nodeY,
-                    height=height, width=rad*2, fg=fg, bg=bg),
-         "box"=,
-         "rect"=,
-         "rectangle" = rect(nodeX-lw, nodeY-(height/2), nodeX+rw,
-           nodeY+(height/2), col=bg, border=fg),
-
-         "plaintext"= { if (style == "filled")
-                          rect(nodeX-lw, nodeY-(height/2),
-                               nodeX+rw, nodeY+(height/2),
-                               col=bg, border=FALSE) },
-         stop("Unimplemented node shape: ", shape(node))
-         ) ## switch
-
-  drawTxtLabel(txtLabel(node), xLoc=nodeX, yLoc=nodeY)
-}
-
-drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
-  txt <- labelText(txtLabel)
-  if(length(txt)>1)
-    stop("'labelText(txtLabel)' must have length 1.")
-  if(length(txt)==0)
-    return(invisible(NULL))
-
-  if(xor(missing(xLoc), missing(yLoc)))
-    stop("'xLoc' and 'yLoc' must be either be both specified or both missing.")
-  if(missing(xLoc)) {
-    loc <- labelLoc(txtLabel)
-    justMod <- switch(labelJust(txtLabel),
-                      "l" = 0,
-                      "n" = -0.5,
-                      "r" = -1)
-    xLoc <-  getX(loc) + (justMod * labelWidth(txtLabel))
-    yLoc <-  getY(loc)
-  }
-
-  text(xLoc, yLoc, txt, col=labelColor(txtLabel))
-}
-
-## not exported
-drawCircleNode <- function(x, y, rad, fg, bg) {
-    invisible(symbols(x, y, circles=rad, inches=FALSE,
-                      fg=fg, bg=bg, add=TRUE))
-}

@@ -2,7 +2,7 @@
 #include "util.h"
 
 SEXP Rgraphviz_graph_type_tag;
-GVC_t *gvc;
+GVC_t *gvc = NULL;
 
 SEXP Rgraphviz_init(void) {
     Rgraphviz_graph_type_tag = install("RGRAPH_TYPE_TAG");
@@ -11,6 +11,7 @@ SEXP Rgraphviz_init(void) {
     agseterr(AGERR);
 
 #ifdef GRAPHVIZGT_2_4
+    if ( gvc ) { gvFreeContext(gvc); gvc = NULL; }
     gvc = gvContext();
 #endif /* GRAPHVIZGT_2_4 */
 
