@@ -75,7 +75,7 @@ getDefaultAttrs <- function(curAttrs=list(),
     if (is.null(curAttrs$node$fillcolor))
         curAttrs$node$fillcolor <- bg
     if (is.null(curAttrs$node$label))
-        curAttrs$node$label <- ""
+        curAttrs$node$label <- "\\N"
     if (is.null(curAttrs$node$color))
         curAttrs$node$color <- col
     if (is.null(curAttrs$node$fontcolor))

@@ -14,8 +14,9 @@ Source based installation
 The Rgraphviz package depends on the Graphviz library which can be
 obtained from http://www.graphviz.org/.
 
-At present, Rgraphviz is known to work with Graphviz versions 2.2,
-2.4, and 2.6.
+At present, Rgraphviz is known to work with Graphviz versions greater
+than or equal to 2.2 (note however that a bug in the neato layout
+routine makes it preferable not to use versions 2.4, 2.6 and 2.8)
 
 To install Graphviz:
 
@@ -27,6 +28,9 @@ To install Graphviz:
       ./configure
       make
       make install
+
+A word of warning, especially on the Mac OS X platform: Rgraphviz may
+not work if Graphviz is compiled with optimization.
 
 For the most recent version of Graphviz, you will also need to make
 sure that pkg-config (http://pkgconfig.freedesktop.org/wiki/) is

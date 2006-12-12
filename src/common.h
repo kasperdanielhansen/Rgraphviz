@@ -13,13 +13,7 @@
 
 #include <math.h>
 
-#ifdef GRAPHVIZGT_2_4
-#include <gvc.h>
-#include <gvplugin.h>
-#include <gvcext.h>
-#include <gvcint.h>
-#include <globals.h>
-#else
+#ifdef GRAPHVIZ_2_2_TO_2_3
 #include <render.h>
 #include <graph.h>
 #include <dotprocs.h>
@@ -27,8 +21,24 @@
 #include <adjust.h>
 #include <renderprocs.h>
 #include <circle.h>
-
 extern char *Info[];
+#endif
+
+#ifdef GRAPHVIZ_2_4_TO_2_9
+#include <gvc.h>
+#include <gvplugin.h>
+#include <gvcext.h>
+#include <gvcint.h>
+#include <globals.h>
+#endif
+
+#ifdef GRAPHVIZ_2_10_TO_MORE
+#include <gvc.h>
+#include <gvplugin.h>
+#include <gvcext.h>
+#include <gvcjob.h>
+#include <gvcint.h>
+#include <globals.h>
 #endif
 
 extern GVC_t *gvc;
