@@ -304,7 +304,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 			/* Note that we're using the standard dotneato */
 			/* layout commands for layouts and not the ones */
 			/* provided below.  This is a test */
-#ifdef GRAPHVIZGT_2_2_TO_2_3
+#ifdef GRAPHVIZ_2_2_TO_2_3
 			switch(INTEGER(layoutType)[0]) {
 			case DOTLAYOUT:
 				dot_layout(g);
