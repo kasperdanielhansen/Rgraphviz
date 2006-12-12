@@ -1,4 +1,4 @@
-PKG_CPPFLAGS=-I../graphviz-win32/include -DGRAPHVIZGT_1_16 -DWin32
+PKG_CPPFLAGS=-I../graphviz-win32/include -DGRAPHVIZ_2_2_TO_2_3 -DWin32
 
 PKG_LIBS = -L../graphviz-win32/lib -ldotgen -ltwopigen -lcircogen -lneatogen -lpack -lcommon -lpathplan -lgvrender -lgvgd -lgraph -lagraph -lcdt   
 

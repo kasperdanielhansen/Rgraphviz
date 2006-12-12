@@ -116,8 +116,13 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 	    /* Get the label information */
 	    if (edge->u.label != NULL) {
 		PROTECT(curLab = NEW_OBJECT(labClass));
-		SET_SLOT(curLab, Rf_install("labelText"),
-			 R_scalarString(edge->u.label->u.txt.line->str));
+#ifdef GRAPHVIZ_2_10_TO_MORE
+		SET_SLOT(curLab, Rf_install("labelText"),	
+			 R_scalarString(ED_label(edge)->u.txt.para->str));
+#else
+		SET_SLOT(curLab, Rf_install("labelText"),	
+		         R_scalarString(edge->u.label->u.txt.line->str));
+#endif
 		/* Get the X/Y location of the label */
 		PROTECT(curXY = NEW_OBJECT(xyClass));
 		SET_SLOT(curXY, Rf_install("x"),
@@ -127,12 +132,25 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
 		UNPROTECT(1);
 			 
+#ifdef GRAPHVIZ_2_10_TO_MORE
+		snprintf(tmpString, 2, "%c",ED_label(edge)->u.txt.para->just);
+		SET_SLOT(curLab, Rf_install("labelJust"),
+			 R_scalarString(tmpString));
+#else
 		snprintf(tmpString, 2, "%c",edge->u.label->u.txt.line->just);
 		SET_SLOT(curLab, Rf_install("labelJust"),
 			 R_scalarString(tmpString));
+#endif
 
+
+#ifdef GRAPHVIZ_2_10_TO_MORE
+		SET_SLOT(curLab, Rf_install("labelWidth"),
+			 R_scalarInteger(ED_label(edge)->u.txt.para->width));
+#else
 		SET_SLOT(curLab, Rf_install("labelWidth"),
 			 R_scalarInteger(edge->u.label->u.txt.line->width));
+#endif
+
 
 		SET_SLOT(curLab, Rf_install("labelColor"),
 			 R_scalarString(edge->u.label->fontcolor));
@@ -201,15 +219,28 @@ SEXP getNodeLayouts(Agraph_t *g) {
 
 
 	PROTECT(curLab = NEW_OBJECT(labClass));
+
+#ifdef GRAPHVIZ_2_10_TO_MORE
+	if (ND_label(node)->u.txt.para != NULL) {
+	    SET_SLOT(curLab, Rf_install("labelText"),
+		     R_scalarString(ND_label(node)->u.txt.para->str));
+	    snprintf(tmpString, 2, "%c",ND_label(node)->u.txt.para->just);
+#else
 	if (node->u.label->u.txt.line != NULL) {
 	    SET_SLOT(curLab, Rf_install("labelText"),
 		     R_scalarString(node->u.label->u.txt.line->str));
 	    snprintf(tmpString, 2, "%c",node->u.label->u.txt.line->just);
+#endif
 	    SET_SLOT(curLab, Rf_install("labelJust"),
 		     R_scalarString(tmpString));
 	    
+#ifdef GRAPHVIZ_2_10_TO_MORE
+	    SET_SLOT(curLab, Rf_install("labelWidth"),
+		     R_scalarInteger(ND_label(node)->u.txt.para->width));
+#else
 	    SET_SLOT(curLab, Rf_install("labelWidth"),
 		     R_scalarInteger(node->u.label->u.txt.line->width));
+#endif
 	    
 	    /* Get the X/Y location of the label */
 	    PROTECT(curXY = NEW_OBJECT(xyClass));
@@ -239,10 +270,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
     return(outLst);
 }
 
-
-#ifdef GRAPHVIZGT_2_4
-static char *layouts[] = { "dot", "neato", "twopi", "circo", "fdp"};
-#else
+#ifdef GRAPHVIZ_2_2_TO_2_3
 enum {
         DOTLAYOUT = 0,
         NEATOLAYOUT,
@@ -250,6 +278,8 @@ enum {
         CIRCOLAYOUT,
         FDPLAYOUT
 };
+#else
+static char *layouts[] = { "dot", "neato", "twopi", "circo", "fdp"};
 #endif
 
 SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
@@ -274,9 +304,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 			/* Note that we're using the standard dotneato */
 			/* layout commands for layouts and not the ones */
 			/* provided below.  This is a test */
-#ifdef GRAPHVIZGT_2_4
-			gvLayout(gvc, g, layouts[INTEGER(layoutType)[0]]);
-#else
+#ifdef GRAPHVIZGT_2_2_TO_2_3
 			switch(INTEGER(layoutType)[0]) {
 			case DOTLAYOUT:
 				dot_layout(g);
@@ -298,6 +326,8 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 			default:
 				error("Invalid layout type\n");
 			}
+#else
+			gvLayout(gvc, g, layouts[INTEGER(layoutType)[0]]);
 #endif
 		}
 		

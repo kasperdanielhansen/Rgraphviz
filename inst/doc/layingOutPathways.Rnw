@@ -203,7 +203,7 @@ require("fibroEset")
 require("hgu95av2")
 data("fibroEset")
 plotExpressionGraph(IMCAGraph, IMCAAttrs$LocusLink,
-exprs(fibroEset)[,1], hgu95av2LOCUSID, attrs=IMCAAttrs$defAttrs,
+exprs(fibroEset)[,1], hgu95av2ENTREZID, attrs=IMCAAttrs$defAttrs,
 subGList=IMCAAttrs$subGList, nodeAttrs=IMCAAttrs$nodeAttrs)
 @
 
@@ -238,5 +238,17 @@ customize the outputs to demonstrate a variety of effects.  Hopefully
 as time goes on, we will be able to provide more in the way of
 automation in our tools, but even as it exists now, laying out
 pathways can provide a valuable tool for users.
+
+\section{Sessioninfo}
+
+This document was produced using
+<<>>=
+sessionInfo()
+@ 
+
+together with the following version of graphviz
+<<>>=
+graphvizVersion()
+@ 
 
 \end{document}

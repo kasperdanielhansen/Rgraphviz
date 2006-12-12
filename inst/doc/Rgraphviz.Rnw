@@ -73,6 +73,12 @@ plot(g1, "twopi")
 \end{center} \end{figure}
 The result is shown in Figure~\ref{plotNeatoTwopi}.
 
+A word of warning: some versions of graphviz (notably 2.4, 2.6 and
+2.8) have a problem using the \textit{neato} layout on graphs with
+singletons (single nodes, unconnected to any other node). If you are
+trying to run these examples on such a system, just add an edge to
+these singleton nodes (that however, will change the output).
+
 % wh 16.6.06):
 %  I have commented the following remarks about fully connectedness 
 %  and the definition of g2 out. Note that g2 is not connected, either!
@@ -814,5 +820,17 @@ fhtml
 if(interactive())
   browseURL(fhtml)
 @
+
+\section{Sessioninfo}
+
+This document was produced using
+<<>>=
+sessionInfo()
+@ 
+
+together with the following version of graphviz
+<<>>=
+graphvizVersion()
+@ 
 
 \end{document}

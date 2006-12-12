@@ -7,7 +7,6 @@ AC_ARG_WITH(graphviz,
 GRAPHVIZ_DIR="${with_graphviz}",
 GRAPHVIZ_DIR="")
 
-GVIZ_DEFS="-DGRAPHVIZGT_1_16"
 GRAPHVIZ_VERSTR=""
 
 dnl If user doesn't specify --with-graphviz arg, try pkg-config first
@@ -62,13 +61,22 @@ AC_MSG_NOTICE(Found graphviz $GRAPHVIZ_VERSTR)
 MAJOR=`echo ${GRAPHVIZ_VERSTR} | cut -f1 -d"."`
 MINOR=`echo ${GRAPHVIZ_VERSTR} | cut -f2 -d"."`
 
-if test ${MAJOR} -lt "2" || test ${MINOR} -lt "2" ; then
+if test ${MAJOR} -lt "2" || (test ${MAJOR} -eq "2" && test ${MINOR} -lt "2") ; then
    AC_MSG_ERROR("Need graphviz >= 2.2")
    exit 1
 fi
 
-if test ${MAJOR} -eq "2" && test ${MINOR} -gt "3" ; then
-   GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZGT_2_4"
+if test ${MAJOR} -eq "2" && test ${MINOR} -lt "4" ; then
+   GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_2_2_TO_2_3"
+fi
+
+if test ${MAJOR} -eq "2" && test ${MINOR} -ge "4" && test ${MINOR} -le "9"; then
+   GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_2_4_TO_2_9"
+fi
+
+if test ${MAJOR} -ge "2" && test ${MINOR} -ge "10" ; then
+   GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_2_10_TO_MORE"
+   echo "test"
 fi
 
 AC_SUBST(GVIZ_DEFS)

@@ -10,10 +10,10 @@ SEXP Rgraphviz_init(void) {
     /* Stifle graphviz warning messages, only return errors */
     agseterr(AGERR);
 
-#ifdef GRAPHVIZGT_2_4
+#ifndef GRAPHVIZ_2_2_TO_2_3
     if ( gvc ) { gvFreeContext(gvc); gvc = NULL; }
     gvc = gvContext();
-#endif /* GRAPHVIZGT_2_4 */
+#endif 
 
     return(R_NilValue);
 }
