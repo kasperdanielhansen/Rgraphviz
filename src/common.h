@@ -44,6 +44,9 @@ extern char *Info[];
 extern GVC_t *gvc;
 extern SEXP Rgraphviz_graph_type_tag;
 
+typedef struct Rgattr_t Rgattr_t;
+struct Rgattr_t { char* name; char* value; };
+
 // these are called by R-functions directly
 SEXP Rgraphviz_agopen(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP Rgraphviz_agread(SEXP);

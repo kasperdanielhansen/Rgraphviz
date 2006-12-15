@@ -1,5 +1,6 @@
 agopen <- function(graph,  name, nodes, edges, kind=NULL,
-                   layout=TRUE, layoutType=c("dot","neato","twopi","circo","fdp"),
+                   layout=TRUE,	layoutType=c("dot","neato","twopi","circo","fdp"),
+
                    attrs=list(),
                    nodeAttrs=list(), edgeAttrs=list(),
                    subGList=list(), edgeMode=edgemode(graph),
@@ -10,36 +11,35 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     attrs <- getDefaultAttrs(attrs, layoutType)
     checkAttrs(attrs)
 
-    if ((missing(graph)) && (missing(edgeMode)))
+    if (missing(graph) && missing(edgeMode))
         stop("Must pass in either 'graph' or 'edgeMode'")
+    if (missing(nodes) && missing(graph))
+        stop("Must supply either parameter 'graph' or 'nodes'")
+    if (missing(edges) && missing(graph))
+        stop("Must supply either parameter 'graph' or 'edges'")
 
-    ## FIXME: For now, in graphviz 2.4, 2.6 and 2.8 on a neato graph w/
+    ## FIXME: For now, in graphviz 2.4 and 2.6 on a neato graph w/
     ##  singleton nodes, it will segfault.  The root cause
     ##  of this is in Graphviz proper and has been fixed in
     ##  the 2.5 devel branch (and thus 2.6).  Try and work
     ##  around this in a less hassling manner.
-    if ((graphvizVersion() %in% c("2.4","2.6", "2.8")) && (layoutType == "neato")) {
+    ## FIXME: This seems to still be around in 2.6
+    if ((graphvizVersion() %in% c("2.4","2.6")) && (layoutType == "neato")) {
         singletonGraph <- any(sapply(connComp(graph), length)<=1)
         if (singletonGraph)
             stop("There is a bad interaction between ",
-                 "Rgraphviz and Graphviz 2.4, 2.6 and 2.8 involving ",
+                 "Rgraphviz and Graphviz 2.4 and 2.6 involving ",
                  "graphs with singleton nodes laid out with neato.\n",
                  "Hopefully we can find a solution, ",
                  "but until then you can ",
-                 "use Graphviz versions earlier than 2.4 or newer than 2.8")
+                 "use Graphviz versions earlier than 2.4.")
     }
 
-
     if (missing(nodes)) {
-        if (missing(graph))
-            stop("Must supply either parameter 'graph' or 'nodes'")
         nodes <- buildNodeList(graph, nodeAttrs, subGList, attrs$node)
     }
     if (missing(edges)) {
-        if (missing(graph))
-            stop("Must supply either parameter 'graph' or 'edges'")
-        edges <- buildEdgeList(graph, recipEdges, edgeAttrs,  subGList,
-                               attrs$edge)
+        edges <- buildEdgeList(graph, recipEdges, edgeAttrs,  subGList, attrs$edge)
     }
 
     if (is.null(kind)) {
@@ -68,8 +68,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
 
     ## Allows lwd (line width) and lty (line type) to be set in same manner
     ## color is set
-    if (layout)
-      g <- layoutGraph(g)
+    if (layout) g <- layoutGraph(g)
     
     if (!is.null(edgeAttrs$lwd)) {
         for (i in seq(along=edgeAttrs$lwd)) {   
@@ -87,7 +86,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
 }
 
 agread <- function(filename, layoutType=c("dot","neato","twopi","circo","fdp"),
-                   layout=TRUE) {
+                   layout=TRUE	) {
     layoutType <- match.arg(layoutType)
     ## First check that the file exists
     if (!file.exists(filename))
@@ -107,13 +106,14 @@ agwrite <- function(graph, filename) {
                PACKAGE="Rgraphviz")
 }
 
-layoutGraph <- function(graph) {
+layoutGraph <- function(graph, layoutType=c("dot","neato","twopi","circo","fdp")) {
     if (is(graph,"graphNEL"))
         stop("Please use function agopen() for graphNEL objects")
     if (!is(graph,"Ragraph"))
         stop("Object is not of class Ragraph")
 
-    type <- switch(layoutType(graph),
+    layoutType <- match.arg(layoutType)
+    type <- switch(layoutType,
                    "dot"=0,
                    "neato"=1,
                    "twopi"=2,
@@ -122,14 +122,9 @@ layoutGraph <- function(graph) {
                    stop(paste("Invalid layout type:",layoutType))
                    )
 
-    if (laidout(graph) == FALSE) {
-        z <- .Call("Rgraphviz_doLayout", graph, as.integer(type),
+     z <- .Call("Rgraphviz_doLayout", graph, as.integer(type),
                    PACKAGE="Rgraphviz");
-        return(z)
-    }
-    else {
-        return(graph)
-    }
+     return(z)
 }
 
 graphvizVersion <- function() {
@@ -175,14 +170,12 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
 }
 
 getNodeNames <- function(object) {
-    if (!is(object, "Ragraph"))
-        stop("Need a Ragraph object")
+    if (!is(object, "Ragraph")) stop("Need a Ragraph object")
     unlist(lapply(object@AgNode, name))
 }
 
 getNodeLabels <- function(object) {
-    if (!is(object, "Ragraph"))
-        stop("Need a Ragraph object")
+    if (!is(object, "Ragraph")) stop("Need a Ragraph object")
     unlist(lapply(object@AgNode, function(x) labelText(x@txtLabel)))
 }
 

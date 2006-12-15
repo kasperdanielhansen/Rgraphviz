@@ -24,17 +24,22 @@ export(
 	LLgetAttrsGraph,
 	LLgetDefAttrsGraph,
 	LLsetAttrsGraph,
+	LLsetDefAttrsGraph,
 
 	LLgetAttrsNode,
 	LLgetDefAttrsNode,
 	LLsetAttrsNode,
+	LLsetDefAttrsNode,
 
 	LLgetAttrsEdge,
 	LLgetDefAttrsEdge,
 	LLsetAttrsEdge,
+	LLsetDefAttrsEdge,
 
 	LLgetDefAttrs,
-	LLtoFile
+	LLsetDefAttrs,
+	LLtoFile,
+	LLagopen
 	)
 
 exportClasses(			# Ragraph
@@ -49,7 +54,18 @@ exportClasses(			# Ragraph
                 "xyPoint"
 	)
 
-exportMethods(		# Ragraph +
+exportMethods(	
+		##LLattrDefaults,
+      		##LL"attrDefaults<-", 
+		##LLedgeDataDefaults, 
+		##LL"edgeDataDefaults<-",
+      		##LLnodeDataDefaults, 
+		##LL"nodeDataDefaults<-", 
+		##LLedgeData, 
+		##LL"edgeData<-", 
+		##LLnodeData,
+      		##LL"nodeData<-"
+		# Ragraph +
                 "AgEdge<-",
                 "AgEdge",
                 "AgNode<-",

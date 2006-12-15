@@ -16,16 +16,27 @@ setMethod("plot", "graph",
                 attrs=attrs, nodeAttrs=nodeAttrs,
                 edgeAttrs=edgeAttrs, subGList=subGList,
                 recipEdges=recipEdges)
-    invisible(plot(g, ...))
+
+    invisible(plot(g, y, ...))
   })
 
 
 setMethod("plot", "Ragraph",
-  function(x, y, ...,
+  function(x, y, edgeAttrs=list(), ...,
            main=NULL, cex.main=NULL, col.main="black",
            sub=NULL, cex.sub=NULL, col.sub="black",
            drawNode=drawAgNode, xlab, ylab) {
 
+    ############################################################
+    ## layout graph
+    ## TODO: if y is changed, redo layout
+    ############################################################
+    if (missing(y)) y <- "dot"
+    x <- layoutGraph(x, y)
+
+    ############################################################
+    ## render graph
+    ############################################################
     plot.new()
 
     ## eliminate all plot borders

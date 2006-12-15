@@ -18,6 +18,58 @@ static inline Agraph_t *getAgraphPtr(SEXP graph)
 // -- setAttrs
 // o. check attr default/val
 // o. ??? validate attr default/val, e.g., red for color, 123 not for shape ???
+// o. call "agclose(g)" somewhere...
+
+static const Rgattr_t def_graph_attrs[] = { 
+     		{"bgcolor",	"transparent"},
+     		{"fontcolor",	"black"},
+     		{"ratio",	"fill"},
+     		{"overlap",	""},
+     		{"splines",	"TRUE"},
+
+     		{"rank",	"same"},
+     		{"size",	"6.99, 6.99"},
+     		{"rankdir",	"TB"},	// dot only
+
+		{NULL,		NULL}
+		};
+
+static const Rgattr_t def_node_attrs[] = { 
+     		{"shape",	"circle"},
+     		{"fixedsize",	"TRUE"},
+     		{"fillcolor",	"transparent"},
+     		{"label",	""},
+     		{"color",	"black"},
+
+     		{"fontcolor",	"black"},
+     		{"fontsize",	"14"},
+     		{"height",	"0.5"},
+     		{"width",	"0.75"},
+
+		{NULL,		NULL}
+		};
+
+static const Rgattr_t def_edge_attrs[] = {
+     		{"color",	"black"},
+     		{"dir",		"both"},
+     		{"weight",	"1.0"},
+     		{"label",	""},
+     		{"fontcolor",	"black"},
+		
+     		{"arrowhead",	"none"},
+     		{"arrowtail",	"none"},
+     		{"fontsize",	"14"},
+     		{"labelfontsize","11"},
+     		{"arrowsize",	"1"},
+		
+     		{"headport",	"center"},
+     		{"layer",	""},
+     		{"style",	"solid"},
+     		{"minlen",	"1"},	// dot only
+		{"len",		"1.0"},	// neato only
+
+		{NULL, NULL}
+		};
 
 SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
 {
@@ -46,25 +98,13 @@ SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
 
 #endif
 
-     char* attrs[] = { 
-     		"bgcolor",
-     		"fontcolor",
-     		"ratio",
-     		"overlap",
-     		"splines",
-
-     		"rank",
-     		"size",
-     		"rankdir",	// dot only
-		NULL
-		};
      int nattr = 0;
-     while ( attrs[nattr] ) nattr++;
+     while ( def_graph_attrs[nattr].name ) nattr++;
 
      Agraph_t *g = getAgraphPtr(graph);
      if ( !g ) return(R_NilValue);
 
-     SEXP ans, at_name, at_val;
+     SEXP ans;
      PROTECT(ans = allocMatrix(STRSXP, nattr, 2));
 
      Agsym_t* sym;
@@ -72,11 +112,11 @@ SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
      int i = 0, ii = 0;
      for ( i = 0, ii = 0; i < nattr; i++, ii++ )
      {
-        sym = agfindattr(g, attrs[i]);
+        sym = agfindattr(g, def_graph_attrs[i].name);
         val = sym? sym->value : NULL;
         if ( !val ) val = "ATTR_NOT_DEFINED";
 
-        SET_STRING_ELT(ans, ii, mkChar(attrs[i]));
+        SET_STRING_ELT(ans, ii, mkChar(def_graph_attrs[i].name));
         SET_STRING_ELT(ans, nattr+ii, mkChar(val));
 
 #if DEBUG
@@ -86,6 +126,18 @@ SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
      }
      UNPROTECT(1);
      return(ans);
+}
+
+SEXP Rgraphviz_setDefAttrsGraph()
+{
+     int nattr = 0;
+     int i;
+     while ( def_graph_attrs[nattr].name ) nattr++;
+
+     for ( i = 0; i < nattr; i++ )
+        agraphattr(NULL, def_graph_attrs[i].name, def_graph_attrs[i].value);
+
+     return(R_NilValue);
 }
 
 SEXP Rgraphviz_getAttrsGraph(SEXP graph, SEXP attrname)
@@ -118,7 +170,13 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
      if ( !g ) return(R_NilValue);
 
      // 0 for success, -1 otherwise
-     int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
+//#if OLDER_THAN_2_8
+     Agsym_t* a = agfindattr(g, STR(attrname));
+     if ( !a ) a = agraphattr(g->root, STR(attrname), STR(default_val));
+     int r = agset(g, STR(attrname), STR(attrval));
+//#else
+//     int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
+//#endif 
 
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
@@ -181,21 +239,8 @@ SEXP Rgraphviz_getDefAttrsNode(SEXP graph)
 
 #endif
 
-     char* attrs[] = { 
-     		"shape",
-     		"fixedsize",
-     		"fillcolor",
-     		"label",
-     		"color",
-
-     		"fontcolor",
-     		"fontsize",
-     		"height",
-     		"width",
-		NULL
-		};
      int nattr = 0;
-     while ( attrs[nattr] ) nattr++;
+     while ( def_node_attrs[nattr].name ) nattr++;
 
      Agraph_t *g = getAgraphPtr(graph);
      if ( !g ) return(R_NilValue);
@@ -210,11 +255,11 @@ SEXP Rgraphviz_getDefAttrsNode(SEXP graph)
      int i = 0, ii = 0;
      for ( i = 0, ii = 0; i < nattr; i++, ii++ )
      {
-        sym = agfindattr(n, attrs[i]);
+        sym = agfindattr(n, def_node_attrs[i].name);
         val = sym? sym->value : NULL;
         if ( !val ) val = "ATTR_NOT_DEFINED";
 
-        SET_STRING_ELT(ans, ii, mkChar(attrs[i]));
+        SET_STRING_ELT(ans, ii, mkChar(def_node_attrs[i].name));
         SET_STRING_ELT(ans, nattr+ii, mkChar(val));
 
 #if DEBUG
@@ -225,6 +270,18 @@ SEXP Rgraphviz_getDefAttrsNode(SEXP graph)
 
      UNPROTECT(1);
      return(ans);
+}
+
+SEXP Rgraphviz_setDefAttrsNode()
+{
+     int nattr = 0;
+     while ( def_node_attrs[nattr].name ) nattr++;
+
+     int i;
+     for ( i = 0; i < nattr; i++ )
+	agnodeattr(NULL, def_node_attrs[i].name, def_node_attrs[i].value);
+
+     return(R_NilValue);
 }
 
 SEXP Rgraphviz_getAttrsNode(SEXP graph, SEXP node, SEXP attrname)
@@ -262,7 +319,13 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
      Agnode_t *n = agfindnode(g, STR(node));
      if ( !n ) return(R_NilValue);
 
-     int r = agsafeset(n, STR(attrname), STR(attrval), STR(default_val));
+//#if OLDER_THAN_2_8
+     Agsym_t* a = agfindattr(n, STR(attrname));
+     if ( !a ) a = agnodeattr(g, STR(attrname), STR(default_val));
+     int r = agset(n, STR(attrname), STR(attrval));
+//#else
+//     int r = agsafeset(n, STR(attrname), STR(attrval), STR(default_val));
+//#endif 
 
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
@@ -333,28 +396,8 @@ SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
 
 #endif
 
-     char* attrs[] = {
-     		"color",
-     		"dir",
-     		"weight",
-     		"label",
-     		"fontcolor",
-		
-     		"arrowhead",
-     		"arrowtail",
-     		"fontsize",
-     		"labelfontsize",
-     		"arrowsize",
-		
-     		"headport",
-     		"layer",
-     		"style",
-     		"minlen",	// dot only
-		"len",		// neato only
-		NULL
-		};
      int nattr = 0;
-     while ( attrs[nattr] ) nattr++;
+     while ( def_edge_attrs[nattr].name ) nattr++;
 
      Agraph_t *g = getAgraphPtr(graph);
      if ( !g ) return(R_NilValue);
@@ -369,11 +412,11 @@ SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
      int i = 0, ii = 0;
      for ( i = 0, ii = 0; i < nattr; i++, ii++ )
      {
-        sym = agfindattr(e, attrs[i]);
+        sym = agfindattr(e, def_edge_attrs[i].name);
         if ( sym ) val = sym? sym->value : NULL;
         if ( !val ) val = "ATTR_NOT_DEFINED";
 
-        SET_STRING_ELT(ans, ii, mkChar(attrs[i]));
+        SET_STRING_ELT(ans, ii, mkChar(def_edge_attrs[i].name));
         SET_STRING_ELT(ans, nattr+ii, mkChar(val));
 
 #if DEBUG
@@ -383,6 +426,18 @@ SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
      }
      UNPROTECT(1);
      return(ans);
+}
+
+SEXP Rgraphviz_setDefAttrsEdge()
+{
+     int nattr = 0;
+     while ( def_edge_attrs[nattr].name ) nattr++;
+
+     int i;
+     for ( i = 0; i < nattr; i++ )
+	agedgeattr(NULL, def_edge_attrs[i].name, def_edge_attrs[i].value);
+
+     return(R_NilValue);
 }
 
 SEXP Rgraphviz_getAttrsEdge(SEXP graph, SEXP from, SEXP to, SEXP attrname)
@@ -428,7 +483,13 @@ SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
      Agedge_t *e = agfindedge(g, u, v);
      if ( !e ) return(R_NilValue);
 
-     int r = agsafeset(e, STR(attrname), STR(attrval), STR(default_val));
+//#if OLDER_THAN_2_8
+     Agsym_t* a = agfindattr(e, STR(attrname));
+     if ( !a ) a = agedgeattr(g, STR(attrname), STR(default_val));
+     int r= agset(e, STR(attrname), STR(attrval));
+//#else
+//     int r = agsafeset(e, STR(attrname), STR(attrval), STR(default_val));
+//#endif
 
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
@@ -449,6 +510,113 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
      int i3 = gvFreeLayout(gvc, g);
 
      return(R_NilValue);
+}
+
+// g: graphNEL
+// nodes = nodes(g), 	strings
+// edges_from = edgeMatrix(g)["from",], edges_to = edgeMatrix(g)["to", ],  ints
+// nsubG = no. of subgraphs
+// subGIndex = subgraph-index for nodes, ints
+SEXP LLagopen(SEXP name, SEXP kind, 
+	      SEXP nodes, SEXP edges_from, SEXP edges_to, 
+	      SEXP nsubG, SEXP subGIndex, SEXP recipEdges)
+{
+    Agraph_t *g, *tmpGraph;
+    Agraph_t **sgs;
+    Agnode_t *head, *tail, *curNode;
+    Agedge_t *curEdge;
+    SEXP curPN, curPE, curSubG, curSubGEle;
+
+    char subGName[256];
+    int ag_k = 0;
+    int nsg = INTEGER(nsubG)[0];
+    int i,j;
+    int whichSubG;
+
+    if ( length(edges_from) != length(edges_to) )
+       error("length of edges_from must be equal to length of edges_to");
+
+    if ( length(nodes) != length(subGIndex) )
+       error("length of nodes must be equal to length of subGIndex");
+
+    if (!isString(name)) error("name must be a string");
+
+    if (!isInteger(kind)) error("kind must be an integer value");     
+
+    ag_k = INTEGER(kind)[0]; 
+    if ((ag_k < 0)||(ag_k > 3))
+        error("kind must be an integer value between 0 and 3");
+
+    aginit();
+    g = agopen(STR(name), ag_k);
+
+    /* create subgraphs */
+    sgs = (Agraph_t **)R_alloc(nsg, sizeof(Agraph_t *));
+    if ( nsg > 0 && !sgs ) 
+	error("Out of memory while allocating subgraphs");
+
+    for (i = 0; i < nsg; i++) {
+/*
+            curSubG = VECTOR_ELT(subGs, i);
+
+            // First see if this is a cluster or not 
+            curSubGEle = getListElement(curSubG, "cluster");
+            if ( curSubGEle == R_NilValue || LOGICAL(curSubGEle)[0] )
+                sprintf(subGName, "%s%d", "cluster_", i);
+            else
+*/
+                sprintf(subGName, "%d", i);
+
+//	    printf(" subgraph %d is named: %s \n", i, subGName);
+            sgs[i] = agsubg(g, subGName);
+     }
+
+#if DEBUG
+    printf(" nodes: ");
+    for (i = 0; i < length(nodes); i++) {
+	printf("%s ", CHAR(STRING_ELT(nodes, i)));
+    }
+    printf("\n");
+    printf(" edges: ");
+    for (i = 0; i < length(edges_from); i++) {
+	printf("%d - %d     %s - %s \n", 
+		INTEGER(edges_from)[i], 
+		INTEGER(edges_to)[i],
+		CHAR(STRING_ELT(nodes, INTEGER(edges_from)[i]-1)),
+		CHAR(STRING_ELT(nodes, INTEGER(edges_to)[i]-1)));
+    }
+#endif
+
+    /* create nodes */
+    for (i = 0; i < length(nodes); i++) {
+        whichSubG = INTEGER(subGIndex)[i];
+        tmpGraph = whichSubG > 0 ? sgs[whichSubG-1] : g;
+
+        curNode = agnode(tmpGraph, CHAR(STRING_ELT(nodes, i)));
+
+	//printf(" node %d in subgraph %d \n", i, whichSubG);
+    }
+
+    /* create the edges */
+    char* node_f; char* node_t;
+    for (i = 0; i < length(edges_from); i++) {
+	node_f = CHAR(STRING_ELT(nodes, INTEGER(edges_from)[i]-1));
+	node_t = CHAR(STRING_ELT(nodes, INTEGER(edges_to)[i]-1));
+
+        tail = agfindnode(g, node_f);
+        if ( !tail ) error("Missing tail node");
+
+        head = agfindnode(g, node_t);
+        if ( !head ) error("Missing head node");
+
+        whichSubG = INTEGER(subGIndex)[INTEGER(edges_from)[i]-1]; 
+        tmpGraph = whichSubG > 0 ? sgs[whichSubG-1] : g;
+
+        curEdge = agedge(tmpGraph, tail, head);
+    }
+
+    return(buildRagraph(g));
+
 }
 
 /*
