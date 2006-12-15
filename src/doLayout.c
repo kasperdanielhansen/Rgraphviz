@@ -262,8 +262,10 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	SEXP slotTmp, nLayout, cPoints, bb;
 
 	/* First make sure that hte graph is not already laid out */
-//LL	laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
-//LL	if (laidout == FALSE) {
+/*LL
+	laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
+	if (laidout == FALSE) {
+*/
 		/* Extract the Agraph_t pointer from the S4 object */
 		PROTECT(slotTmp = GET_SLOT(graph, install("agraph")));
 		CHECK_Rgraphviz_graph(slotTmp);
@@ -312,7 +314,9 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 							Rf_install("numEdges")))[0]));
 		SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 		SET_SLOT(graph,Rf_install("AgNode"),nLayout);
-//LL		SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
+/* LL
+		SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
+*/
 		SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
 		SET_SLOT(graph,Rf_install("boundBox"), bb);
 		UNPROTECT(4);
@@ -321,7 +325,10 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		/* free gvc after rendering */
 		gvFreeLayout(gvc, g);
 #endif
-//LL	}
+
+/* LL
+	}
+*/
 	
 	return(graph);
 }

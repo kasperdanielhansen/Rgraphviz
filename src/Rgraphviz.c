@@ -48,7 +48,6 @@ SEXP getListElement(SEXP list, char *str) {
             else
                 error("expecting VECSXP, got %s", 
                       Rf_type2char(TYPEOF(list))); 
-			// TODO: mod this Rf_ call (rev. 18855 -> 19051)
 	    break;
 	}
     }

@@ -9,9 +9,9 @@ static const R_CallMethodDef R_CallDef[] = {
     {"Rgraphviz_bezier", (DL_FUNC)&Rgraphviz_bezier, 3},
     {"Rgraphviz_buildNodeList", (DL_FUNC)&Rgraphviz_buildNodeList, 4},
     {"Rgraphviz_buildEdgeList", (DL_FUNC)&Rgraphviz_buildEdgeList, 7},
-
-    //{"Rgraphviz_toFile", (DL_FUNC)&Rgraphviz_toFile, 4),
-
+/*
+    {"Rgraphviz_toFile", (DL_FUNC)&Rgraphviz_toFile, 4),
+*/
     {NULL, NULL, 0},
 };
 
