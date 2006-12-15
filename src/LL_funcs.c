@@ -10,15 +10,17 @@ static inline Agraph_t *getAgraphPtr(SEXP graph)
      return g;
 }
 
-// TODO:
-// o. validate ptrs to graph/node/edge
-// -- getAttrs
-// o. handle non-exist attr
-// o. handle given default attr
-// -- setAttrs
-// o. check attr default/val
-// o. ??? validate attr default/val, e.g., red for color, 123 not for shape ???
-// o. call "agclose(g)" somewhere...
+/*
+ * TODO:
+ * o. validate ptrs to graph/node/edge
+ * -- getAttrs
+ * o. handle non-exist attr
+ * o. handle given default attr
+ * -- setAttrs
+ * o. check attr default/val
+ * o. ??? validate attr default/val, e.g., red for color, 123 not for shape ???
+ * o. call "agclose(g)" somewhere...
+*/
 
 static const Rgattr_t def_graph_attrs[] = { 
      		{"bgcolor",	"transparent"},
@@ -29,7 +31,7 @@ static const Rgattr_t def_graph_attrs[] = {
 
      		{"rank",	"same"},
      		{"size",	"6.99, 6.99"},
-     		{"rankdir",	"TB"},	// dot only
+     		{"rankdir",	"TB"},	/* dot only */
 
 		{NULL,		NULL}
 		};
@@ -65,8 +67,8 @@ static const Rgattr_t def_edge_attrs[] = {
      		{"headport",	"center"},
      		{"layer",	""},
      		{"style",	"solid"},
-     		{"minlen",	"1"},	// dot only
-		{"len",		"1.0"},	// neato only
+     		{"minlen",	"1"},	/* dot only */
+		{"len",		"1.0"},	/* neato only */
 
 		{NULL, NULL}
 		};
@@ -147,11 +149,11 @@ SEXP Rgraphviz_getAttrsGraph(SEXP graph, SEXP attrname)
 
      char *val = agget(g, STR(attrname));
 
-     if ( !val ) // no such attr
+     if ( !val ) /* no such attr */
      {
          val = "default graph attr val 1";
      }
-     else if ( !strlen(val) ) // attr defined but use default
+     else if ( !strlen(val) ) /* attr defined but use default */
      {
          val = "default graph attr val 2";
      }
@@ -169,14 +171,18 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
      Agraph_t *g = getAgraphPtr(graph);
      if ( !g ) return(R_NilValue);
 
-     // 0 for success, -1 otherwise
-//#if OLDER_THAN_2_8
+     /* 0 for success, -1 otherwise */
+/*
+#if OLDER_THAN_2_8 
+*/
      Agsym_t* a = agfindattr(g, STR(attrname));
      if ( !a ) a = agraphattr(g->root, STR(attrname), STR(default_val));
      int r = agset(g, STR(attrname), STR(attrval));
-//#else
-//     int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
-//#endif 
+/*
+#else
+     int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
+#endif 
+*/
 
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
@@ -294,11 +300,11 @@ SEXP Rgraphviz_getAttrsNode(SEXP graph, SEXP node, SEXP attrname)
 
      char *val = agget(n, STR(attrname));
 
-     if ( !val ) // no such attr
+     if ( !val ) /* no such attr */
      {
          val = "default node attr val 1";
      }
-     else if ( !strlen(val) ) // attr defined but use default
+     else if ( !strlen(val) ) /* attr defined but use default */
      {
          val = "default node attr val 2";
      }
@@ -319,13 +325,17 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
      Agnode_t *n = agfindnode(g, STR(node));
      if ( !n ) return(R_NilValue);
 
-//#if OLDER_THAN_2_8
+/*
+#if OLDER_THAN_2_8
+*/
      Agsym_t* a = agfindattr(n, STR(attrname));
      if ( !a ) a = agnodeattr(g, STR(attrname), STR(default_val));
      int r = agset(n, STR(attrname), STR(attrval));
-//#else
-//     int r = agsafeset(n, STR(attrname), STR(attrval), STR(default_val));
-//#endif 
+/*
+#else
+     int r = agsafeset(n, STR(attrname), STR(attrval), STR(default_val));
+#endif 
+*/
 
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
@@ -337,7 +347,7 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
 SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
 {
 #if DEBUG 
-     // entries that are set are the same set of attrs as listed below
+     /* entries that are set are the same set of attrs as listed below */
      attrsym_t* defattrs[] = {
         	E_weight, 
 		E_minlen, 
@@ -413,7 +423,7 @@ SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
      for ( i = 0, ii = 0; i < nattr; i++, ii++ )
      {
         sym = agfindattr(e, def_edge_attrs[i].name);
-        if ( sym ) val = sym? sym->value : NULL;
+        val = sym? sym->value : NULL;
         if ( !val ) val = "ATTR_NOT_DEFINED";
 
         SET_STRING_ELT(ans, ii, mkChar(def_edge_attrs[i].name));
@@ -454,11 +464,11 @@ SEXP Rgraphviz_getAttrsEdge(SEXP graph, SEXP from, SEXP to, SEXP attrname)
 
      char *val = agget(e, STR(attrname));
 
-     if ( !val ) // no such attr
+     if ( !val ) /* no such attr */
      {
          val = "default edge attr val 1";
      }
-     else if ( !strlen(val) ) // attr defined but use default
+     else if ( !strlen(val) ) /* attr defined but use default */
      {
          val = "default edge attr val 2";
      }
@@ -483,13 +493,17 @@ SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
      Agedge_t *e = agfindedge(g, u, v);
      if ( !e ) return(R_NilValue);
 
-//#if OLDER_THAN_2_8
+/*
+#if OLDER_THAN_2_8
+*/
      Agsym_t* a = agfindattr(e, STR(attrname));
      if ( !a ) a = agedgeattr(g, STR(attrname), STR(default_val));
      int r= agset(e, STR(attrname), STR(attrval));
-//#else
-//     int r = agsafeset(e, STR(attrname), STR(attrval), STR(default_val));
-//#endif
+/*
+#else
+     int r = agsafeset(e, STR(attrname), STR(attrval), STR(default_val));
+#endif
+*/
 
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
@@ -500,6 +514,7 @@ SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
 
 SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
 {
+#ifndef GRAPHVIZ_2_2_TO_2_3
      Agraph_t *g = getAgraphPtr(graph);
      if ( !g ) return(R_NilValue);
 
@@ -508,15 +523,18 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
      int i2 = gvRenderFilename(gvc, g, STR(filetype), STR(filename));
 
      int i3 = gvFreeLayout(gvc, g);
+#endif
 
      return(R_NilValue);
 }
 
-// g: graphNEL
-// nodes = nodes(g), 	strings
-// edges_from = edgeMatrix(g)["from",], edges_to = edgeMatrix(g)["to", ],  ints
-// nsubG = no. of subgraphs
-// subGIndex = subgraph-index for nodes, ints
+/*
+ * g: graphNEL
+ * nodes = nodes(g), 	strings
+ * edges_from = edgeMatrix(g)["from",], edges_to = edgeMatrix(g)["to", ],  ints
+ * nsubG = no. of subgraphs
+ * subGIndex = subgraph-index for nodes, ints
+*/
 SEXP LLagopen(SEXP name, SEXP kind, 
 	      SEXP nodes, SEXP edges_from, SEXP edges_to, 
 	      SEXP nsubG, SEXP subGIndex, SEXP recipEdges)
@@ -567,7 +585,7 @@ SEXP LLagopen(SEXP name, SEXP kind,
 */
                 sprintf(subGName, "%d", i);
 
-//	    printf(" subgraph %d is named: %s \n", i, subGName);
+/*	    printf(" subgraph %d is named: %s \n", i, subGName); */
             sgs[i] = agsubg(g, subGName);
      }
 
@@ -594,7 +612,7 @@ SEXP LLagopen(SEXP name, SEXP kind,
 
         curNode = agnode(tmpGraph, CHAR(STRING_ELT(nodes, i)));
 
-	//printf(" node %d in subgraph %d \n", i, whichSubG);
+/*	printf(" node %d in subgraph %d \n", i, whichSubG); */
     }
 
     /* create the edges */
@@ -618,47 +636,4 @@ SEXP LLagopen(SEXP name, SEXP kind,
     return(buildRagraph(g));
 
 }
-
-/*
-SEXP Rgraphviz_drawNode(SEXP graph, SEXP node)
-{
-     Agraph_t *g = getAgraphPtr(graph);
-     if ( !g ) return(R_NilValue);
-     
-     Agnode_t *np = agfindnode(g, STR(node));
-     if ( !np ) return(R_NilValue);
-
-     //ND_width(np);
-     //ND_height(np);
-     //ND_coord_i(np);
-     if ( strcmp(ND_shape(np)->name, "box") == 0 ||
-	  strcmp(ND_shape(np)->name, "rect") == 0 ||
-	  strcmp(ND_shape(np)->name, "rectangle") == 0 ||
-	  strcmp(ND_shape(np)->name, "polygon") == 0 // ||
-	) 
-     {
-	Nd_shape_info(np)->vertice 
-     }
-     else if ( strcmp(ND_shape(np)->name, "circle") == 0 ) 
-     {
-     }
-     else if ( strcmp(ND_shape(np)->name, "ellipse") == 0 ) 
-     {
-     }
-     else if ( strcmp(ND_shape(np)->name, "plaintext") == 0 ) 
-     {
-     }
-
-     return(R_NilValue);
-}
-*/
-
-/*
-default attrs for cluster:
-
-bgcolor
-color
-rank
-
-*/
 
