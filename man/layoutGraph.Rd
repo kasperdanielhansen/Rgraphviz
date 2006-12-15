@@ -6,10 +6,11 @@
   perform a libgraph layout on the graph locations.
 }
 \usage{
-layoutGraph(graph)
+layoutGraph(graph, layoutType=c("dot","neato","twopi","circo","fdp"))
 }
 \arguments{
   \item{graph}{An object of type \code{Ragraph}}
+  \item{layoutType}{layout algorithm to use}
 }
 \details{
   If the graph has already been laid out, this function merely returns

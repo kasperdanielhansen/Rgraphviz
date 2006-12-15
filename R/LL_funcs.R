@@ -3,6 +3,17 @@
 # -- validate given nodes/edges
 # -- check attrname/attrval/defaultval
 
+## to enable: 	nodeAttr and nodeAttr <- x, 
+##		edgeAttr and edgeAttr <- x
+##setGeneric("AgNodeAttr", function(object) standardGeneric("AgNodeAttr"))
+##setMethod("AgNodeAttr", "Ragraph", function(object) object@AgNode)
+##
+##setGeneric("AgNodeAttr<-", function(object, value) standardGeneric("AgNodeAttr<-"))
+##setReplaceMethod("AgNodeAttr", "Ragraph", function(object, value) {
+##                   object@AgNode = value
+##                   return(object)
+##                 })
+
 LLgetDefAttrsGraph <- function(graph)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
@@ -13,6 +24,11 @@ LLgetDefAttrsGraph <- function(graph)
    rownames(ans) <- paste("graph attr", 1:nrow(ans))
 
    ans
+}
+
+LLsetDefAttrsGraph <- function()
+{
+   ans <- .Call("Rgraphviz_setDefAttrsGraph", PACKAGE="Rgraphviz")
 }
 
 LLgetAttrsGraph <- function(graph, attrname)
@@ -48,6 +64,11 @@ LLgetDefAttrsNode <- function(graph)
    rownames(ans) <- paste("node attr", 1:nrow(ans))
 
    ans
+}
+
+LLsetDefAttrsNode <- function()
+{
+   ans <- .Call("Rgraphviz_setDefAttrsNode", PACKAGE="Rgraphviz")
 }
 
 LLgetAttrsNode <- function(graph, node, attrname)
@@ -99,6 +120,11 @@ LLgetDefAttrsEdge <- function(graph)
    rownames(ans) <- paste("edge attr", 1:nrow(ans))
 
    ans
+}
+
+LLsetDefAttrsEdge <- function()
+{
+   ans <- .Call("Rgraphviz_setDefAttrsEdge", PACKAGE="Rgraphviz")
 }
 
 LLgetAttrsEdge <- function(graph, from, to, attrname)
@@ -154,6 +180,13 @@ LLgetDefAttrs <- function(graph)
    ans
 }
 
+LLsetDefAttrs <- function()
+{
+   ans_g <- LLsetDefAttrsGraph()
+   ans_n <- LLsetDefAttrsNode()
+   ans_e <- LLsetDefAttrsEdge()
+}
+
 LLtoFile <- function(graph, 
 		      layoutType=c("dot","neato","twopi","circo","fdp"), 
 		      filename, 
@@ -176,5 +209,54 @@ LLtoFile <- function(graph,
 		PACKAGE="Rgraphviz")
 
    # msg for users
+}
+
+# graph: graphNEL
+# name: string
+# kind: int
+# subGList: list of subgraphs
+# recipEdges:  TODO: use it
+LLagopen <- function(graph, name, 
+		kind=NULL, edgeMode=edgemode(graph),
+                subGList=list(), 
+                recipEdges=c("combined", "distinct")) 
+{
+    if (!is(graph,"graphNEL"))
+        stop("This function is for graphNEL objects only")
+
+    if (is.null(kind)) {
+        ## Determine kind from the graph object
+        outK <- switch(edgeMode,
+                       "undirected"=0,  ## AGRAPH
+                       "directed"=1,    ## AGDIGRAPH
+                       0)
+    }
+    else {
+        ## Use the specified 'kind' parameter.
+        outK <- switch(kind,
+                       "AGRAPH"=0,   ##Undirected Graph
+                       "AGDIGRAPH"=1,   ## directed graph
+                       "AGRAPHSTRICT"=2,   ## no self arcs or multiedges
+                       "AGDIGRAPHSTRICT"=3, ## directed strict graph
+                       stop(paste("Incorrect kind parameter:",kind)))
+    }
+
+    nsubG = length(subGList)
+
+    sgi = vector(mode="numeric", length=numNodes(graph))
+    sgi[] = nsubG 
+    names(sgi) = nodes(graph)
+    if ( nsubG > 0 ) 
+	for ( i in 1:nsubG ) sgi[nodes(subGList[[i]]$graph)] = i
+
+    g <- .Call("LLagopen", name, as.integer(outK), 
+		nodes(graph), 
+		as.integer(edgeMatrix(graph)["from",]), 
+		as.integer(edgeMatrix(graph)["to",]), 
+		as.integer(nsubG), as.integer(sgi),
+		recipEdges, PACKAGE="Rgraphviz")
+    g@edgemode <- edgeMode
+
+    g
 }
 
