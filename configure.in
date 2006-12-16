@@ -76,7 +76,6 @@ fi
 
 if test ${MAJOR} -ge "2" && test ${MINOR} -ge "10" ; then
    GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_2_10_TO_MORE"
-   echo "test"
 fi
 
 AC_SUBST(GVIZ_DEFS)
