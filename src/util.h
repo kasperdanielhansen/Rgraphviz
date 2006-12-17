@@ -13,10 +13,8 @@
 SEXP assignAttrs(SEXP, SEXP, SEXP);
 SEXP buildRagraph(Agraph_t *);
 SEXP getListElement(SEXP list, char *str);
-SEXP R_scalarInteger(int);
-SEXP R_scalarLogical(Rboolean);
-SEXP R_scalarReal(double);  
-SEXP R_scalarString(const char *v);
+SEXP Rgraphviz_ScalarLogicalFromRbool(Rboolean);
+SEXP Rgraphviz_ScalarStringOrNull(const char *);
 
 #endif // RGRAPHVIZ_UTIL_H
 

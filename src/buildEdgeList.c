@@ -114,7 +114,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 		    }
 
 		    SET_VECTOR_ELT(newRecipAttrs, j,
-				   R_scalarString("open"));
+				   mkString("open"));
 		    SET_STRING_ELT(newRecipAttrNames, j,
 				   mkChar("arrowtail"));
 		    setAttrib(newRecipAttrs, R_NamesSymbol, newRecipAttrNames);
@@ -133,12 +133,12 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 	    SET_STRING_ELT(tmpToSTR, 0, toName);
 	    SET_SLOT(curPE, Rf_install("to"), tmpToSTR);
 	    if (strcmp(STR(edgeMode), "directed") == 0)
-		SET_VECTOR_ELT(curAttrs, 0, R_scalarString("open"));
+		SET_VECTOR_ELT(curAttrs, 0, mkString("open"));
 	    else 
-		SET_VECTOR_ELT(curAttrs, 0, R_scalarString("none"));
+		SET_VECTOR_ELT(curAttrs, 0, mkString("none"));
 	    PROTECT(tmpWtSTR = allocVector(STRSXP, 1));
 	    SET_STRING_ELT(tmpWtSTR, 0, 
-			   asChar(R_scalarReal(REAL(curWeights)[y])));
+			   asChar(Rf_ScalarReal(REAL(curWeights)[y])));
 	    SET_VECTOR_ELT(curAttrs, 1, tmpWtSTR);
 	    SET_SLOT(curPE, Rf_install("attrs"), curAttrs);
 	    SET_STRING_ELT(goodEdgeNames, curEle, mkChar(edgeName));
@@ -159,7 +159,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 		if (j == length(subGEdges))
 		    continue;
 		/* If we get here, then this edge is in subG 'i' */
-		SET_SLOT(curPE, Rf_install("subG"), R_scalarInteger(i+1));
+		SET_SLOT(curPE, Rf_install("subG"), Rf_ScalarInteger(i+1));
 
 		/* Only one subgraph per edge */
 		break;

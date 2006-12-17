@@ -13,10 +13,10 @@ SEXP getBoundBox(Agraph_t *g) {
     PROTECT(LLXY = NEW_OBJECT(xyClass));
     PROTECT(URXY = NEW_OBJECT(xyClass));
 
-    SET_SLOT(LLXY,Rf_install("x"),R_scalarInteger(g->u.bb.LL.x));
-    SET_SLOT(LLXY,Rf_install("y"),R_scalarInteger(g->u.bb.LL.y));
-    SET_SLOT(URXY,Rf_install("x"),R_scalarInteger(g->u.bb.UR.x));
-    SET_SLOT(URXY,Rf_install("y"),R_scalarInteger(g->u.bb.UR.y));
+    SET_SLOT(LLXY,Rf_install("x"),Rf_ScalarInteger(g->u.bb.LL.x));
+    SET_SLOT(LLXY,Rf_install("y"),Rf_ScalarInteger(g->u.bb.LL.y));
+    SET_SLOT(URXY,Rf_install("x"),Rf_ScalarInteger(g->u.bb.UR.x));
+    SET_SLOT(URXY,Rf_install("y"),Rf_ScalarInteger(g->u.bb.UR.y));
 
     SET_SLOT(curBB,Rf_install("botLeft"), LLXY);
     SET_SLOT(curBB,Rf_install("upRight"), URXY);
@@ -25,7 +25,7 @@ SEXP getBoundBox(Agraph_t *g) {
     return(curBB);
 }
 
-SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
+SEXP getEdgeLocs(Agraph_t *g) {
     SEXP outList, curCP, curEP, pntList, pntSet, curXY, curLab;
     SEXP epClass, cpClass, xyClass, labClass;
     Agnode_t *node, *head;
@@ -45,7 +45,7 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
     tmpString = (char *)R_alloc(2, sizeof(char));
     if (tmpString == NULL) error("Allocation error in getEdgeLocs");
 
-    PROTECT(outList = allocVector(VECSXP, numEdges));
+    PROTECT(outList = allocVector(VECSXP, agnedges(g)));
 
     nodes = agnnodes(g);
     node = agfstnode(g);
@@ -69,9 +69,9 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 		for (l = -1; l < 3; l++) {
 		    PROTECT(curXY = NEW_OBJECT(xyClass));
 		    SET_SLOT(curXY, Rf_install("x"), 
-			     R_scalarInteger(bez.list[k+l].x));
+			     Rf_ScalarInteger(bez.list[k+l].x));
 		    SET_SLOT(curXY, Rf_install("y"), 
-			     R_scalarInteger(bez.list[k+l].y));
+			     Rf_ScalarInteger(bez.list[k+l].y));
 		    SET_ELEMENT(pntSet, l+1, curXY);
 		    UNPROTECT(1);
 		}
@@ -82,64 +82,64 @@ SEXP getEdgeLocs(Agraph_t *g, int numEdges) {
 	    SET_SLOT(curEP, Rf_install("splines"), pntList);
 	    /* get the sp and ep */
 	    PROTECT(curXY = NEW_OBJECT(xyClass));
-	    SET_SLOT(curXY, Rf_install("x"), R_scalarInteger(bez.sp.x));
-	    SET_SLOT(curXY, Rf_install("y"), R_scalarInteger(bez.sp.y));
+	    SET_SLOT(curXY, Rf_install("x"), Rf_ScalarInteger(bez.sp.x));
+	    SET_SLOT(curXY, Rf_install("y"), Rf_ScalarInteger(bez.sp.y));
 	    SET_SLOT(curEP, Rf_install("sp"), curXY);
 	    UNPROTECT(1);
 	    PROTECT(curXY = NEW_OBJECT(xyClass));
-	    SET_SLOT(curXY, Rf_install("x"), R_scalarInteger(bez.ep.x));
-	    SET_SLOT(curXY, Rf_install("y"), R_scalarInteger(bez.ep.y));
+	    SET_SLOT(curXY, Rf_install("x"), Rf_ScalarInteger(bez.ep.x));
+	    SET_SLOT(curXY, Rf_install("y"), Rf_ScalarInteger(bez.ep.y));
 	    SET_SLOT(curEP, Rf_install("ep"), curXY);
 	    UNPROTECT(1);	    
 
-	    SET_SLOT(curEP, Rf_install("tail"), R_scalarString(node->name));
+	    SET_SLOT(curEP, Rf_install("tail"), Rgraphviz_ScalarStringOrNull(node->name));
 	    head = edge->head;
-	    SET_SLOT(curEP, Rf_install("head"), R_scalarString(head->name));
+	    SET_SLOT(curEP, Rf_install("head"), Rgraphviz_ScalarStringOrNull(head->name));
 
-	    SET_SLOT(curEP, Rf_install("arrowhead"), R_scalarString(agget(edge, "arrowhead")));
-	    SET_SLOT(curEP, Rf_install("arrowtail"), R_scalarString(agget(edge, "arrowtail")));
-	    SET_SLOT(curEP, Rf_install("arrowsize"), R_scalarString(agget(edge, "arrowsize")));
+	    SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowhead")));
+	    SET_SLOT(curEP, Rf_install("arrowtail"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowtail")));
+	    SET_SLOT(curEP, Rf_install("arrowsize"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowsize")));
 
-	    SET_SLOT(curEP, Rf_install("color"), R_scalarString(agget(edge, "color")));
+	    SET_SLOT(curEP, Rf_install("color"), Rgraphviz_ScalarStringOrNull(agget(edge, "color")));
 
 	    /* Get the label information */
 	    if (edge->u.label != NULL) {
 		PROTECT(curLab = NEW_OBJECT(labClass));
 #ifdef GRAPHVIZ_2_10_TO_MORE
 		SET_SLOT(curLab, Rf_install("labelText"),	
-			 R_scalarString(ED_label(edge)->u.txt.para->str));
+			 Rgraphviz_ScalarStringOrNull(ED_label(edge)->u.txt.para->str));
 #else
 		SET_SLOT(curLab, Rf_install("labelText"),	
-		         R_scalarString(edge->u.label->u.txt.line->str));
+		         Rgraphviz_ScalarStringOrNull(edge->u.label->u.txt.line->str));
 #endif
 		/* Get the X/Y location of the label */
 		PROTECT(curXY = NEW_OBJECT(xyClass));
-		SET_SLOT(curXY, Rf_install("x"), R_scalarInteger(edge->u.label->p.x));
-		SET_SLOT(curXY, Rf_install("y"), R_scalarInteger(edge->u.label->p.y));
+		SET_SLOT(curXY, Rf_install("x"), Rf_ScalarInteger(edge->u.label->p.x));
+		SET_SLOT(curXY, Rf_install("y"), Rf_ScalarInteger(edge->u.label->p.y));
 		SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
 		UNPROTECT(1);
 			 
 #ifdef GRAPHVIZ_2_10_TO_MORE
 		snprintf(tmpString, 2, "%c",ED_label(edge)->u.txt.para->just);
 		SET_SLOT(curLab, Rf_install("labelJust"),
-			 R_scalarString(tmpString));
+			 Rgraphviz_ScalarStringOrNull(tmpString));
 #else
 		snprintf(tmpString, 2, "%c",edge->u.label->u.txt.line->just);
-		SET_SLOT(curLab, Rf_install("labelJust"), R_scalarString(tmpString));
+		SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
 #endif
 
 #ifdef GRAPHVIZ_2_10_TO_MORE
 		SET_SLOT(curLab, Rf_install("labelWidth"),
-			 R_scalarInteger(ED_label(edge)->u.txt.para->width));
+			 Rf_ScalarInteger(ED_label(edge)->u.txt.para->width));
 #else
 		SET_SLOT(curLab, Rf_install("labelWidth"),
-			 R_scalarInteger(edge->u.label->u.txt.line->width));
+			 Rf_ScalarInteger(edge->u.label->u.txt.line->width));
 #endif
 
 		SET_SLOT(curLab, Rf_install("labelColor"),
-			 R_scalarString(edge->u.label->fontcolor));
+			 Rgraphviz_ScalarStringOrNull(edge->u.label->fontcolor));
 
-		SET_SLOT(curLab, Rf_install("labelFontsize"), R_scalarReal(edge->u.label->fontsize));
+		SET_SLOT(curLab, Rf_install("labelFontsize"), Rf_ScalarReal(edge->u.label->fontsize));
 
 		SET_SLOT(curEP, Rf_install("txtLabel"), curLab);
 		UNPROTECT(1);
@@ -182,18 +182,18 @@ SEXP getNodeLayouts(Agraph_t *g) {
     for (i = 0; i < nodes; i++) {	
 	PROTECT(curNL = NEW_OBJECT(nlClass));
 	PROTECT(curXY = NEW_OBJECT(xyClass));
-	SET_SLOT(curXY,Rf_install("x"),R_scalarInteger(node->u.coord.x));
-	SET_SLOT(curXY,Rf_install("y"),R_scalarInteger(node->u.coord.y));
+	SET_SLOT(curXY,Rf_install("x"),Rf_ScalarInteger(node->u.coord.x));
+	SET_SLOT(curXY,Rf_install("y"),Rf_ScalarInteger(node->u.coord.y));
 	SET_SLOT(curNL,Rf_install("center"),curXY);
-	SET_SLOT(curNL,Rf_install("height"),R_scalarInteger(node->u.ht));
-	SET_SLOT(curNL,Rf_install("rWidth"),R_scalarInteger(node->u.rw));
-	SET_SLOT(curNL,Rf_install("lWidth"),R_scalarInteger(node->u.lw));
-	SET_SLOT(curNL,Rf_install("name"), R_scalarString(node->name));
+	SET_SLOT(curNL,Rf_install("height"),Rf_ScalarInteger(node->u.ht));
+	SET_SLOT(curNL,Rf_install("rWidth"),Rf_ScalarInteger(node->u.rw));
+	SET_SLOT(curNL,Rf_install("lWidth"),Rf_ScalarInteger(node->u.lw));
+	SET_SLOT(curNL,Rf_install("name"), Rgraphviz_ScalarStringOrNull(node->name));
 
-	SET_SLOT(curNL, Rf_install("color"), R_scalarString(agget(node, "color")));
-	SET_SLOT(curNL, Rf_install("fillcolor"), R_scalarString(agget(node, "fillcolor")));
-	SET_SLOT(curNL, Rf_install("shape"), R_scalarString(agget(node, "shape")));
-	SET_SLOT(curNL, Rf_install("style"), R_scalarString(agget(node, "style")));
+	SET_SLOT(curNL, Rf_install("color"), Rgraphviz_ScalarStringOrNull(agget(node, "color")));
+	SET_SLOT(curNL, Rf_install("fillcolor"), Rgraphviz_ScalarStringOrNull(agget(node, "fillcolor")));
+	SET_SLOT(curNL, Rf_install("shape"), Rgraphviz_ScalarStringOrNull(agget(node, "shape")));
+	SET_SLOT(curNL, Rf_install("style"), Rgraphviz_ScalarStringOrNull(agget(node, "style")));
 
 
 	PROTECT(curLab = NEW_OBJECT(labClass));
@@ -201,33 +201,34 @@ SEXP getNodeLayouts(Agraph_t *g) {
 #ifdef GRAPHVIZ_2_10_TO_MORE
 	if (ND_label(node)->u.txt.para != NULL) {
 	    SET_SLOT(curLab, Rf_install("labelText"),
-		     R_scalarString(ND_label(node)->u.txt.para->str));
+		     Rgraphviz_ScalarStringOrNull(ND_label(node)->u.txt.para->str));
 	    snprintf(tmpString, 2, "%c",ND_label(node)->u.txt.para->just);
+	    SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
 #else
 	if (node->u.label->u.txt.line != NULL) {
-	    SET_SLOT(curLab, Rf_install("labelText"), R_scalarString(node->u.label->u.txt.line->str));
+	    SET_SLOT(curLab, Rf_install("labelText"), Rgraphviz_ScalarStringOrNull(node->u.label->u.txt.line->str));
 	    snprintf(tmpString, 2, "%c",node->u.label->u.txt.line->just);
-	    SET_SLOT(curLab, Rf_install("labelJust"), R_scalarString(tmpString));
+	    SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
 #endif
 	    
 #ifdef GRAPHVIZ_2_10_TO_MORE
 	    SET_SLOT(curLab, Rf_install("labelWidth"),
-		     R_scalarInteger(ND_label(node)->u.txt.para->width));
+		     Rf_ScalarInteger(ND_label(node)->u.txt.para->width));
 #else
 	    SET_SLOT(curLab, Rf_install("labelWidth"),
-		     R_scalarInteger(node->u.label->u.txt.line->width));
+		     Rf_ScalarInteger(node->u.label->u.txt.line->width));
 #endif
 	    
 	    /* Get the X/Y location of the label */
 	    PROTECT(curXY = NEW_OBJECT(xyClass));
-	    SET_SLOT(curXY, Rf_install("x"), R_scalarInteger(node->u.label->p.x));
-	    SET_SLOT(curXY, Rf_install("y"), R_scalarInteger(node->u.label->p.y));
+	    SET_SLOT(curXY, Rf_install("x"), Rf_ScalarInteger(node->u.label->p.x));
+	    SET_SLOT(curXY, Rf_install("y"), Rf_ScalarInteger(node->u.label->p.y));
 	    SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
 	    UNPROTECT(1);
 	    
-	    SET_SLOT(curLab, Rf_install("labelColor"), R_scalarString(node->u.label->fontcolor));
+	    SET_SLOT(curLab, Rf_install("labelColor"), Rgraphviz_ScalarStringOrNull(node->u.label->fontcolor));
 	    
-	    SET_SLOT(curLab, Rf_install("labelFontsize"), R_scalarReal(node->u.label->fontsize));
+	    SET_SLOT(curLab, Rf_install("labelFontsize"), Rf_ScalarReal(node->u.label->fontsize));
     
 	}
 
@@ -309,13 +310,11 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		   object */
 		PROTECT(nLayout = getNodeLayouts(g));
 		PROTECT(bb = getBoundBox(g));
-		PROTECT(cPoints= 
-			getEdgeLocs(g, INTEGER(GET_SLOT(graph, 
-							Rf_install("numEdges")))[0]));
+		PROTECT(cPoints = getEdgeLocs(g));
 		SET_SLOT(graph, Rf_install("agraph"), slotTmp);
-		SET_SLOT(graph,Rf_install("AgNode"),nLayout);
+		SET_SLOT(graph,Rf_install("AgNode"), nLayout);
 /* LL
-		SET_SLOT(graph,Rf_install("laidout"), R_scalarLogical(TRUE));
+		SET_SLOT(graph,Rf_install("laidout"), Rgraphviz_ScalarLogicalFromRbool(TRUE));
 */
 		SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
 		SET_SLOT(graph,Rf_install("boundBox"), bb);

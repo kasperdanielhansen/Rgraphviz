@@ -43,7 +43,7 @@ SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
 	    if (k == length(subGNodes))
 		continue;
 
-	    SET_SLOT(curPN, Rf_install("subG"), R_scalarInteger(j+1));
+	    SET_SLOT(curPN, Rf_install("subG"), Rf_ScalarInteger(j+1));
 	    /* Only one subgraph per node */
 	    break;
 	}
