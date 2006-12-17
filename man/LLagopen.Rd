@@ -72,7 +72,8 @@ V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
 z <- LLagopen(g1,name="foo")
-if(strsplit(graphvizVersion(), "[.]")[[1]][2] >= 10) {
+if(as.numeric(strsplit(graphvizVersion(), "[.]")[[1]][2]) >= 10) {
+  ## This example will only run with Graphviz >= 2.10
   plot(z, "twopi")
 }
 }
