@@ -693,6 +693,12 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
     return(R_NilValue);
 }
 
+SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
+{
+    warning("This function is not supported by your current Graphviz installation.\n");
+    return(R_NilValue);
+}
+
 SEXP Rgraphviz_setDefAttrsEdge()
 {
     warning("This function is not supported by your current Graphviz installation.\n");
@@ -711,6 +717,7 @@ SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
+
 
 SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
 {
