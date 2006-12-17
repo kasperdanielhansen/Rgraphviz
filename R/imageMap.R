@@ -53,7 +53,7 @@ setMethod("imageMap",
   names(xl) = names(xr) = names(yu) = names(yl) = nn
 
   mapname <- paste("map", gsub(" |/|#|:", "_", imgname), sep="_")
-  base::writeLines(paste("<IMG SRC=\"", imgname, "\" USEMAP=\#", mapname, " BORDER=0>",
+  base::writeLines(paste("<IMG SRC=\"", imgname, "\" USEMAP=#", mapname, " BORDER=0>",
                    "<MAP NAME=\"", mapname, "\">", sep=""), con)
   for(nd in unique(unlist(lapply(tags, names)))) {
     out = paste("<AREA SHAPE=\"rect\" COORDS=\"", xl[nd], ",", yl[nd], ",",
