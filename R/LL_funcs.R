@@ -255,8 +255,8 @@ LLagopen <- function(graph, name,
 		as.integer(edgeMatrix(graph)["to",]), 
 		as.integer(nsubG), as.integer(sgi),
 		recipEdges, PACKAGE="Rgraphviz")
-    g@edgemode <- edgeMode
-
+    if(!is.null(g))
+        g@edgemode <- edgeMode
     g
 }
 
