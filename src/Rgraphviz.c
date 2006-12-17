@@ -1,34 +1,20 @@
 #include "common.h"
 #include "util.h"
 
-SEXP R_scalarReal(double v) {
-    SEXP ans = allocVector(REALSXP,1);
-    REAL(ans)[0] = v;
-    return(ans);
-}
-
-SEXP R_scalarInteger(int v)
-{
-  SEXP  ans = allocVector(INTSXP, 1);
-  INTEGER(ans)[0] = v;
-  return(ans);
-}
-
-SEXP R_scalarLogical(Rboolean v)
+SEXP Rgraphviz_ScalarLogicalFromRbool(Rboolean v)
 {
   SEXP  ans = allocVector(LGLSXP, 1);
   LOGICAL(ans)[0] = v;
   return(ans);
 }
 
-SEXP R_scalarString(const char *v)
+SEXP Rgraphviz_ScalarStringOrNull(const char* x)
 {
-  SEXP ans = allocVector(STRSXP, 1);
-  PROTECT(ans);
-  if(v)
-    SET_STRING_ELT(ans, 0, mkChar(v));
-  UNPROTECT(1);
-  return(ans);
+    if(x != 0) {
+	return(mkString(x));
+    } else {
+	return(mkString(""));
+    }
 }
 
 SEXP getListElement(SEXP list, char *str) {
@@ -193,9 +179,7 @@ SEXP buildRagraph(Agraph_t *g) {
     PROTECT(obj = NEW_OBJECT(klass));
     
     SET_SLOT(obj, Rf_install("agraph"), graphRef);
-    SET_SLOT(obj, Rf_install("laidout"), R_scalarLogical(FALSE));
-    SET_SLOT(obj, Rf_install("numEdges"), R_scalarInteger(agnedges(g)));
-
+    SET_SLOT(obj, Rf_install("laidout"), Rgraphviz_ScalarLogicalFromRbool(FALSE));
     UNPROTECT(3);
 
     return(obj);

@@ -10,18 +10,18 @@
  */
 #ifdef Win32
 SEXP Rgraphviz_graphvizVersion(void) {
-    return(R_scalarString("2.2.1"));
+    return(mkString("2.2.1"));
 }
 #else
 SEXP Rgraphviz_graphvizVersion(void) {
 #ifdef GRAPHVIZ_2_2_TO_2_3
-    return(R_scalarString(Info[1]));
+    return(Rgraphviz_ScalarStringOrNull(Info[1]));
 #endif
 #ifdef GRAPHVIZ_2_4_TO_2_9
-    return(R_scalarString(gvc->info[1]));
+    return(Rgraphviz_ScalarStringOrNull(gvc->info[1]));
 #endif
 #ifdef GRAPHVIZ_2_10_TO_MORE
-    return(R_scalarString(gvc->common.info[1]));
+    return(Rgraphviz_ScalarStringOrNull(gvc->common.info[1]));
 #endif
 }
 #endif
