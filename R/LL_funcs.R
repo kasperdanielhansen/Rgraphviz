@@ -19,10 +19,10 @@ LLgetDefAttrsGraph <- function(graph)
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
 
    ans <- .Call("Rgraphviz_getDefAttrsGraph", graph, PACKAGE="Rgraphviz")
-
-   colnames(ans) <- c("attr name", "attr value")
-   rownames(ans) <- paste("graph attr", 1:nrow(ans))
-
+   if(!is.null(ans) {
+       colnames(ans) <- c("attr name", "attr value")
+       rownames(ans) <- paste("graph attr", 1:nrow(ans))
+   }
    ans
 }
 
@@ -60,9 +60,11 @@ LLgetDefAttrsNode <- function(graph)
 
    ans <- .Call("Rgraphviz_getDefAttrsNode", graph, PACKAGE="Rgraphviz")
 
-   colnames(ans) <- c("attr name", "attr value")
-   rownames(ans) <- paste("node attr", 1:nrow(ans))
-
+   if(!is.null(ans) {
+       colnames(ans) <- c("attr name", "attr value")
+       rownames(ans) <- paste("node attr", 1:nrow(ans))
+   }
+       
    ans
 }
 
@@ -116,9 +118,11 @@ LLgetDefAttrsEdge <- function(graph)
 
    ans <- .Call("Rgraphviz_getDefAttrsEdge", graph, PACKAGE="Rgraphviz")
 
-   colnames(ans) <- c("attr name", "attr value")
-   rownames(ans) <- paste("edge attr", 1:nrow(ans))
-
+   if(!is.null(ans)) {
+       colnames(ans) <- c("attr name", "attr value")
+       rownames(ans) <- paste("edge attr", 1:nrow(ans))
+   }
+       
    ans
 }
 
