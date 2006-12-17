@@ -72,7 +72,9 @@ V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
 z <- LLagopen(g1,name="foo")
-plot(z, "twopi")
+if(strsplit(graphvizVersion(), "[.]")[[1]][2] >= 10) {
+  plot(z, "twopi")
+}
 }
 \keyword{graphs}
 
