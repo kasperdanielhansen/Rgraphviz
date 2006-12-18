@@ -73,7 +73,6 @@ static const Rgattr_t def_edge_attrs[] = {
 		{NULL, NULL}
 		};
 
-
 #ifdef GRAPHVIZ_2_10_TO_MORE
 
 
@@ -134,14 +133,25 @@ SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
      return(ans);
 }
 
-SEXP Rgraphviz_setDefAttrsGraph()
+SEXP Rgraphviz_setDefAttrsGraph(SEXP graph, SEXP nnattr, 
+				SEXP attrnames, SEXP attrvals)
 {
-     int nattr = 0;
+     Agraph_t *g = getAgraphPtr(graph);
+     if ( !g ) return(R_NilValue);
+
+     int nattr = INTEGER(nnattr)[0];
      int i;
+
+     for ( i = 0; i < nattr; i++ )
+	agraphattr(g, CHAR(STRING_ELT(attrnames, i)), 
+		      CHAR(STRING_ELT(attrvals, i)));
+
+     nattr = 0;
      while ( def_graph_attrs[nattr].name ) nattr++;
 
      for ( i = 0; i < nattr; i++ )
-        agraphattr(NULL, def_graph_attrs[i].name, def_graph_attrs[i].value);
+	if ( !agfindattr(g, def_graph_attrs[i].name) )
+           agraphattr(g->root, def_graph_attrs[i].name, def_graph_attrs[i].value);
 
      return(R_NilValue);
 }
@@ -282,14 +292,24 @@ SEXP Rgraphviz_getDefAttrsNode(SEXP graph)
      return(ans);
 }
 
-SEXP Rgraphviz_setDefAttrsNode()
+SEXP Rgraphviz_setDefAttrsNode(SEXP graph, SEXP nnattr, 
+			SEXP attrnames, SEXP attrvals)
 {
-     int nattr = 0;
-     while ( def_node_attrs[nattr].name ) nattr++;
+     Agraph_t *g = getAgraphPtr(graph);
+     if ( !g ) return(R_NilValue);
 
+     int nattr = INTEGER(nnattr)[0];
      int i;
      for ( i = 0; i < nattr; i++ )
-	agnodeattr(NULL, def_node_attrs[i].name, def_node_attrs[i].value);
+        agnodeattr(g, CHAR(STRING_ELT(attrnames, i)),  
+                      CHAR(STRING_ELT(attrvals, i)));
+
+     nattr = 0;
+     while ( def_node_attrs[nattr].name ) nattr++;
+
+     for ( i = 0; i < nattr; i++ )
+	if ( !agfindattr(g, def_node_attrs[i].name) )
+	   agnodeattr(g, def_node_attrs[i].name, def_node_attrs[i].value);
 
      return(R_NilValue);
 }
@@ -442,14 +462,25 @@ SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
      return(ans);
 }
 
-SEXP Rgraphviz_setDefAttrsEdge()
+SEXP Rgraphviz_setDefAttrsEdge(SEXP graph, SEXP nnattr, 
+				SEXP attrnames, SEXP attrvals)
 {
-     int nattr = 0;
+     Agraph_t *g = getAgraphPtr(graph);
+     if ( !g ) return(R_NilValue);
+
+     int nattr = INTEGER(nnattr)[0];
+     int i;
+
+     for ( i = 0; i < nattr; i++ )
+        agedgeattr(g, CHAR(STRING_ELT(attrnames, i)),  
+                      CHAR(STRING_ELT(attrvals, i)));
+
+     nattr = 0;
      while ( def_edge_attrs[nattr].name ) nattr++;
 
-     int i;
      for ( i = 0; i < nattr; i++ )
-	agedgeattr(NULL, def_edge_attrs[i].name, def_edge_attrs[i].value);
+	if ( !agfindattr(g, def_edge_attrs[i].name) )
+	   agedgeattr(g, def_edge_attrs[i].name, def_edge_attrs[i].value);
 
      return(R_NilValue);
 }
@@ -547,7 +578,6 @@ SEXP LLagopen(SEXP name, SEXP kind,
     Agraph_t **sgs;
     Agnode_t *head, *tail, *curNode;
     Agedge_t *curEdge;
-    SEXP curPN, curPE, curSubG, curSubGEle;
 
     char subGName[256];
     int ag_k = 0;
@@ -661,59 +691,59 @@ SEXP Rgraphviz_getAttrsGraph(SEXP graph, SEXP attrname)
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_setAttrsGraph(SEXP graph, 
-		SEXP attrname, SEXP attrval, SEXP default_val)
+SEXP Rgraphviz_setAttrsGraph(SEXP graph,
+                SEXP attrname, SEXP attrval, SEXP default_val)
 {
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_getDefAttrsNode(SEXP graph)
+SEXP Rgraphviz_getDefAttrsNode(SEXP graph) 
 {
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_setDefAttrsNode()
+SEXP Rgraphviz_setDefAttrsNode() 
 {
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_getAttrsNode(SEXP graph, SEXP node, SEXP attrname)
+SEXP Rgraphviz_getAttrsNode(SEXP graph, SEXP node, SEXP attrname) 
 {
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node, 
-		SEXP attrname, SEXP attrval, SEXP default_val)
+SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
+                SEXP attrname, SEXP attrval, SEXP default_val) 
 {
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
+SEXP Rgraphviz_getDefAttrsEdge(SEXP graph) 
 {
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_setDefAttrsEdge()
+SEXP Rgraphviz_setDefAttrsEdge() 
 {
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
 
 SEXP Rgraphviz_getAttrsEdge(SEXP graph, SEXP from, SEXP to, SEXP attrname)
-{
+{     
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
 
-SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to, 
-		SEXP attrname, SEXP attrval, SEXP default_val)
-{
+SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
+                SEXP attrname, SEXP attrval, SEXP default_val)
+{   
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
@@ -725,12 +755,13 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
     return(R_NilValue);
 }
 
-SEXP LLagopen(SEXP name, SEXP kind, 
-	      SEXP nodes, SEXP edges_from, SEXP edges_to, 
-	      SEXP nsubG, SEXP subGIndex, SEXP recipEdges) 
+SEXP LLagopen(SEXP name, SEXP kind,
+              SEXP nodes, SEXP edges_from, SEXP edges_to,
+              SEXP nsubG, SEXP subGIndex, SEXP recipEdges)
 {
     warning("This function is not supported by your current Graphviz installation.\n");
     return(R_NilValue);
 }
 
 #endif
+

@@ -26,9 +26,16 @@ LLgetDefAttrsGraph <- function(graph)
    ans
 }
 
-LLsetDefAttrsGraph <- function()
+LLsetDefAttrsGraph <- function(graph, attrnames=c(), attrvals=c())
 {
-   ans <- .Call("Rgraphviz_setDefAttrsGraph", PACKAGE="Rgraphviz")
+   if ( length(attrnames) != length(attrvals) )
+      stop("Length of attrnames is not equal to length of attrvals")
+
+   nattr = length(attrnames)
+
+   ans <- .Call("Rgraphviz_setDefAttrsGraph", 
+	 	graph, as.integer(nattr), attrnames, attrvals, 
+		PACKAGE="Rgraphviz")
 }
 
 LLgetAttrsGraph <- function(graph, attrname)
@@ -68,9 +75,15 @@ LLgetDefAttrsNode <- function(graph)
    ans
 }
 
-LLsetDefAttrsNode <- function()
+LLsetDefAttrsNode <- function(graph, attrnames=c(), attrvals=c())
 {
-   ans <- .Call("Rgraphviz_setDefAttrsNode", PACKAGE="Rgraphviz")
+   if ( length(attrnames) != length(attrvals) )
+      stop("Length of attrnames is not equal to length of attrvals")
+
+   nattr = length(attrnames)
+   ans <- .Call("Rgraphviz_setDefAttrsNode", 
+		graph, as.integer(nattr), attrnames, attrvals,
+		PACKAGE="Rgraphviz")
 }
 
 LLgetAttrsNode <- function(graph, node, attrname)
@@ -126,9 +139,16 @@ LLgetDefAttrsEdge <- function(graph)
    ans
 }
 
-LLsetDefAttrsEdge <- function()
+LLsetDefAttrsEdge <- function(graph, attrnames=c(), attrvals=c())
 {
-   ans <- .Call("Rgraphviz_setDefAttrsEdge", PACKAGE="Rgraphviz")
+   if ( length(attrnames) != length(attrvals) )
+      stop("Length of attrnames is not equal to length of attrvals")
+
+   nattr = length(attrnames)
+
+   ans <- .Call("Rgraphviz_setDefAttrsEdge", 
+		graph, as.integer(nattr), attrnames, attrvals,
+		PACKAGE="Rgraphviz")
 }
 
 LLgetAttrsEdge <- function(graph, from, to, attrname)
@@ -184,11 +204,13 @@ LLgetDefAttrs <- function(graph)
    ans
 }
 
-LLsetDefAttrs <- function()
+LLsetDefAttrs <- function(graph, g_attrnames=c(), g_attrvals=c(),
+			n_attrnames=c(), n_attrvals=c(),
+			e_attrnames=c(), e_attrvals=c())
 {
-   ans_g <- LLsetDefAttrsGraph()
-   ans_n <- LLsetDefAttrsNode()
-   ans_e <- LLsetDefAttrsEdge()
+   ans_g <- LLsetDefAttrsGraph(graph, g_attrnames, g_attrvals)
+   ans_n <- LLsetDefAttrsNode(graph, n_attrnames, n_attrvals)
+   ans_e <- LLsetDefAttrsEdge(graph, e_attrnames, e_attrvals)
 }
 
 LLtoFile <- function(graph, 
