@@ -261,6 +261,9 @@ LLagopen <- function(graph, name,
 		recipEdges, PACKAGE="Rgraphviz")
     if(!is.null(g))
         g@edgemode <- edgeMode
+
+    g@layoutType = "dot"    # place holder for now
+
     g
 }
 

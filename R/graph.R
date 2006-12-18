@@ -31,7 +31,7 @@ setMethod("plot", "Ragraph",
     ## layout graph
     ## TODO: if y is changed, redo layout
     ############################################################
-    if (missing(y)) y <- "dot"
+    if ( missing(y) ) y <- x@layoutType
     x <- layoutGraph(x, y)
 
     ############################################################
