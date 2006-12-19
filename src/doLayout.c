@@ -263,11 +263,6 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 	Rboolean laidout;
 	SEXP slotTmp, nLayout, cPoints, bb;
 
-	/* First make sure that hte graph is not already laid out */
-/*LL
-	laidout = (int)LOGICAL(GET_SLOT(graph, Rf_install("laidout")))[0];
-	if (laidout == FALSE) {
-*/
 		/* Extract the Agraph_t pointer from the S4 object */
 		PROTECT(slotTmp = GET_SLOT(graph, install("agraph")));
 		CHECK_Rgraphviz_graph(slotTmp);
@@ -314,9 +309,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		PROTECT(cPoints = getEdgeLocs(g));
 		SET_SLOT(graph, Rf_install("agraph"), slotTmp);
 		SET_SLOT(graph,Rf_install("AgNode"), nLayout);
-/* LL
 		SET_SLOT(graph,Rf_install("laidout"), Rgraphviz_ScalarLogicalFromRbool(TRUE));
-*/
 		SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
 		SET_SLOT(graph,Rf_install("boundBox"), bb);
 		UNPROTECT(4);

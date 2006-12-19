@@ -68,6 +68,10 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
 
     ## Allows lwd (line width) and lty (line type) to be set in same manner
     ## color is set
+    ## FIXME:
+    ##       shouldn't do layoutGraph here, but AgEdge/AgNode count on it 
+    ##       to fill in data entries, hence, examples from man-pages...
+    ## 
     if (layout) g <- layoutGraph(g)
     
     if (!is.null(edgeAttrs$lwd)) {
@@ -86,8 +90,10 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
 }
 
 agread <- function(filename, layoutType=c("dot","neato","twopi","circo","fdp"),
-                   layout=TRUE	) {
+                   layout=TRUE	) 
+{
     layoutType <- match.arg(layoutType)
+
     ## First check that the file exists
     if (!file.exists(filename))
         stop(paste("Request file",filename,"does not exist"))
@@ -95,25 +101,33 @@ agread <- function(filename, layoutType=c("dot","neato","twopi","circo","fdp"),
     g <- .Call("Rgraphviz_agread", as.character(filename), PACKAGE="Rgraphviz")
     g@layoutType <- layoutType
 
+    ## FIXME:
+    ##       shouldn't do layoutGraph here, but AgEdge/AgNode count on it 
+    ##       to fill in data entries, hence, examples from man-pages...
+    ## 
     if (layout)
         return(layoutGraph(g))
     else
         return(g)
 }
 
-agwrite <- function(graph, filename) {
+agwrite <- function(graph, filename) 
+{
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename),
                PACKAGE="Rgraphviz")
 }
 
-layoutGraph <- function(graph, layoutType=c("dot","neato","twopi","circo","fdp")) {
+layoutGraph <- function(graph, layoutType=graph@layoutType) 
+{
     if (is(graph,"graphNEL"))
         stop("Please use function agopen() for graphNEL objects")
     if (!is(graph,"Ragraph"))
         stop("Object is not of class Ragraph")
 
-    layoutType <- match.arg(layoutType)
-    type <- switch(layoutType,
+    if ( graph@layoutType != layoutType || !graph@laidout )
+    {
+       graph@layoutType <- layoutType 
+       type <- switch(layoutType,
                    "dot"=0,
                    "neato"=1,
                    "twopi"=2,
@@ -122,8 +136,12 @@ layoutGraph <- function(graph, layoutType=c("dot","neato","twopi","circo","fdp")
                    stop(paste("Invalid layout type:",layoutType))
                    )
 
-     z <- .Call("Rgraphviz_doLayout", graph, as.integer(type),
+        z <- .Call("Rgraphviz_doLayout", graph, as.integer(type),
                    PACKAGE="Rgraphviz");
+     }
+     else
+        z <- graph
+
      return(z)
 }
 
