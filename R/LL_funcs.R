@@ -276,7 +276,7 @@ LLagopen <- function(graph, name,
 		as.integer(nsubG), as.integer(sgi),
 		recipEdges, PACKAGE="Rgraphviz")
     g@edgemode <- edgeMode
-    g@layoutType = "dot"    # place holder for now
+    g@layoutType = "dot"    # default layout type
 
     g
 }

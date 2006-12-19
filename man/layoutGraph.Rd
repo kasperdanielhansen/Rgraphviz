@@ -6,7 +6,7 @@
   perform a libgraph layout on the graph locations.
 }
 \usage{
-layoutGraph(graph, layoutType=c("dot","neato","twopi","circo","fdp"))
+layoutGraph(graph, layoutType=graph@layoutType)
 }
 \arguments{
   \item{graph}{An object of type \code{Ragraph}}

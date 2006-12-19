@@ -538,11 +538,11 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
      Agraph_t *g = getAgraphPtr(graph);
      if ( !g ) return(R_NilValue);
 
-     int i1 = gvLayout(gvc, g, STR(layoutType));
+     gvLayout(gvc, g, STR(layoutType));
 
-     int i2 = gvRenderFilename(gvc, g, STR(filetype), STR(filename));
+     gvRenderFilename(gvc, g, STR(filetype), STR(filename));
 
-     int i3 = gvFreeLayout(gvc, g);
+     gvFreeLayout(gvc, g);
 #endif
 
      return(R_NilValue);
@@ -567,7 +567,7 @@ SEXP LLagopen(SEXP name, SEXP kind,
     char subGName[256];
     int ag_k = 0;
     int nsg = INTEGER(nsubG)[0];
-    int i,j;
+    int i;
     int whichSubG;
 
     if ( length(edges_from) != length(edges_to) )
