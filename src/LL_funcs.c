@@ -73,9 +73,6 @@ static const Rgattr_t def_edge_attrs[] = {
 		{NULL, NULL}
 		};
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
-
-
 SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
 {
 #if DEBUG
@@ -186,18 +183,14 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
      if ( !g ) return(R_NilValue);
 
      /* 0 for success, -1 otherwise */
-/*
-#if OLDER_THAN_2_8 
-*/
+
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
      Agsym_t* a = agfindattr(g, STR(attrname));
      if ( !a ) a = agraphattr(g->root, STR(attrname), STR(default_val));
      int r = agset(g, STR(attrname), STR(attrval));
-/*
 #else
      int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
 #endif 
-*/
-
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
      LOGICAL(ans)[0] = r? FALSE : TRUE;
@@ -349,17 +342,13 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
      Agnode_t *n = agfindnode(g, STR(node));
      if ( !n ) return(R_NilValue);
 
-/*
-#if OLDER_THAN_2_8
-*/
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
      Agsym_t* a = agfindattr(n, STR(attrname));
      if ( !a ) a = agnodeattr(g, STR(attrname), STR(default_val));
      int r = agset(n, STR(attrname), STR(attrval));
-/*
 #else
      int r = agsafeset(n, STR(attrname), STR(attrval), STR(default_val));
 #endif 
-*/
 
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
@@ -528,17 +517,13 @@ SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
      Agedge_t *e = agfindedge(g, u, v);
      if ( !e ) return(R_NilValue);
 
-/*
-#if OLDER_THAN_2_8
-*/
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
      Agsym_t* a = agfindattr(e, STR(attrname));
      if ( !a ) a = agedgeattr(g, STR(attrname), STR(default_val));
      int r= agset(e, STR(attrname), STR(attrval));
-/*
 #else
      int r = agsafeset(e, STR(attrname), STR(attrval), STR(default_val));
 #endif
-*/
 
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
@@ -670,98 +655,4 @@ SEXP LLagopen(SEXP name, SEXP kind,
     return(buildRagraph(g));
 
 }
-
-#else
-
-SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_setDefAttrsGraph()
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_getAttrsGraph(SEXP graph, SEXP attrname)
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_setAttrsGraph(SEXP graph,
-                SEXP attrname, SEXP attrval, SEXP default_val)
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_getDefAttrsNode(SEXP graph) 
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_setDefAttrsNode() 
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_getAttrsNode(SEXP graph, SEXP node, SEXP attrname) 
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
-                SEXP attrname, SEXP attrval, SEXP default_val) 
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_getDefAttrsEdge(SEXP graph) 
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_setDefAttrsEdge() 
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_getAttrsEdge(SEXP graph, SEXP from, SEXP to, SEXP attrname)
-{     
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
-                SEXP attrname, SEXP attrval, SEXP default_val)
-{   
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-
-SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-SEXP LLagopen(SEXP name, SEXP kind,
-              SEXP nodes, SEXP edges_from, SEXP edges_to,
-              SEXP nsubG, SEXP subGIndex, SEXP recipEdges)
-{
-    warning("This function is not supported by your current Graphviz installation.\n");
-    return(R_NilValue);
-}
-
-#endif
 
