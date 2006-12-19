@@ -19,10 +19,8 @@ LLgetDefAttrsGraph <- function(graph)
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
 
    ans <- .Call("Rgraphviz_getDefAttrsGraph", graph, PACKAGE="Rgraphviz")
-   if(!is.null(ans)) {
-       colnames(ans) <- c("attr name", "attr value")
-       rownames(ans) <- paste("graph attr", 1:nrow(ans))
-   }
+   colnames(ans) <- c("attr name", "attr value")
+   rownames(ans) <- paste("graph attr", 1:nrow(ans))
    ans
 }
 
@@ -67,10 +65,8 @@ LLgetDefAttrsNode <- function(graph)
 
    ans <- .Call("Rgraphviz_getDefAttrsNode", graph, PACKAGE="Rgraphviz")
 
-   if(!is.null(ans)) {
-       colnames(ans) <- c("attr name", "attr value")
-       rownames(ans) <- paste("node attr", 1:nrow(ans))
-   }
+   colnames(ans) <- c("attr name", "attr value")
+   rownames(ans) <- paste("node attr", 1:nrow(ans))
        
    ans
 }
@@ -131,10 +127,8 @@ LLgetDefAttrsEdge <- function(graph)
 
    ans <- .Call("Rgraphviz_getDefAttrsEdge", graph, PACKAGE="Rgraphviz")
 
-   if(!is.null(ans)) {
-       colnames(ans) <- c("attr name", "attr value")
-       rownames(ans) <- paste("edge attr", 1:nrow(ans))
-   }
+   colnames(ans) <- c("attr name", "attr value")
+   rownames(ans) <- paste("edge attr", 1:nrow(ans))
        
    ans
 }
@@ -281,9 +275,7 @@ LLagopen <- function(graph, name,
 		as.integer(edgeMatrix(graph)["to",]), 
 		as.integer(nsubG), as.integer(sgi),
 		recipEdges, PACKAGE="Rgraphviz")
-    if(!is.null(g))
-        g@edgemode <- edgeMode
-
+    g@edgemode <- edgeMode
     g@layoutType = "dot"    # place holder for now
 
     g
