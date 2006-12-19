@@ -66,17 +66,7 @@ if test ${MAJOR} -lt "2" || (test ${MAJOR} -eq "2" && test ${MINOR} -lt "2") ; t
    exit 1
 fi
 
-if test ${MAJOR} -eq "2" && test ${MINOR} -lt "4" ; then
-   GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_2_2_TO_2_3"
-fi
-
-if test ${MAJOR} -eq "2" && test ${MINOR} -ge "4" && test ${MINOR} -le "9"; then
-   GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_2_4_TO_2_9"
-fi
-
-if test ${MAJOR} -ge "2" && test ${MINOR} -ge "10" ; then
-   GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_2_10_TO_MORE"
-fi
+GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_MAJOR=${MAJOR} -DGRAPHVIZ_MINOR=${MINOR}"
 
 AC_SUBST(GVIZ_DEFS)
 AC_SUBST(PKG_CPPFLAGS)

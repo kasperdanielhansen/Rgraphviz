@@ -73,7 +73,7 @@ static const Rgattr_t def_edge_attrs[] = {
 		{NULL, NULL}
 		};
 
-#ifdef GRAPHVIZ_2_10_TO_MORE
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
 
 
 SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
@@ -549,7 +549,7 @@ SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
 
 SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
 {
-#ifndef GRAPHVIZ_2_2_TO_2_3
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 4
      Agraph_t *g = getAgraphPtr(graph);
      if ( !g ) return(R_NilValue);
 

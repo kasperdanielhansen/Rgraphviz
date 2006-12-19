@@ -14,13 +14,13 @@ SEXP Rgraphviz_graphvizVersion(void) {
 }
 #else
 SEXP Rgraphviz_graphvizVersion(void) {
-#ifdef GRAPHVIZ_2_2_TO_2_3
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 3
     return(Rgraphviz_ScalarStringOrNull(Info[1]));
 #endif
-#ifdef GRAPHVIZ_2_4_TO_2_9
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >=4 && GRAPHVIZ_MINOR <= 9
     return(Rgraphviz_ScalarStringOrNull(gvc->info[1]));
 #endif
-#ifdef GRAPHVIZ_2_10_TO_MORE
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
     return(Rgraphviz_ScalarStringOrNull(gvc->common.info[1]));
 #endif
 }

@@ -13,7 +13,7 @@
 
 #include <math.h>
 
-#ifdef GRAPHVIZ_2_2_TO_2_3
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 3
 #include <render.h>
 #include <graph.h>
 #include <dotprocs.h>
@@ -24,7 +24,7 @@
 extern char *Info[];
 #endif
 
-#ifdef GRAPHVIZ_2_4_TO_2_9
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 4 && GRAPHVIZ_MINOR <= 9
 #include <gvc.h>
 #include <gvplugin.h>
 #include <gvcext.h>
@@ -32,7 +32,7 @@ extern char *Info[];
 #include <globals.h>
 #endif
 
-#ifdef GRAPHVIZ_2_10_TO_MORE
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
 #include <gvc.h>
 #include <gvplugin.h>
 #include <gvcext.h>
