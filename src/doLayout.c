@@ -105,7 +105,7 @@ SEXP getEdgeLocs(Agraph_t *g) {
 	    /* Get the label information */
 	    if (edge->u.label != NULL) {
 		PROTECT(curLab = NEW_OBJECT(labClass));
-#ifdef GRAPHVIZ_2_10_TO_MORE
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
 		SET_SLOT(curLab, Rf_install("labelText"),	
 			 Rgraphviz_ScalarStringOrNull(ED_label(edge)->u.txt.para->str));
 #else
@@ -119,7 +119,8 @@ SEXP getEdgeLocs(Agraph_t *g) {
 		SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
 		UNPROTECT(1);
 			 
-#ifdef GRAPHVIZ_2_10_TO_MORE
+
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
 		snprintf(tmpString, 2, "%c",ED_label(edge)->u.txt.para->just);
 		SET_SLOT(curLab, Rf_install("labelJust"),
 			 Rgraphviz_ScalarStringOrNull(tmpString));
@@ -128,7 +129,7 @@ SEXP getEdgeLocs(Agraph_t *g) {
 		SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
 #endif
 
-#ifdef GRAPHVIZ_2_10_TO_MORE
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
 		SET_SLOT(curLab, Rf_install("labelWidth"),
 			 Rf_ScalarInteger(ED_label(edge)->u.txt.para->width));
 #else
@@ -198,7 +199,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 
 	PROTECT(curLab = NEW_OBJECT(labClass));
 
-#ifdef GRAPHVIZ_2_10_TO_MORE
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
 	if (ND_label(node)->u.txt.para != NULL) {
 	    SET_SLOT(curLab, Rf_install("labelText"),
 		     Rgraphviz_ScalarStringOrNull(ND_label(node)->u.txt.para->str));
@@ -211,7 +212,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 	    SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
 #endif
 	    
-#ifdef GRAPHVIZ_2_10_TO_MORE
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
 	    SET_SLOT(curLab, Rf_install("labelWidth"),
 		     Rf_ScalarInteger(ND_label(node)->u.txt.para->width));
 #else
@@ -243,7 +244,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
     return(outLst);
 }
 
-#ifdef GRAPHVIZ_2_2_TO_2_3
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 3
 enum {
         DOTLAYOUT = 0,
         NEATOLAYOUT,
@@ -279,7 +280,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 			/* Note that we're using the standard dotneato */
 			/* layout commands for layouts and not the ones */
 			/* provided below.  This is a test */
-#ifdef GRAPHVIZ_2_2_TO_2_3
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 3
 			switch(INTEGER(layoutType)[0]) {
 			case DOTLAYOUT:
 				dot_layout(g);
@@ -320,15 +321,11 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
 		SET_SLOT(graph,Rf_install("boundBox"), bb);
 		UNPROTECT(4);
 
-#ifndef GRAPHVIZ_2_2_TO_2_3
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 4
 		/* free gvc after rendering */
 		gvFreeLayout(gvc, g);
 #endif
 
-/* LL
-	}
-*/
-	
 	return(graph);
 }
 

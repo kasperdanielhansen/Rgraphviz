@@ -10,11 +10,10 @@ SEXP Rgraphviz_init(void) {
     /* Stifle graphviz warning messages, only return errors */
     agseterr(AGERR);
 
-#ifndef GRAPHVIZ_2_2_TO_2_3
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 4
     if ( gvc ) { gvFreeContext(gvc); gvc = NULL; }
     gvc = gvContext();
 #endif 
-
     return(R_NilValue);
 }
 
