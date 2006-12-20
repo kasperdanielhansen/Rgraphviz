@@ -80,7 +80,6 @@ exportMethods(
                 "boundBox",
                 "color",
                 "cPoints",
-                "edgeL",		# graph only
                 "edgemode",
                 "edgeNames",
                 "ep",

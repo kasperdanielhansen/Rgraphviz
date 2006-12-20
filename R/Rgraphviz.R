@@ -6,17 +6,22 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
                    subGList=list(), edgeMode=edgemode(graph),
                    recipEdges=c("combined", "distinct")) {
 
+    if ( missing(graph) )
+    {
+       if ( missing(nodes) || missing(edges) || missing(edgeMode) )
+          stop("When not providing graph, need to provide ",
+               "'nodes', 'edges' and 'edgeMode'.")
+    }
+    else
+    {
+       if (!is(graph,"graph"))
+          stop("graph is not an object of class 'graph'")
+    }
+
     layoutType <- match.arg(layoutType)
     recipEdges <- match.arg(recipEdges)
     attrs <- getDefaultAttrs(attrs, layoutType)
     checkAttrs(attrs)
-
-    if (missing(graph) && missing(edgeMode))
-        stop("Must pass in either 'graph' or 'edgeMode'")
-    if (missing(nodes) && missing(graph))
-        stop("Must supply either parameter 'graph' or 'nodes'")
-    if (missing(edges) && missing(graph))
-        stop("Must supply either parameter 'graph' or 'edges'")
 
     ## FIXME: For now, in graphviz 2.4 and 2.6 on a neato graph w/
     ##  singleton nodes, it will segfault.  The root cause
@@ -119,8 +124,9 @@ agwrite <- function(graph, filename)
 
 layoutGraph <- function(graph, layoutType=graph@layoutType) 
 {
-    if (is(graph,"graphNEL"))
-        stop("Please use function agopen() for graphNEL objects")
+    if (is(graph,"graph"))
+        stop("Please use function agopen() for graph objects")
+
     if (!is(graph,"Ragraph"))
         stop("Object is not of class Ragraph")
 
