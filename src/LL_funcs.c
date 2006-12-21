@@ -554,16 +554,18 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
  * edges_from = edgeMatrix(g)["from",], edges_to = edgeMatrix(g)["to", ],  ints
  * nsubG = no. of subgraphs
  * subGIndex = subgraph-index for nodes, ints
+ * recipK = combined reciprocal directed edges or not
 */
 SEXP LLagopen(SEXP name, SEXP kind, 
 	      SEXP nodes, SEXP edges_from, SEXP edges_to, 
-	      SEXP nsubG, SEXP subGIndex, SEXP recipEdges)
+	      SEXP nsubG, SEXP subGIndex, SEXP recipK)
 {
     Agraph_t *g, *tmpGraph;
     Agraph_t **sgs;
     Agnode_t *head, *tail, *curNode;
     Agedge_t *curEdge;
 
+    int recip = INTEGER(recipK)[0];
     char subGName[256];
     int ag_k = 0;
     int nsg = INTEGER(nsubG)[0];
@@ -649,7 +651,23 @@ SEXP LLagopen(SEXP name, SEXP kind,
         whichSubG = INTEGER(subGIndex)[INTEGER(edges_from)[i]-1]; 
         tmpGraph = whichSubG > 0 ? sgs[whichSubG-1] : g;
 
-        curEdge = agedge(tmpGraph, tail, head);
+	/* recipEdges == "combined" in directed graph */
+        if ( (ag_k == 1 || ag_k == 3 ) && 
+	     recip == 0 && 
+	     (curEdge = agfindedge(tmpGraph, head, tail)) )  
+        {
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
+     	   Agsym_t* a = agfindattr(e, "dir");
+     	   if ( !a ) a = agedgeattr(g, "dir", "forward");
+     	   int r= agset(e, "dir", "both");
+#else
+           int r = agsafeset(curEdge, "dir", "both", "forward");
+#endif
+        }
+	else
+	{
+           curEdge = agedge(tmpGraph, tail, head);
+	}
     }
 
     return(buildRagraph(g));

@@ -218,8 +218,8 @@ LLtoFile <- function(graph,
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    
-   which1 <- match.arg(layoutType)
-   which2 <- match.arg(fileType)
+   layoutType <- match.arg(layoutType)
+   fileType <- match.arg(fileType)
    # error check
 
    .Call("Rgraphviz_toFile", graph, 
@@ -235,14 +235,14 @@ LLtoFile <- function(graph,
 # name: string
 # kind: int
 # subGList: list of subgraphs
-# recipEdges:  TODO: use it
+# recipEdges: combine reciprocal directed edges or not 
 LLagopen <- function(graph, name, 
 		kind=NULL, edgeMode=edgemode(graph),
                 subGList=list(), 
                 recipEdges=c("combined", "distinct")) 
 {
-    if (!is(graph,"graphNEL"))
-        stop("This function is for graphNEL objects only")
+    if (!is(graph,"graph"))
+        stop("This function is for objects of class 'graph' only")
 
     if (is.null(kind)) {
         ## Determine kind from the graph object
@@ -261,6 +261,12 @@ LLagopen <- function(graph, name,
                        stop(paste("Incorrect kind parameter:",kind)))
     }
 
+    recipEdges <- match.arg(recipEdges)
+    recipK <- switch(recipEdges,
+                   "combined"=0,  
+                   "distinct"=1, 
+                    0)
+
     nsubG = length(subGList)
 
     sgi = vector(mode="numeric", length=numNodes(graph))
@@ -274,7 +280,8 @@ LLagopen <- function(graph, name,
 		as.integer(edgeMatrix(graph)["from",]), 
 		as.integer(edgeMatrix(graph)["to",]), 
 		as.integer(nsubG), as.integer(sgi),
-		recipEdges, PACKAGE="Rgraphviz")
+		as.integer(recipK), 
+                PACKAGE="Rgraphviz")
     g@edgemode <- edgeMode
     g@layoutType = "dot"    # default layout type
 
