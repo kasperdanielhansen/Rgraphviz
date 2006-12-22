@@ -36,6 +36,14 @@ static const Rgattr_t def_graph_attrs[] = {
 		{NULL,		NULL}
 		};
 
+static const Rgattr_t def_cluster_attrs[] = { 
+     		{"bgcolor",	"transparent"},
+     		{"color",	"black"},
+     		{"rank",	"same"},
+
+		{NULL,		NULL}
+		};
+
 static const Rgattr_t def_node_attrs[] = { 
      		{"shape",	"circle"},
      		{"fixedsize",	"TRUE"},
@@ -191,6 +199,145 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
 #else
      int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
 #endif 
+
+     SEXP ans;
+     PROTECT(ans = NEW_LOGICAL(1));
+     LOGICAL(ans)[0] = r? FALSE : TRUE;
+     UNPROTECT(1);
+     return(ans);
+}
+
+/* TODO:
+ *  when use sg->root to find/set cluster attribute, it seems to set the 
+ *  attribute for the whole graph, instead of only that particular cluster...
+ *  when use sg->meta_node->graph, it doesn't seem to have effect...
+ */
+SEXP Rgraphviz_getDefAttrsCluster(SEXP graph, SEXP cluster)
+{
+     Agraph_t *g = getAgraphPtr(graph);
+     if ( !g ) return(R_NilValue);
+
+     int i = INTEGER(cluster)[0];
+     char subGName[256]; 
+     sprintf(subGName, "%s%d", "cluster_", i);
+
+     Agraph_t *sg = agfindsubg(g, subGName);
+     if ( !sg ) return(R_NilValue);
+
+     int nattr = 0;
+     while ( def_cluster_attrs[nattr].name ) nattr++;
+
+     SEXP ans;
+     PROTECT(ans = allocMatrix(STRSXP, nattr, 2));
+
+     Agsym_t* sym;
+     char* val;
+     int ii = 0;
+     for ( i = 0, ii = 0; i < nattr; i++, ii++ )
+     {
+        //sym = agfindattr(sg->root, def_cluster_attrs[i].name);
+        sym = agfindattr(sg->meta_node->graph, def_cluster_attrs[i].name);
+        val = sym? sym->value : NULL;
+        if ( !val ) val = "ATTR_NOT_DEFINED";
+
+        SET_STRING_ELT(ans, ii, mkChar(def_cluster_attrs[i].name));
+        SET_STRING_ELT(ans, nattr+ii, mkChar(val));
+     }
+     UNPROTECT(1);
+     return(ans);
+}
+
+SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
+		SEXP nnattr, SEXP attrnames, SEXP attrvals)
+{
+     Agraph_t *g = getAgraphPtr(graph);
+     if ( !g ) return(R_NilValue);
+
+     int i = INTEGER(cluster)[0];
+     char subGName[256]; 
+     sprintf(subGName, "%s%d", "cluster_", i);
+
+     Agraph_t *sg = agfindsubg(g, subGName);
+     if ( !sg ) return(R_NilValue);
+
+     int nattr = INTEGER(nnattr)[0];
+
+     for ( i = 0; i < nattr; i++ )
+     {
+	//Agsym_t *r = agraphattr(sg->root, CHAR(STRING_ELT(attrnames, i)), 
+	Agsym_t *r = agraphattr(sg->meta_node->graph, CHAR(STRING_ELT(attrnames, i)), 
+		      CHAR(STRING_ELT(attrvals, i)));
+	printf(" set %s to %s with %d \n", CHAR(STRING_ELT(attrnames, i)),
+		CHAR(STRING_ELT(attrvals, i)), (r? 0:1));
+     }
+
+     nattr = 0;
+     while ( def_cluster_attrs[nattr].name ) nattr++;
+
+     for ( i = 0; i < nattr; i++ )
+	//if ( !agfindattr(sg->root, def_cluster_attrs[i].name) )
+	if ( !agfindattr(sg->meta_node->graph, def_cluster_attrs[i].name) )
+        {
+           //Agsym_t *r = agraphattr(sg->root, def_cluster_attrs[i].name, def_cluster_attrs[i].value);
+           Agsym_t *r = agraphattr(sg->meta_node->graph, def_cluster_attrs[i].name, def_cluster_attrs[i].value);
+	   printf(" set %s to %s with %d \n", def_cluster_attrs[i].name, def_cluster_attrs[i].value, (r? 0:1));
+	}
+
+     return(R_NilValue);
+}
+
+SEXP Rgraphviz_getAttrsCluster(SEXP graph, SEXP cluster, SEXP attrname)
+{
+     Agraph_t *g = getAgraphPtr(graph);
+     if ( !g ) return(R_NilValue);
+
+     int i = INTEGER(cluster)[0];
+     char subGName[256]; 
+     sprintf(subGName, "%s%d", "cluster_", i);
+
+     Agraph_t *sg = agfindsubg(g, subGName);
+     if ( !sg ) return(R_NilValue);
+
+     char *val = agget(sg, STR(attrname));
+
+     if ( !val ) /* no such attr */
+     {
+         val = "default cluster attr val 1";
+     }
+     else if ( !strlen(val) ) /* attr defined but use default */
+     {
+         val = "default cluster attr val 2";
+     }
+
+     SEXP ans;
+     PROTECT(ans = allocVector(STRSXP, 1));
+     SET_STRING_ELT(ans, 0, mkChar(val));
+     UNPROTECT(1);
+     return(ans);
+}
+
+SEXP Rgraphviz_setAttrsCluster(SEXP graph, SEXP cluster,
+		 SEXP attrname, SEXP attrval, SEXP default_val)
+{
+     Agraph_t *g = getAgraphPtr(graph);
+     if ( !g ) return(R_NilValue);
+
+     int i = INTEGER(cluster)[0];
+     char subGName[256]; 
+     sprintf(subGName, "%s%d", "cluster_", i);
+
+     Agraph_t *sg = agfindsubg(g, subGName);
+     if ( !sg ) return(R_NilValue);
+
+     /* 0 for success, -1 otherwise */
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
+     Agsym_t* a = agfindattr(sg, STR(attrname));
+     if ( !a ) a = agraphattr(sg->root, STR(attrname), STR(default_val));
+     int r = agset(sg, STR(attrname), STR(attrval));
+#else
+     int r = agsafeset(sg, STR(attrname), STR(attrval), STR(default_val));
+#endif 
+
      SEXP ans;
      PROTECT(ans = NEW_LOGICAL(1));
      LOGICAL(ans)[0] = r? FALSE : TRUE;
@@ -557,13 +704,16 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
  * recipK = combined reciprocal directed edges or not
 */
 SEXP LLagopen(SEXP name, SEXP kind, 
-	      SEXP nodes, SEXP edges_from, SEXP edges_to, 
-	      SEXP nsubG, SEXP subGIndex, SEXP recipK)
+	      SEXP nodes, SEXP subGIndex,
+	      SEXP edges_from, SEXP edges_to, 
+	      SEXP nsubG, SEXP subGs, 
+              SEXP recipK)
 {
     Agraph_t *g, *tmpGraph;
     Agraph_t **sgs;
     Agnode_t *head, *tail, *curNode;
     Agedge_t *curEdge;
+    SEXP curSubG, curSubGEle;
 
     int recip = INTEGER(recipK)[0];
     char subGName[256];
@@ -595,7 +745,6 @@ SEXP LLagopen(SEXP name, SEXP kind,
 	error("Out of memory while allocating subgraphs");
 
     for (i = 0; i < nsg; i++) {
-/*
             curSubG = VECTOR_ELT(subGs, i);
 
             // First see if this is a cluster or not 
@@ -603,7 +752,6 @@ SEXP LLagopen(SEXP name, SEXP kind,
             if ( curSubGEle == R_NilValue || LOGICAL(curSubGEle)[0] )
                 sprintf(subGName, "%s%d", "cluster_", i);
             else
-*/
                 sprintf(subGName, "%d", i);
 
 /*	    printf(" subgraph %d is named: %s \n", i, subGName); */
