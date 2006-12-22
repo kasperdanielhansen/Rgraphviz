@@ -59,6 +59,73 @@ LLsetAttrsGraph <- function(graph, attrname, attrval, defaultval="")
 	PACKAGE="Rgraphviz")
 }
 
+LLgetDefAttrsCluster <- function(graph, cluster)
+{
+   if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
+   if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
+
+   ans <- .Call("Rgraphviz_getDefAttrsCluster", 
+		graph, as.integer(cluster), 
+		PACKAGE="Rgraphviz")
+
+   if ( !is.null(ans) )
+   {
+      colnames(ans) <- c("attr name", "attr value")
+      rownames(ans) <- paste("cluster attr", 1:nrow(ans))
+   }
+
+   ans
+}
+
+LLsetDefAttrsCluster <- function(graph, cluster, attrnames=c(), attrvals=c())
+{
+   if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
+   if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
+
+   if ( length(attrnames) != length(attrvals) )
+      stop("Length of attrnames is not equal to length of attrvals")
+
+   nattr = length(attrnames)
+
+   ans <- .Call("Rgraphviz_setDefAttrsCluster", 
+	 	graph, as.integer(cluster), 
+		as.integer(nattr), attrnames, attrvals, 
+		PACKAGE="Rgraphviz")
+
+   ans
+}
+
+LLgetAttrsCluster <- function(graph, cluster, attrname)
+{
+   if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
+   if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
+
+   if ( missing(attrname) || !is.character(attrname) || attrname=="" ) 
+	stop("attrname is needed")
+
+   ans <- .Call("Rgraphviz_getAttrsCluster", 
+		graph, as.integer(cluster), attrname, 
+		PACKAGE="Rgraphviz")
+   ans
+}
+
+LLsetAttrsCluster <- function(graph, cluster, attrname, attrval, defaultval="")
+{
+   if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
+   if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
+
+   if ( missing(attrname) || !is.character(attrname) || attrname=="" ) 
+	stop("attrname is needed")
+   if ( missing(attrval) || !is.character(attrval) ) 
+	stop("attrval is needed")
+
+   ans <- .Call("Rgraphviz_setAttrsCluster", 
+		graph, as.integer(cluster),
+		attrname, attrval, defaultval, 
+		PACKAGE="Rgraphviz")
+   ans
+}
+
 LLgetDefAttrsNode <- function(graph)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
@@ -190,6 +257,7 @@ LLgetDefAttrs <- function(graph)
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    
    ans_g <- LLgetDefAttrsGraph(graph)
+   #ans_c <- LLgetDefAttrsCluster(graph)  # which one to inquire?
    ans_n <- LLgetDefAttrsNode(graph)
    ans_e <- LLgetDefAttrsEdge(graph)
 
@@ -199,10 +267,12 @@ LLgetDefAttrs <- function(graph)
 }
 
 LLsetDefAttrs <- function(graph, g_attrnames=c(), g_attrvals=c(),
+			#c_attrnames=c(), c_attrvals=c(),
 			n_attrnames=c(), n_attrvals=c(),
 			e_attrnames=c(), e_attrvals=c())
 {
    ans_g <- LLsetDefAttrsGraph(graph, g_attrnames, g_attrvals)
+   #ans_c <- LLsetDefAttrsCluster(graph, c_attrnames, c_attrvals)
    ans_n <- LLsetDefAttrsNode(graph, n_attrnames, n_attrvals)
    ans_e <- LLsetDefAttrsEdge(graph, e_attrnames, e_attrvals)
 }
@@ -276,10 +346,10 @@ LLagopen <- function(graph, name,
 	for ( i in 1:nsubG ) sgi[nodes(subGList[[i]]$graph)] = i
 
     g <- .Call("LLagopen", name, as.integer(outK), 
-		nodes(graph), 
+		nodes(graph), as.integer(sgi),
 		as.integer(edgeMatrix(graph)["from",]), 
 		as.integer(edgeMatrix(graph)["to",]), 
-		as.integer(nsubG), as.integer(sgi),
+		as.integer(nsubG), as.list(subGList),
 		as.integer(recipK), 
                 PACKAGE="Rgraphviz")
     g@edgemode <- edgeMode
