@@ -805,7 +805,7 @@ SEXP LLagopen(SEXP name, SEXP kind,
 	     (curEdge = agfindedge(tmpGraph, head, tail)) )  
         {
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
-     	   Agsym_t* a = agfindattr(e, "dir");
+     	   Agsym_t* a = agfindattr(curEdge, "dir");
      	   if ( !a ) a = agedgeattr(g, "dir", "forward");
      	   int r= agset(e, "dir", "both");
 #else
