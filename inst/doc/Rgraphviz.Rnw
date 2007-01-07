@@ -789,7 +789,7 @@ close(con)
 
 Finally, we create the graph plot, and the associated HTML image map.
 
-<<makegraph>>=  
+<<makegraph, results=hide>>=  
 width = 600
 height = 512
 imgname = "graph.png"
@@ -824,13 +824,10 @@ if(interactive())
 \section{Sessioninfo}
 
 This document was produced using
-<<>>=
+<<echo=FALSE>>=
 sessionInfo()
 @ 
+together with version \Sexpr{graphvizVersion()} of graphviz.
 
-together with the following version of graphviz
-<<>>=
-graphvizVersion()
-@ 
 
 \end{document}
