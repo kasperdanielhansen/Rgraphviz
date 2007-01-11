@@ -1347,8 +1347,16 @@ echo "$as_me: error: $DOT not found.  Check graphviz installation." >&2;}
    { (exit 1); exit 1; }; }
     else
        GRAPHVIZ_VERSTR=`${DOT} -V 2>&1 | cut -f3 -d" "`
+       # Newer versions have different output from dot -V
+       # this less than ideal, seems to work for graphviz 2.12
+       if test "${GRAPHVIZ_VERSTR}" = "Graphviz"; then
+                  GRAPHVIZ_VERSTR=`${DOT} -V 2>&1 | cut -f5 -d" "`
+       fi
        PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
-       PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -lgvc"
+       # Add both dirs since actual location depends on graphviz
+       # version.  Could do version computation here, but having
+       # the extra path doesn't hurt.
+       PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -L${GRAPHVIZ_DIR}/lib -lgvc"
     fi
 fi
 
