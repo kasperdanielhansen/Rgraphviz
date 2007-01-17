@@ -31,6 +31,7 @@ SEXP getEdgeLocs(Agraph_t *g) {
     Agnode_t *node, *head;
     Agedge_t *edge;
     char *tmpString;
+    char *tmp_ed;
     bezier bez;
     int nodes;
     int i,k,l,pntLstEl;
@@ -96,9 +97,30 @@ SEXP getEdgeLocs(Agraph_t *g) {
 	    head = edge->head;
 	    SET_SLOT(curEP, Rf_install("head"), Rgraphviz_ScalarStringOrNull(head->name));
 
+            /* TODO: clean up the use of attrs: dir, arrowhead, arrowtail.
+             * the following are for interactive plotting in R-env, not needed 
+             * for output to files.  The existing codes set "dir"-attr, but use
+             * "arrowhead"/"arrowtail" instead.  Quite confusing.  
+             */
+            tmp_ed = agget(edge, "dir");
+            if ( !tmp_ed )	/* undirected graph */
+            {
 	    SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowhead")));
 	    SET_SLOT(curEP, Rf_install("arrowtail"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowtail")));
 	    SET_SLOT(curEP, Rf_install("arrowsize"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowsize")));
+            }
+	    else if ( strcmp(tmp_ed, "both")==0 )
+            {
+	    SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull("open"));
+	    SET_SLOT(curEP, Rf_install("arrowtail"), Rgraphviz_ScalarStringOrNull("open"));
+	    SET_SLOT(curEP, Rf_install("arrowsize"), Rgraphviz_ScalarStringOrNull("1"));
+            }
+	    else /* if ( strcmp(tmp_ed, "forward")==0 ) */
+            {
+	    SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull("open"));
+	    SET_SLOT(curEP, Rf_install("arrowtail"), Rgraphviz_ScalarStringOrNull("none"));
+	    SET_SLOT(curEP, Rf_install("arrowsize"), Rgraphviz_ScalarStringOrNull("1"));
+            }
 
 	    SET_SLOT(curEP, Rf_install("color"), Rgraphviz_ScalarStringOrNull(agget(edge, "color")));
 

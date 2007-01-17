@@ -61,7 +61,7 @@ static const Rgattr_t def_node_attrs[] = {
 
 static const Rgattr_t def_edge_attrs[] = {
      		{"color",	"black"},
-     		{"dir",		"both"},
+     		{"dir",		"forward"},
      		{"weight",	"1.0"},
      		{"label",	""},
      		{"fontcolor",	"black"},

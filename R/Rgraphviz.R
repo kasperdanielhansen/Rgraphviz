@@ -73,7 +73,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
 
     ## Allows lwd (line width) and lty (line type) to be set in same manner
     ## color is set
-    ## FIXME:
+    ## FIXME:  fix examples in AgNode/AgEdge
     ##       shouldn't do layoutGraph here, but AgEdge/AgNode count on it 
     ##       to fill in data entries, hence, examples from man-pages...
     ## 
