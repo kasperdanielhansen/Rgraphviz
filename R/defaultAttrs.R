@@ -75,7 +75,7 @@ getDefaultAttrs <- function(curAttrs=list(),
     if (is.null(curAttrs$node$fillcolor))
         curAttrs$node$fillcolor <- bg
     if (is.null(curAttrs$node$label))
-        curAttrs$node$label <- ""
+        curAttrs$node$label <- "\\N"
     if (is.null(curAttrs$node$color))
         curAttrs$node$color <- col
     if (is.null(curAttrs$node$fontcolor))
@@ -104,7 +104,7 @@ getDefaultAttrs <- function(curAttrs=list(),
     if (is.null(curAttrs$edge$color))
         curAttrs$edge$color <- col
     if (is.null(curAttrs$edge$dir))
-        curAttrs$edge$dir <- "both"
+        curAttrs$edge$dir <- "forward"
     if (is.null(curAttrs$edge$weight))
         curAttrs$edge$weight <- "1.0"
     if (is.null(curAttrs$edge$label))

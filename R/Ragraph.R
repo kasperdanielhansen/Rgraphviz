@@ -357,7 +357,7 @@ setMethod("edgeNames", "Ragraph",
         handled <- character()
         remove <- numeric()
         for (i in 1:length(LedgeNames)) {
-            if ((recipEdges == "distinct") || (! revNames[i] %in% handled))
+            if (! revNames[i] %in% handled)
                 handled <- c(handled, LedgeNames[i])
             else
                 remove <- c(remove, i)
