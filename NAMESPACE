@@ -55,16 +55,26 @@ exportClasses(			# Ragraph
 	)
 
 exportMethods(	
-		##LLattrDefaults,
-      		##LL"attrDefaults<-", 
-		##LLedgeDataDefaults, 
-		##LL"edgeDataDefaults<-",
-      		##LLnodeDataDefaults, 
-		##LL"nodeDataDefaults<-", 
-		##LLedgeData, 
-		##LL"edgeData<-", 
-		##LLnodeData,
-      		##LL"nodeData<-"
+		##graphDataDefaults,
+      		##"graphDataDefaults<-", 
+		##graphData,
+      		##"graphData<-", 
+
+		##clusterDataDefaults,
+      		##"clusterDataDefaults<-", 
+		##clusterData,
+      		##"clusterData<-", 
+
+      		nodeDataDefaults, 
+		"nodeDataDefaults<-", 
+		nodeData,
+      		"nodeData<-",
+
+		edgeDataDefaults, 
+		"edgeDataDefaults<-",
+		edgeData, 
+		"edgeData<-", 
+
 		# Ragraph +
                 "AgEdge<-",
                 "AgEdge",

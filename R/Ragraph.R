@@ -367,3 +367,98 @@ setMethod("edgeNames", "Ragraph",
     LedgeNames
 })
 
+###################################################################
+# node attributes
+###################################################################
+#
+# Note: generics are from "graph"
+#
+#setGeneric("nodeDataDefaults", function(self)
+#           standardGeneric("nodeDataDefaults"))
+#
+#setGeneric("nodeDataDefaults<-", function(self, attr, value)
+#           standardGeneric("nodeDataDefaults<-"))
+#
+#setGeneric("nodeData", function(self, n, attr)
+#           standardGeneric("nodeData"))
+#
+#setGeneric("nodeData<-", function(self, n, attr, value)
+#           standardGeneric("nodeData<-"))
+#
+###################################################################
+
+setMethod("nodeDataDefaults", 
+          signature(self="Ragraph", attr="missing"),
+          function(self, attr) {
+	     LLgetDefAttrsNode(self)
+          })
+
+setReplaceMethod("nodeDataDefaults", 
+          signature(self="Ragraph", attr="vector", value="vector"),
+          function(self, attr, value) {
+	     LLsetDefAttrsNode(self, attr, value);
+             self
+          })
+
+setMethod("nodeData",
+          signature(self="Ragraph", n="character", attr="character"),
+          function(self, n, attr) {
+             LLgetAttrsNode(self, n, attr)
+          })
+
+setReplaceMethod("nodeData",
+          signature(self="Ragraph", n="character", attr="character", value="character"),
+          function(self, n, attr, value) {
+             LLsetAttrsNode(self, n, attr, value)
+             self
+          })
+
+
+###################################################################
+# edge attributes
+###################################################################
+#
+# Note: generics are from "graph"
+#
+#setGeneric("edgeDataDefaults", function(self, attr)            
+#	   standardGeneric("edgeDataDefaults"))
+#
+#setGeneric("edgeDataDefaults<-", function(self, attr, value)
+#           standardGeneric("edgeDataDefaults<-"))
+#
+#setGeneric("edgeData", function(self, from, to, attr)
+#           standardGeneric("edgeData"))
+#
+#setGeneric("edgeData<-", function(self, from, to, attr, value)
+#           standardGeneric("edgeData<-"))
+#
+###################################################################
+
+setMethod("edgeDataDefaults", 
+          signature(self="Ragraph", attr="missing"),
+          function(self) {
+             LLgetDefAttrsEdge(self)
+	  })
+
+setReplaceMethod("edgeDataDefaults", 
+          signature(self="Ragraph", attr="vector", value="vector"),
+          function(self, attr, value) {
+             LLsetDefAttrsEdge(self, attr, value)
+             self
+          })
+
+setMethod("edgeData", 
+          signature(self="Ragraph", from="character", to="character", attr="character"),
+          function(self, from, to, attr) {
+             LLgetAttrsEdge(self, from, to, attr)
+          })
+
+setReplaceMethod("edgeData",
+          signature(self="Ragraph", from="character", to="character",
+                    attr="character", value="character"),
+          function(self, from, to, attr, value) {
+             LLsetAttrsEdge(self, from, to, attr, value)
+             self
+          })
+
+

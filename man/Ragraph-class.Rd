@@ -9,6 +9,16 @@
 \alias{boundBox}
 \alias{show,Ragraph-method}
 \alias{edgeNames,Ragraph-method}
+
+\alias{edgeDataDefaults,Ragraph,missing-method}
+\alias{edgeDataDefaults<-,Ragraph,vector,vector-method}
+\alias{edgeData<-,Ragraph,character,character,character,character-method}
+\alias{edgeData,Ragraph,character,character,character-method}
+\alias{nodeDataDefaults,Ragraph,missing-method}
+\alias{nodeDataDefaults<-,Ragraph,vector,vector-method}
+\alias{nodeData,Ragraph,character,character-method}
+\alias{nodeData<-,Ragraph,character,character,character-method}
+
 \alias{AgEdge,Ragraph-method}
 \alias{AgEdge<-,Ragraph-method}
 \alias{agraph,Ragraph-method}
@@ -70,6 +80,25 @@ Objects can be created by calls to the function \code{agopen}.
       method used for the layout of this graph.}
     \item{edgeNames}{\code{signature(object = "Ragraph")}: Returns a
       vector of the names of the edges in this graph.}
+
+    \item{edgeDataDefaults}{\code{signature(self= "Ragraph", attr="missing")}: Gets
+      default attributes of the given edge.}
+    \item{edgeDataDefaults<-}{\code{signature(self= "Ragraph", attr="vector", value="vector")}: Sets
+      default attributes of the given edge.}
+    \item{edgeData}{\code{signature(self= "Ragraph", from="character", to="character", attr="character")}: Gets
+      attributes of the given edge.}
+    \item{edgeData<-}{\code{signature(self= "Ragraph", from="character", to="character", attr="character", value="character")}: Sets
+      attributes of the given edge.}
+
+    \item{nodeDataDefaults}{\code{signature(self= "Ragraph", attr="missing")}: Gets
+      default attributes of the given node.}
+    \item{nodeDataDefaults<-}{\code{signature(self= "Ragraph", attr="vector", value="vector")}: Sets
+      default attributes of the given node.}
+    \item{nodeData}{\code{signature(self= "Ragraph", n="character", attr="character")}: Gets
+      attributes of the given node.}
+    \item{nodeData<-}{\code{signature(self= "Ragraph", n="character", attr="character", value="character")}: Sets
+      attributes of the given node.}
+
     \item{getNodeXY}{\code{signature(object = "Ragraph")}: Returns a two
       element list, the first element contains a numerical vector with
       the 'x' positions of every node in this graph, and the second
