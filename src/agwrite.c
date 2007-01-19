@@ -15,11 +15,11 @@ SEXP Rgraphviz_agwrite(SEXP graph, SEXP filename) {
     /* output the Agraph_t */
     dotFile = fopen(STR(filename),"w");
     if (dotFile == NULL) {
-	error("Error opening file");
+        error("Error opening file");
     }
     agwrite(g, dotFile);
 
     fclose(dotFile);
     return(R_NilValue);
 }
-    
+

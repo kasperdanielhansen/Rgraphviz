@@ -138,7 +138,7 @@ Objects can be created by calls to the function \code{agopen}.
       vector with the right width of every node in the graph.}
   }
 }
-\author{Jeff Gentry}
+\author{Jeff Gentry and Li Long <li.long@isb-sib.ch>}
 
 \seealso{\code{\link{agopen}}}
 

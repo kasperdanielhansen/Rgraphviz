@@ -22,5 +22,11 @@ clusterDataDefaults(self, cluster, attr) <- value
 \description{
   Get/Set default values for attributes associated with a cluster of a graph.
 }
+
+\author{Li Long <li.long@isb-sib.ch>}
+
+\seealso{}
+
+
 \keyword{methods}
 

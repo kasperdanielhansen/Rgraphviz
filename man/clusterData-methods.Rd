@@ -24,5 +24,11 @@ clusterData(self, cluster, attr) <- value
   \code{clusterData}.  The attributes must be defined using
   \code{\link{clusterDataDefaults}}.  
 }
+
+\author{Li Long <li.long@isb-sib.ch>}
+
+\seealso{}
+
+
 \keyword{methods}
 
