@@ -26,6 +26,11 @@ export(
 	LLsetAttrsGraph,
 	LLsetDefAttrsGraph,
 
+	LLgetAttrsCluster,
+	LLgetDefAttrsCluster,
+	LLsetAttrsCluster,
+	LLsetDefAttrsCluster,
+
 	LLgetAttrsNode,
 	LLgetDefAttrsNode,
 	LLsetAttrsNode,
@@ -55,15 +60,15 @@ exportClasses(			# Ragraph
 	)
 
 exportMethods(	
-		##graphDataDefaults,
-      		##"graphDataDefaults<-", 
-		##graphData,
-      		##"graphData<-", 
+		graphDataDefaults,
+      		"graphDataDefaults<-", 
+		graphData,
+      		"graphData<-", 
 
-		##clusterDataDefaults,
-      		##"clusterDataDefaults<-", 
-		##clusterData,
-      		##"clusterData<-", 
+		clusterDataDefaults,
+      		"clusterDataDefaults<-", 
+		clusterData,
+      		"clusterData<-", 
 
       		nodeDataDefaults, 
 		"nodeDataDefaults<-", 
