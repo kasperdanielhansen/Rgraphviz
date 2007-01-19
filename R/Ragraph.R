@@ -368,6 +368,94 @@ setMethod("edgeNames", "Ragraph",
 })
 
 ###################################################################
+# graph attributes
+###################################################################
+
+setGeneric("graphDataDefaults", function(self)
+           standardGeneric("graphDataDefaults"))
+
+setGeneric("graphDataDefaults<-", function(self, attr, value)
+           standardGeneric("graphDataDefaults<-"))
+
+setGeneric("graphData", function(self, attr)
+           standardGeneric("graphData"))
+
+setGeneric("graphData<-", function(self, attr, value)
+           standardGeneric("graphData<-"))
+
+###################################################################
+
+setMethod("graphDataDefaults",
+          signature(self="Ragraph"),
+          function(self) {
+             LLgetDefAttrsGraph(self)
+          })
+
+setReplaceMethod("graphDataDefaults",
+          signature(self="Ragraph", attr="vector", value="vector"),
+          function(self, attr, value) {
+             LLsetDefAttrsGraph(self, attr, value);
+             self
+          })
+
+setMethod("graphData",
+          signature(self="Ragraph", attr="character"),
+          function(self, attr) {
+             LLgetAttrsGraph(self, attr)
+          })
+
+setReplaceMethod("graphData",
+          signature(self="Ragraph", attr="character", value="character"),
+          function(self, attr, value) {
+             LLsetAttrsGraph(self, attr, value)
+             self
+          })
+
+###################################################################
+# cluster attributes
+###################################################################
+
+setGeneric("clusterDataDefaults", function(self, cluster)
+           standardGeneric("clusterDataDefaults"))
+
+setGeneric("clusterDataDefaults<-", function(self, cluster, attr, value)
+           standardGeneric("clusterDataDefaults<-"))
+
+setGeneric("clusterData", function(self, cluster, attr)
+           standardGeneric("clusterData"))
+
+setGeneric("clusterData<-", function(self, cluster, attr, value)
+           standardGeneric("clusterData<-"))
+
+###################################################################
+
+setMethod("clusterDataDefaults",
+          signature(self="Ragraph", cluster="numeric"),
+          function(self, cluster) {
+             LLgetDefAttrsCluster(self, cluster)
+          })
+
+setReplaceMethod("clusterDataDefaults",
+          signature(self="Ragraph", cluster="numeric", attr="vector", value="vector"),
+          function(self, cluster, attr, value) {
+             LLsetDefAttrsCluster(self, cluster, attr, value);
+             self
+          })
+
+setMethod("clusterData",
+          signature(self="Ragraph", cluster="numeric", attr="character"),
+          function(self, cluster, attr) {
+             LLgetAttrsCluster(self, cluster, attr)
+          })
+
+setReplaceMethod("clusterData",
+          signature(self="Ragraph", cluster="numeric", attr="character", value="character"),
+          function(self, cluster, attr, value) {
+             LLsetAttrsCluster(self, cluster, attr, value)
+             self
+          })
+
+###################################################################
 # node attributes
 ###################################################################
 #

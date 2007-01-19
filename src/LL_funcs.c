@@ -264,23 +264,27 @@ SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
 
      for ( i = 0; i < nattr; i++ )
      {
-	//Agsym_t *r = agraphattr(sg->root, CHAR(STRING_ELT(attrnames, i)), 
+	/*Agsym_t *r = agraphattr(sg->root, CHAR(STRING_ELT(attrnames, i)), */
 	Agsym_t *r = agraphattr(sg->meta_node->graph, CHAR(STRING_ELT(attrnames, i)), 
 		      CHAR(STRING_ELT(attrvals, i)));
+        /*
 	printf(" set %s to %s with %d \n", CHAR(STRING_ELT(attrnames, i)),
 		CHAR(STRING_ELT(attrvals, i)), (r? 0:1));
+         */
      }
 
      nattr = 0;
      while ( def_cluster_attrs[nattr].name ) nattr++;
 
      for ( i = 0; i < nattr; i++ )
-	//if ( !agfindattr(sg->root, def_cluster_attrs[i].name) )
+	/*if ( !agfindattr(sg->root, def_cluster_attrs[i].name) ) */
 	if ( !agfindattr(sg->meta_node->graph, def_cluster_attrs[i].name) )
         {
-           //Agsym_t *r = agraphattr(sg->root, def_cluster_attrs[i].name, def_cluster_attrs[i].value);
+           /*Agsym_t *r = agraphattr(sg->root, def_cluster_attrs[i].name, def_cluster_attrs[i].value); */
            Agsym_t *r = agraphattr(sg->meta_node->graph, def_cluster_attrs[i].name, def_cluster_attrs[i].value);
+           /*
 	   printf(" set %s to %s with %d \n", def_cluster_attrs[i].name, def_cluster_attrs[i].value, (r? 0:1));
+            */
 	}
 
      return(R_NilValue);
