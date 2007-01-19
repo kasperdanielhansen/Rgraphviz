@@ -2,7 +2,7 @@
 #include "util.h"
 
 SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
-			     SEXP subGList, SEXP defAttrs) {
+                             SEXP subGList, SEXP defAttrs) {
     SEXP pNodes;
     SEXP pnClass, curPN;
     SEXP attrs, attrNames, tmpStr;
@@ -19,36 +19,36 @@ SEXP Rgraphviz_buildNodeList(SEXP nodes, SEXP nodeAttrs,
     SET_STRING_ELT(attrNames, 0, mkChar("label"));
 
     for (i = 0; i < length(nodes); i++) {
-	PROTECT(tmpStr = allocVector(STRSXP, 1));
-	SET_STRING_ELT(tmpStr, 0, STRING_ELT(nodes, i));
-	PROTECT(curPN = NEW_OBJECT(pnClass));
-	SET_SLOT(curPN, Rf_install("name"), tmpStr);
+        PROTECT(tmpStr = allocVector(STRSXP, 1));
+        SET_STRING_ELT(tmpStr, 0, STRING_ELT(nodes, i));
+        PROTECT(curPN = NEW_OBJECT(pnClass));
+        SET_SLOT(curPN, Rf_install("name"), tmpStr);
 
-	PROTECT(attrs = allocVector(VECSXP, 1));
-	setAttrib(attrs, R_NamesSymbol, attrNames);
+        PROTECT(attrs = allocVector(VECSXP, 1));
+        setAttrib(attrs, R_NamesSymbol, attrNames);
 
-	SET_VECTOR_ELT(attrs, 0, tmpStr);
-	SET_SLOT(curPN, Rf_install("attrs"), attrs);
-	SET_VECTOR_ELT(pNodes, i, curPN);
-	
-	for (j = 0; j < nSubG; j++) {
-	    curSubG = getListElement(VECTOR_ELT(subGList, j), "graph");
-	    subGNodes = GET_SLOT(curSubG, Rf_install("nodes"));
+        SET_VECTOR_ELT(attrs, 0, tmpStr);
+        SET_SLOT(curPN, Rf_install("attrs"), attrs);
+        SET_VECTOR_ELT(pNodes, i, curPN);
 
-	    for (k = 0; k < length(subGNodes); k++) {
-		if (strcmp(CHAR(STRING_ELT(subGNodes, k)),
-			   CHAR(STRING_ELT(nodes, i))) == 0)
-		    break;
-	    }
-	    if (k == length(subGNodes))
-		continue;
+        for (j = 0; j < nSubG; j++) {
+            curSubG = getListElement(VECTOR_ELT(subGList, j), "graph");
+            subGNodes = GET_SLOT(curSubG, Rf_install("nodes"));
 
-	    SET_SLOT(curPN, Rf_install("subG"), Rf_ScalarInteger(j+1));
-	    /* Only one subgraph per node */
-	    break;
-	}
+            for (k = 0; k < length(subGNodes); k++) {
+                if (strcmp(CHAR(STRING_ELT(subGNodes, k)),
+                           CHAR(STRING_ELT(nodes, i))) == 0)
+                    break;
+            }
+            if (k == length(subGNodes))
+                continue;
 
-	UNPROTECT(3);
+            SET_SLOT(curPN, Rf_install("subG"), Rf_ScalarInteger(j+1));
+            /* Only one subgraph per node */
+            break;
+        }
+
+        UNPROTECT(3);
     }
 
     setAttrib(pNodes, R_NamesSymbol, nodes);

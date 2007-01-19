@@ -7,7 +7,7 @@ SEXP Rgraphviz_agread(SEXP filename) {
 
     dotFile = fopen(STR(filename),"r");
     if (dotFile == NULL) {
-	error("Requested file does not exit");
+        error("Requested file does not exit");
     }
     aginit();
     g = agread(dotFile);
