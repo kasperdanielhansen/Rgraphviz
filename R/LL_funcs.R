@@ -1,18 +1,8 @@
 # TODO: 
-# -- check given graph is Ragraph
-# -- validate given nodes/edges
-# -- check attrname/attrval/defaultval
-
-## to enable: 	nodeAttr and nodeAttr <- x, 
-##		edgeAttr and edgeAttr <- x
-##setGeneric("AgNodeAttr", function(object) standardGeneric("AgNodeAttr"))
-##setMethod("AgNodeAttr", "Ragraph", function(object) object@AgNode)
-##
-##setGeneric("AgNodeAttr<-", function(object, value) standardGeneric("AgNodeAttr<-"))
-##setReplaceMethod("AgNodeAttr", "Ragraph", function(object, value) {
-##                   object@AgNode = value
-##                   return(object)
-##                 })
+# -- ?validate given nodes/edges
+# -- ?check attrname/attrval/defaultval
+# -- cluster defaults: specify cluster number or not
+# -- cluster number: starting from 0 or 1
 
 LLgetDefAttrsGraph <- function(graph)
 {
@@ -39,24 +29,39 @@ LLsetDefAttrsGraph <- function(graph, attrnames=c(), attrvals=c())
 LLgetAttrsGraph <- function(graph, attrname)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
-   if ( missing(attrname) || !is.character(attrname) || attrname=="" ) 
+   if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
 	stop("attrname is needed")
 
-   .Call("Rgraphviz_getAttrsGraph", graph, 
-	attrname, PACKAGE="Rgraphviz")
+   x <- cbind(attrname)
+
+   ans <- vector()
+   for ( i in 1:nrow(x) )
+   {
+      r <- .Call("Rgraphviz_getAttrsGraph", graph, x[i],
+                 PACKAGE="Rgraphviz")
+      if ( is.null(r) ) r <- "ERROR"
+      names(r) <- x[i, 1]
+      ans <- c(ans, r)
+   }
+
+   ans
 }
 
 LLsetAttrsGraph <- function(graph, attrname, attrval, defaultval="")
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
-   if ( missing(attrname) || !is.character(attrname) || attrname=="" ) 
+   if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
 	stop("attrname is needed")
    if ( missing(attrval) || !is.character(attrval) ) 
 	stop("attrval is needed")
 
-   .Call("Rgraphviz_setAttrsGraph", graph, 
-	attrname, attrval, defaultval, 
-	PACKAGE="Rgraphviz")
+   x <- cbind(attrname, attrval, defaultval)
+
+   for ( i in 1:nrow(x) )
+   {
+      .Call("Rgraphviz_setAttrsGraph", graph, x[i, 1], x[i, 2], x[i, 3],
+	    PACKAGE="Rgraphviz")
+   }
 }
 
 LLgetDefAttrsCluster <- function(graph, cluster)
@@ -100,12 +105,22 @@ LLgetAttrsCluster <- function(graph, cluster, attrname)
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
 
-   if ( missing(attrname) || !is.character(attrname) || attrname=="" ) 
+   if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
 	stop("attrname is needed")
 
-   ans <- .Call("Rgraphviz_getAttrsCluster", 
-		graph, as.integer(cluster), attrname, 
-		PACKAGE="Rgraphviz")
+   x <- cbind(cluster, attrname)
+
+   ans <- vector()
+   for ( i in 1:nrow(x) )
+   {
+      r <- .Call("Rgraphviz_getAttrsCluster", 
+                 graph, as.integer(x[i, 1]), x[i, 2],
+                 PACKAGE="Rgraphviz")
+      if ( is.null(r) ) r <- "ERROR"
+      names(r) <- x[i, 1]
+      ans <- c(ans, r)
+   }
+
    ans
 }
 
@@ -114,16 +129,19 @@ LLsetAttrsCluster <- function(graph, cluster, attrname, attrval, defaultval="")
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
 
-   if ( missing(attrname) || !is.character(attrname) || attrname=="" ) 
-	stop("attrname is needed")
-   if ( missing(attrval) || !is.character(attrval) ) 
-	stop("attrval is needed")
+   if ( missing(attrname) || !is.character(attrname) || any(attrname=="") )
+        stop("attrname is needed")
+   if ( missing(attrval) || !is.character(attrval) )
+        stop("attrval is needed")
 
-   ans <- .Call("Rgraphviz_setAttrsCluster", 
-		graph, as.integer(cluster),
-		attrname, attrval, defaultval, 
-		PACKAGE="Rgraphviz")
-   ans
+   x <- cbind(cluster, attrname, attrval, defaultval)
+
+   for ( i in 1:nrow(x) )
+   {
+       .Call("Rgraphviz_setAttrsCluster", graph, as.integer(x[i, 1]),
+	     x[i, 2], x[i, 3], x[i, 4],
+	     PACKAGE="Rgraphviz")
+   }
 }
 
 LLgetDefAttrsNode <- function(graph)
@@ -160,8 +178,8 @@ LLgetAttrsNode <- function(graph, node, attrname)
    ans <- vector()
    for ( i in 1:nrow(x) )
    {
-      r <- .Call("Rgraphviz_getAttrsNode", graph, x[i, 1], 
-		x[i, 2], PACKAGE="Rgraphviz")
+      r <- .Call("Rgraphviz_getAttrsNode", graph, x[i, 1], x[i, 2], 
+                 PACKAGE="Rgraphviz")
       if ( is.null(r) ) r <- "ERROR"
       names(r) <- x[i, 1]
       ans <- c(ans, r)
@@ -173,7 +191,7 @@ LLgetAttrsNode <- function(graph, node, attrname)
 LLsetAttrsNode <- function(graph, node, attrname, attrval, defaultval="")
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
-   if ( missing(attrname) || !is.character(attrname) || attrname=="" ) 
+   if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
 	stop("attrname is needed")
    if ( missing(attrval) || !is.character(attrval) ) 
 	stop("attrval is needed")
@@ -182,9 +200,8 @@ LLsetAttrsNode <- function(graph, node, attrname, attrval, defaultval="")
 
    for ( i in 1:nrow(x) )
    {
-   .Call("Rgraphviz_setAttrsNode", graph, x[i, 1], 
-	x[i, 2], x[i, 3], x[i, 4],
-	PACKAGE="Rgraphviz")
+      .Call("Rgraphviz_setAttrsNode", graph, x[i, 1], x[i, 2], x[i, 3], x[i, 4],
+	    PACKAGE="Rgraphviz")
    }
 }
 
@@ -215,7 +232,7 @@ LLsetDefAttrsEdge <- function(graph, attrnames=c(), attrvals=c())
 LLgetAttrsEdge <- function(graph, from, to, attrname)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
-   if ( missing(attrname) || !is.character(attrname) || attrname=="" ) 
+   if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
 	stop("attrname is needed")
 
    x <- cbind(from, to, attrname)
@@ -224,8 +241,8 @@ LLgetAttrsEdge <- function(graph, from, to, attrname)
 
    for ( i in 1:nrow(x) )
    {
-      r <- .Call("Rgraphviz_getAttrsEdge", graph, x[i, 1], x[i, 2], 
-	   	   x[i, 3], PACKAGE="Rgraphviz")
+      r <- .Call("Rgraphviz_getAttrsEdge", graph, x[i, 1], x[i, 2], x[i, 3], 
+                 PACKAGE="Rgraphviz")
       if ( is.null(r) ) r <- "ERROR"
       names(r) <- paste(x[i, 1], "--", x[i, 2], sep="")
       ans <- c(ans, r)
@@ -237,7 +254,7 @@ LLgetAttrsEdge <- function(graph, from, to, attrname)
 LLsetAttrsEdge <- function(graph, from, to, attrname, attrval, defaultval="") 
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
-   if ( missing(attrname) || !is.character(attrname) || attrname=="" ) 
+   if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
 	stop("attrname is needed")
    if ( missing(attrval) || !is.character(attrval) ) 
 	stop("attrval is needed")
