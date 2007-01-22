@@ -20,12 +20,12 @@
 \alias{clusterData<-,Ragraph,numeric,character,character-method}
 \alias{edgeDataDefaults,Ragraph,missing-method}
 \alias{edgeDataDefaults<-,Ragraph,vector,vector-method}
-\alias{edgeData<-,Ragraph,character,character,character,character-method}
-\alias{edgeData,Ragraph,character,character,character-method}
+\alias{edgeData<-,Ragraph,vector,vector,vector,vector-method}
+\alias{edgeData,Ragraph,vector,vector,vector-method}
 \alias{nodeDataDefaults,Ragraph,missing-method}
 \alias{nodeDataDefaults<-,Ragraph,vector,vector-method}
-\alias{nodeData,Ragraph,character,character-method}
-\alias{nodeData<-,Ragraph,character,character,character-method}
+\alias{nodeData,Ragraph,vector,vector-method}
+\alias{nodeData<-,Ragraph,vector,vector,vector-method}
 
 \alias{AgEdge,Ragraph-method}
 \alias{AgEdge<-,Ragraph-method}
@@ -111,18 +111,18 @@ Objects can be created by calls to the function \code{agopen}.
       Gets default attributes of the given edge.}
     \item{edgeDataDefaults<-}{\code{signature(self= "Ragraph", attr="vector", value="vector")}: 
       Sets default attributes of the given edge.}
-    \item{edgeData}{\code{signature(self= "Ragraph", from="character", to="character", attr="character")}: 
+    \item{edgeData}{\code{signature(self= "Ragraph", from="vector", to="vector", attr="vector")}: 
       Gets attributes of the given edge.}
-    \item{edgeData<-}{\code{signature(self= "Ragraph", from="character", to="character", attr="character", value="character")}: 
+    \item{edgeData<-}{\code{signature(self= "Ragraph", from="vector", to="vector", attr="vector", value="vector")}: 
       Sets attributes of the given edge.}
 
     \item{nodeDataDefaults}{\code{signature(self= "Ragraph", attr="missing")}: 
       Gets default attributes of the given node.}
     \item{nodeDataDefaults<-}{\code{signature(self= "Ragraph", attr="vector", value="vector")}: 
       Sets default attributes of the given node.}
-    \item{nodeData}{\code{signature(self= "Ragraph", n="character", attr="character")}: 
+    \item{nodeData}{\code{signature(self= "Ragraph", n="vector", attr="vector")}: 
       Gets attributes of the given node.}
-    \item{nodeData<-}{\code{signature(self= "Ragraph", n="character", attr="character", value="character")}: 
+    \item{nodeData<-}{\code{signature(self= "Ragraph", n="vector", attr="vector", value="vector")}: 
       Sets attributes of the given node.}
 
     \item{getNodeXY}{\code{signature(object = "Ragraph")}: Returns a two
