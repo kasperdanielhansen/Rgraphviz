@@ -100,7 +100,7 @@ SEXP getEdgeLocs(Agraph_t *g) {
              * "arrowhead"/"arrowtail" instead.  Quite confusing.  
              */
             tmp_ed = agget(edge, "dir");
-            if ( !tmp_ed )	/* undirected graph */
+            if ( !AG_IS_DIRECTED(g) || !tmp_ed )	/* undirected graph */
             {
                 SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowhead")));
                 SET_SLOT(curEP, Rf_install("arrowtail"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowtail")));
