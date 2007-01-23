@@ -2,12 +2,28 @@
 #include "util.h"
 #include <stdio.h>
 
-static inline Agraph_t *getAgraphPtr(SEXP graph)
+static inline Agraph_t* getAgraphPtr(SEXP graph)
 {
     SEXP slotTmp = GET_SLOT(graph, Rf_install("agraph"));
     CHECK_Rgraphviz_graph(slotTmp);
     Agraph_t *g = R_ExternalPtrAddr(slotTmp);
     return g;
+}
+
+#define CLUSTERFLAG "cluster"
+
+static Agraph_t* getClusterPtr(SEXP graph, SEXP cluster)
+{
+    Agraph_t *g = getAgraphPtr(graph);
+    if ( !g ) return(NULL);
+
+    int i = INTEGER(cluster)[0];
+    char subGName[256];
+    sprintf(subGName, "%s_%d", CLUSTERFLAG, i);
+
+    Agraph_t *sg = agfindsubg(g, subGName);
+
+    return(sg);
 }
 
 /*
@@ -190,14 +206,13 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
     if ( !g ) return(R_NilValue);
 
     /* 0 for success, -1 otherwise */
-
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
     Agsym_t* a = agfindattr(g, STR(attrname));
     if ( !a ) a = agraphattr(g->root, STR(attrname), STR(default_val));
     int r = agset(g, STR(attrname), STR(attrval));
 #else
     int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
-#endif 
+#endif
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -213,14 +228,7 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
  */
 SEXP Rgraphviz_getDefAttrsCluster(SEXP graph, SEXP cluster)
 {
-    Agraph_t *g = getAgraphPtr(graph);
-    if ( !g ) return(R_NilValue);
-
-    int i = INTEGER(cluster)[0];
-    char subGName[256];
-    sprintf(subGName, "%s%d", "cluster_", i);
-
-    Agraph_t *sg = agfindsubg(g, subGName);
+    Agraph_t *sg = getClusterPtr(graph, cluster);
     if ( !sg ) return(R_NilValue);
 
     int nattr = 0;
@@ -231,7 +239,7 @@ SEXP Rgraphviz_getDefAttrsCluster(SEXP graph, SEXP cluster)
 
     Agsym_t* sym;
     char* val;
-    int ii = 0;
+    int i = 0, ii = 0;
     for ( i = 0, ii = 0; i < nattr; i++, ii++ )
     {
         /*sym = agfindattr(sg->root, def_cluster_attrs[i].name);*/
@@ -249,26 +257,23 @@ SEXP Rgraphviz_getDefAttrsCluster(SEXP graph, SEXP cluster)
 SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
                                   SEXP nnattr, SEXP attrnames, SEXP attrvals)
 {
-    Agraph_t *g = getAgraphPtr(graph);
-    if ( !g ) return(R_NilValue);
-
-    int i = INTEGER(cluster)[0];
-    char subGName[256];
-    sprintf(subGName, "%s%d", "cluster_", i);
-
-    Agraph_t *sg = agfindsubg(g, subGName);
+    Agraph_t *sg = getClusterPtr(graph, cluster);
     if ( !sg ) return(R_NilValue);
 
     int nattr = INTEGER(nnattr)[0];
+    int i;
 
     for ( i = 0; i < nattr; i++ )
     {
         /*Agsym_t *r = agraphattr(sg->root, CHAR(STRING_ELT(attrnames, i)), */
-        Agsym_t *r = agraphattr(sg->meta_node->graph, CHAR(STRING_ELT(attrnames, i)),
+        Agsym_t *r = agraphattr(sg->meta_node->graph, 
+                                CHAR(STRING_ELT(attrnames, i)),
                                 CHAR(STRING_ELT(attrvals, i)));
         /*
-        printf(" set %s to %s with %d \n", CHAR(STRING_ELT(attrnames, i)),
-        CHAR(STRING_ELT(attrvals, i)), (r? 0:1));
+        printf(" set %s to %s with %d \n", 
+                   CHAR(STRING_ELT(attrnames, i)),
+                   CHAR(STRING_ELT(attrvals, i)), 
+                   (r? 0:1));
          */
     }
 
@@ -279,10 +284,16 @@ SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
         /*if ( !agfindattr(sg->root, def_cluster_attrs[i].name) ) */
         if ( !agfindattr(sg->meta_node->graph, def_cluster_attrs[i].name) )
         {
-            /*Agsym_t *r = agraphattr(sg->root, def_cluster_attrs[i].name, def_cluster_attrs[i].value); */
-            Agsym_t *r = agraphattr(sg->meta_node->graph, def_cluster_attrs[i].name, def_cluster_attrs[i].value);
+            /*Agsym_t *r = agraphattr(sg->root, 
+		      def_cluster_attrs[i].name, def_cluster_attrs[i].value); */
+            Agsym_t *r = agraphattr(sg->meta_node->graph, 
+                                    def_cluster_attrs[i].name, 
+                                    def_cluster_attrs[i].value);
             /*
-            printf(" set %s to %s with %d \n", def_cluster_attrs[i].name, def_cluster_attrs[i].value, (r? 0:1));
+            printf(" set %s to %s with %d \n", 
+                   def_cluster_attrs[i].name, 
+                   def_cluster_attrs[i].value, 
+                   (r? 0:1));
              */
         }
 
@@ -291,14 +302,7 @@ SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
 
 SEXP Rgraphviz_getAttrsCluster(SEXP graph, SEXP cluster, SEXP attrname)
 {
-    Agraph_t *g = getAgraphPtr(graph);
-    if ( !g ) return(R_NilValue);
-
-    int i = INTEGER(cluster)[0];
-    char subGName[256];
-    sprintf(subGName, "%s%d", "cluster_", i);
-
-    Agraph_t *sg = agfindsubg(g, subGName);
+    Agraph_t *sg = getClusterPtr(graph, cluster);
     if ( !sg ) return(R_NilValue);
 
     char *val = agget(sg, STR(attrname));
@@ -322,14 +326,7 @@ SEXP Rgraphviz_getAttrsCluster(SEXP graph, SEXP cluster, SEXP attrname)
 SEXP Rgraphviz_setAttrsCluster(SEXP graph, SEXP cluster,
                                SEXP attrname, SEXP attrval, SEXP default_val)
 {
-    Agraph_t *g = getAgraphPtr(graph);
-    if ( !g ) return(R_NilValue);
-
-    int i = INTEGER(cluster)[0];
-    char subGName[256];
-    sprintf(subGName, "%s%d", "cluster_", i);
-
-    Agraph_t *sg = agfindsubg(g, subGName);
+    Agraph_t *sg = getClusterPtr(graph, cluster);
     if ( !sg ) return(R_NilValue);
 
     /* 0 for success, -1 otherwise */
@@ -339,7 +336,7 @@ SEXP Rgraphviz_setAttrsCluster(SEXP graph, SEXP cluster,
     int r = agset(sg, STR(attrname), STR(attrval));
 #else
     int r = agsafeset(sg, STR(attrname), STR(attrval), STR(default_val));
-#endif 
+#endif
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -498,7 +495,7 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
     int r = agset(n, STR(attrname), STR(attrval));
 #else
     int r = agsafeset(n, STR(attrname), STR(attrval), STR(default_val));
-#endif 
+#endif
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -751,9 +748,9 @@ SEXP LLagopen(SEXP name, SEXP kind,
         curSubG = VECTOR_ELT(subGs, i);
 
         // First see if this is a cluster or not
-        curSubGEle = getListElement(curSubG, "cluster");
+        curSubGEle = getListElement(curSubG, CLUSTERFLAG);
         if ( curSubGEle == R_NilValue || LOGICAL(curSubGEle)[0] )
-            sprintf(subGName, "%s%d", "cluster_", i);
+            sprintf(subGName, "%s_%d", CLUSTERFLAG, i);
         else
             sprintf(subGName, "%d", i);
 
@@ -803,9 +800,8 @@ SEXP LLagopen(SEXP name, SEXP kind,
         tmpGraph = whichSubG > 0 ? sgs[whichSubG-1] : g;
 
         /* recipEdges == "combined" in directed graph */
-        if ( (ag_k == 1 || ag_k == 3 ) &&
-                recip == 0 &&
-                (curEdge = agfindedge(tmpGraph, head, tail)) )
+        if ( (ag_k == 1 || ag_k == 3 ) && recip == 0 &&
+             (curEdge = agfindedge(tmpGraph, head, tail)) )
         {
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
             Agsym_t* a = agfindattr(curEdge, "dir");
