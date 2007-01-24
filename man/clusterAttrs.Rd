@@ -1,17 +1,17 @@
 \name{clusterAttrs}
-\alias{LLgetDefAttrsCluster}
-\alias{LLsetDefAttrsCluster}
-\alias{LLgetAttrsCluster}
-\alias{LLsetAttrsCluster}
+\alias{getDefAttrsCluster}
+\alias{setDefAttrsCluster}
+\alias{getAttrsCluster}
+\alias{setAttrsCluster}
 
 \title{Handle attributes of clusters for layout and/or rendering}
 \description{Handle attributes of clusters for layout and/or rendering}
 
 \usage{
-LLgetDefAttrsCluster(graph, cluster)
-LLsetDefAttrsCluster(graph, cluster, attrnames=c(), attrvals=c())
-LLgetAttrsCluster(graph, cluster, attrname)
-LLsetAttrsCluster(graph, cluster, attrname, attrval, defaultval="")
+getDefAttrsCluster(graph, cluster)
+setDefAttrsCluster(graph, cluster, attrnames=c(), attrvals=c())
+getAttrsCluster(graph, cluster, attrname)
+setAttrsCluster(graph, cluster, attrname, attrval, defaultval="")
 }
 
 \arguments{
@@ -30,10 +30,10 @@ NEED MORE DETAILS.
 }
 
 \value{
-\code{LLgetDefAttrsCluster} { returns attributes and their values}
-\code{LLsetDefAttrsCluster} { returns NULL }
-\code{LLgetAttrsCluster} { returns attribute value }
-\code{LLsetAttrsCluster} { returns TRUE/FALSE }
+\code{getDefAttrsCluster} { returns attributes and their values}
+\code{setDefAttrsCluster} { returns NULL }
+\code{getAttrsCluster} { returns attribute value }
+\code{setAttrsCluster} { returns TRUE/FALSE }
 }
 
 \references{Rgraphviz by E. Ganssner, S. North, www.graphviz.org }

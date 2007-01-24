@@ -1,15 +1,15 @@
 \name{getAttrsGraph}
-\alias{LLgetAttrsGraph}
-\alias{LLgetAttrsNode}
-\alias{LLgetAttrsEdge}
+\alias{getAttrsGraph}
+\alias{getAttrsNode}
+\alias{getAttrsEdge}
 
 \title{Get attributes of graph, nodes, edges for layout and/or rendering}
 \description{Get attributes of graph, nodes, edges for layout and/or rendering}
 
 \usage{
-LLgetAttrsGraph(graph, attrname)
-LLgetAttrsNode(graph, node, attrname)
-LLgetAttrsEdge(graph, from, to, attrname)
+getAttrsGraph(graph, attrname)
+getAttrsNode(graph, node, attrname)
+getAttrsEdge(graph, from, to, attrname)
 }
 
 \arguments{
@@ -25,9 +25,9 @@ of circular rule applies.
 }
 
 \value{
-\code{LLgetAttrsGraph} { returns attribute value(s). }
-\code{LLgetAttrsNode} { returns (node-name, attribute-value)-pair(s). }
-\code{LLgetAttrsEdge} { returns (edge-name, attribute-value)-pair(s). }
+\code{getAttrsGraph} { returns attribute value(s). }
+\code{getAttrsNode} { returns (node-name, attribute-value)-pair(s). }
+\code{getAttrsEdge} { returns (edge-name, attribute-value)-pair(s). }
 }
 
 \references{Rgraphviz by E. Ganssner, S. North, www.graphviz.org }
@@ -44,12 +44,12 @@ library("RBGL")
 dd <- fromGXL(file(system.file("XML/dijkex.gxl",package="RBGL")))
 ag <- agopen(dd, name="test")
 
-attr_g = LLgetAttrsGraph(ag, attrname="bgcolor")
-attr_n = LLgetAttrsNode(ag, "C", attrname="shape")
-attr_e = LLgetAttrsEdge(ag, "A", "C", attrname="color")
+attr_g = getAttrsGraph(ag, attrname="bgcolor")
+attr_n = getAttrsNode(ag, "C", attrname="shape")
+attr_e = getAttrsEdge(ag, "A", "C", attrname="color")
 
-attr_n1 = LLgetAttrsNode(ag, "C", attrname=c("height","label", "fixedsize"))
-attr_n2 = LLgetAttrsNode(ag, c("C","E", "D"), attrname=c("height","label", "fixedsize"))
+attr_n1 = getAttrsNode(ag, "C", attrname=c("height","label", "fixedsize"))
+attr_n2 = getAttrsNode(ag, c("C","E", "D"), attrname=c("height","label", "fixedsize"))
 
 }
 \keyword{ models }

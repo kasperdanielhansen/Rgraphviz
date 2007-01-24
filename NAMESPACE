@@ -21,29 +21,29 @@ export(
         pieGlyph,		# own
         removedEdges,		# Rgraphviz
 
-	LLgetAttrsGraph,
-	LLgetDefAttrsGraph,
-	LLsetAttrsGraph,
-	LLsetDefAttrsGraph,
+	getAttrsGraph,
+	getDefAttrsGraph,
+	setAttrsGraph,
+	setDefAttrsGraph,
 
-	LLgetAttrsCluster,
-	LLgetDefAttrsCluster,
-	LLsetAttrsCluster,
-	LLsetDefAttrsCluster,
+	getAttrsCluster,
+	getDefAttrsCluster,
+	setAttrsCluster,
+	setDefAttrsCluster,
 
-	LLgetAttrsNode,
-	LLgetDefAttrsNode,
-	LLsetAttrsNode,
-	LLsetDefAttrsNode,
+	getAttrsNode,
+	getDefAttrsNode,
+	setAttrsNode,
+	setDefAttrsNode,
 
-	LLgetAttrsEdge,
-	LLgetDefAttrsEdge,
-	LLsetAttrsEdge,
-	LLsetDefAttrsEdge,
+	getAttrsEdge,
+	getDefAttrsEdge,
+	setAttrsEdge,
+	setDefAttrsEdge,
 
-	LLgetDefAttrs,
-	LLsetDefAttrs,
-	LLtoFile,
+	getDefAttrs,
+	setDefAttrs,
+	toFile,
 	LLagopen
 	)
 

@@ -1,15 +1,15 @@
 \name{setAttrsGraph}
-\alias{LLsetAttrsGraph}
-\alias{LLsetAttrsNode}
-\alias{LLsetAttrsEdge}
+\alias{setAttrsGraph}
+\alias{setAttrsNode}
+\alias{setAttrsEdge}
 
 \title{Set attributes of graph, nodes, edges for layout and/or rendering}
 \description{Set attributes of graph, nodes, edges for layout and/or rendering}
 
 \usage{
-LLsetAttrsGraph(graph, attrname, attrval, defaultval="")
-LLsetAttrsNode(graph, node, attrname, attrval, defaultval="")
-LLsetAttrsEdge(graph, from, to, attrname, attrval, defaultval="")
+setAttrsGraph(graph, attrname, attrval, defaultval="")
+setAttrsNode(graph, node, attrname, attrval, defaultval="")
+setAttrsEdge(graph, from, to, attrname, attrval, defaultval="")
 }
 
 \arguments{
@@ -30,8 +30,8 @@ graph, node(s) or edge(s).
 }
 
 \value{
-Functions, \code{LLsetAttrsGraph}, \code{LLsetAttrsNode}, 
-\code{LLsetAttrsEdge}, return TRUE if it successfully set attribute to the
+Functions, \code{setAttrsGraph}, \code{setAttrsNode}, 
+\code{setAttrsEdge}, return TRUE if it successfully set attribute to the
 new value, return FALSE otherwise.
 }
 
@@ -49,15 +49,15 @@ library("RBGL")
 dd <- fromGXL(file(system.file("XML/dijkex.gxl",package="RBGL")))
 ag <- agopen(dd, name="test")
 
-attr_g = LLsetAttrsGraph(ag, attrname="bgcolor", attrval="red")
-attr_n = LLsetAttrsNode(ag, "C", attrname="shape", attrval="tripleoctagon")
-attr_e = LLsetAttrsEdge(ag, "A", "C", attrname="color", attrval="#40e0d0")
+attr_g = setAttrsGraph(ag, attrname="bgcolor", attrval="red")
+attr_n = setAttrsNode(ag, "C", attrname="shape", attrval="tripleoctagon")
+attr_e = setAttrsEdge(ag, "A", "C", attrname="color", attrval="#40e0d0")
 
-s_attr_e = LLsetAttrsEdge(ag, "A", "C", attrname="style", attrval="setlinewidth(14),dotted")
+s_attr_e = setAttrsEdge(ag, "A", "C", attrname="style", attrval="setlinewidth(14),dotted")
 
 
-attr_n1 = LLsetAttrsNode(ag, "C", attrname=c("height","label", "fixedsize"), attrval=c("2", "test_C", "FALSE"))
-attr_n2 = LLsetAttrsNode(ag, c("C","E", "D"), attrname=c("height","label", "fixedsize"), attrval=c("2", "test_C", "FALSE"))
+attr_n1 = setAttrsNode(ag, "C", attrname=c("height","label", "fixedsize"), attrval=c("2", "test_C", "FALSE"))
+attr_n2 = setAttrsNode(ag, c("C","E", "D"), attrname=c("height","label", "fixedsize"), attrval=c("2", "test_C", "FALSE"))
 
 }
 \keyword{ models }

@@ -1,17 +1,17 @@
 \name{getDefAttrsGraph}
-\alias{LLgetDefAttrsGraph}
-\alias{LLgetDefAttrsNode}
-\alias{LLgetDefAttrsEdge}
-\alias{LLgetDefAttrs}
+\alias{getDefAttrsGraph}
+\alias{getDefAttrsNode}
+\alias{getDefAttrsEdge}
+\alias{getDefAttrs}
 
 \title{Get default attributes of graph, nodes, edges for layout and/or rendering}
 \description{Get default attributes of graph, nodes, edges for layout and/or rendering}
 
 \usage{
-LLgetDefAttrsGraph(graph)
-LLgetDefAttrsNode(graph)
-LLgetDefAttrsEdge(graph)
-LLgetDefAttrs(graph)
+getDefAttrsGraph(graph)
+getDefAttrsNode(graph)
+getDefAttrsEdge(graph)
+getDefAttrs(graph)
 }
 
 \arguments{
@@ -23,11 +23,11 @@ for the graph, its nodes or its edges.
 }
 
 \value{
-Functions, \code{LLgetDefAttrsGraph},  \code{LLgetDefAttrsNode},
-\code{LLgetDefAttrsEdge}, return a nx2 matrix, each row gives a pair of
+Functions, \code{getDefAttrsGraph},  \code{getDefAttrsNode},
+\code{getDefAttrsEdge}, return a nx2 matrix, each row gives a pair of
 (attribute-name, attribute-value). 
 
-Function \code{LLgetDefAttrs} returns the combined results from the other three.
+Function \code{getDefAttrs} returns the combined results from the other three.
 }
 
 \references{Rgraphviz by E. Ganssner, S. North, www.graphviz.org }
@@ -44,10 +44,10 @@ library("RBGL")
 dd <- fromGXL(file(system.file("XML/dijkex.gxl",package="RBGL")))
 ag <- agopen(dd, name="test")
 
-def_attr_g = LLgetDefAttrsGraph(ag)
-def_attr_n = LLgetDefAttrsNode(ag)
-def_attr_e = LLgetDefAttrsEdge(ag)
-def_attr = LLgetDefAttrs(ag)
+def_attr_g = getDefAttrsGraph(ag)
+def_attr_n = getDefAttrsNode(ag)
+def_attr_e = getDefAttrsEdge(ag)
+def_attr = getDefAttrs(ag)
 
 }
 \keyword{ models }
