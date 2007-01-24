@@ -19,26 +19,26 @@ setGeneric("graphData<-", function(self, attr, value)
 setMethod("graphDataDefaults",
           signature(self="Ragraph"),
           function(self) {
-             LLgetDefAttrsGraph(self)
+             getDefAttrsGraph(self)
           })
 
 setReplaceMethod("graphDataDefaults",
           signature(self="Ragraph", attr="vector", value="vector"),
           function(self, attr, value) {
-             LLsetDefAttrsGraph(self, attr, value);
+             setDefAttrsGraph(self, attr, value);
              self
           })
 
 setMethod("graphData",
           signature(self="Ragraph", attr="character"),
           function(self, attr) {
-             LLgetAttrsGraph(self, attr)
+             getAttrsGraph(self, attr)
           })
 
 setReplaceMethod("graphData",
           signature(self="Ragraph", attr="character", value="character"),
           function(self, attr, value) {
-             LLsetAttrsGraph(self, attr, value)
+             setAttrsGraph(self, attr, value)
              self
           })
 
@@ -63,26 +63,26 @@ setGeneric("clusterData<-", function(self, cluster, attr, value)
 setMethod("clusterDataDefaults",
           signature(self="Ragraph", cluster="numeric"),
           function(self, cluster) {
-             LLgetDefAttrsCluster(self, cluster)
+             getDefAttrsCluster(self, cluster)
           })
 
 setReplaceMethod("clusterDataDefaults",
           signature(self="Ragraph", cluster="numeric", attr="vector", value="vector"),
           function(self, cluster, attr, value) {
-             LLsetDefAttrsCluster(self, cluster, attr, value);
+             setDefAttrsCluster(self, cluster, attr, value);
              self
           })
 
 setMethod("clusterData",
           signature(self="Ragraph", cluster="numeric", attr="character"),
           function(self, cluster, attr) {
-             LLgetAttrsCluster(self, cluster, attr)
+             getAttrsCluster(self, cluster, attr)
           })
 
 setReplaceMethod("clusterData",
           signature(self="Ragraph", cluster="numeric", attr="character", value="character"),
           function(self, cluster, attr, value) {
-             LLsetAttrsCluster(self, cluster, attr, value)
+             setAttrsCluster(self, cluster, attr, value)
              self
           })
 
@@ -109,26 +109,26 @@ setReplaceMethod("clusterData",
 setMethod("nodeDataDefaults", 
           signature(self="Ragraph", attr="missing"),
           function(self, attr) {
-	     LLgetDefAttrsNode(self)
+	     getDefAttrsNode(self)
           })
 
 setReplaceMethod("nodeDataDefaults", 
           signature(self="Ragraph", attr="vector", value="vector"),
           function(self, attr, value) {
-	     LLsetDefAttrsNode(self, attr, value);
+	     setDefAttrsNode(self, attr, value);
              self
           })
 
 setMethod("nodeData",
           signature(self="Ragraph", n="vector", attr="vector"),
           function(self, n, attr) {
-             LLgetAttrsNode(self, n, attr)
+             getAttrsNode(self, n, attr)
           })
 
 setReplaceMethod("nodeData",
           signature(self="Ragraph", n="vector", attr="vector", value="vector"),
           function(self, n, attr, value) {
-             LLsetAttrsNode(self, n, attr, value)
+             setAttrsNode(self, n, attr, value)
              self
           })
 
@@ -156,27 +156,27 @@ setReplaceMethod("nodeData",
 setMethod("edgeDataDefaults", 
           signature(self="Ragraph", attr="missing"),
           function(self) {
-             LLgetDefAttrsEdge(self)
+             getDefAttrsEdge(self)
 	  })
 
 setReplaceMethod("edgeDataDefaults", 
           signature(self="Ragraph", attr="vector", value="vector"),
           function(self, attr, value) {
-             LLsetDefAttrsEdge(self, attr, value)
+             setDefAttrsEdge(self, attr, value)
              self
           })
 
 setMethod("edgeData", 
           signature(self="Ragraph", from="vector", to="vector", attr="vector"),
           function(self, from, to, attr) {
-             LLgetAttrsEdge(self, from, to, attr)
+             getAttrsEdge(self, from, to, attr)
           })
 
 setReplaceMethod("edgeData",
           signature(self="Ragraph", from="vector", to="vector",
                     attr="vector", value="vector"),
           function(self, from, to, attr, value) {
-             LLsetAttrsEdge(self, from, to, attr, value)
+             setAttrsEdge(self, from, to, attr, value)
              self
           })
 
