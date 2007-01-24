@@ -4,7 +4,7 @@
 # -- cluster defaults: specify cluster number or not
 # -- cluster number: starting from 0 or 1
 
-LLgetDefAttrsGraph <- function(graph)
+getDefAttrsGraph <- function(graph)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
 
@@ -14,7 +14,7 @@ LLgetDefAttrsGraph <- function(graph)
    ans
 }
 
-LLsetDefAttrsGraph <- function(graph, attrnames=c(), attrvals=c())
+setDefAttrsGraph <- function(graph, attrnames=c(), attrvals=c())
 {
    if ( length(attrnames) != length(attrvals) )
       stop("Length of attrnames is not equal to length of attrvals")
@@ -26,7 +26,7 @@ LLsetDefAttrsGraph <- function(graph, attrnames=c(), attrvals=c())
 		PACKAGE="Rgraphviz")
 }
 
-LLgetAttrsGraph <- function(graph, attrname)
+getAttrsGraph <- function(graph, attrname)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
@@ -47,7 +47,7 @@ LLgetAttrsGraph <- function(graph, attrname)
    ans
 }
 
-LLsetAttrsGraph <- function(graph, attrname, attrval, defaultval="")
+setAttrsGraph <- function(graph, attrname, attrval, defaultval="")
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
@@ -64,7 +64,7 @@ LLsetAttrsGraph <- function(graph, attrname, attrval, defaultval="")
    }
 }
 
-LLgetDefAttrsCluster <- function(graph, cluster)
+getDefAttrsCluster <- function(graph, cluster)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
@@ -82,7 +82,7 @@ LLgetDefAttrsCluster <- function(graph, cluster)
    ans
 }
 
-LLsetDefAttrsCluster <- function(graph, cluster, attrnames=c(), attrvals=c())
+setDefAttrsCluster <- function(graph, cluster, attrnames=c(), attrvals=c())
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
@@ -100,7 +100,7 @@ LLsetDefAttrsCluster <- function(graph, cluster, attrnames=c(), attrvals=c())
    ans
 }
 
-LLgetAttrsCluster <- function(graph, cluster, attrname)
+getAttrsCluster <- function(graph, cluster, attrname)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
@@ -124,7 +124,7 @@ LLgetAttrsCluster <- function(graph, cluster, attrname)
    ans
 }
 
-LLsetAttrsCluster <- function(graph, cluster, attrname, attrval, defaultval="")
+setAttrsCluster <- function(graph, cluster, attrname, attrval, defaultval="")
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
@@ -144,7 +144,7 @@ LLsetAttrsCluster <- function(graph, cluster, attrname, attrval, defaultval="")
    }
 }
 
-LLgetDefAttrsNode <- function(graph)
+getDefAttrsNode <- function(graph)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
 
@@ -156,7 +156,7 @@ LLgetDefAttrsNode <- function(graph)
    ans
 }
 
-LLsetDefAttrsNode <- function(graph, attrnames=c(), attrvals=c())
+setDefAttrsNode <- function(graph, attrnames=c(), attrvals=c())
 {
    if ( length(attrnames) != length(attrvals) )
       stop("Length of attrnames is not equal to length of attrvals")
@@ -167,7 +167,7 @@ LLsetDefAttrsNode <- function(graph, attrnames=c(), attrvals=c())
 		PACKAGE="Rgraphviz")
 }
 
-LLgetAttrsNode <- function(graph, node, attrname)
+getAttrsNode <- function(graph, node, attrname)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
@@ -188,7 +188,7 @@ LLgetAttrsNode <- function(graph, node, attrname)
    ans
 }
 
-LLsetAttrsNode <- function(graph, node, attrname, attrval, defaultval="")
+setAttrsNode <- function(graph, node, attrname, attrval, defaultval="")
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
@@ -205,7 +205,7 @@ LLsetAttrsNode <- function(graph, node, attrname, attrval, defaultval="")
    }
 }
 
-LLgetDefAttrsEdge <- function(graph)
+getDefAttrsEdge <- function(graph)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
 
@@ -217,7 +217,7 @@ LLgetDefAttrsEdge <- function(graph)
    ans
 }
 
-LLsetDefAttrsEdge <- function(graph, attrnames=c(), attrvals=c())
+setDefAttrsEdge <- function(graph, attrnames=c(), attrvals=c())
 {
    if ( length(attrnames) != length(attrvals) )
       stop("Length of attrnames is not equal to length of attrvals")
@@ -229,7 +229,7 @@ LLsetDefAttrsEdge <- function(graph, attrnames=c(), attrvals=c())
 		PACKAGE="Rgraphviz")
 }
 
-LLgetAttrsEdge <- function(graph, from, to, attrname)
+getAttrsEdge <- function(graph, from, to, attrname)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
@@ -251,7 +251,7 @@ LLgetAttrsEdge <- function(graph, from, to, attrname)
    ans
 }
 
-LLsetAttrsEdge <- function(graph, from, to, attrname, attrval, defaultval="") 
+setAttrsEdge <- function(graph, from, to, attrname, attrval, defaultval="") 
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
@@ -269,32 +269,32 @@ LLsetAttrsEdge <- function(graph, from, to, attrname, attrval, defaultval="")
    }
 }
 
-LLgetDefAttrs <- function(graph)
+getDefAttrs <- function(graph)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    
-   ans_g <- LLgetDefAttrsGraph(graph)
-   #ans_c <- LLgetDefAttrsCluster(graph)  # which one to inquire?
-   ans_n <- LLgetDefAttrsNode(graph)
-   ans_e <- LLgetDefAttrsEdge(graph)
+   ans_g <- getDefAttrsGraph(graph)
+   #ans_c <- getDefAttrsCluster(graph)  # which one to inquire?
+   ans_n <- getDefAttrsNode(graph)
+   ans_e <- getDefAttrsEdge(graph)
 
    ans <- rbind(ans_g, ans_n, ans_e)
 
    ans
 }
 
-LLsetDefAttrs <- function(graph, g_attrnames=c(), g_attrvals=c(),
+setDefAttrs <- function(graph, g_attrnames=c(), g_attrvals=c(),
 			#c_attrnames=c(), c_attrvals=c(),
 			n_attrnames=c(), n_attrvals=c(),
 			e_attrnames=c(), e_attrvals=c())
 {
-   ans_g <- LLsetDefAttrsGraph(graph, g_attrnames, g_attrvals)
-   #ans_c <- LLsetDefAttrsCluster(graph, c_attrnames, c_attrvals)
-   ans_n <- LLsetDefAttrsNode(graph, n_attrnames, n_attrvals)
-   ans_e <- LLsetDefAttrsEdge(graph, e_attrnames, e_attrvals)
+   ans_g <- setDefAttrsGraph(graph, g_attrnames, g_attrvals)
+   #ans_c <- setDefAttrsCluster(graph, c_attrnames, c_attrvals)
+   ans_n <- setDefAttrsNode(graph, n_attrnames, n_attrvals)
+   ans_e <- setDefAttrsEdge(graph, e_attrnames, e_attrvals)
 }
 
-LLtoFile <- function(graph, 
+toFile <- function(graph, 
 		      layoutType=c("dot","neato","twopi","circo","fdp"), 
 		      filename, 
 		      fileType=c("canon", "dot", "xdot", "dia", "fig", 
