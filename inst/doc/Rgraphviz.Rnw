@@ -452,6 +452,8 @@ plot(g1, attrs=attrs, nodeAttrs=nAttrs)
 user defined node shapes.}
 
 %--------------------------------------------------
+
+%--------------------------------------------------
 \section{Layout, rendering and the function \Rfunction{agopen}}
 %--------------------------------------------------
 The calls to the \Rfunction{plot} that we have made above amount to
@@ -740,6 +742,206 @@ plot(g, attrs = att, nodeAttrs=nA, subGList = sgL)
 @
 %
 \inclfig{figbipartite}{0.4\textwidth}{A bipartite graph.}
+
+%--------------------------------------------------
+\section{NEW Another workflow to plot a graph }
+
+Another workflow in doing layout, rendering is as following:
+(1) convert a graph in \Robject{graph} class to \Robject{Ragraph} class,
+(2) set its default attributes for graph, cluster(s), nodes and edges,
+(3) set attributes for individual cluster, node(s) and/or edge(s),
+(4) layout it with desired algorithm,
+(5) render it to desired media.
+
+Repeat steps (3), (4) and/or (5) as needed.
+
+\subsection{Convert a graph to \Robject{Ragraph} class}
+
+We prepare a graph with two subgraphs: one is hcs.gxl, the other is conn.gxl, 
+both are from package \Rpackage{RBGL}.  We specify the 1st subgraph is NOT a 
+cluster, while the 2nd one is.
+
+Just as in graphviz, \Rpackage{Rgraphviz} treats a cluster as a special subgraph, 
+its nodes are layed out and drawn together and within a bounding rectangel. 
+
+<<LLagopenDemo>>=
+library("RBGL")
+hcs <- fromGXL(file(system.file("XML/hcs.gxl",package="RBGL")))
+conn <- fromGXL(file(system.file("XML/conn.gxl",package="RBGL")))
+jg <- join(conn, hcs)
+sgl <- vector(mode="list", length=2)
+sgl[[1]] <- list(graph=hcs, cluster=FALSE)
+sgl[[2]] <- list(graph=conn, cluster=TRUE)
+ng <- LLagopen(jg, "tmpsg", subGList=sgl)
+@
+
+Note: this instance of \Robject{Ragraph} class from \Rfunction{LLagopen} 
+contains less content than that
+you obtain from calling \Robject{agopen}: it maintains a pointer for access to
+graphviz; after setting various attributes and doing layout, other entries 
+are filled in for drawing only.   
+
+The following workflow works well for an instance of \Robject{Ragraph} class 
+obtained from \Rfunction{agopen} as well.
+
+TODO: a new function name for \Rfunction{LLagopen}?
+
+\subsection{Get default attributes}
+
+There are default attributes associated with a graph, a cluster (a subgraph), 
+nodes and edges.  You can find out what they are as follows:
+
+<<GetDefAttrsDemo1>>=
+getDefAttrsGraph(ng)
+getDefAttrsCluster(ng, 1)
+getDefAttrsNode(ng)
+getDefAttrsEdge(ng)
+getDefAttrs(ng)
+@
+
+The function \Rfunction{getDefAttrs} is just a shortform to call the first 3
+functions.  
+
+The return value, "ATTR\_NOT\_DEFINED", indicates that 
+you haven't explicitly set any default attributes yet, 
+
+After you explicitly set one or more default attributes, you'll see the
+default attributes.
+
+If you like the notation from package \Robject{graph} better, the following
+codes accomplish the same:
+
+<<DataDefaultsDemo1>>=
+graphDataDefaults(ng)
+clusterDataDefaults(ng, 1)
+nodeDataDefaults(ng)
+edgeDataDefaults(ng)
+@
+
+\subsection{Set default attributes}
+
+If you want to set default attributes yourself, you could call functions like
+following:
+
+<<SetDefAttrsDemo1>>=
+setAttrsGraph(ng, attrname="bgcolor", attrval="red", defaultval="yellow")
+setDefAttrsCluster(ng, 1, c("bgcolor"), c("blue"))
+setDefAttrsNode(ng, c("fillcolor"), c("yellow"))
+setDefAttrsEdge(ng, c("color"), c("blue"))
+@
+
+Again, if you like the notation from package \Robject{graph} better, the following
+codes accomplish the same:
+
+<<DataDefaultsDemo2>>=
+graphDataDefaults(ng, c("size", "bgcolor")) <- c("1", "yellow")
+clusterDataDefaults(ng, 1, c("bgcolor", "color")) <- c("blue", "orange")
+nodeDataDefaults(ng, c("fontcolor", "width")) <- c("blue", 0.5)
+edgeDataDefaults(ng, c("color", "style")) <- c("green", "dotted")
+@
+
+As shown in the examples, you can specify multiple attributes and their 
+corresponding values in one call.  R's circular rule applies.
+
+Currently, only the 1st call to set default attributes has effects.  Subsequent calls yield no effect.
+
+\subsection{Get attributes}
+
+You could set attributes for individual elements: graph, cluster(s), node(s) and
+edge(s).  As R's circular rule applies, you could get multiple
+attributes to multiple elements in one call.
+
+<<getAttrsDemo1>>=
+getAttrsGraph(ng, attrname="bgcolor")
+getAttrsCluster(ng, 1, attrname="bgcolor")
+getAttrsNode(ng, "A1", attrname="shape")
+getAttrsEdge(ng, "B2", "B4", attrname="color")
+@
+
+The package \Robject{graph} like notations are:
+
+<<DataDemo1>>=
+graphData(ng, "bgcolor")
+clusterData(ng, 1, "bgcolor") 
+nodeData(ng, "A", c("fontcolor", "width"))
+edgeData(ng, "F", "G", c("color", "arrowhead"))
+
+@
+
+The return value, "default {graph, node, cluster, node} attr val 1", indicates 
+that the attribute is NOT defined. 
+
+The return value, "default {graph, node, cluster, node} attr val 2", indicates 
+that the attribute is NOT set for this object, the software will use default
+instead. 
+
+\subsection{Set attributes}
+
+Likewise, you can set attributes for each element: graph, cluster(s), node(s)
+and edge(s).  R's circular rule applies to element(s), attribute name(s) and
+attribute value(s).  
+
+A note on default value(s): default value could be set once and only once 
+at this time.  Only the first call has effect.
+
+<<setAttrsDemo1>>=
+setAttrsGraph(ng, attrname="bgcolor", attrval="red", defaultval="yellow")
+setAttrsCluster(ng, 1, attrname="bgcolor", attrval="blue")
+setAttrsNode(ng, "A", attrname="shape", attrval="rect", defaultval="circle")
+setAttrsEdge(ng, "A", "C", attrname="color", attrval="purple")
+@
+
+<<DataDemo2>>=
+graphData(ng, "bgcolor") <- "orange"
+clusterData(ng, c(0, 1), "color") <- "red"
+nodeData(ng, "A", c("fontcolor", "width")) <- c("blue", 0.5)
+ 
+edgeData(ng, "F", "G", c("color", "style")) <- c("yellow", "dotted")
+@
+
+You can set as many attributes as you like.  
+
+Not every rendering software honors all the attributes, even for those provided
+by graphviz.  Different attributes could have different impact in layout: some
+affect layout and drawing, such as node shapes, font size; others affect only
+drawing, such as fill color, font color.
+
+Some attribute seem only take effect for certain layout, for instance, 
+\Robject{bgcolor} for cluster shows the effect when layout is "dot", but not 
+for "circo".
+
+\subsection{Layout and render the graph in various formats}
+
+To do the layout and render the results, there are two main output channels:
+(1) interactive output, and
+(2) file output which you could use various viewers to view the results.
+
+To plot a graph interactively, simply do:
+
+<<layoutRenderDemo1>>=
+plot(ng, "neato")
+plot(ng, "circo")
+@
+
+Currently, interactive output only honors a small number of attributes, mainly
+those from \Robject{buildNodelist} and \Robject{buildEdgeList}.
+
+To do layout and then output to a file, you can do:
+
+<<layoutRenderDemo1>>=
+toFile(ng, layoutType="dot", filename="test_dot.svg", fileType="svg")
+toFile(ng, layoutType="circo", filename="test_circo.ps", fileType="ps")
+toFile(ng, layoutType="twopi", filename="test_twopi.dot", fileType="dot")
+@
+
+These examples use various renderer provided by graphviz, which honor a lot 
+more attributes.  You can look into graphviz doc to find out more, for instance,
+node shapes, color schemes, line types/sizes, etc.
+
+You need corresponding viewers installed to be able to view the output files.
+
+
+%------------------------------------------------------------
 
 %------------------------------------------------------------
 \section{Tooltips and hyperlinks on graphs}
