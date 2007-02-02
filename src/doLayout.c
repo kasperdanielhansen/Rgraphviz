@@ -121,6 +121,9 @@ SEXP getEdgeLocs(Agraph_t *g) {
 
             SET_SLOT(curEP, Rf_install("color"), Rgraphviz_ScalarStringOrNull(agget(edge, "color")));
 
+            if ( agget(edge, "style") )
+               SET_SLOT(curEP, Rf_install("lty"), Rgraphviz_ScalarStringOrNull(agget(edge, "style")));
+
             /* Get the label information */
             if (edge->u.label != NULL) {
                 PROTECT(curLab = NEW_OBJECT(labClass));
@@ -278,7 +281,6 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Will perform a Graphviz layout on a graph */
 
     Agraph_t *g;
-    Rboolean laidout;
     SEXP slotTmp, nLayout, cPoints, bb;
 
     /* Extract the Agraph_t pointer from the S4 object */
