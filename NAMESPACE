@@ -21,28 +21,6 @@ export(
         pieGlyph,		# own
         removedEdges,		# Rgraphviz
 
-	getAttrsGraph,
-	getDefAttrsGraph,
-	setAttrsGraph,
-	setDefAttrsGraph,
-
-	getAttrsCluster,
-	getDefAttrsCluster,
-	setAttrsCluster,
-	setDefAttrsCluster,
-
-	getAttrsNode,
-	getDefAttrsNode,
-	setAttrsNode,
-	setDefAttrsNode,
-
-	getAttrsEdge,
-	getDefAttrsEdge,
-	setAttrsEdge,
-	setDefAttrsEdge,
-
-	getDefAttrs,
-	setDefAttrs,
 	toFile,
 	LLagopen
 	)
