@@ -791,20 +791,6 @@ TODO: a new function name for \Rfunction{LLagopen}?
 There are default attributes associated with a graph, a cluster (a subgraph), 
 nodes and edges.  You can find out what they are as follows:
 
-<<GetDefAttrsDemo1>>=
-getDefAttrsGraph(ng)
-getDefAttrsCluster(ng, 1)
-getDefAttrsNode(ng)
-getDefAttrsEdge(ng)
-getDefAttrs(ng)
-@
-
-The function \Rfunction{getDefAttrs} is just a shortform to call the first 3
-functions.  
-
-The return value, "ATTR\_NOT\_DEFINED", indicates that 
-you haven't explicitly set any default attributes yet, 
-
 After you explicitly set one or more default attributes, you'll see the
 default attributes.
 
@@ -823,16 +809,6 @@ edgeDataDefaults(ng)
 If you want to set default attributes yourself, you could call functions like
 following:
 
-<<SetDefAttrsDemo1>>=
-setAttrsGraph(ng, attrname="bgcolor", attrval="red", defaultval="yellow")
-setDefAttrsCluster(ng, 1, c("bgcolor"), c("blue"))
-setDefAttrsNode(ng, c("fillcolor"), c("yellow"))
-setDefAttrsEdge(ng, c("color"), c("blue"))
-@
-
-Again, if you like the notation from package \Robject{graph} better, the following
-codes accomplish the same:
-
 <<DataDefaultsDemo2>>=
 graphDataDefaults(ng, c("size", "bgcolor")) <- c("1", "yellow")
 clusterDataDefaults(ng, 1, c("bgcolor", "color")) <- c("blue", "orange")
@@ -850,13 +826,6 @@ Currently, only the 1st call to set default attributes has effects.  Subsequent 
 You could set attributes for individual elements: graph, cluster(s), node(s) and
 edge(s).  As R's circular rule applies, you could get multiple
 attributes to multiple elements in one call.
-
-<<getAttrsDemo1>>=
-getAttrsGraph(ng, attrname="bgcolor")
-getAttrsCluster(ng, 1, attrname="bgcolor")
-getAttrsNode(ng, "A1", attrname="shape")
-getAttrsEdge(ng, "B2", "B4", attrname="color")
-@
 
 The package \Robject{graph} like notations are:
 
@@ -883,13 +852,6 @@ attribute value(s).
 
 A note on default value(s): default value could be set once and only once 
 at this time.  Only the first call has effect.
-
-<<setAttrsDemo1>>=
-setAttrsGraph(ng, attrname="bgcolor", attrval="red", defaultval="yellow")
-setAttrsCluster(ng, 1, attrname="bgcolor", attrval="blue")
-setAttrsNode(ng, "A", attrname="shape", attrval="rect", defaultval="circle")
-setAttrsEdge(ng, "A", "C", attrname="color", attrval="purple")
-@
 
 <<DataDemo2>>=
 graphData(ng, "bgcolor") <- "orange"
