@@ -12,16 +12,19 @@
 
 \alias{graphDataDefaults,Ragraph-method}
 \alias{graphDataDefaults<-,Ragraph,vector,vector-method}
-\alias{graphData<-,Ragraph,character,character-method}
 \alias{graphData,Ragraph,character-method}
+\alias{graphData<-,Ragraph,vector,vector-method}
+
 \alias{clusterDataDefaults,Ragraph,numeric-method}
 \alias{clusterDataDefaults<-,Ragraph,numeric,vector,vector-method}
 \alias{clusterData,Ragraph,numeric,character-method}
-\alias{clusterData<-,Ragraph,numeric,character,character-method}
+\alias{clusterData<-,Ragraph,numeric,vector,vector-method}
+
 \alias{edgeDataDefaults,Ragraph,missing-method}
 \alias{edgeDataDefaults<-,Ragraph,vector,vector-method}
-\alias{edgeData<-,Ragraph,vector,vector,vector,vector-method}
 \alias{edgeData,Ragraph,vector,vector,vector-method}
+\alias{edgeData<-,Ragraph,vector,vector,vector,vector-method}
+
 \alias{nodeDataDefaults,Ragraph,missing-method}
 \alias{nodeDataDefaults<-,Ragraph,vector,vector-method}
 \alias{nodeData,Ragraph,vector,vector-method}
@@ -95,7 +98,7 @@ Objects can be created by calls to the function \code{agopen}.
       Sets default attributes of the given graph.}
     \item{graphData}{\code{signature(self= "Ragraph", attr="character")}: 
       Gets attributes of the given graph.}
-    \item{graphData<-}{\code{signature(self= "Ragraph", attr="character", value="character")}: 
+    \item{graphData<-}{\code{signature(self= "Ragraph", attr="vector", value="vector")}: 
       Sets attributes of the given graph.}
 
     \item{clusterDataDefaults}{\code{signature(self= "Ragraph", cluster="numeric")}: 
@@ -104,7 +107,7 @@ Objects can be created by calls to the function \code{agopen}.
       Sets default attributes of a cluster for the given graph.}
     \item{clusterData}{\code{signature(self= "Ragraph", cluster="numeric", attr="character")}: 
       Gets attributes of a cluster for the given graph.}
-    \item{clusterData<-}{\code{signature(self= "Ragraph", cluster="numeric", attr="character", value="character")}: 
+    \item{clusterData<-}{\code{signature(self= "Ragraph", cluster="numeric", attr="vector", value="vector")}: 
       Sets attributes of a cluster for the given graph.}
 
     \item{edgeDataDefaults}{\code{signature(self= "Ragraph", attr="missing")}: 
