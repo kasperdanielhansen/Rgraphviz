@@ -36,7 +36,7 @@ setMethod("graphData",
           })
 
 setReplaceMethod("graphData",
-          signature(self="Ragraph", attr="character", value="character"),
+          signature(self="Ragraph", attr="vector", value="vector"),
           function(self, attr, value) {
              setAttrsGraph(self, attr, value)
              self
@@ -80,7 +80,7 @@ setMethod("clusterData",
           })
 
 setReplaceMethod("clusterData",
-          signature(self="Ragraph", cluster="numeric", attr="character", value="character"),
+          signature(self="Ragraph", cluster="numeric", attr="vector", value="vector"),
           function(self, cluster, attr, value) {
              setAttrsCluster(self, cluster, attr, value)
              self

@@ -9,8 +9,12 @@ getDefAttrsGraph <- function(graph)
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
 
    ans <- .Call("Rgraphviz_getDefAttrsGraph", graph, PACKAGE="Rgraphviz")
-   colnames(ans) <- c("attr name", "attr value")
-   rownames(ans) <- paste("graph attr", 1:nrow(ans))
+   
+   if ( !is.null(ans) && nrow(ans) > 0 )
+   {
+      colnames(ans) <- c("attr name", "attr value")
+      rownames(ans) <- paste("graph attr", 1:nrow(ans))
+   }
    ans
 }
 
@@ -73,7 +77,7 @@ getDefAttrsCluster <- function(graph, cluster)
 		graph, as.integer(cluster), 
 		PACKAGE="Rgraphviz")
 
-   if ( !is.null(ans) )
+   if ( !is.null(ans) && nrow(ans) > 0 )
    {
       colnames(ans) <- c("attr name", "attr value")
       rownames(ans) <- paste("cluster attr", 1:nrow(ans))
@@ -150,8 +154,11 @@ getDefAttrsNode <- function(graph)
 
    ans <- .Call("Rgraphviz_getDefAttrsNode", graph, PACKAGE="Rgraphviz")
 
+   if ( !is.null(ans) && nrow(ans) > 0 )
+   {
    colnames(ans) <- c("attr name", "attr value")
    rownames(ans) <- paste("node attr", 1:nrow(ans))
+   }
        
    ans
 }
@@ -211,8 +218,11 @@ getDefAttrsEdge <- function(graph)
 
    ans <- .Call("Rgraphviz_getDefAttrsEdge", graph, PACKAGE="Rgraphviz")
 
+   if ( !is.null(ans) && nrow(ans) > 0 )
+   {
    colnames(ans) <- c("attr name", "attr value")
    rownames(ans) <- paste("edge attr", 1:nrow(ans))
+   }
        
    ans
 }
