@@ -121,8 +121,12 @@ SEXP getEdgeLocs(Agraph_t *g) {
 
             SET_SLOT(curEP, Rf_install("color"), Rgraphviz_ScalarStringOrNull(agget(edge, "color")));
 
-            if ( agget(edge, "style") )
-               SET_SLOT(curEP, Rf_install("lty"), Rgraphviz_ScalarStringOrNull(agget(edge, "style")));
+            /* get lty/lwd info */
+            if ( agget(edge, "lty") )
+               SET_SLOT(curEP, Rf_install("lty"), Rgraphviz_ScalarStringOrNull(agget(edge, "lty")));
+
+            if ( agget(edge, "lwd") )
+               SET_SLOT(curEP, Rf_install("lwd"), Rgraphviz_ScalarStringOrNull(agget(edge, "lwd")));
 
             /* Get the label information */
             if (edge->u.label != NULL) {

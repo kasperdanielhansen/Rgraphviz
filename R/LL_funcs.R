@@ -100,8 +100,6 @@ setDefAttrsCluster <- function(graph, cluster, attrnames=c(), attrvals=c())
 	 	graph, as.integer(cluster), 
 		as.integer(nattr), attrnames, attrvals, 
 		PACKAGE="Rgraphviz")
-
-   ans
 }
 
 getAttrsCluster <- function(graph, cluster, attrname)
