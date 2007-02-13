@@ -92,38 +92,13 @@ static const Rgattr_t def_edge_attrs[] = {
             {"layer",	""},
             {"style",	"solid"},
             {"minlen",	"1"},	/* dot only */
-            {"len",		"1.0"},	/* neato only */
+            {"len",	"1.0"},	/* neato only */
 
             {NULL, NULL}
         };
 
 SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
 {
-#if DEBUG
-    attrsym_t* defattrs[] = {
-                                G_activepencolor,
-                                G_activefillcolor,
-                                G_selectedpencolor,
-                                G_selectedfillcolor,
-                                G_visitedpencolor,
-
-                                G_visitedfillcolor,
-                                G_deletedpencolor,
-                                G_deletedfillcolor,
-                                G_peripheries,
-                                NULL
-                            };
-    int nnattr = 0;
-    while ( defattrs[nnattr] ) nnattr++;
-
-    for ( int jj = 0; jj < nnattr; jj++ )
-    {
-        if ( defattrs[jj] && defattrs[jj]->name && defattrs[jj]->value )
-            printf("%d : %s = %s \n", jj, defattrs[jj]->name, defattrs[jj]->value);
-    }
-
-#endif
-
     int nattr = 0;
     while ( def_graph_attrs[nattr].name ) nattr++;
 
@@ -347,58 +322,6 @@ SEXP Rgraphviz_setAttrsCluster(SEXP graph, SEXP cluster,
 
 SEXP Rgraphviz_getDefAttrsNode(SEXP graph)
 {
-#if DEBUG
-    attrsym_t* defattrs[] = {
-                                N_height,
-                                N_width,
-                                N_shape,
-                                N_color,
-                                N_fillcolor,
-
-                                N_activepencolor,
-                                N_activefillcolor,
-                                N_selectedpencolor,
-                                N_selectedfillcolor,
-                                N_visitedpencolor,
-
-                                N_visitedfillcolor,
-                                N_deletedpencolor,
-                                N_deletedfillcolor,
-                                N_fontsize,
-                                N_fontname,
-
-                                N_fontcolor,
-                                N_label,
-                                N_nojustify,
-                                N_style,
-                                N_showboxes,
-
-                                N_sides,
-                                N_peripheries,
-                                N_orientation,
-                                N_skew,
-                                N_distortion,
-
-                                N_fixed,
-                                N_layer,
-                                N_group,
-                                N_comment,
-                                N_vertices,
-
-                                N_z,
-                                NULL
-                            };
-    int nnattr = 0;
-    while ( defattrs[nnattr] ) nnattr++;
-
-    for ( int jj = 0; jj < nnattr; jj++ )
-    {
-        if ( defattrs[jj] && defattrs[jj]->name && defattrs[jj]->value )
-            printf("%d : %s = %s \n", jj, defattrs[jj]->name, defattrs[jj]->value);
-    }
-
-#endif
-
     int nattr = 0;
     while ( def_node_attrs[nattr].name ) nattr++;
 
@@ -418,7 +341,7 @@ SEXP Rgraphviz_getDefAttrsNode(SEXP graph)
         sym = agfindattr(n, def_node_attrs[i].name);
         val = sym? sym->value : NULL;
         if ( !val ) val = "ATTR_NOT_DEFINED";
-
+        
         SET_STRING_ELT(ans, ii, mkChar(def_node_attrs[i].name));
         SET_STRING_ELT(ans, nattr+ii, mkChar(val));
 
@@ -506,66 +429,6 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
 
 SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
 {
-#if DEBUG 
-    /* entries that are set are the same set of attrs as listed below */
-    attrsym_t* defattrs[] = {
-                                E_weight,
-                                E_minlen,
-                                E_color,
-                                E_activepencolor,
-                                E_activefillcolor,
-
-                                E_selectedpencolor,
-                                E_selectedfillcolor,
-                                E_visitedpencolor,
-                                E_visitedfillcolor,
-                                E_deletedpencolor,
-
-                                E_deletedfillcolor,
-                                E_fontsize,
-                                E_fontname,
-                                E_fontcolor,
-                                E_label,
-
-                                E_dir,
-                                E_style,
-                                E_decorate,
-                                E_showboxes,
-                                E_arrowsz,
-
-                                E_constr,
-                                E_layer,
-                                E_comment,
-                                E_label_float,
-                                E_samehead,
-
-                                E_sametail,
-                                E_arrowhead,
-                                E_arrowtail,
-                                E_headlabel,
-                                E_taillabel,
-
-                                E_labelfontsize,
-                                E_labelfontname,
-                                E_labelfontcolor,
-                                E_labeldistance,
-                                E_labelangle,
-
-                                E_tailclip,
-                                E_headclip,
-                                NULL
-                            };
-    int nnattr = 0;
-    while ( defattrs[nnattr] ) nnattr++;
-
-    for ( int jj = 0; jj < nnattr; jj++ )
-    {
-        if ( defattrs[jj] && defattrs[jj]->name && defattrs[jj]->value )
-            printf("%d : %s = %s \n", jj, defattrs[jj]->name, defattrs[jj]->value);
-    }
-
-#endif
-
     int nattr = 0;
     while ( def_edge_attrs[nattr].name ) nattr++;
 

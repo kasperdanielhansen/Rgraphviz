@@ -108,7 +108,7 @@ setClass("AgEdge", representation(splines="list",
                                   arrowtail="character",
                                   arrowsize="character",
                                   color="character",
-                                  lty="numeric",
+                                  lty="character",
                                   lwd="numeric",
                                   txtLabel="AgTextLabel"))
 
