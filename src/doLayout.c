@@ -338,7 +338,7 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     SET_SLOT(graph,Rf_install("boundBox"), bb);
     UNPROTECT(4);
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 4
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR > 4
     /* free gvc after rendering */
     gvFreeLayout(gvc, g);
 #endif

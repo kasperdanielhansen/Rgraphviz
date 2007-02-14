@@ -550,9 +550,15 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
 
     gvLayout(gvc, g, STR(layoutType));
 
+#if GRAPHVIZ_MINOR == 4
+    FILE *fp = fopen(STR(filename), "w");
+    gvRender(gvc, g, STR(filetype), fp);
+    fclose(fp);
+#else
     gvRenderFilename(gvc, g, STR(filetype), STR(filename));
-
     gvFreeLayout(gvc, g);
+#endif
+
 #endif
 
     return(R_NilValue);
