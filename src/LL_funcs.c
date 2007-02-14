@@ -146,7 +146,7 @@ SEXP Rgraphviz_setDefAttrsGraph(SEXP graph, SEXP nnattr,
 
     for ( i = 0; i < nattr; i++ )
         if ( !agfindattr(g, def_graph_attrs[i].name) )
-            agraphattr(g->root, def_graph_attrs[i].name, def_graph_attrs[i].value);
+            agraphattr(g, def_graph_attrs[i].name, def_graph_attrs[i].value);
 
     return(R_NilValue);
 }
@@ -160,11 +160,11 @@ SEXP Rgraphviz_getAttrsGraph(SEXP graph, SEXP attrname)
 
     if ( !val ) /* no such attr */
     {
-        val = "default graph attr val 1";
+        val = "N/A";
     }
     else if ( !strlen(val) ) /* attr defined but use default */
     {
-        val = "default graph attr val 2";
+        val = "Default";
     }
 
     SEXP ans;
@@ -183,7 +183,7 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
     /* 0 for success, -1 otherwise */
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
     Agsym_t* a = agfindattr(g, STR(attrname));
-    if ( !a ) a = agraphattr(g->root, STR(attrname), STR(default_val));
+    if ( !a ) a = agraphattr(g, STR(attrname), STR(default_val));
     int r = agset(g, STR(attrname), STR(attrval));
 #else
     int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
@@ -196,11 +196,6 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
     return(ans);
 }
 
-/* TODO:
- *  when use sg->root to find/set cluster attribute, it seems to set the 
- *  attribute for the whole graph, instead of only that particular cluster...
- *  when use sg->meta_node->graph, it doesn't seem to have effect...
- */
 SEXP Rgraphviz_getDefAttrsCluster(SEXP graph, SEXP cluster)
 {
     Agraph_t *sg = getClusterPtr(graph, cluster);
@@ -217,8 +212,7 @@ SEXP Rgraphviz_getDefAttrsCluster(SEXP graph, SEXP cluster)
     int i = 0, ii = 0;
     for ( i = 0, ii = 0; i < nattr; i++, ii++ )
     {
-        /*sym = agfindattr(sg->root, def_cluster_attrs[i].name);*/
-        sym = agfindattr(sg->meta_node->graph, def_cluster_attrs[i].name);
+        sym = agfindattr(sg, def_cluster_attrs[i].name);
         val = sym? sym->value : NULL;
         if ( !val ) val = "ATTR_NOT_DEFINED";
 
@@ -240,36 +234,19 @@ SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
 
     for ( i = 0; i < nattr; i++ )
     {
-        /*Agsym_t *r = agraphattr(sg->root, CHAR(STRING_ELT(attrnames, i)), */
-        Agsym_t *r = agraphattr(sg->meta_node->graph, 
+        Agsym_t *r = agraphattr(sg,
                                 CHAR(STRING_ELT(attrnames, i)),
                                 CHAR(STRING_ELT(attrvals, i)));
-        /*
-        printf(" set %s to %s with %d \n", 
-                   CHAR(STRING_ELT(attrnames, i)),
-                   CHAR(STRING_ELT(attrvals, i)), 
-                   (r? 0:1));
-         */
     }
 
     nattr = 0;
     while ( def_cluster_attrs[nattr].name ) nattr++;
 
     for ( i = 0; i < nattr; i++ )
-        /*if ( !agfindattr(sg->root, def_cluster_attrs[i].name) ) */
-        if ( !agfindattr(sg->meta_node->graph, def_cluster_attrs[i].name) )
+        if ( !agfindattr(sg, def_cluster_attrs[i].name) ) 
         {
-            /*Agsym_t *r = agraphattr(sg->root, 
-		      def_cluster_attrs[i].name, def_cluster_attrs[i].value); */
-            Agsym_t *r = agraphattr(sg->meta_node->graph, 
-                                    def_cluster_attrs[i].name, 
-                                    def_cluster_attrs[i].value);
-            /*
-            printf(" set %s to %s with %d \n", 
-                   def_cluster_attrs[i].name, 
-                   def_cluster_attrs[i].value, 
-                   (r? 0:1));
-             */
+            Agsym_t *r = agraphattr(sg, 
+		      def_cluster_attrs[i].name, def_cluster_attrs[i].value); 
         }
 
     return(R_NilValue);
@@ -284,11 +261,11 @@ SEXP Rgraphviz_getAttrsCluster(SEXP graph, SEXP cluster, SEXP attrname)
 
     if ( !val ) /* no such attr */
     {
-        val = "default cluster attr val 1";
+        val = "N/A";
     }
     else if ( !strlen(val) ) /* attr defined but use default */
     {
-        val = "default cluster attr val 2";
+        val = "Default";
     }
 
     SEXP ans;
@@ -307,7 +284,7 @@ SEXP Rgraphviz_setAttrsCluster(SEXP graph, SEXP cluster,
     /* 0 for success, -1 otherwise */
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
     Agsym_t* a = agfindattr(sg, STR(attrname));
-    if ( !a ) a = agraphattr(sg->root, STR(attrname), STR(default_val));
+    if ( !a ) a = agraphattr(sg, STR(attrname), STR(default_val));
     int r = agset(sg, STR(attrname), STR(attrval));
 #else
     int r = agsafeset(sg, STR(attrname), STR(attrval), STR(default_val));
@@ -389,11 +366,11 @@ SEXP Rgraphviz_getAttrsNode(SEXP graph, SEXP node, SEXP attrname)
 
     if ( !val ) /* no such attr */
     {
-        val = "default node attr val 1";
+        val = "N/A";
     }
     else if ( !strlen(val) ) /* attr defined but use default */
     {
-        val = "default node attr val 2";
+        val = "Default";
     }
 
     SEXP ans;
@@ -500,11 +477,11 @@ SEXP Rgraphviz_getAttrsEdge(SEXP graph, SEXP from, SEXP to, SEXP attrname)
 
     if ( !val ) /* no such attr */
     {
-        val = "default edge attr val 1";
+        val = "N/A";
     }
     else if ( !strlen(val) ) /* attr defined but use default */
     {
-        val = "default edge attr val 2";
+        val = "Default";
     }
 
     SEXP ans;
@@ -623,7 +600,6 @@ SEXP LLagopen(SEXP name, SEXP kind,
         else
             sprintf(subGName, "%d", i+1);
 
-        /*	    printf(" subgraph %d is named: %s \n", i, subGName); */
         sgs[i] = agsubg(g, subGName);
     }
 
