@@ -613,9 +613,9 @@ SEXP LLagopen(SEXP name, SEXP kind,
         // First see if this is a cluster or not
         curSubGEle = getListElement(curSubG, CLUSTERFLAG);
         if ( curSubGEle == R_NilValue || LOGICAL(curSubGEle)[0] )
-            sprintf(subGName, "%s_%d", CLUSTERFLAG, i);
+            sprintf(subGName, "%s_%d", CLUSTERFLAG, i+1);
         else
-            sprintf(subGName, "%d", i);
+            sprintf(subGName, "%d", i+1);
 
         /*	    printf(" subgraph %d is named: %s \n", i, subGName); */
         sgs[i] = agsubg(g, subGName);
