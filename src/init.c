@@ -11,9 +11,15 @@ SEXP Rgraphviz_init(void) {
     agseterr(AGERR);
 
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 4
-    if ( gvc ) { gvFreeContext(gvc); gvc = NULL; }
+
+#if GRAPHVIZ_MINOR > 4
+    if ( gvc ) { gvFreeContext(gvc); gvc = NULL; } 
+#endif
+
     gvc = gvContext();
+
 #endif 
+
     return(R_NilValue);
 }
 

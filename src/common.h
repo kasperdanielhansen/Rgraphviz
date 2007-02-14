@@ -13,7 +13,9 @@
 
 #include <math.h>
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 3
+#if GRAPHVIZ_MAJOR == 2 
+
+#if GRAPHVIZ_MINOR <= 3
 #include <render.h>
 #include <graph.h>
 #include <dotprocs.h>
@@ -22,23 +24,24 @@
 #include <renderprocs.h>
 #include <circle.h>
 extern char *Info[];
-#endif
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 4 && GRAPHVIZ_MINOR <= 9
+#else
+
 #include <gvc.h>
 #include <gvplugin.h>
+
+#if GRAPHVIZ_MINOR > 4
 #include <gvcext.h>
-#include <gvcint.h>
-#include <globals.h>
 #endif
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
-#include <gvc.h>
-#include <gvplugin.h>
-#include <gvcext.h>
+#if GRAPHVIZ_MINOR >= 10
 #include <gvcjob.h>
+#endif
+
 #include <gvcint.h>
 #include <globals.h>
+#endif
+
 #endif
 
 extern GVC_t *gvc;
@@ -57,6 +60,28 @@ SEXP Rgraphviz_buildEdgeList(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP Rgraphviz_doLayout(SEXP, SEXP);
 SEXP Rgraphviz_graphvizVersion(void);
 SEXP Rgraphviz_init(void);
+
+SEXP Rgraphviz_toFile(SEXP, SEXP, SEXP, SEXP);
+
+SEXP Rgraphviz_getDefAttrsGraph(SEXP);
+SEXP Rgraphviz_setDefAttrsGraph(SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_getAttrsGraph(SEXP, SEXP);
+SEXP Rgraphviz_setAttrsGraph(SEXP, SEXP, SEXP, SEXP);
+
+SEXP Rgraphviz_getDefAttrsCluster(SEXP, SEXP);
+SEXP Rgraphviz_setDefAttrsCluster(SEXP, SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_getAttrsCluster(SEXP, SEXP, SEXP);
+SEXP Rgraphviz_setAttrsCluster(SEXP, SEXP, SEXP, SEXP, SEXP);
+
+SEXP Rgraphviz_getDefAttrsNode(SEXP);
+SEXP Rgraphviz_setDefAttrsNode(SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_getAttrsNode(SEXP, SEXP, SEXP);
+SEXP Rgraphviz_setAttrsNode(SEXP, SEXP, SEXP, SEXP, SEXP);
+
+SEXP Rgraphviz_getDefAttrsEdge(SEXP);
+SEXP Rgraphviz_setDefAttrsEdge(SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_getAttrsEdge(SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_setAttrsEdge(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 #endif // RGRAPHVIZ_COMMON_H
 
