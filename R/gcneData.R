@@ -11,7 +11,7 @@ setGeneric("graphDataDefaults<-", function(self, attr, value)
 setGeneric("graphData", function(self, attr)
            standardGeneric("graphData"))
 
-setGeneric("graphData<-", function(self, attr, value)
+setGeneric("graphData<-", function(self, attr, defval, value)
            standardGeneric("graphData<-"))
 
 ###################################################################
@@ -36,9 +36,16 @@ setMethod("graphData",
           })
 
 setReplaceMethod("graphData",
-          signature(self="Ragraph", attr="vector", value="vector"),
+          signature(self="Ragraph", attr="vector", defval = "missing", value="vector"),
           function(self, attr, value) {
              setAttrsGraph(self, attr, value)
+             self
+          })
+
+setReplaceMethod("graphData",
+          signature(self="Ragraph", attr="vector", defval = "vector", value="vector"),
+          function(self, attr, defval, value) {
+             setAttrsGraph(self, attr, value, defval)
              self
           })
 
@@ -55,7 +62,7 @@ setGeneric("clusterDataDefaults<-", function(self, cluster, attr, value)
 setGeneric("clusterData", function(self, cluster, attr)
            standardGeneric("clusterData"))
 
-setGeneric("clusterData<-", function(self, cluster, attr, value)
+setGeneric("clusterData<-", function(self, cluster, attr, defval, value)
            standardGeneric("clusterData<-"))
 
 ###################################################################
@@ -80,35 +87,40 @@ setMethod("clusterData",
           })
 
 setReplaceMethod("clusterData",
-          signature(self="Ragraph", cluster="numeric", attr="vector", value="vector"),
+          signature(self="Ragraph", cluster="numeric", attr="vector", defval="missing", value="vector"),
           function(self, cluster, attr, value) {
              setAttrsCluster(self, cluster, attr, value)
+             self
+          })
+
+setReplaceMethod("clusterData",
+          signature(self="Ragraph", cluster="numeric", attr="vector", defval="vector", value="vector"),
+          function(self, cluster, attr, defval, value) {
+             setAttrsCluster(self, cluster, attr, value, defval)
              self
           })
 
 ###################################################################
 # node attributes
 ###################################################################
-#
-# Note: generics are from "graph"
-#
-#setGeneric("nodeDataDefaults", function(self)
-#           standardGeneric("nodeDataDefaults"))
-#
-#setGeneric("nodeDataDefaults<-", function(self, attr, value)
-#           standardGeneric("nodeDataDefaults<-"))
-#
-#setGeneric("nodeData", function(self, n, attr)
-#           standardGeneric("nodeData"))
-#
-#setGeneric("nodeData<-", function(self, n, attr, value)
-#           standardGeneric("nodeData<-"))
-#
+
+setGeneric("nodeDataDefaults", function(self)
+           standardGeneric("nodeDataDefaults"))
+
+setGeneric("nodeDataDefaults<-", function(self, attr, value)
+           standardGeneric("nodeDataDefaults<-"))
+
+setGeneric("nodeData", function(self, n, attr)
+           standardGeneric("nodeData"))
+
+setGeneric("nodeData<-", function(self, n, attr, defval, value)
+           standardGeneric("nodeData<-"))
+
 ###################################################################
 
 setMethod("nodeDataDefaults", 
-          signature(self="Ragraph", attr="missing"),
-          function(self, attr) {
+          signature(self="Ragraph"),
+          function(self) {
 	     getDefAttrsNode(self)
           })
 
@@ -126,9 +138,16 @@ setMethod("nodeData",
           })
 
 setReplaceMethod("nodeData",
-          signature(self="Ragraph", n="vector", attr="vector", value="vector"),
+          signature(self="Ragraph", n="vector", attr="vector", defval="missing", value="vector"),
           function(self, n, attr, value) {
              setAttrsNode(self, n, attr, value)
+             self
+          })
+
+setReplaceMethod("nodeData",
+          signature(self="Ragraph", n="vector", attr="vector", defval="vector", value="vector"),
+          function(self, n, attr, defval, value) {
+             setAttrsNode(self, n, attr, value, defval)
              self
           })
 
@@ -136,25 +155,23 @@ setReplaceMethod("nodeData",
 ###################################################################
 # edge attributes
 ###################################################################
-#
-# Note: generics are from "graph"
-#
-#setGeneric("edgeDataDefaults", function(self, attr)            
-#	   standardGeneric("edgeDataDefaults"))
-#
-#setGeneric("edgeDataDefaults<-", function(self, attr, value)
-#           standardGeneric("edgeDataDefaults<-"))
-#
-#setGeneric("edgeData", function(self, from, to, attr)
-#           standardGeneric("edgeData"))
-#
-#setGeneric("edgeData<-", function(self, from, to, attr, value)
-#           standardGeneric("edgeData<-"))
-#
+
+setGeneric("edgeDataDefaults", function(self)            
+	   standardGeneric("edgeDataDefaults"))
+
+setGeneric("edgeDataDefaults<-", function(self, attr, value)
+           standardGeneric("edgeDataDefaults<-"))
+
+setGeneric("edgeData", function(self, from, to, attr)
+           standardGeneric("edgeData"))
+
+setGeneric("edgeData<-", function(self, from, to, attr, defval, value)
+           standardGeneric("edgeData<-"))
+
 ###################################################################
 
 setMethod("edgeDataDefaults", 
-          signature(self="Ragraph", attr="missing"),
+          signature(self="Ragraph"),
           function(self) {
              getDefAttrsEdge(self)
 	  })
@@ -174,9 +191,17 @@ setMethod("edgeData",
 
 setReplaceMethod("edgeData",
           signature(self="Ragraph", from="vector", to="vector",
-                    attr="vector", value="vector"),
+                    attr="vector", defval="missing", value="vector"),
           function(self, from, to, attr, value) {
              setAttrsEdge(self, from, to, attr, value)
+             self
+          })
+
+setReplaceMethod("edgeData",
+          signature(self="Ragraph", from="vector", to="vector",
+                    attr="vector", defval="vector", value="vector"),
+          function(self, from, to, attr, defval, value) {
+             setAttrsEdge(self, from, to, attr, value, defval)
              self
           })
 
