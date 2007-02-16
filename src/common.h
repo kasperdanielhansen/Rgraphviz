@@ -13,6 +13,9 @@
 
 #include <math.h>
 
+/* #define HAVE_BOOL 1 */
+/* #define HAVE_STDBOOL_H 1 */
+
 #if GRAPHVIZ_MAJOR == 2 
 
 #if GRAPHVIZ_MINOR <= 3
