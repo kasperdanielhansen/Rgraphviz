@@ -1,6 +1,7 @@
 AC_INIT(src/Rgraphviz.c)
 AC_PREREQ(2.13)
 
+
 AC_ARG_WITH(graphviz,
             [ --with-graphviz=DIR      root directory of graphviz installation 
                           (defaults to /usr/local/)],
@@ -75,6 +76,22 @@ if test ${MAJOR} -lt "2" || (test ${MAJOR} -eq "2" && test ${MINOR} -lt "2") ; t
 fi
 
 GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_MAJOR=${MAJOR} -DGRAPHVIZ_MINOR=${MINOR}"
+
+if test ${MAJOR} -le "2" && test ${MINOR} -le "12"; then
+   AC_MSG_CHECKING([for whether compiler has bool])
+   AC_HEADER_STDBOOL
+   AC_TRY_COMPILE([
+   #ifdef HAVE_STDBOOL_H>
+   #include <stdbool.h>
+   #endif
+   ],[
+   bool foo = true, bar = false;
+   ],[
+   AC_MSG_RESULT(yes)
+   GVIZ_DEFS="${GVIZ_DEFS} -DHAVE_STDBOOL_H=1 -DHAVE_BOOL=1"
+   ],[
+   AC_MSG_RESULT(no)])
+fi
 
 AC_SUBST(GVIZ_DEFS)
 AC_SUBST(PKG_CPPFLAGS)
