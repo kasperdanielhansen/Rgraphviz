@@ -26,12 +26,30 @@ static Agraph_t* getClusterPtr(SEXP graph, SEXP cluster)
     return(sg);
 }
 
+static void getDefAttrs(void *obj, int *n, char*** attr_name, char*** attr_defval)
+{
+    Agdict_t *dict = agdictof(obj);
+    int i;
+
+    if ( *n = dtsize(dict->dict) )
+    {
+       *attr_name = Calloc(*n, char*);
+       *attr_defval = Calloc(*n, char*);
+
+       for ( i = 0; i < *n; i++ )
+       {
+          (*attr_defval)[i] = dict->list[i]->value;
+          (*attr_name)[i] = dict->list[i]->name;
+       }
+    }
+}
+
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
 
 int agsafeset(void* obj, char* name, char* value, char* def)
-{
+{  
   Agsym_t* a = agfindattr(obj, name);
-
+   
   if (a == NULL) {
     if (!def) def = "";
     switch (agobjkind(obj)) {
@@ -40,14 +58,14 @@ int agsafeset(void* obj, char* name, char* value, char* def)
         break;
     case AGNODE:
         a = agnodeattr(((Agnode_t*)obj)->graph, name, def);
-        break;
+        break;     
     case AGEDGE:
         a = agedgeattr(((Agedge_t*)obj)->head->graph, name, def);
         break;
     }
   }
   return agxset(obj, a->index, value);
-}
+}  
 
 #endif
 
@@ -63,94 +81,29 @@ int agsafeset(void* obj, char* name, char* value, char* def)
  * o. call "agclose(g)" somewhere...
 */
 
-static const Rgattr_t def_graph_attrs[] = {
-            {"bgcolor",	"transparent"},
-            {"fontcolor",	"black"},
-            {"ratio",	"fill"},
-            {"overlap",	""},
-            {"splines",	"TRUE"},
-
-            {"rank",	"same"},
-            {"size",	"6.99, 6.99"},
-            {"rankdir",	"TB"},	/* dot only */
-
-            {NULL,		NULL}
-        };
-
-static const Rgattr_t def_cluster_attrs[] = {
-            {"bgcolor",	"transparent"},
-            {"color",	"black"},
-            {"rank",	"same"},
-
-            {NULL,		NULL}
-        };
-
-static const Rgattr_t def_node_attrs[] = {
-            {"shape",	"circle"},
-            {"fixedsize",	"TRUE"},
-            {"fillcolor",	"transparent"},
-            {"label",	""},
-            {"color",	"black"},
-
-            {"fontcolor",	"black"},
-            {"fontsize",	"14"},
-            {"height",	"0.5"},
-            {"width",	"0.75"},
-
-            {NULL,		NULL}
-        };
-
-static const Rgattr_t def_edge_attrs[] = {
-            {"color",	"black"},
-            {"dir",		"forward"},
-            {"weight",	"1.0"},
-            {"label",	""},
-            {"fontcolor",	"black"},
-
-            {"arrowhead",	"none"},
-            {"arrowtail",	"none"},
-            {"fontsize",	"14"},
-            {"labelfontsize","11"},
-            {"arrowsize",	"1"},
-
-            {"headport",	"center"},
-            {"layer",	""},
-            {"style",	"solid"},
-            {"minlen",	"1"},	/* dot only */
-            {"len",	"1.0"},	/* neato only */
-
-            {NULL, NULL}
-        };
-
 SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
 {
-    int nattr = 0;
-    while ( def_graph_attrs[nattr].name ) nattr++;
-
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
+
+    int i = 0, nattr = 0; 
+    char **attr_name = NULL, **attr_defval = NULL;
+
+    getDefAttrs(g, &nattr, &attr_name, &attr_defval);
 
     SEXP ans;
     PROTECT(ans = allocMatrix(STRSXP, nattr, 2));
 
-    Agsym_t* sym;
-    char* val;
-    int i = 0, ii = 0;
-    for ( i = 0, ii = 0; i < nattr; i++, ii++ )
+    for ( i = 0; i < nattr; i++ )
     {
-        sym = agfindattr(g, def_graph_attrs[i].name);
-        val = sym? sym->value : NULL;
-        if ( !val ) val = "ATTR_NOT_DEFINED";
-
-        SET_STRING_ELT(ans, ii, mkChar(def_graph_attrs[i].name));
-        SET_STRING_ELT(ans, nattr+ii, mkChar(val));
-
-#if DEBUG
-        if ( sym )
-            printf(" attr name: %s \t attr val: %s \n", sym->name, sym->value);
-#endif
+        SET_STRING_ELT(ans, i, mkChar(attr_name[i]));
+        SET_STRING_ELT(ans, nattr+i, mkChar(attr_defval[i]));
     }
+
     UNPROTECT(1);
+
+    Free(attr_name); Free(attr_defval);
+
     return(ans);
 }
 
@@ -165,13 +118,6 @@ SEXP Rgraphviz_setDefAttrsGraph(SEXP graph, SEXP nnattr,
 
     for ( i = 0; i < nattr; i++ )
         agraphattr(g, CHAR(STRING_ELT(attrnames, i)), CHAR(STRING_ELT(attrvals, i)));
-
-    nattr = 0;
-    while ( def_graph_attrs[nattr].name ) nattr++;
-
-    for ( i = 0; i < nattr; i++ )
-        if ( !agfindattr(g, def_graph_attrs[i].name) )
-            agraphattr(g, def_graph_attrs[i].name, def_graph_attrs[i].value);
 
     return(R_NilValue);
 }
@@ -220,25 +166,24 @@ SEXP Rgraphviz_getDefAttrsCluster(SEXP graph, SEXP cluster)
     Agraph_t *sg = getClusterPtr(graph, cluster);
     if ( !sg ) return(R_NilValue);
 
-    int nattr = 0;
-    while ( def_cluster_attrs[nattr].name ) nattr++;
+    int i = 0, nattr = 0;
+    char **attr_name = NULL, **attr_defval = NULL;
+
+    getDefAttrs(sg, &nattr, &attr_name, &attr_defval);
 
     SEXP ans;
     PROTECT(ans = allocMatrix(STRSXP, nattr, 2));
 
-    Agsym_t* sym;
-    char* val;
-    int i = 0, ii = 0;
-    for ( i = 0, ii = 0; i < nattr; i++, ii++ )
+    for ( i = 0; i < nattr; i++ )
     {
-        sym = agfindattr(sg, def_cluster_attrs[i].name);
-        val = sym? sym->value : NULL;
-        if ( !val ) val = "ATTR_NOT_DEFINED";
-
-        SET_STRING_ELT(ans, ii, mkChar(def_cluster_attrs[i].name));
-        SET_STRING_ELT(ans, nattr+ii, mkChar(val));
+        SET_STRING_ELT(ans, i, mkChar(attr_name[i]));
+        SET_STRING_ELT(ans, nattr+i, mkChar(attr_defval[i]));
     }
+
     UNPROTECT(1);
+
+    Free(attr_name); Free(attr_defval);
+
     return(ans);
 }
 
@@ -257,16 +202,6 @@ SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
                                 CHAR(STRING_ELT(attrnames, i)),
                                 CHAR(STRING_ELT(attrvals, i)));
     }
-
-    nattr = 0;
-    while ( def_cluster_attrs[nattr].name ) nattr++;
-
-    for ( i = 0; i < nattr; i++ )
-        if ( !agfindattr(sg, def_cluster_attrs[i].name) ) 
-        {
-            Agsym_t *r = agraphattr(sg, 
-		      def_cluster_attrs[i].name, def_cluster_attrs[i].value); 
-        }
 
     return(R_NilValue);
 }
@@ -312,36 +247,29 @@ SEXP Rgraphviz_setAttrsCluster(SEXP graph, SEXP cluster,
 
 SEXP Rgraphviz_getDefAttrsNode(SEXP graph)
 {
-    int nattr = 0;
-    while ( def_node_attrs[nattr].name ) nattr++;
-
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
     Agnode_t *n = g->proto->n;
 
+    int i = 0, nattr = 0;
+    char **attr_name = NULL, **attr_defval = NULL;
+
+    getDefAttrs(n, &nattr, &attr_name, &attr_defval);
+
     SEXP ans;
     PROTECT(ans = allocMatrix(STRSXP, nattr, 2));
 
-    Agsym_t* sym;
-    char* val;
-    int i = 0, ii = 0;
-    for ( i = 0, ii = 0; i < nattr; i++, ii++ )
+    for ( i = 0; i < nattr; i++ )
     {
-        sym = agfindattr(n, def_node_attrs[i].name);
-        val = sym? sym->value : NULL;
-        if ( !val ) val = "ATTR_NOT_DEFINED";
-        
-        SET_STRING_ELT(ans, ii, mkChar(def_node_attrs[i].name));
-        SET_STRING_ELT(ans, nattr+ii, mkChar(val));
-
-#if DEBUG
-        if ( sym )
-            printf(" attr name: %s \t attr val: %s \n", sym->name, sym->value);
-#endif
+        SET_STRING_ELT(ans, i, mkChar(attr_name[i]));
+        SET_STRING_ELT(ans, nattr+i, mkChar(attr_defval[i]));
     }
 
     UNPROTECT(1);
+
+    Free(attr_name); Free(attr_defval);
+
     return(ans);
 }
 
@@ -356,13 +284,6 @@ SEXP Rgraphviz_setDefAttrsNode(SEXP graph, SEXP nnattr,
     for ( i = 0; i < nattr; i++ )
         agnodeattr(g, CHAR(STRING_ELT(attrnames, i)),
                    CHAR(STRING_ELT(attrvals, i)));
-
-    nattr = 0;
-    while ( def_node_attrs[nattr].name ) nattr++;
-
-    for ( i = 0; i < nattr; i++ )
-        if ( !agfindattr(g, def_node_attrs[i].name) )
-            agnodeattr(g, def_node_attrs[i].name, def_node_attrs[i].value);
 
     return(R_NilValue);
 }
@@ -413,35 +334,29 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
 
 SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
 {
-    int nattr = 0;
-    while ( def_edge_attrs[nattr].name ) nattr++;
-
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
     Agedge_t *e = g->proto->e;
 
+    int i = 0, nattr = 0;
+    char **attr_name = NULL, **attr_defval = NULL;
+
+    getDefAttrs(e, &nattr, &attr_name, &attr_defval);
+
     SEXP ans;
     PROTECT(ans = allocMatrix(STRSXP, nattr, 2));
 
-    Agsym_t* sym;
-    char* val;
-    int i = 0, ii = 0;
-    for ( i = 0, ii = 0; i < nattr; i++, ii++ )
+    for ( i = 0; i < nattr; i++ )
     {
-        sym = agfindattr(e, def_edge_attrs[i].name);
-        val = sym? sym->value : NULL;
-        if ( !val ) val = "ATTR_NOT_DEFINED";
-
-        SET_STRING_ELT(ans, ii, mkChar(def_edge_attrs[i].name));
-        SET_STRING_ELT(ans, nattr+ii, mkChar(val));
-
-#if DEBUG
-        if ( sym )
-            printf(" attr name: %s \t attr val: %s \n", sym->name, sym->value);
-#endif
+        SET_STRING_ELT(ans, i, mkChar(attr_name[i]));
+        SET_STRING_ELT(ans, nattr+i, mkChar(attr_defval[i]));
     }
+
     UNPROTECT(1);
+
+    Free(attr_name); Free(attr_defval);
+
     return(ans);
 }
 
@@ -457,13 +372,6 @@ SEXP Rgraphviz_setDefAttrsEdge(SEXP graph, SEXP nnattr,
     for ( i = 0; i < nattr; i++ )
         agedgeattr(g, CHAR(STRING_ELT(attrnames, i)),
                    CHAR(STRING_ELT(attrvals, i)));
-
-    nattr = 0;
-    while ( def_edge_attrs[nattr].name ) nattr++;
-
-    for ( i = 0; i < nattr; i++ )
-        if ( !agfindattr(g, def_edge_attrs[i].name) )
-            agedgeattr(g, def_edge_attrs[i].name, def_edge_attrs[i].value);
 
     return(R_NilValue);
 }
