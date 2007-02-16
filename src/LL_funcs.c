@@ -26,6 +26,31 @@ static Agraph_t* getClusterPtr(SEXP graph, SEXP cluster)
     return(sg);
 }
 
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
+
+int agsafeset(void* obj, char* name, char* value, char* def)
+{
+  Agsym_t* a = agfindattr(obj, name);
+
+  if (a == NULL) {
+    if (!def) def = "";
+    switch (agobjkind(obj)) {
+    case AGGRAPH:
+        a = agraphattr(((Agraph_t*)obj)->root, name, def);
+        break;
+    case AGNODE:
+        a = agnodeattr(((Agnode_t*)obj)->graph, name, def);
+        break;
+    case AGEDGE:
+        a = agedgeattr(((Agedge_t*)obj)->head->graph, name, def);
+        break;
+    }
+  }
+  return agxset(obj, a->index, value);
+}
+
+#endif
+
 /*
  * TODO:
  * o. validate ptrs to graph/node/edge
@@ -181,13 +206,7 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
     if ( !g ) return(R_NilValue);
 
     /* 0 for success, -1 otherwise */
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
-    Agsym_t* a = agfindattr(g, STR(attrname));
-    if ( !a ) a = agraphattr(g, STR(attrname), STR(default_val));
-    int r = agset(g, STR(attrname), STR(attrval));
-#else
     int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
-#endif
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -282,13 +301,7 @@ SEXP Rgraphviz_setAttrsCluster(SEXP graph, SEXP cluster,
     if ( !sg ) return(R_NilValue);
 
     /* 0 for success, -1 otherwise */
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
-    Agsym_t* a = agfindattr(sg, STR(attrname));
-    if ( !a ) a = agraphattr(sg, STR(attrname), STR(default_val));
-    int r = agset(sg, STR(attrname), STR(attrval));
-#else
     int r = agsafeset(sg, STR(attrname), STR(attrval), STR(default_val));
-#endif
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -389,13 +402,7 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
     Agnode_t *n = agfindnode(g, STR(node));
     if ( !n ) return(R_NilValue);
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
-    Agsym_t* a = agfindattr(n, STR(attrname));
-    if ( !a ) a = agnodeattr(g, STR(attrname), STR(default_val));
-    int r = agset(n, STR(attrname), STR(attrval));
-#else
     int r = agsafeset(n, STR(attrname), STR(attrval), STR(default_val));
-#endif
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -504,13 +511,7 @@ SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
     Agedge_t *e = agfindedge(g, u, v);
     if ( !e ) return(R_NilValue);
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
-    Agsym_t* a = agfindattr(e, STR(attrname));
-    if ( !a ) a = agedgeattr(g, STR(attrname), STR(default_val));
-    int r= agset(e, STR(attrname), STR(attrval));
-#else
     int r = agsafeset(e, STR(attrname), STR(attrval), STR(default_val));
-#endif
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -648,13 +649,7 @@ SEXP LLagopen(SEXP name, SEXP kind,
         if ( (ag_k == 1 || ag_k == 3 ) && recip == 0 &&
              (curEdge = agfindedge(tmpGraph, head, tail)) )
         {
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
-            Agsym_t* a = agfindattr(curEdge, "dir");
-            if ( !a ) a = agedgeattr(g, "dir", "forward");
-            int r= agset(curEdge, "dir", "both");
-#else
             int r = agsafeset(curEdge, "dir", "both", "forward");
-#endif
         }
         else
         {
