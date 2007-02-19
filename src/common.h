@@ -47,6 +47,12 @@ extern char *Info[];
 /* from libgraph.h, due to overlap with graph.h, cannot #include it */
 extern Agdict_t *agdictof(void *);
 
+/* these are missing in .h */
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 4
+extern void circo_layout(Agraph_t * g);
+extern void fdp_layout(Agraph_t * g);
+#endif
+
 extern GVC_t *gvc;
 extern SEXP Rgraphviz_graph_type_tag;
 
