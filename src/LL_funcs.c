@@ -31,7 +31,7 @@ static void getDefAttrs(void *obj, int *n, char*** attr_name, char*** attr_defva
     Agdict_t *dict = agdictof(obj);
     int i;
 
-    if ( *n = dtsize(dict->dict) )
+    if ( (*n = dtsize(dict->dict)) )
     {
        *attr_name = Calloc(*n, char*);
        *attr_defval = Calloc(*n, char*);
@@ -198,9 +198,8 @@ SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
 
     for ( i = 0; i < nattr; i++ )
     {
-        Agsym_t *r = agraphattr(sg,
-                                CHAR(STRING_ELT(attrnames, i)),
-                                CHAR(STRING_ELT(attrvals, i)));
+        agraphattr(sg, CHAR(STRING_ELT(attrnames, i)),
+                       CHAR(STRING_ELT(attrvals, i)));
     }
 
     return(R_NilValue);
@@ -557,7 +556,7 @@ SEXP LLagopen(SEXP name, SEXP kind,
         if ( (ag_k == 1 || ag_k == 3 ) && recip == 0 &&
              (curEdge = agfindedge(tmpGraph, head, tail)) )
         {
-            int r = agsafeset(curEdge, "dir", "both", "forward");
+            agsafeset(curEdge, "dir", "both", "forward");
         }
         else
         {
