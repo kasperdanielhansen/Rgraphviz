@@ -29,7 +29,6 @@ setMethod("plot", "Ragraph",
 
     ############################################################
     ## layout graph
-    ## TODO: if y is changed, redo layout
     ############################################################
     if ( missing(y) ) y <- x@layoutType
     x <- layoutGraph(x, y)
@@ -43,9 +42,9 @@ setMethod("plot", "Ragraph",
     old.mai=par(mai=0.01+c(0.83*(!is.null(sub)), 0, 0.83*(!is.null(main)), 0))
     on.exit(par(mai=old.mai), add=TRUE)
 
-    ## Get the upper right X,Y point of the bounding
-    ## box for the graph
+    ## Get the upper right/bottom left points of the bounding box for the graph
     ur <- upRight(boundBox(x))
+    bl <- botLeft(boundBox(x))
 
     ## Set up the plot region.  We need
     ## to emulate what happens in 'plot.default' as
@@ -56,8 +55,8 @@ setMethod("plot", "Ragraph",
 
     ## !! Currently hardcoding log & asp,
     ## !! probably want to change that over time.
-    plot.window(xlim=c(0,getX(ur)),
-                ylim=c(0,getY(ur)),
+    plot.window(xlim=c(getX(bl),getX(ur)),
+                ylim=c(getY(bl),getY(ur)),
                 log="", asp=NA, ...)
     xy <- xy.coords(NA, NA)
 
@@ -172,6 +171,8 @@ drawAgNode <- function(node) {
 }
 
 drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
+  ## NOTE: labelFontsize not used
+
   txt <- labelText(txtLabel)
 
   if(length(txt)>1) stop("'labelText(txtLabel)' must have length 1.")

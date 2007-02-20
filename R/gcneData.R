@@ -103,23 +103,23 @@ setReplaceMethod("clusterData",
 ###################################################################
 # node attributes
 ###################################################################
-
-setGeneric("nodeDataDefaults", function(self)
-           standardGeneric("nodeDataDefaults"))
-
-setGeneric("nodeDataDefaults<-", function(self, attr, value)
-           standardGeneric("nodeDataDefaults<-"))
-
-setGeneric("nodeData", function(self, n, attr)
-           standardGeneric("nodeData"))
-
-setGeneric("nodeData<-", function(self, n, attr, defval, value)
-           standardGeneric("nodeData<-"))
+#
+#setGeneric("nodeDataDefaults", function(self)
+#           standardGeneric("nodeDataDefaults"))
+#
+#setGeneric("nodeDataDefaults<-", function(self, attr, value)
+#           standardGeneric("nodeDataDefaults<-"))
+#
+#setGeneric("nodeData", function(self, n, attr)
+#           standardGeneric("nodeData"))
+#
+#setGeneric("nodeData<-", function(self, n, attr, defval, value)
+#           standardGeneric("nodeData<-"))
 
 ###################################################################
 
 setMethod("nodeDataDefaults", 
-          signature(self="Ragraph"),
+          signature(self="Ragraph", attr="missing"),
           function(self) {
 	     getDefAttrsNode(self)
           })
@@ -138,40 +138,40 @@ setMethod("nodeData",
           })
 
 setReplaceMethod("nodeData",
-          signature(self="Ragraph", n="vector", attr="vector", defval="missing", value="vector"),
+          signature(self="Ragraph", n="vector", attr="vector", value="vector"),
           function(self, n, attr, value) {
-             setAttrsNode(self, n, attr, value)
-             self
+             ans <- getAttrsNode(self, n, attr)
+             if ( any(is.na(ans)) )
+             {
+                stop("Some attributes are not set, initialize them first")
+             }
+             else
+             {
+                setAttrsNode(self, n, attr, value)
+                self
+             }
           })
-
-setReplaceMethod("nodeData",
-          signature(self="Ragraph", n="vector", attr="vector", defval="vector", value="vector"),
-          function(self, n, attr, defval, value) {
-             setAttrsNode(self, n, attr, value, defval)
-             self
-          })
-
 
 ###################################################################
 # edge attributes
 ###################################################################
-
-setGeneric("edgeDataDefaults", function(self)            
-	   standardGeneric("edgeDataDefaults"))
-
-setGeneric("edgeDataDefaults<-", function(self, attr, value)
-           standardGeneric("edgeDataDefaults<-"))
-
-setGeneric("edgeData", function(self, from, to, attr)
-           standardGeneric("edgeData"))
-
-setGeneric("edgeData<-", function(self, from, to, attr, defval, value)
-           standardGeneric("edgeData<-"))
+#
+#setGeneric("edgeDataDefaults", function(self)            
+#	   standardGeneric("edgeDataDefaults"))
+#
+#setGeneric("edgeDataDefaults<-", function(self, attr, value)
+#           standardGeneric("edgeDataDefaults<-"))
+#
+#setGeneric("edgeData", function(self, from, to, attr)
+#           standardGeneric("edgeData"))
+#
+#setGeneric("edgeData<-", function(self, from, to, attr, defval, value)
+#           standardGeneric("edgeData<-"))
 
 ###################################################################
 
 setMethod("edgeDataDefaults", 
-          signature(self="Ragraph"),
+          signature(self="Ragraph", attr="missing"),
           function(self) {
              getDefAttrsEdge(self)
 	  })
@@ -191,18 +191,18 @@ setMethod("edgeData",
 
 setReplaceMethod("edgeData",
           signature(self="Ragraph", from="vector", to="vector",
-                    attr="vector", defval="missing", value="vector"),
+                    attr="vector", value="vector"),
           function(self, from, to, attr, value) {
+             ans <- getAttrsEdge(self, from, to, attr)
+             if ( any(is.na(ans)) )
+             {
+                stop("Some attributes are not set, initialize them first")
+             }
+             else
+             {
              setAttrsEdge(self, from, to, attr, value)
              self
-          })
-
-setReplaceMethod("edgeData",
-          signature(self="Ragraph", from="vector", to="vector",
-                    attr="vector", defval="vector", value="vector"),
-          function(self, from, to, attr, defval, value) {
-             setAttrsEdge(self, from, to, attr, value, defval)
-             self
+             }
           })
 
 
