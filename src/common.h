@@ -73,22 +73,22 @@ SEXP Rgraphviz_init(void);
 SEXP Rgraphviz_toFile(SEXP, SEXP, SEXP, SEXP);
 
 SEXP Rgraphviz_getDefAttrsGraph(SEXP);
-SEXP Rgraphviz_setDefAttrsGraph(SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_setDefAttrsGraph(SEXP, SEXP, SEXP);
 SEXP Rgraphviz_getAttrsGraph(SEXP, SEXP);
 SEXP Rgraphviz_setAttrsGraph(SEXP, SEXP, SEXP, SEXP);
 
 SEXP Rgraphviz_getDefAttrsCluster(SEXP, SEXP);
-SEXP Rgraphviz_setDefAttrsCluster(SEXP, SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_setDefAttrsCluster(SEXP, SEXP, SEXP, SEXP);
 SEXP Rgraphviz_getAttrsCluster(SEXP, SEXP, SEXP);
 SEXP Rgraphviz_setAttrsCluster(SEXP, SEXP, SEXP, SEXP, SEXP);
 
 SEXP Rgraphviz_getDefAttrsNode(SEXP);
-SEXP Rgraphviz_setDefAttrsNode(SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_setDefAttrsNode(SEXP, SEXP, SEXP);
 SEXP Rgraphviz_getAttrsNode(SEXP, SEXP, SEXP);
 SEXP Rgraphviz_setAttrsNode(SEXP, SEXP, SEXP, SEXP, SEXP);
 
 SEXP Rgraphviz_getDefAttrsEdge(SEXP);
-SEXP Rgraphviz_setDefAttrsEdge(SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_setDefAttrsEdge(SEXP, SEXP, SEXP);
 SEXP Rgraphviz_getAttrsEdge(SEXP, SEXP, SEXP, SEXP);
 SEXP Rgraphviz_setAttrsEdge(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
