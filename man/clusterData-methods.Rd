@@ -21,7 +21,7 @@ clusterData(self, cluster, attr) <- value
 
 \description{
   Attributes of a graph can be accessed using \code{clusterData}.  
-  The attributes must be defined using \code{\link{clusterDataDefaults}}.  
+  The attributes must be defined using \code{\link{graphDataDefaults}}.  
 }
 
 \author{Li Long <li.long@isb-sib.ch>}

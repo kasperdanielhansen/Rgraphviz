@@ -77,8 +77,6 @@ SEXP Rgraphviz_setDefAttrsGraph(SEXP, SEXP, SEXP);
 SEXP Rgraphviz_getAttrsGraph(SEXP, SEXP);
 SEXP Rgraphviz_setAttrsGraph(SEXP, SEXP, SEXP, SEXP);
 
-SEXP Rgraphviz_getDefAttrsCluster(SEXP, SEXP);
-SEXP Rgraphviz_setDefAttrsCluster(SEXP, SEXP, SEXP, SEXP);
 SEXP Rgraphviz_getAttrsCluster(SEXP, SEXP, SEXP);
 SEXP Rgraphviz_setAttrsCluster(SEXP, SEXP, SEXP, SEXP, SEXP);
 

@@ -66,42 +66,6 @@ setAttrsGraph <- function(graph, attrname, attrval, defaultval="")
    }
 }
 
-getDefAttrsCluster <- function(graph, cluster)
-{
-   if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
-   if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
-
-   ans <- .Call("Rgraphviz_getDefAttrsCluster", 
-		graph, as.integer(cluster), 
-		PACKAGE="Rgraphviz")
-
-   if ( !is.null(ans) && nrow(ans) > 0 )
-   {
-      colnames(ans) <- c("attr name", "attr value")
-      rownames(ans) <- paste("cluster attr", 1:nrow(ans))
-   }
-
-   ans
-}
-
-setDefAttrsCluster <- function(graph, cluster, attrnames=c(), attrvals=c())
-{
-   if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
-   if ( !is.numeric(cluster) ) stop("Cluster is not given as an integer")
-
-   if ( length(attrnames) != length(attrvals) )
-      stop("Length of attrnames is not equal to length of attrvals")
-
-   x <- cbind(cluster, attrnames, attrvals)
-
-   for ( i in 1:nrow(x) )
-   {
-      .Call("Rgraphviz_setDefAttrsCluster", 
-	 	graph, as.integer(x[i, 1]), x[i, 2], x[i, 3], 
-		PACKAGE="Rgraphviz")
-   }
-}
-
 getAttrsCluster <- function(graph, cluster, attrname)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
@@ -138,8 +102,8 @@ setAttrsCluster <- function(graph, cluster, attrname, attrval, defaultval="")
 
    for ( i in 1:nrow(x) )
    {
-       .Call("Rgraphviz_setAttrsCluster", graph, as.integer(x[i, 1]),
-	     x[i, 2], x[i, 3], x[i, 4],
+       .Call("Rgraphviz_setAttrsCluster", 
+             graph, as.integer(x[i, 1]), x[i, 2], x[i, 3], x[i, 4],
 	     PACKAGE="Rgraphviz")
    }
 }
@@ -275,31 +239,6 @@ setAttrsEdge <- function(graph, from, to, attrname, attrval, defaultval="")
 	    x[i, 3], x[i, 4], x[i, 5], 
 	    PACKAGE="Rgraphviz")
    }
-}
-
-getDefAttrs <- function(graph)
-{
-   if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
-   
-   ans_g <- getDefAttrsGraph(graph)
-   #ans_c <- getDefAttrsCluster(graph)  # which one to inquire?
-   ans_n <- getDefAttrsNode(graph)
-   ans_e <- getDefAttrsEdge(graph)
-
-   ans <- rbind(ans_g, ans_n, ans_e)
-
-   ans
-}
-
-setDefAttrs <- function(graph, g_attrnames=c(), g_attrvals=c(),
-			#c_attrnames=c(), c_attrvals=c(),
-			n_attrnames=c(), n_attrvals=c(),
-			e_attrnames=c(), e_attrvals=c())
-{
-   ans_g <- setDefAttrsGraph(graph, g_attrnames, g_attrvals)
-   #ans_c <- setDefAttrsCluster(graph, c_attrnames, c_attrvals)
-   ans_n <- setDefAttrsNode(graph, n_attrnames, n_attrvals)
-   ans_e <- setDefAttrsEdge(graph, e_attrnames, e_attrvals)
 }
 
 toFile <- function(graph, 

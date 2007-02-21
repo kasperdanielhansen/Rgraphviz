@@ -15,8 +15,6 @@
 \alias{graphData,Ragraph,vector-method}
 \alias{graphData<-,Ragraph,vector,vector-method}
 
-\alias{clusterDataDefaults,Ragraph,numeric-method}
-\alias{clusterDataDefaults<-,Ragraph,numeric,vector,vector-method}
 \alias{clusterData,Ragraph,numeric,vector-method}
 \alias{clusterData<-,Ragraph,numeric,vector,vector-method}
 
@@ -101,10 +99,6 @@ Objects can be created by calls to the function \code{agopen}.
     \item{graphData<-}{\code{signature(self= "Ragraph", attr="vector", value="vector")}: 
       Sets attributes of the given graph.}
 
-    \item{clusterDataDefaults}{\code{signature(self= "Ragraph", cluster="numeric")}: 
-      Gets default attributes of a cluster for the given graph.}
-    \item{clusterDataDefaults<-}{\code{signature(self= "Ragraph", cluster="numeric", attr="vector", value="vector")}: 
-      Sets default attributes of a cluster for the given graph.}
     \item{clusterData}{\code{signature(self= "Ragraph", cluster="numeric", attr="vector")}: 
       Gets attributes of a cluster for the given graph.}
     \item{clusterData<-}{\code{signature(self= "Ragraph", cluster="numeric", attr="vector", value="vector")}: 
