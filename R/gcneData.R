@@ -56,12 +56,6 @@ setReplaceMethod("graphData",
 # cluster attributes
 ###################################################################
 
-setGeneric("clusterDataDefaults", function(self, cluster)
-           standardGeneric("clusterDataDefaults"))
-
-setGeneric("clusterDataDefaults<-", function(self, cluster, attr, value)
-           standardGeneric("clusterDataDefaults<-"))
-
 setGeneric("clusterData", function(self, cluster, attr)
            standardGeneric("clusterData"))
 
@@ -69,19 +63,6 @@ setGeneric("clusterData<-", function(self, cluster, attr, value)
            standardGeneric("clusterData<-"))
 
 ###################################################################
-
-setMethod("clusterDataDefaults",
-          signature(self="Ragraph", cluster="numeric"),
-          function(self, cluster) {
-             getDefAttrsCluster(self, cluster)
-          })
-
-setReplaceMethod("clusterDataDefaults",
-          signature(self="Ragraph", cluster="numeric", attr="vector", value="vector"),
-          function(self, cluster, attr, value) {
-             setDefAttrsCluster(self, cluster, attr, value);
-             self
-          })
 
 setMethod("clusterData",
           signature(self="Ragraph", cluster="numeric", attr="vector"),

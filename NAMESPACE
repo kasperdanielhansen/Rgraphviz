@@ -43,8 +43,6 @@ exportMethods(
 		graphData,
       		"graphData<-", 
 
-		clusterDataDefaults,
-      		"clusterDataDefaults<-", 
 		clusterData,
       		"clusterData<-", 
 

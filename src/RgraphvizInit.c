@@ -11,7 +11,6 @@ static const R_CallMethodDef R_CallDef[] = {
              {"Rgraphviz_buildNodeList", (DL_FUNC)&Rgraphviz_buildNodeList, 4},
              {"Rgraphviz_buildEdgeList", (DL_FUNC)&Rgraphviz_buildEdgeList, 7},
 
-             /**/
              {"Rgraphviz_toFile", (DL_FUNC)&Rgraphviz_toFile, 4},
 
              {"Rgraphviz_getDefAttrsGraph", (DL_FUNC)&Rgraphviz_getDefAttrsGraph, 1},
@@ -19,8 +18,6 @@ static const R_CallMethodDef R_CallDef[] = {
              {"Rgraphviz_getAttrsGraph", (DL_FUNC)&Rgraphviz_getAttrsGraph, 2},
              {"Rgraphviz_setAttrsGraph", (DL_FUNC)&Rgraphviz_setAttrsGraph, 4},
          
-             {"Rgraphviz_getDefAttrsCluster", (DL_FUNC)&Rgraphviz_getDefAttrsCluster, 2},
-             {"Rgraphviz_setDefAttrsCluster", (DL_FUNC)&Rgraphviz_setDefAttrsCluster, 4},
              {"Rgraphviz_getAttrsCluster", (DL_FUNC)&Rgraphviz_getAttrsCluster, 3},
              {"Rgraphviz_setAttrsCluster", (DL_FUNC)&Rgraphviz_setAttrsCluster, 5},
    
@@ -34,8 +31,6 @@ static const R_CallMethodDef R_CallDef[] = {
              {"Rgraphviz_getAttrsEdge", (DL_FUNC)&Rgraphviz_getAttrsEdge, 4},
              {"Rgraphviz_setAttrsEdge", (DL_FUNC)&Rgraphviz_setAttrsEdge, 6},
 
-             /**/
-      
              {NULL, NULL, 0},
              };
 

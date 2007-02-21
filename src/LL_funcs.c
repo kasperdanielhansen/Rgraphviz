@@ -112,9 +112,13 @@ SEXP Rgraphviz_setDefAttrsGraph(SEXP graph, SEXP attrname, SEXP attrval)
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    agraphattr(g, STR(attrname), STR(attrval));
+    Agsym_t *r = agraphattr(g, STR(attrname), STR(attrval));
 
-    return(R_NilValue);
+    SEXP ans;
+    PROTECT(ans = NEW_LOGICAL(1));
+    LOGICAL(ans)[0] = r? TRUE : FALSE;
+    UNPROTECT(1);
+    return(ans);
 }
 
 SEXP Rgraphviz_getAttrsGraph(SEXP graph, SEXP attrname)
@@ -152,43 +156,6 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
     LOGICAL(ans)[0] = r? FALSE : TRUE;
     UNPROTECT(1);
     return(ans);
-}
-
-SEXP Rgraphviz_getDefAttrsCluster(SEXP graph, SEXP cluster)
-{
-    Agraph_t *sg = getClusterPtr(graph, cluster);
-    if ( !sg ) return(R_NilValue);
-
-    int i = 0, nattr = 0;
-    char **attr_name = NULL, **attr_defval = NULL;
-
-    getDefAttrs(sg, &nattr, &attr_name, &attr_defval);
-
-    SEXP ans;
-    PROTECT(ans = allocMatrix(STRSXP, nattr, 2));
-
-    for ( i = 0; i < nattr; i++ )
-    {
-        SET_STRING_ELT(ans, i, mkChar(attr_name[i]));
-        SET_STRING_ELT(ans, nattr+i, mkChar(attr_defval[i]));
-    }
-
-    UNPROTECT(1);
-
-    Free(attr_name); Free(attr_defval);
-
-    return(ans);
-}
-
-SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
-                                  SEXP attrname, SEXP attrval)
-{
-    Agraph_t *sg = getClusterPtr(graph, cluster);
-    if ( !sg ) return(R_NilValue);
-
-    agraphattr(sg, STR(attrname), STR(attrval));
-
-    return(R_NilValue);
 }
 
 SEXP Rgraphviz_getAttrsCluster(SEXP graph, SEXP cluster, SEXP attrname)
@@ -261,9 +228,13 @@ SEXP Rgraphviz_setDefAttrsNode(SEXP graph, SEXP attrname, SEXP attrval)
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    agnodeattr(g, STR(attrname), STR(attrval));
+    Agsym_t *r = agnodeattr(g, STR(attrname), STR(attrval));
 
-    return(R_NilValue);
+    SEXP ans;
+    PROTECT(ans = NEW_LOGICAL(1));
+    LOGICAL(ans)[0] = r? TRUE : FALSE;
+    UNPROTECT(1);
+    return(ans);
 }
 
 SEXP Rgraphviz_getAttrsNode(SEXP graph, SEXP node, SEXP attrname)
@@ -341,9 +312,13 @@ SEXP Rgraphviz_setDefAttrsEdge(SEXP graph, SEXP attrname, SEXP attrval)
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    agedgeattr(g, STR(attrname), STR(attrval));
+    Agsym_t *r = agedgeattr(g, STR(attrname), STR(attrval));
 
-    return(R_NilValue);
+    SEXP ans;
+    PROTECT(ans = NEW_LOGICAL(1));
+    LOGICAL(ans)[0] = r? TRUE : FALSE;
+    UNPROTECT(1);
+    return(ans);
 }
 
 SEXP Rgraphviz_getAttrsEdge(SEXP graph, SEXP from, SEXP to, SEXP attrname)
