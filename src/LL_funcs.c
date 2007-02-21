@@ -107,17 +107,12 @@ SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
     return(ans);
 }
 
-SEXP Rgraphviz_setDefAttrsGraph(SEXP graph, SEXP nnattr,
-                                SEXP attrnames, SEXP attrvals)
+SEXP Rgraphviz_setDefAttrsGraph(SEXP graph, SEXP attrname, SEXP attrval)
 {
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    int nattr = INTEGER(nnattr)[0];
-    int i;
-
-    for ( i = 0; i < nattr; i++ )
-        agraphattr(g, CHAR(STRING_ELT(attrnames, i)), CHAR(STRING_ELT(attrvals, i)));
+    agraphattr(g, STR(attrname), STR(attrval));
 
     return(R_NilValue);
 }
@@ -131,18 +126,16 @@ SEXP Rgraphviz_getAttrsGraph(SEXP graph, SEXP attrname)
 
     if ( !val ) /* no such attr */
     {
-        val = "N/A";
+       return(R_NilValue);
     }
-    else if ( !strlen(val) ) /* attr defined but use default */
+    else 
     {
-        val = "Default";
+       SEXP ans;
+       PROTECT(ans = allocVector(STRSXP, 1));
+       SET_STRING_ELT(ans, 0, mkChar(val));
+       UNPROTECT(1);
+       return(ans);
     }
-
-    SEXP ans;
-    PROTECT(ans = allocVector(STRSXP, 1));
-    SET_STRING_ELT(ans, 0, mkChar(val));
-    UNPROTECT(1);
-    return(ans);
 }
 
 SEXP Rgraphviz_setAttrsGraph(SEXP graph,
@@ -188,19 +181,12 @@ SEXP Rgraphviz_getDefAttrsCluster(SEXP graph, SEXP cluster)
 }
 
 SEXP Rgraphviz_setDefAttrsCluster(SEXP graph, SEXP cluster,
-                                  SEXP nnattr, SEXP attrnames, SEXP attrvals)
+                                  SEXP attrname, SEXP attrval)
 {
     Agraph_t *sg = getClusterPtr(graph, cluster);
     if ( !sg ) return(R_NilValue);
 
-    int nattr = INTEGER(nnattr)[0];
-    int i;
-
-    for ( i = 0; i < nattr; i++ )
-    {
-        agraphattr(sg, CHAR(STRING_ELT(attrnames, i)),
-                       CHAR(STRING_ELT(attrvals, i)));
-    }
+    agraphattr(sg, STR(attrname), STR(attrval));
 
     return(R_NilValue);
 }
@@ -214,18 +200,16 @@ SEXP Rgraphviz_getAttrsCluster(SEXP graph, SEXP cluster, SEXP attrname)
 
     if ( !val ) /* no such attr */
     {
-        val = "N/A";
+       return(R_NilValue);
     }
-    else if ( !strlen(val) ) /* attr defined but use default */
+    else 
     {
-        val = "Default";
+       SEXP ans;
+       PROTECT(ans = allocVector(STRSXP, 1));
+       SET_STRING_ELT(ans, 0, mkChar(val));
+       UNPROTECT(1);
+       return(ans);
     }
-
-    SEXP ans;
-    PROTECT(ans = allocVector(STRSXP, 1));
-    SET_STRING_ELT(ans, 0, mkChar(val));
-    UNPROTECT(1);
-    return(ans);
 }
 
 SEXP Rgraphviz_setAttrsCluster(SEXP graph, SEXP cluster,
@@ -272,17 +256,12 @@ SEXP Rgraphviz_getDefAttrsNode(SEXP graph)
     return(ans);
 }
 
-SEXP Rgraphviz_setDefAttrsNode(SEXP graph, SEXP nnattr,
-                               SEXP attrnames, SEXP attrvals)
+SEXP Rgraphviz_setDefAttrsNode(SEXP graph, SEXP attrname, SEXP attrval)
 {
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    int nattr = INTEGER(nnattr)[0];
-    int i;
-    for ( i = 0; i < nattr; i++ )
-        agnodeattr(g, CHAR(STRING_ELT(attrnames, i)),
-                   CHAR(STRING_ELT(attrvals, i)));
+    agnodeattr(g, STR(attrname), STR(attrval));
 
     return(R_NilValue);
 }
@@ -299,18 +278,16 @@ SEXP Rgraphviz_getAttrsNode(SEXP graph, SEXP node, SEXP attrname)
 
     if ( !val ) /* no such attr */
     {
-        val = "N/A";
+        return(R_NilValue);
     }
-    else if ( !strlen(val) ) /* attr defined but use default */
+    else 
     {
-        val = "Default";
+        SEXP ans;
+        PROTECT(ans = allocVector(STRSXP, 1));
+        SET_STRING_ELT(ans, 0, mkChar(val));
+        UNPROTECT(1);
+        return(ans);
     }
-
-    SEXP ans;
-    PROTECT(ans = allocVector(STRSXP, 1));
-    SET_STRING_ELT(ans, 0, mkChar(val));
-    UNPROTECT(1);
-    return(ans);
 }
 
 SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
@@ -359,18 +336,12 @@ SEXP Rgraphviz_getDefAttrsEdge(SEXP graph)
     return(ans);
 }
 
-SEXP Rgraphviz_setDefAttrsEdge(SEXP graph, SEXP nnattr,
-                               SEXP attrnames, SEXP attrvals)
+SEXP Rgraphviz_setDefAttrsEdge(SEXP graph, SEXP attrname, SEXP attrval)
 {
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    int nattr = INTEGER(nnattr)[0];
-    int i;
-
-    for ( i = 0; i < nattr; i++ )
-        agedgeattr(g, CHAR(STRING_ELT(attrnames, i)),
-                   CHAR(STRING_ELT(attrvals, i)));
+    agedgeattr(g, STR(attrname), STR(attrval));
 
     return(R_NilValue);
 }
@@ -391,18 +362,16 @@ SEXP Rgraphviz_getAttrsEdge(SEXP graph, SEXP from, SEXP to, SEXP attrname)
 
     if ( !val ) /* no such attr */
     {
-        val = "N/A";
+       return(R_NilValue);
     }
-    else if ( !strlen(val) ) /* attr defined but use default */
+    else 
     {
-        val = "Default";
+       SEXP ans;
+       PROTECT(ans = allocVector(STRSXP, 1));
+       SET_STRING_ELT(ans, 0, mkChar(val));
+       UNPROTECT(1);
+       return(ans);
     }
-
-    SEXP ans;
-    PROTECT(ans = allocVector(STRSXP, 1));
-    SET_STRING_ELT(ans, 0, mkChar(val));
-    UNPROTECT(1);
-    return(ans);
 }
 
 SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,

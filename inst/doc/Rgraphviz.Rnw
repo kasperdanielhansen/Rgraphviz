@@ -799,7 +799,7 @@ codes accomplish the same:
 
 <<DataDefaultsDemo1>>=
 graphDataDefaults(ng)
-clusterDataDefaults(ng, 1)
+#clusterDataDefaults(ng, 2)
 nodeDataDefaults(ng)
 edgeDataDefaults(ng)
 @
@@ -811,7 +811,7 @@ following:
 
 <<DataDefaultsDemo2>>=
 graphDataDefaults(ng, c("size", "bgcolor")) <- c("1", "yellow")
-clusterDataDefaults(ng, 1, c("bgcolor", "color")) <- c("blue", "orange")
+#clusterDataDefaults(ng, 2, c("bgcolor", "color")) <- c("blue", "orange")
 nodeDataDefaults(ng, c("fontcolor", "width")) <- c("blue", 0.5)
 edgeDataDefaults(ng, c("color", "style")) <- c("green", "dotted")
 @
@@ -831,7 +831,7 @@ The package \Robject{graph} like notations are:
 
 <<DataDemo1>>=
 graphData(ng, "bgcolor")
-clusterData(ng, 1, "bgcolor") 
+#clusterData(ng, 2, "bgcolor") 
 nodeData(ng, "A", c("fontcolor", "width"))
 edgeData(ng, "F", "G", c("color", "arrowhead"))
 
@@ -855,9 +855,8 @@ at this time.  Only the first call has effect.
 
 <<DataDemo2>>=
 graphData(ng, "bgcolor") <- "orange"
-clusterData(ng, c(0, 1), "color") <- "red"
-nodeData(ng, "A", c("fontcolor", "width")) <- c("blue", 0.5)
- 
+#clusterData(ng, 2, "bgcolor") <- "red"
+nodeData(ng, "A", c("fontcolor", "width")) <- c("blue", "0.5")
 edgeData(ng, "F", "G", c("color", "style")) <- c("yellow", "dotted")
 @
 

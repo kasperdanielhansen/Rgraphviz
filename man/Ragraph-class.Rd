@@ -12,15 +12,13 @@
 
 \alias{graphDataDefaults,Ragraph-method}
 \alias{graphDataDefaults<-,Ragraph,vector,vector-method}
-\alias{graphData,Ragraph,character-method}
-\alias{graphData<-,Ragraph,vector,missing,vector-method}
-\alias{graphData<-,Ragraph,vector,vector,vector-method}
+\alias{graphData,Ragraph,vector-method}
+\alias{graphData<-,Ragraph,vector,vector-method}
 
 \alias{clusterDataDefaults,Ragraph,numeric-method}
 \alias{clusterDataDefaults<-,Ragraph,numeric,vector,vector-method}
-\alias{clusterData,Ragraph,numeric,character-method}
-\alias{clusterData<-,Ragraph,numeric,vector,missing,vector-method}
-\alias{clusterData<-,Ragraph,numeric,vector,vector,vector-method}
+\alias{clusterData,Ragraph,numeric,vector-method}
+\alias{clusterData<-,Ragraph,numeric,vector,vector-method}
 
 \alias{edgeDataDefaults,Ragraph,missing-method}
 \alias{edgeDataDefaults<-,Ragraph,vector,vector-method}
@@ -98,7 +96,7 @@ Objects can be created by calls to the function \code{agopen}.
       Gets default attributes of the given graph.}
     \item{graphDataDefaults<-}{\code{signature(self= "Ragraph", attr="vector", value="vector")}: 
       Sets default attributes of the given graph.}
-    \item{graphData}{\code{signature(self= "Ragraph", attr="character")}: 
+    \item{graphData}{\code{signature(self= "Ragraph", attr="vector")}: 
       Gets attributes of the given graph.}
     \item{graphData<-}{\code{signature(self= "Ragraph", attr="vector", value="vector")}: 
       Sets attributes of the given graph.}
@@ -107,7 +105,7 @@ Objects can be created by calls to the function \code{agopen}.
       Gets default attributes of a cluster for the given graph.}
     \item{clusterDataDefaults<-}{\code{signature(self= "Ragraph", cluster="numeric", attr="vector", value="vector")}: 
       Sets default attributes of a cluster for the given graph.}
-    \item{clusterData}{\code{signature(self= "Ragraph", cluster="numeric", attr="character")}: 
+    \item{clusterData}{\code{signature(self= "Ragraph", cluster="numeric", attr="vector")}: 
       Gets attributes of a cluster for the given graph.}
     \item{clusterData<-}{\code{signature(self= "Ragraph", cluster="numeric", attr="vector", value="vector")}: 
       Sets attributes of a cluster for the given graph.}

@@ -23,11 +23,13 @@ setDefAttrsGraph <- function(graph, attrnames=c(), attrvals=c())
    if ( length(attrnames) != length(attrvals) )
       stop("Length of attrnames is not equal to length of attrvals")
 
-   nattr = length(attrnames)
+   x <- cbind(attrnames, attrvals)
 
-   ans <- .Call("Rgraphviz_setDefAttrsGraph", 
-	 	graph, as.integer(nattr), attrnames, attrvals, 
-		PACKAGE="Rgraphviz")
+   for ( i in 1:nrow(x) )
+   {
+      .Call("Rgraphviz_setDefAttrsGraph", graph, x[i, 1], x[i, 2], 
+	    PACKAGE="Rgraphviz")
+   }
 }
 
 getAttrsGraph <- function(graph, attrname)
@@ -36,16 +38,12 @@ getAttrsGraph <- function(graph, attrname)
    if ( missing(attrname) || !is.character(attrname) || any(attrname=="") ) 
 	stop("attrname is needed")
 
-   x <- cbind(attrname)
-
-   ans <- vector()
-   for ( i in 1:nrow(x) )
+   ans <- vector(length=length(attrname))
+   names(ans) <- attrname
+   for ( i in 1:length(attrname) )
    {
-      r <- .Call("Rgraphviz_getAttrsGraph", graph, x[i],
-                 PACKAGE="Rgraphviz")
-      if ( is.null(r) ) r <- "ERROR"
-      names(r) <- x[i, 1]
-      ans <- c(ans, r)
+      r <- .Call("Rgraphviz_getAttrsGraph", graph, attrname[i], PACKAGE="Rgraphviz")
+      if ( !is.null(r) ) ans[i] <- r
    }
 
    ans
@@ -94,12 +92,14 @@ setDefAttrsCluster <- function(graph, cluster, attrnames=c(), attrvals=c())
    if ( length(attrnames) != length(attrvals) )
       stop("Length of attrnames is not equal to length of attrvals")
 
-   nattr = length(attrnames)
+   x <- cbind(cluster, attrnames, attrvals)
 
-   ans <- .Call("Rgraphviz_setDefAttrsCluster", 
-	 	graph, as.integer(cluster), 
-		as.integer(nattr), attrnames, attrvals, 
+   for ( i in 1:nrow(x) )
+   {
+      .Call("Rgraphviz_setDefAttrsCluster", 
+	 	graph, as.integer(x[i, 1]), x[i, 2], x[i, 3], 
 		PACKAGE="Rgraphviz")
+   }
 }
 
 getAttrsCluster <- function(graph, cluster, attrname)
@@ -112,15 +112,13 @@ getAttrsCluster <- function(graph, cluster, attrname)
 
    x <- cbind(cluster, attrname)
 
-   ans <- vector()
+   ans <- vector(length=nrow(x))
+   names(ans) <- x[, 1]
    for ( i in 1:nrow(x) )
    {
       r <- .Call("Rgraphviz_getAttrsCluster", 
-                 graph, as.integer(x[i, 1]), x[i, 2],
-                 PACKAGE="Rgraphviz")
-      if ( is.null(r) ) r <- "ERROR"
-      names(r) <- x[i, 1]
-      ans <- c(ans, r)
+                 graph, as.integer(x[i, 1]), x[i, 2], PACKAGE="Rgraphviz")
+      if ( !is.null(r) ) ans[i] <- r
    }
 
    ans
@@ -154,8 +152,8 @@ getDefAttrsNode <- function(graph)
 
    if ( !is.null(ans) && nrow(ans) > 0 )
    {
-   colnames(ans) <- c("attr name", "attr value")
-   rownames(ans) <- paste("node attr", 1:nrow(ans))
+      colnames(ans) <- c("attr name", "attr value")
+      rownames(ans) <- paste("node attr", 1:nrow(ans))
    }
        
    ans
@@ -166,10 +164,13 @@ setDefAttrsNode <- function(graph, attrnames=c(), attrvals=c())
    if ( length(attrnames) != length(attrvals) )
       stop("Length of attrnames is not equal to length of attrvals")
 
-   nattr = length(attrnames)
-   ans <- .Call("Rgraphviz_setDefAttrsNode", 
-		graph, as.integer(nattr), attrnames, attrvals,
-		PACKAGE="Rgraphviz")
+   x <- cbind(attrnames, attrvals)
+
+   for ( i in 1:nrow(x) )
+   {
+      .Call("Rgraphviz_setDefAttrsNode", graph, x[i, 1], x[i, 2],
+	    PACKAGE="Rgraphviz")
+   }
 }
 
 getAttrsNode <- function(graph, node, attrname)
@@ -180,14 +181,13 @@ getAttrsNode <- function(graph, node, attrname)
 
    x <- cbind(node, attrname)
 
-   ans <- vector()
+   ans <- vector(length=nrow(x))
+   names(ans) <- x[, 1]
    for ( i in 1:nrow(x) )
    {
       r <- .Call("Rgraphviz_getAttrsNode", graph, x[i, 1], x[i, 2], 
                  PACKAGE="Rgraphviz")
-      if ( is.null(r) ) r <- "ERROR"
-      names(r) <- x[i, 1]
-      ans <- c(ans, r)
+      if ( !is.null(r) ) ans[i] <- r
    }
 
    ans
@@ -230,11 +230,13 @@ setDefAttrsEdge <- function(graph, attrnames=c(), attrvals=c())
    if ( length(attrnames) != length(attrvals) )
       stop("Length of attrnames is not equal to length of attrvals")
 
-   nattr = length(attrnames)
+   x <- cbind(attrnames, attrvals)
 
-   ans <- .Call("Rgraphviz_setDefAttrsEdge", 
-		graph, as.integer(nattr), attrnames, attrvals,
-		PACKAGE="Rgraphviz")
+   for ( i in 1:nrow(x) )
+   {
+      .Call("Rgraphviz_setDefAttrsEdge", graph, x[i, 1], x[i, 2],
+	    PACKAGE="Rgraphviz")
+   }
 }
 
 getAttrsEdge <- function(graph, from, to, attrname)
@@ -245,15 +247,13 @@ getAttrsEdge <- function(graph, from, to, attrname)
 
    x <- cbind(from, to, attrname)
 
-   ans <- vector()
-
+   ans <- vector(length=nrow(x))
+   names(ans) <- x[, 1]
    for ( i in 1:nrow(x) )
    {
       r <- .Call("Rgraphviz_getAttrsEdge", graph, x[i, 1], x[i, 2], x[i, 3], 
                  PACKAGE="Rgraphviz")
-      if ( is.null(r) ) r <- "ERROR"
-      names(r) <- paste(x[i, 1], "--", x[i, 2], sep="")
-      ans <- c(ans, r)
+      if ( !is.null(r) ) ans[i] <- r
    }
 
    ans
