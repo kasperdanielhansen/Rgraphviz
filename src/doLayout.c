@@ -99,25 +99,10 @@ SEXP getEdgeLocs(Agraph_t *g) {
              * for output to files.  The existing codes set "dir"-attr, but use
              * "arrowhead"/"arrowtail" instead.  Quite confusing.  
              */
-            tmp_ed = agget(edge, "dir");
-            if ( !AG_IS_DIRECTED(g) || !tmp_ed )	/* undirected graph */
-            {
-                SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowhead")));
-                SET_SLOT(curEP, Rf_install("arrowtail"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowtail")));
-                SET_SLOT(curEP, Rf_install("arrowsize"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowsize")));
-            }
-            else if ( strcmp(tmp_ed, "both")==0 )
-            {
-                SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull("open"));
-                SET_SLOT(curEP, Rf_install("arrowtail"), Rgraphviz_ScalarStringOrNull("open"));
-                SET_SLOT(curEP, Rf_install("arrowsize"), Rgraphviz_ScalarStringOrNull("1"));
-            }
-            else /* if ( strcmp(tmp_ed, "forward")==0 ) */
-            {
-                SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull("open"));
-                SET_SLOT(curEP, Rf_install("arrowtail"), Rgraphviz_ScalarStringOrNull("none"));
-                SET_SLOT(curEP, Rf_install("arrowsize"), Rgraphviz_ScalarStringOrNull("1"));
-            }
+            SET_SLOT(curEP, Rf_install("dir"), Rgraphviz_ScalarStringOrNull(agget(edge, "dir")));
+            SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowhead")));
+            SET_SLOT(curEP, Rf_install("arrowtail"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowtail")));
+            SET_SLOT(curEP, Rf_install("arrowsize"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowsize")));
 
             SET_SLOT(curEP, Rf_install("color"), Rgraphviz_ScalarStringOrNull(agget(edge, "color")));
 
@@ -336,6 +321,8 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     SET_SLOT(graph,Rf_install("laidout"), Rgraphviz_ScalarLogicalFromRbool(TRUE));
     SET_SLOT(graph,Rf_install("AgEdge"), cPoints);
     SET_SLOT(graph,Rf_install("boundBox"), bb);
+    SET_SLOT(graph,Rf_install("fg"), Rgraphviz_ScalarStringOrNull(agget(g, "fgcolor")));
+    SET_SLOT(graph,Rf_install("bg"), Rgraphviz_ScalarStringOrNull(agget(g, "bgcolor")));
     UNPROTECT(4);
 
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR > 4
