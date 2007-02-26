@@ -46,6 +46,9 @@ setMethod("plot", "Ragraph",
     ur <- upRight(boundBox(x))
     bl <- botLeft(boundBox(x))
 
+    if ( x@bg != "" ) par(bg=x@bg)
+    if ( x@fg != "" ) par(fg=x@fg)
+
     ## Set up the plot region.  We need
     ## to emulate what happens in 'plot.default' as
     ## we called plot.new() above, and for the same
