@@ -104,6 +104,7 @@ setClass("AgEdge", representation(splines="list",
                                   ep="xyPoint",
                                   head="character",
                                   tail="character",
+			          dir="character",
                                   arrowhead="character",
                                   arrowtail="character",
                                   arrowsize="character",
@@ -178,6 +179,7 @@ setMethod("bezierPoints", "BezierCurve", function(object) {
     out
 })
 
+## TODO: this should be obsolete
 setGeneric("bLines", function(x, ...) standardGeneric("bLines"))
 setMethod("bLines", "BezierCurve", 
 		function(x,...,col=par("col"), len=0.25, lty=par("lty"),
@@ -191,10 +193,10 @@ setMethod("bLines", "BezierCurve",
     tailEnd <- z[1,]
     switch(arrowtail,
            "none"=lines(c(tailStart[1], tailEnd[1]),
-                        c(tailStart[2], tailEnd[2]), 
-			col=col, lty=lty, lwd=lwd),
-           "open"=arrows(tailStart[1], tailStart[2], tailEnd[1], tailEnd[2], 
-			col=col, length=len, lty=lty, lwd=lwd),
+                        c(tailStart[2], tailEnd[2]),
+                        col=col, lty=lty, lwd=lwd),
+           "open"=arrows(tailStart[1], tailStart[2], tailEnd[1], tailEnd[2],
+                        col=col, length=len, lty=lty, lwd=lwd),
            stop("Unsupported arrowtail type: ", arrowtail))
 
     headStart <- z[numSegs-1,]
@@ -202,10 +204,10 @@ setMethod("bLines", "BezierCurve",
 
     switch(arrowhead,
            "none"=lines(c(headStart[1], headEnd[1]),
-                        c(headStart[2], headEnd[2]), 
-			col=col, lty=lty, lwd=lwd),
-           "open"=arrows(headStart[1], headStart[2], headEnd[1], headEnd[2], 
-			col=col, length=len, lty=lty, lwd=lwd),
+                        c(headStart[2], headEnd[2]),
+                        col=col, lty=lty, lwd=lwd),
+           "open"=arrows(headStart[1], headStart[2], headEnd[1], headEnd[2],
+                        col=col, length=len, lty=lty, lwd=lwd),
            stop("Unsupported arrowhead type: ", arrowhead))
 })
 
@@ -245,22 +247,35 @@ setMethod("lines", "AgEdge",
   		function(x, ..., len, lty=par("lty"), lwd=par("lwd")) {
     z <- splines(x)
 
-    curArrowTail <- arrowtail(x)
-    if (curArrowTail == "") curArrowTail <- "none"
-    curArrowHead <- arrowhead(x)
-    if (curArrowHead == "") curArrowHead <- "none"
     edgeColor <- color(x)
     if (edgeColor == "") edgeColor <- "black"
 
-    arrowtails <- c(curArrowTail, rep("none", length(z)-1))
-    arrowheads <- c(rep("none", length(z)-1), curArrowHead)
+    arrowSize <- arrowsize(x)
+    if ( arrowSize == "" ) arrowSize = "1"
 
     if(length(x@lty)>0) lty=x@lty[1]
     if(length(x@lwd)>0) lwd=x@lwd[1]
 
-    len <- len * as.numeric(arrowsize(x))
-    mapply(bLines, z, arrowhead=arrowheads, arrowtail=arrowtails,
-           MoreArgs=list(len=len, col=edgeColor, lty=lty, lwd=lwd, ...))
+    len <- len * as.numeric(arrowSize)
+    mapply(lines, z, MoreArgs=list(len=len, col=edgeColor, lty=lty, lwd=lwd, ...))
+
+    # TODO: arrow shapes should/could be from arrowtail/head 
+    if ( x@dir == "both" || x@dir== "back" )
+    {
+       tails = bezierPoints(z[[1]])
+       tail_from = tails[2, ]
+       tail_to   = tails[1, ]
+       arrows(tail_from[1], tail_from[2], tail_to[1], tail_to[2],
+			col=edgeColor, length=len, lty=lty, lwd=lwd)
+    }
+    if ( x@dir == "both" || x@dir == "forward" )
+    {
+       heads = bezierPoints(z[[length(z)]])
+       head_from = heads[nrow(heads)-1, ]
+       head_to   = heads[nrow(heads),]
+       arrows(head_from[1], head_from[2], head_to[1], head_to[2],
+			col=edgeColor, length=len, lty=lty, lwd=lwd)
+    }
 
     drawTxtLabel(txtLabel(x))
 })
@@ -272,7 +287,9 @@ setClass("Ragraph", representation(agraph="externalptr",
                                    edgemode="character",
                                    AgNode="list",
                                    AgEdge="list",
-                                   boundBox="boundingBox"))
+                                   boundBox="boundingBox",
+				   fg="character",
+				   bg="character"))
 
 setGeneric("agraph", function(object) standardGeneric("agraph"))
 setMethod("agraph", "Ragraph", function(object) object@agraph)
