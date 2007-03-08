@@ -78,7 +78,6 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     ##       to fill in data entries, hence, examples from man-pages...
     ## 
     if (layout) g <- layoutGraph(g)
-    g@laidout = FALSE
     
     if (!is.null(edgeAttrs$lwd)) {
         for (i in seq(along=edgeAttrs$lwd)) {   
