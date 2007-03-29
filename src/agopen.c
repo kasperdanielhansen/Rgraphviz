@@ -157,7 +157,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
                                           Rf_install("to"))));
         if (head == NULL) error("Missing head node");
 
-        curEdge = agedge(tmpGraph, tail, head);
+        curEdge = agedge(tmpGraph, tail, head); 
 
         PROTECT(curAttrs = GET_SLOT(curPE, Rf_install("attrs")));
         PROTECT(attrNames = getAttrib(curAttrs, R_NamesSymbol));

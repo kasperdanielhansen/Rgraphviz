@@ -104,7 +104,7 @@ getDefaultAttrs <- function(curAttrs=list(),
     if (is.null(curAttrs$edge$color))
         curAttrs$edge$color <- col
     if (is.null(curAttrs$edge$dir))
-        curAttrs$edge$dir <- "forward"
+        curAttrs$edge$dir <- "none"
     if (is.null(curAttrs$edge$weight))
         curAttrs$edge$weight <- "1.0"
     if (is.null(curAttrs$edge$label))
