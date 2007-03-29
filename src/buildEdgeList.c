@@ -29,13 +29,14 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
                                  length(removedEdges)));
     PROTECT(goodEdgeNames = allocVector(STRSXP, nEdges -
                                         length(removedEdges)));
-    PROTECT(curAttrs = allocVector(VECSXP, 2));
+    PROTECT(curAttrs = allocVector(VECSXP, 3));
 
-    PROTECT(attrNames = allocVector(STRSXP, 2));
+    PROTECT(attrNames = allocVector(STRSXP, 3));
 
-
+    /* TODO: get rid of attrs "arrowhead"/"arrowtail", "dir" is sufficient */
     SET_STRING_ELT(attrNames, 0, mkChar("arrowhead"));
     SET_STRING_ELT(attrNames, 1, mkChar("weight"));
+    SET_STRING_ELT(attrNames, 2, mkChar("dir"));
     setAttrib(curAttrs, R_NamesSymbol, attrNames);
 
     PROTECT(from = getAttrib(edgeL, R_NamesSymbol));
@@ -107,9 +108,13 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
                     PROTECT(newRecipAttrNames = allocVector(STRSXP,
                                                             length(recipAttrNames)+1));
                     for (j = 0; j < length(recipAttrs); j++) {
-                        SET_VECTOR_ELT(newRecipAttrs, j,
+                      if ( !strcmp(CHAR(STRING_ELT(recipAttrNames, j)), "dir") )
+                        SET_VECTOR_ELT(newRecipAttrs, j, mkString("both"));
+                      else
+                        SET_VECTOR_ELT(newRecipAttrs, j, 
                                        VECTOR_ELT(recipAttrs, j));
-                        SET_STRING_ELT(newRecipAttrNames, j,
+
+                      SET_STRING_ELT(newRecipAttrNames, j,
                                        STRING_ELT(recipAttrNames, j));
                     }
 
@@ -131,9 +136,15 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
             SET_STRING_ELT(tmpToSTR, 0, toName);
             SET_SLOT(curPE, Rf_install("to"), tmpToSTR);
             if (strcmp(STR(edgeMode), "directed") == 0)
+	    {
                 SET_VECTOR_ELT(curAttrs, 0, mkString("open"));
+                SET_VECTOR_ELT(curAttrs, 2, mkString("forward"));
+            }
             else
+	    {
                 SET_VECTOR_ELT(curAttrs, 0, mkString("none"));
+                SET_VECTOR_ELT(curAttrs, 2, mkString("none"));
+            }
             PROTECT(tmpWtSTR = allocVector(STRSXP, 1));
             SET_STRING_ELT(tmpWtSTR, 0,
                            asChar(Rf_ScalarReal(REAL(curWeights)[y])));
