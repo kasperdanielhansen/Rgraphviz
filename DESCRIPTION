@@ -4,12 +4,12 @@ Description: Interfaces R with the AT&T GraphViz library to provide
         the ability for plotting R graph objects from the graph
         package
 Version: 1.13.34
-Author: Jeff Gentry <jgentry@jimmy.harvard.edu>, Li Long <li.long@isb-sib.ch>
+Author: Jeff Gentry <jgentry@jimmy.harvard.edu>, Li Long <li.long@isb-sib.ch>,
+   Robert Gentleman <rgentlem@fhcrc.org>, Seth Falcon <sethf@fhcrc.org>
 Maintainer: Li Long <li.long@isb-sib.ch>
 Depends: R (>= 2.4.0), methods, graph, geneplotter (>= 1.11.3)
 Suggests: Biobase, fibroEset, hgu95av2
 SystemRequirements: Graphviz version >= 2.2
-License: LGPL
+License: The Artistic License, Version 2.0
 SaveImage: Yes
 biocViews: GraphsAndNetworks
-
