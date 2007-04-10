@@ -401,7 +401,7 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
  * subGIndex = subgraph-index for nodes, ints
  * recipK = combined reciprocal directed edges or not
 */
-SEXP LLagopen(SEXP name, SEXP kind,
+SEXP Rgraphviz_agopenSimple(SEXP name, SEXP kind,
               SEXP nodes, SEXP subGIndex,
               SEXP edges_from, SEXP edges_to,
               SEXP nsubG, SEXP subGs,

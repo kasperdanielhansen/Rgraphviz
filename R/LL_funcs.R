@@ -270,7 +270,7 @@ toFile <- function(graph,
 # kind: int
 # subGList: list of subgraphs
 # recipEdges: combine reciprocal directed edges or not 
-LLagopen <- function(graph, name, 
+agopenSimple <- function(graph, name, 
 		kind=NULL, edgeMode=edgemode(graph),
                 subGList=list(), 
                 recipEdges=c("combined", "distinct")) 
@@ -309,7 +309,7 @@ LLagopen <- function(graph, name,
     if ( nsubG > 0 ) 
 	for ( i in 1:nsubG ) sgi[nodes(subGList[[i]]$graph)] = i
 
-    g <- .Call("LLagopen", name, as.integer(outK), 
+    g <- .Call("Rgraphviz_agopenSimple", name, as.integer(outK), 
 		nodes(graph), as.integer(sgi),
 		as.integer(edgeMatrix(graph)["from",]), 
 		as.integer(edgeMatrix(graph)["to",]), 

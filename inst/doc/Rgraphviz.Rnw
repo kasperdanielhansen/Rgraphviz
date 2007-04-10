@@ -764,7 +764,7 @@ cluster, while the 2nd one is.
 Just as in graphviz, \Rpackage{Rgraphviz} treats a cluster as a special subgraph, 
 its nodes are layed out and drawn together and within a bounding rectangel. 
 
-<<LLagopenDemo>>=
+<<agopenSimpleDemo>>=
 library("RBGL")
 hcs <- fromGXL(file(system.file("XML/hcs.gxl",package="RBGL")))
 conn <- fromGXL(file(system.file("XML/conn.gxl",package="RBGL")))
@@ -772,10 +772,10 @@ jg <- join(conn, hcs)
 sgl <- vector(mode="list", length=2)
 sgl[[1]] <- list(graph=hcs, cluster=FALSE)
 sgl[[2]] <- list(graph=conn, cluster=TRUE)
-ng <- LLagopen(jg, "tmpsg", subGList=sgl)
+ng <- agopenSimple(jg, "tmpsg", subGList=sgl)
 @
 
-Note: this instance of \Robject{Ragraph} class from \Rfunction{LLagopen} 
+Note: this instance of \Robject{Ragraph} class from \Rfunction{agopenSimple} 
 contains less content than that
 you obtain from calling \Robject{agopen}: it maintains a pointer for access to
 graphviz; after setting various attributes and doing layout, other entries 
@@ -783,8 +783,6 @@ are filled in for drawing only.
 
 The following workflow works well for an instance of \Robject{Ragraph} class 
 obtained from \Rfunction{agopen} as well.
-
-TODO: a new function name for \Rfunction{LLagopen}?
 
 \subsection{Get default attributes}
 

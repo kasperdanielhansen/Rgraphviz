@@ -1,5 +1,5 @@
-\name{LLagopen}
-\alias{LLagopen}
+\name{agopenSimple}
+\alias{agopenSimple}
 \title{A function to obtain a Ragraph object}
 \description{
   This function will read in a \code{graphNEL} object and create a
@@ -7,7 +7,7 @@
   graph represented by the \code{Ragraph} can be laidout in various formats.
 }
 \usage{
-LLagopen(graph, name, kind = NULL, edgeMode=edgemode(graph),
+agopenSimple(graph, name, kind = NULL, edgeMode=edgemode(graph),
        subGList=list(), recipEdges=c("combined", "distinct"))
 }
 \arguments{
@@ -71,7 +71,7 @@ set.seed(123)
 V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
-z <- LLagopen(g1,name="foo")
+z <- agopenSimple(g1,name="foo")
 if(as.numeric(strsplit(graphvizVersion(), "[.]")[[1]][2]) >= 10) {
   ## This example will only run with Graphviz >= 2.10
   plot(z, "twopi")
