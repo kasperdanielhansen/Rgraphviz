@@ -22,7 +22,7 @@ export(
         removedEdges,		# Rgraphviz
 
 	toFile,
-	LLagopen
+	agopenSimple
 	)
 
 exportClasses(			# Ragraph

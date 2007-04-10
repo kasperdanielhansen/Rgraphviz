@@ -71,6 +71,7 @@ SEXP Rgraphviz_graphvizVersion(void);
 SEXP Rgraphviz_init(void);
 
 SEXP Rgraphviz_toFile(SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_agopenSimple(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 SEXP Rgraphviz_getDefAttrsGraph(SEXP);
 SEXP Rgraphviz_setDefAttrsGraph(SEXP, SEXP, SEXP);
