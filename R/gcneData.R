@@ -75,16 +75,8 @@ setMethod("clusterData",
 setReplaceMethod("clusterData",
           signature(self="Ragraph", cluster="numeric", attr="vector", value="vector"),
           function(self, cluster, attr, value) {
-             ans <- getAttrsCluster(self, cluster, attr)
-             if ( any(ans==FALSE) )
-             {
-                stop("No default for some attribute(s), set them up first")
-             }
-             else
-             {
-                setAttrsCluster(self, cluster, attr, value)
-                self
-             }
+             setAttrsCluster(self, cluster, attr, value)
+             self
           })
 
 ###################################################################
