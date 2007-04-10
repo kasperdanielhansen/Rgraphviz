@@ -6,6 +6,8 @@ setMethod("imageMap",
     imgname="character"),
   definition=function(object, con, tags, imgname, width, height, usr = par("usr")) {
 
+  .Deprecated("toFile", "Rgraphviz")
+
   if(any(par("mai")!=0))
     warning("If par('mai') are not all 0, the result of this function (imageMap) may not be useful.")
 
