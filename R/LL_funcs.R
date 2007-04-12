@@ -212,7 +212,7 @@ getAttrsEdge <- function(graph, from, to, attrname)
    x <- cbind(from, to, attrname)
 
    ans <- vector(length=nrow(x))
-   names(ans) <- x[, 1]
+   names(ans) <- paste(x[, 1], x[, 2], sep="~")
    for ( i in 1:nrow(x) )
    {
       r <- .Call("Rgraphviz_getAttrsEdge", graph, x[i, 1], x[i, 2], x[i, 3], 

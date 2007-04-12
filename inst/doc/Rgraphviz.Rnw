@@ -757,22 +757,24 @@ Repeat steps (3), (4) and/or (5) as needed.
 
 \subsection{Convert a graph to \Robject{Ragraph} class}
 
-We prepare a graph with two subgraphs: one is hcs.gxl, the other is conn.gxl, 
-both are from package \Rpackage{RBGL}.  We specify the 1st subgraph is NOT a 
-cluster, while the 2nd one is.
+We prepare a graph with two subgraphs: graphExample-01.gxl.gz and 
+graphExample-11.gxl.gz from package \Rpackage{graph}.  We specify the 1st one
+is NOT a cluster, while the 2nd one is.
 
 Just as in graphviz, \Rpackage{Rgraphviz} treats a cluster as a special subgraph, 
 its nodes are layed out and drawn together and within a bounding rectangel. 
 
 <<agopenSimpleDemo>>=
-library("RBGL")
-hcs <- fromGXL(file(system.file("XML/hcs.gxl",package="RBGL")))
-conn <- fromGXL(file(system.file("XML/conn.gxl",package="RBGL")))
-jg <- join(conn, hcs)
+library("graph")
+g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",package="graph"), open="rb")
+g11_gz <- gzfile(system.file("GXL/graphExample-11.gxl.gz",package="graph"), open="rb")
+g1 <- fromGXL(g1_gz)
+g11 <- fromGXL(g11_gz)
+g1_11 <- join(g1, g11)
 sgl <- vector(mode="list", length=2)
-sgl[[1]] <- list(graph=hcs, cluster=FALSE)
-sgl[[2]] <- list(graph=conn, cluster=TRUE)
-ng <- agopenSimple(jg, "tmpsg", subGList=sgl)
+sgl[[1]] <- list(graph=g1, cluster=FALSE)
+sgl[[2]] <- list(graph=g11, cluster=TRUE)
+ng <- agopenSimple(g1_11, "tmpsg", subGList=sgl)
 @
 
 Note: this instance of \Robject{Ragraph} class from \Rfunction{agopenSimple} 
@@ -797,7 +799,6 @@ codes accomplish the same:
 
 <<DataDefaultsDemo1>>=
 graphDataDefaults(ng)
-#clusterDataDefaults(ng, 2)
 nodeDataDefaults(ng)
 edgeDataDefaults(ng)
 @
@@ -809,7 +810,6 @@ following:
 
 <<DataDefaultsDemo2>>=
 graphDataDefaults(ng, c("size", "bgcolor")) <- c("1", "yellow")
-#clusterDataDefaults(ng, 2, c("bgcolor", "color")) <- c("blue", "orange")
 nodeDataDefaults(ng, c("fontcolor", "width")) <- c("blue", 0.5)
 edgeDataDefaults(ng, c("color", "style")) <- c("green", "dotted")
 @
@@ -829,9 +829,8 @@ The package \Robject{graph} like notations are:
 
 <<DataDemo1>>=
 graphData(ng, "bgcolor")
-#clusterData(ng, 2, "bgcolor") 
-nodeData(ng, "A", c("fontcolor", "width"))
-edgeData(ng, "F", "G", c("color", "arrowhead"))
+nodeData(ng, "a", c("fontcolor", "width"))
+edgeData(ng, "f", "h", c("color", "arrowhead"))
 
 @
 
@@ -853,9 +852,9 @@ at this time.  Only the first call has effect.
 
 <<DataDemo2>>=
 graphData(ng, "bgcolor") <- "orange"
-#clusterData(ng, 2, "bgcolor") <- "red"
-nodeData(ng, "A", c("fontcolor", "width")) <- c("blue", "0.5")
-edgeData(ng, "F", "G", c("color", "style")) <- c("yellow", "dotted")
+clusterData(ng, 2, "bgcolor") <- "red"
+nodeData(ng, "a", c("fontcolor", "width")) <- c("red", "0.8")
+edgeData(ng, "f", "h", c("color", "style")) <- c("blue", "solid")
 @
 
 You can set as many attributes as you like.  
