@@ -39,16 +39,17 @@ with corresponding viewer.
 
 \examples{
 
+library("graph")
 library("Rgraphviz")
-library("RBGL")
 
-dd <- fromGXL(file(system.file("XML/dijkex.gxl",package="RBGL")))
-ag <- agopen(dd, name="test")
+g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",package="graph"), open="rb")
+g1 <- fromGXL(g1_gz)
+ag <- agopen(g1, name="test")
 
-toFile(ag, layoutType="dot", filename="test2.svg", fileType="svg")
-toFile(ag, layoutType="neato", filename="test2.ps", fileType="ps")
-toFile(ag, layoutType="twopi", filename="test3.svg", fileType="svg")
-toFile(ag, layoutType="circo", filename="test3.png", fileType="png")
+toFile(ag, layoutType="dot", filename="g1_dot.svg", fileType="svg")
+toFile(ag, layoutType="neato", filename="g1_neato.ps", fileType="ps")
+toFile(ag, layoutType="twopi", filename="g1_twopi.svg", fileType="svg")
+toFile(ag, layoutType="circo", filename="g1_circo.png", fileType="png")
 
 }
 \keyword{ models }
