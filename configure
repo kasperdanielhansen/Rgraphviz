@@ -1299,7 +1299,7 @@ if test "${with_graphviz+set}" = set; then
   withval="$with_graphviz"
   GRAPHVIZ_DIR="${with_graphviz}"
 else
-  GRAPHVIZ_DIR=""
+  GRAPHVIZ_DIR="/usr/local/"
 fi;
 
 GRAPHVIZ_VERSTR=""

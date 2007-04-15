@@ -6,7 +6,7 @@ AC_ARG_WITH(graphviz,
             [ --with-graphviz=DIR      root directory of graphviz installation 
                           (defaults to /usr/local/)],
 GRAPHVIZ_DIR="${with_graphviz}",
-GRAPHVIZ_DIR="")
+GRAPHVIZ_DIR="/usr/local/")
 
 GRAPHVIZ_VERSTR=""
 
