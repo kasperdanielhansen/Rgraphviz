@@ -3,16 +3,19 @@ AC_PREREQ(2.13)
 
 
 AC_ARG_WITH(graphviz,
-            [ --with-graphviz=DIR      root directory of graphviz installation 
-                          (defaults to /usr/local/)],
-GRAPHVIZ_DIR="${with_graphviz}",
-GRAPHVIZ_DIR="/usr/local/")
-
-GRAPHVIZ_VERSTR=""
+           [AS_HELP_STRING([--with-graphviz=DIR],
+                           [root directory of graphviz installation (defaults to /usr/local)])],
+           [if test ${with_graphviz} = "yes"; then
+             GRAPHVIZ_DIR='/usr/local'
+           else
+             GRAPHVIZ_DIR=${with_graphviz}
+           fi],
+           GRAPHVIZ_DIR="")
 
 dnl If user doesn't specify --with-graphviz arg, try pkg-config first
 dnl and then try dotneato-config.
 if test -z "${GRAPHVIZ_DIR}" ; then
+   AC_MSG_NOTICE(No --with-graphviz option was specified. Trying to find graphviz using other methods.)
    if test -z "${PKG_CONFIG}" ; then
       AC_PATH_PROG(PKG_CONFIG, pkg-config)
    fi
@@ -20,7 +23,7 @@ if test -z "${GRAPHVIZ_DIR}" ; then
       GRAPHVIZ_CONFIG="$PKG_CONFIG libgvc"
       GRAPHVIZ_VERSTR="`${GRAPHVIZ_CONFIG} --modversion || echo ''`"
       if test -z "${GRAPHVIZ_VERSTR}" ; then
-         AC_MSG_NOTICE(pkg-config was not able to find graphviz.  Verify graphviz is installed and that PKG_CONFIG_PATH is correct.)
+         AC_MSG_NOTICE(pkg-config was not able to find the graphviz library libgvc. This either indicates that graphviz is old or that something is wrong. Verify graphviz is installed and that PKG_CONFIG_PATH is correct.)
       else
          PKG_CPPFLAGS="`${GRAPHVIZ_CONFIG} --cflags`"
          PKG_LIBS="`${GRAPHVIZ_CONFIG} --libs`"
@@ -28,6 +31,7 @@ if test -z "${GRAPHVIZ_DIR}" ; then
    fi
 
    if test -z "${GRAPHVIZ_VERSTR}" ; then
+      AC_MSG_NOTICE(Using dotneato-config to find graphviz)
       if test -z "${DOTNEATO_CONFIG}" ; then
          AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config)
       fi
@@ -41,21 +45,29 @@ if test -z "${GRAPHVIZ_DIR}" ; then
    fi
 else 
     dnl User specified --with-graphviz DIR
+    AC_MSG_NOTICE(Using user specified graphviz root directory ${GRAPHVIZ_DIR})
     DOT="${GRAPHVIZ_DIR}/bin/dot"
     if ! test -x "${DOT}" ; then
        AC_MSG_ERROR($DOT not found.  Check graphviz installation.)
     else
        GRAPHVIZ_VERSTR=`${DOT} -V 2>&1 | cut -f3 -d" "`
-       # Newer versions have different output from dot -V
-       # this less than ideal, seems to work for graphviz 2.12
+       dnl Newer versions have different output from dot -V
+       dnl this less than ideal, seems to work for graphviz 2.12
        if test "${GRAPHVIZ_VERSTR}" = "Graphviz"; then
                   GRAPHVIZ_VERSTR=`${DOT} -V 2>&1 | cut -f5 -d" "`
        fi
-       PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
-       # Add both dirs since actual location depends on graphviz
-       # version.  Could do version computation here, but having
-       # the extra path doesn't hurt.
-       PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -L${GRAPHVIZ_DIR}/lib -lgvc"
+       dnl We need to do version computation here
+       dnl since the user-specified graphviz could be version 2.2.1
+       dnl in which gase -lgvc will fail
+       MAJOR=`echo ${GRAPHVIZ_VERSTR} | cut -f1 -d"."`
+       MINOR=`echo ${GRAPHVIZ_VERSTR} | cut -f2 -d"."`
+       if (test ${MAJOR} -eq "2" && test ${MINOR} -le "2") ; then
+         PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
+         PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -ldotneato -lm"
+       else
+         PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
+         PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -L${GRAPHVIZ_DIR}/lib -lgvc"
+       fi
     fi
 fi
 
@@ -74,6 +86,10 @@ if test ${MAJOR} -lt "2" || (test ${MAJOR} -eq "2" && test ${MINOR} -lt "2") ; t
    AC_MSG_ERROR("Need graphviz >= 2.2")
    exit 1
 fi
+
+AC_MSG_NOTICE(We have inferred the following flags for graphviz)
+AC_MSG_NOTICE(..PKG_CPPFLAGS=${PKG_CPPFLAGS})
+AC_MSG_NOTICE(..PKG_LIBS=${PKG_LIBS})
 
 GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_MAJOR=${MAJOR} -DGRAPHVIZ_MINOR=${MINOR}"
 
