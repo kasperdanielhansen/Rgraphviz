@@ -840,8 +840,8 @@ if test -n "$ac_init_help"; then
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
- --with-graphviz=DIR      root directory of graphviz installation
-                          (defaults to /usr/local/)
+  --with-graphviz=DIR     root directory of graphviz installation (defaults to
+                          /usr/local)
 
 Some influential environment variables:
   CC          C compiler command
@@ -1297,14 +1297,18 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 # Check whether --with-graphviz or --without-graphviz was given.
 if test "${with_graphviz+set}" = set; then
   withval="$with_graphviz"
-  GRAPHVIZ_DIR="${with_graphviz}"
+  if test ${with_graphviz} = "yes"; then
+             GRAPHVIZ_DIR='/usr/local'
+           else
+             GRAPHVIZ_DIR=${with_graphviz}
+           fi
 else
-  GRAPHVIZ_DIR="/usr/local/"
+  GRAPHVIZ_DIR=""
 fi;
 
-GRAPHVIZ_VERSTR=""
-
 if test -z "${GRAPHVIZ_DIR}" ; then
+   { echo "$as_me:$LINENO: No --with-graphviz option was specified. Trying to find graphviz using other methods." >&5
+echo "$as_me: No --with-graphviz option was specified. Trying to find graphviz using other methods." >&6;}
    if test -z "${PKG_CONFIG}" ; then
       # Extract the first word of "pkg-config", so it can be a program name with args.
 set dummy pkg-config; ac_word=$2
@@ -1350,8 +1354,8 @@ fi
       GRAPHVIZ_CONFIG="$PKG_CONFIG libgvc"
       GRAPHVIZ_VERSTR="`${GRAPHVIZ_CONFIG} --modversion || echo ''`"
       if test -z "${GRAPHVIZ_VERSTR}" ; then
-         { echo "$as_me:$LINENO: pkg-config was not able to find graphviz.  Verify graphviz is installed and that PKG_CONFIG_PATH is correct." >&5
-echo "$as_me: pkg-config was not able to find graphviz.  Verify graphviz is installed and that PKG_CONFIG_PATH is correct." >&6;}
+         { echo "$as_me:$LINENO: pkg-config was not able to find the graphviz library libgvc. This either indicates that graphviz is old or that something is wrong. Verify graphviz is installed and that PKG_CONFIG_PATH is correct." >&5
+echo "$as_me: pkg-config was not able to find the graphviz library libgvc. This either indicates that graphviz is old or that something is wrong. Verify graphviz is installed and that PKG_CONFIG_PATH is correct." >&6;}
       else
          PKG_CPPFLAGS="`${GRAPHVIZ_CONFIG} --cflags`"
          PKG_LIBS="`${GRAPHVIZ_CONFIG} --libs`"
@@ -1359,6 +1363,8 @@ echo "$as_me: pkg-config was not able to find graphviz.  Verify graphviz is inst
    fi
 
    if test -z "${GRAPHVIZ_VERSTR}" ; then
+      { echo "$as_me:$LINENO: Using dotneato-config to find graphviz" >&5
+echo "$as_me: Using dotneato-config to find graphviz" >&6;}
       if test -z "${DOTNEATO_CONFIG}" ; then
          # Extract the first word of "dotneato-config", so it can be a program name with args.
 set dummy dotneato-config; ac_word=$2
@@ -1410,23 +1416,27 @@ echo "$as_me: dotneato-config not found in PATH.  Try specifying location of gra
       fi
    fi
 else
-        DOT="${GRAPHVIZ_DIR}/bin/dot"
+        { echo "$as_me:$LINENO: Using user specified graphviz root directory ${GRAPHVIZ_DIR}" >&5
+echo "$as_me: Using user specified graphviz root directory ${GRAPHVIZ_DIR}" >&6;}
+    DOT="${GRAPHVIZ_DIR}/bin/dot"
     if ! test -x "${DOT}" ; then
        { { echo "$as_me:$LINENO: error: $DOT not found.  Check graphviz installation." >&5
 echo "$as_me: error: $DOT not found.  Check graphviz installation." >&2;}
    { (exit 1); exit 1; }; }
     else
        GRAPHVIZ_VERSTR=`${DOT} -V 2>&1 | cut -f3 -d" "`
-       # Newer versions have different output from dot -V
-       # this less than ideal, seems to work for graphviz 2.12
-       if test "${GRAPHVIZ_VERSTR}" = "Graphviz"; then
+                     if test "${GRAPHVIZ_VERSTR}" = "Graphviz"; then
                   GRAPHVIZ_VERSTR=`${DOT} -V 2>&1 | cut -f5 -d" "`
        fi
-       PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
-       # Add both dirs since actual location depends on graphviz
-       # version.  Could do version computation here, but having
-       # the extra path doesn't hurt.
-       PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -L${GRAPHVIZ_DIR}/lib -lgvc"
+                            MAJOR=`echo ${GRAPHVIZ_VERSTR} | cut -f1 -d"."`
+       MINOR=`echo ${GRAPHVIZ_VERSTR} | cut -f2 -d"."`
+       if (test ${MAJOR} -eq "2" && test ${MINOR} -le "2") ; then
+         PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
+         PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -ldotneato -lm"
+       else
+         PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
+         PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -L${GRAPHVIZ_DIR}/lib -lgvc"
+       fi
     fi
 fi
 
@@ -1448,6 +1458,13 @@ echo "$as_me: error: \"Need graphviz >= 2.2\"" >&2;}
    { (exit 1); exit 1; }; }
    exit 1
 fi
+
+{ echo "$as_me:$LINENO: We have inferred the following flags for graphviz" >&5
+echo "$as_me: We have inferred the following flags for graphviz" >&6;}
+{ echo "$as_me:$LINENO: ..PKG_CPPFLAGS=${PKG_CPPFLAGS}" >&5
+echo "$as_me: ..PKG_CPPFLAGS=${PKG_CPPFLAGS}" >&6;}
+{ echo "$as_me:$LINENO: ..PKG_LIBS=${PKG_LIBS}" >&5
+echo "$as_me: ..PKG_LIBS=${PKG_LIBS}" >&6;}
 
 GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_MAJOR=${MAJOR} -DGRAPHVIZ_MINOR=${MINOR}"
 
