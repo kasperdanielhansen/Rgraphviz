@@ -904,82 +904,10 @@ You need corresponding viewers installed to be able to view the output files.
 %------------------------------------------------------------
 \section{Tooltips and hyperlinks on graphs}
 %------------------------------------------------------------
-This section is for advanced users. It gives an example for how the
-\Rfunction{imageMap} function of the \Rpackage{Rgraphviz} package can
-be used to create clickable graph renderings with drill-down
-capability.
+Users that want to create a clickable graph renderings with drill-down
+capability should see the \Rfunction{imageMap} function in the 
+\Rpackage{biocGraph} package.
 
-First, we load an example graph
-<<integrinMediatedCellAdhesion>>=
-data("integrinMediatedCellAdhesion")
-@ 
-
-In the next code chunk, we create a set of plots, one for each
-node. Here they are just meaningless ``dummy'' plots, but of course in
-your application these could be showing real data, corresponding to
-the nodes.
-
-<<dummyPlots>>=
-outdir=tempdir()
-nd = nodes(IMCAGraph)
-plotFiles = paste(seq(along=nd), 'png', sep='.')
-for(i in seq(along=nd)) {
-  png(file.path(outdir, plotFiles[i]), width=400, height=600)
-  plot(cumsum(rnorm(100)), type='l', col='blue', lwd=2, main=nd[i])
-  dev.off()
-}
-@ 
-
-Now we create a HTML page that consists of two parts, so-called
-frames, one to hold the graph plot, one for the per-node data plots
-that we generated above. 
-
-<<indexhtml>>=
-fhtml = file.path(outdir, "index.html")
-con = file(fhtml, open="wt")
-cat("<HTML><HEAD><TITLE>",
-"Integrin Mediated Cell Adhesion graph with tooltips and hyperlinks, please click on the nodes.",
-"</TITLE></HEAD>",
-"<FRAMESET COLS=\"3*,2*\" BORDER=0>",
-"  <FRAME SRC=\"graph.html\">",
-"  <FRAME NAME=\"nodedata\">",
-"</FRAMESET></HTML>", sep="\n", file=con)
-close(con)
-@ 
-
-Finally, we create the graph plot, and the associated HTML image map.
-
-<<makegraph, results=hide>>=  
-width = 600
-height = 512
-imgname = "graph.png"
-png(file.path(outdir, imgname), width=width, height=height)
-par(mai=rep(0,4))
-
-lg = agopen(IMCAGraph, name="foo", 
-  attrs = list(graph=list(rankdir="LR", rank=""), node=list(fixedsize=FALSE)), 
-  nodeAttrs = makeNodeAttrs(IMCAGraph), 
-  subGList = IMCAAttrs$subGList)
-plot(lg)    
- 
-con = file(file.path(outdir, "graph.html"), open="wt")
-writeLines("<html><body>\n", con)
-imageMap(lg, con=con,
-         tags=list(HREF=plotFiles,
-           TITLE = nd,
-           TARGET = rep("nodedata", length(nd))),
-         imgname=imgname, width=width, height=height)
-writeLines("</body></html>", con)
-close(con)
-dev.off()
-@  
-
-We can have a look at the result by pointing a web browser to it.
-<<browseurl>>=
-fhtml
-if(interactive())
-  browseURL(fhtml)
-@
 
 \section{Sessioninfo}
 
