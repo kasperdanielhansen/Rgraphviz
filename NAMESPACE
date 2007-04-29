@@ -86,7 +86,6 @@ exportMethods(
                 "getX",
                 "getY",
                 "head",
-                "imageMap",		# imageMap only
                 "labelColor",
                 "labelFontsize",
                 "labelJust",
