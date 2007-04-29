@@ -1,8 +1,8 @@
 % NOTE -- ONLY EDIT Rgraphviz.Rnw!!!
-% Biobase.tex file will get overwritten.
+% Rgraphviz.tex file will get overwritten.
 %
 %\VignetteIndexEntry{How To Plot A Graph Using Rgraphviz}
-%\VignetteDepends{Rgraphviz, graph, Biobase}
+%\VignetteDepends{Rgraphviz, graph}
 %\VignetteKeywords{tools, graphs}
 %\VignettePackage{Rgraphviz}
 
