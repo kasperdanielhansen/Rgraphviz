@@ -9,7 +9,7 @@
 graphvizVersion()
 }
 \value{
-  A character string reporting the version}
+  A character string reporting the version of Graphviz that is being used.
 }
 \author{Jeff Gentry}
 \examples{
