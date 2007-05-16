@@ -85,7 +85,6 @@ Objects can be created by calls of the form \code{new("AgNode", ...)}.
 }
 \author{Jeff Gentry}
 \seealso{\code{\link{Ragraph}}}
-}
 \examples{
 V <- letters[1:10]
 M <- 1:4
