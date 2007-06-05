@@ -6,6 +6,7 @@
 #include <Rmath.h>
 #include <R_ext/RConverters.h>
 #include <R_ext/Rdynload.h>
+#include <R_ext/RS.h>		/* CallocCharBuf */
 
 #ifndef WIN32
 #include <unistd.h>

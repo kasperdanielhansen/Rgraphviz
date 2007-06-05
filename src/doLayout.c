@@ -31,7 +31,6 @@ SEXP getEdgeLocs(Agraph_t *g) {
     Agnode_t *node, *head;
     Agedge_t *edge;
     char *tmpString;
-    char *tmp_ed;
     bezier bez;
     int nodes;
     int i,k,l,pntLstEl;

@@ -1,6 +1,12 @@
 #include "common.h"
 #include "util.h"
 
+char *CallocCharBufFrom(SEXP str_elt) {
+  char *cname = CallocCharBuf(length(str_elt));
+  strcpy(cname, CHAR(str_elt));
+  return cname;
+}
+
 SEXP Rgraphviz_ScalarLogicalFromRbool(Rboolean v)
 {
     SEXP  ans = allocVector(LGLSXP, 1);
@@ -13,7 +19,7 @@ inline SEXP Rgraphviz_ScalarStringOrNull(const char* x)
     return(x? mkString(x) : mkString(""));
 }
 
-SEXP getListElement(SEXP list, char *str) {
+SEXP getListElement(SEXP list, const char *str) {
     /* Given a R list and a character string, will return the */
     /* element of the list which has the name that corresponds to the */
     /*   string */
@@ -35,7 +41,7 @@ SEXP getListElement(SEXP list, char *str) {
     return(elmt);
 }
 
-SEXP stringEltByName(SEXP strv, char *str) {
+SEXP stringEltByName(SEXP strv, const char *str) {
     /* Given STRSXP (character vector in R) and a string, return the
      * element of the strv (CHARSXP) which has the name that
      * corresponds to the string.
@@ -56,7 +62,7 @@ SEXP stringEltByName(SEXP strv, char *str) {
     return(elmt);
 }
 
-int getVectorPos(SEXP vector, char *str) {
+int getVectorPos(SEXP vector, const char *str) {
     /* Returns position in a named vector where the name matches string*/
     /* Returns -1 if not found */
 
@@ -93,7 +99,7 @@ SEXP assignAttrs(SEXP attrList, SEXP objList,
     /* to slots of the objects listed in objList            */
     int i, j, k, namePos, leno;
     SEXP curAttrs, curObj, attrNames, objNames;
-    char* curObjName;
+    const char* curObjName;
     SEXP attrsSlot, newASlot, oattrs;
     SEXP names, onames;
     SEXP attrPos;
