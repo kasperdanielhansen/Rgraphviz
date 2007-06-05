@@ -7,6 +7,7 @@ static Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     /* to have defined defaults manually */
     int i;
     SEXP attrNames, elmt;
+    char *cname, *celmt;
 
     /* Now set user defined attributes */
     /* Set the graph level attributes */
@@ -14,8 +15,10 @@ static Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     /* Now elmt is a list of attributes to set */
     PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
     for (i = 0; i < length(elmt); i++) {
-        agraphattr(g, CHAR(STRING_ELT(attrNames,i)),
-                   STR(coerceVector(VECTOR_ELT(elmt,i), STRSXP)));
+        cname = ALLOC_CHAR(attrNames, i);
+        celmt = ALLOC_CHAR(coerceVector(VECTOR_ELT(elmt,i), STRSXP), 0);
+        agraphattr(g, cname, celmt);
+        Free(celmt); Free(cname);
     }
 
     UNPROTECT(2);
@@ -24,8 +27,10 @@ static Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     PROTECT(elmt = getListElement(attrs, "node"));
     PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
     for (i = 0; i < length(elmt); i++) {
-        agnodeattr(g, CHAR(STRING_ELT(attrNames,i)),
-                   STR(coerceVector(VECTOR_ELT(elmt,i), STRSXP)));
+        cname = ALLOC_CHAR(attrNames,i);
+        celmt = ALLOC_CHAR(coerceVector(VECTOR_ELT(elmt,i), STRSXP), 0);
+        agnodeattr(g, cname, celmt);
+        Free(celmt); Free(cname);
     }
     UNPROTECT(2);
 
@@ -33,8 +38,10 @@ static Agraph_t *setDefaultAttrs(Agraph_t *g, SEXP attrs) {
     PROTECT(elmt = getListElement(attrs, "edge"));
     PROTECT(attrNames = getAttrib(elmt, R_NamesSymbol));
     for (i = 0; i < length(elmt); i++) {
-        agedgeattr(g, CHAR(STRING_ELT(attrNames,i)),
-                   STR(coerceVector(VECTOR_ELT(elmt,i), STRSXP)));
+        cname = ALLOC_CHAR(attrNames, i);
+        celmt = ALLOC_CHAR(coerceVector(VECTOR_ELT(elmt,i), STRSXP), 0);
+        agedgeattr(g, cname, celmt);
+        Free(celmt); Free(cname);
     }
     UNPROTECT(2);
     return(g);
@@ -49,6 +56,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     Agnode_t *head, *tail, *tmp;
     Agedge_t *curEdge;
     char *subGName;
+    char *cname, *celmt;
     int ag_k = 0;
     int i,j;
     int whichSubG;
@@ -70,7 +78,9 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
         error("name must be a string");
 
     aginit();
-    g = agopen(STR(name), ag_k);
+    cname = ALLOC_CHAR(name, 0);
+    g = agopen(cname, ag_k);
+    Free(cname);
 
     /* Set default attributes */
     g = setDefaultAttrs(g,attrs);
@@ -103,8 +113,10 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
             if (curSubGEle != R_NilValue) {
                 attrNames = getAttrib(curSubGEle, R_NamesSymbol);
                 for (j = 0; j < length(curSubGEle); j++) {
-                    agset(sgs[i], CHAR(STRING_ELT(attrNames, j)),
-                          CHAR(STRING_ELT(curSubGEle, j)));
+                    cname = ALLOC_CHAR(attrNames, j);
+                    celmt = ALLOC_CHAR(curSubGEle, j);
+                    agset(sgs[i], cname, celmt);
+                    Free(celmt); Free(cname);
                 }
             }
         }
@@ -126,12 +138,17 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
         else
             tmpGraph = g;
 
-        tmp = agnode(tmpGraph, STR(GET_SLOT(curPN, Rf_install("name"))));
+        cname = ALLOC_CHAR(GET_SLOT(curPN, Rf_install("name")), 0);
+        tmp = agnode(tmpGraph, cname);
+        Free(cname);
 
         PROTECT(curAttrs = coerceVector(GET_SLOT(curPN, Rf_install("attrs")), STRSXP));
         PROTECT(attrNames = coerceVector(getAttrib(curAttrs, R_NamesSymbol), STRSXP));
         for (j = 0; j < length(curAttrs); j++) {
-            agset(tmp,  CHAR(STRING_ELT(attrNames,j)), CHAR(STRING_ELT(curAttrs,j)));
+            cname = ALLOC_CHAR(attrNames, j);
+            celmt = ALLOC_CHAR(curAttrs, j);
+            agset(tmp,  cname, celmt);
+            Free(cname); Free(celmt);
         }
 
         UNPROTECT(3);
@@ -149,12 +166,15 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
             tmpGraph = g;
         }
 
-        tail = agfindnode(g, STR(GET_SLOT(curPE, Rf_install("from"))));
+        cname = ALLOC_CHAR(GET_SLOT(curPE, Rf_install("from")), 0);
+        tail = agfindnode(g, cname);
+        Free(cname);
         if (tail == NULL)
             error("Missing tail node");
 
-        head = agfindnode(g, STR(GET_SLOT(curPE,
-                                          Rf_install("to"))));
+        cname = ALLOC_CHAR(GET_SLOT(curPE, Rf_install("to")), 0);
+        head = agfindnode(g, cname);
+        Free(cname);
         if (head == NULL) error("Missing head node");
 
         curEdge = agedge(tmpGraph, tail, head); 
@@ -162,8 +182,10 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
         PROTECT(curAttrs = GET_SLOT(curPE, Rf_install("attrs")));
         PROTECT(attrNames = getAttrib(curAttrs, R_NamesSymbol));
         for (j = 0; j < length(curAttrs); j++) {
-            agset(curEdge, CHAR(STRING_ELT(attrNames,j)),
-                  STR(VECTOR_ELT(curAttrs, j)));
+            cname = ALLOC_CHAR(attrNames,j);
+            celmt = ALLOC_CHAR(VECTOR_ELT(curAttrs, j), 0);
+            agset(curEdge, cname, celmt);
+            Free(celmt); Free(cname);
         }
         UNPROTECT(3);
     }

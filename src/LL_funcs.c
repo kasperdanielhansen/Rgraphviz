@@ -109,10 +109,14 @@ SEXP Rgraphviz_getDefAttrsGraph(SEXP graph)
 
 SEXP Rgraphviz_setDefAttrsGraph(SEXP graph, SEXP attrname, SEXP attrval)
 {
+    char *cname, *cval;
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    Agsym_t *r = agraphattr(g, STR(attrname), STR(attrval));
+    cname = ALLOC_CHAR(attrname, 0);
+    cval = ALLOC_CHAR(attrval, 0);
+    Agsym_t *r = agraphattr(g, cname, cval);
+    Free(cval); Free(cname);
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -126,7 +130,9 @@ SEXP Rgraphviz_getAttrsGraph(SEXP graph, SEXP attrname)
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    char *val = agget(g, STR(attrname));
+    char *cname = ALLOC_CHAR(attrname, 0);
+    char *val = agget(g, cname);
+    Free(cname);
 
     if ( !val ) /* no such attr */
     {
@@ -149,7 +155,11 @@ SEXP Rgraphviz_setAttrsGraph(SEXP graph,
     if ( !g ) return(R_NilValue);
 
     /* 0 for success, -1 otherwise */
-    int r = agsafeset(g, STR(attrname), STR(attrval), STR(default_val));
+    char *cname = ALLOC_CHAR(attrname, 0),
+        *cval = ALLOC_CHAR(attrval, 0),
+        *cdefault = ALLOC_CHAR(default_val, 0);
+    int r = agsafeset(g, cname, cval, cdefault);
+    Free(cdefault); Free(cval); Free(cname);
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -163,7 +173,9 @@ SEXP Rgraphviz_getAttrsCluster(SEXP graph, SEXP cluster, SEXP attrname)
     Agraph_t *sg = getClusterPtr(graph, cluster);
     if ( !sg ) return(R_NilValue);
 
-    char *val = agget(sg, STR(attrname));
+    char *cname = ALLOC_CHAR(attrname, 0);
+    char *val = agget(sg, cname);
+    Free(cname);
 
     if ( !val ) /* no such attr */
     {
@@ -184,9 +196,13 @@ SEXP Rgraphviz_setAttrsCluster(SEXP graph, SEXP cluster,
 {
     Agraph_t *sg = getClusterPtr(graph, cluster);
     if ( !sg ) return(R_NilValue);
-
+    
     /* 0 for success, -1 otherwise */
-    int r = agsafeset(sg, STR(attrname), STR(attrval), STR(default_val));
+    char *cname = ALLOC_CHAR(attrname, 0),
+        *cval = ALLOC_CHAR(attrval, 0),
+        *cdefault = ALLOC_CHAR(default_val, 0);
+    int r = agsafeset(sg, cname, cval, cdefault);
+    Free(cdefault); Free(cval); Free(cname);
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -228,7 +244,10 @@ SEXP Rgraphviz_setDefAttrsNode(SEXP graph, SEXP attrname, SEXP attrval)
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    Agsym_t *r = agnodeattr(g, STR(attrname), STR(attrval));
+    char *cname = ALLOC_CHAR(attrname, 0),
+        *cval = ALLOC_CHAR(attrval, 0);
+    Agsym_t *r = agnodeattr(g, cname, cval);
+    Free(cval); Free(cname);
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -242,10 +261,14 @@ SEXP Rgraphviz_getAttrsNode(SEXP graph, SEXP node, SEXP attrname)
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    Agnode_t *n = agfindnode(g, STR(node));
+    char *cnode = ALLOC_CHAR(node, 0);
+    Agnode_t *n = agfindnode(g, cnode);
+    Free(cnode);
     if ( !n ) return(R_NilValue);
 
-    char *val = agget(n, STR(attrname));
+    char *cval = ALLOC_CHAR(attrname, 0);
+    char *val = agget(n, cval);
+    Free(cval);
 
     if ( !val ) /* no such attr */
     {
@@ -267,10 +290,16 @@ SEXP Rgraphviz_setAttrsNode(SEXP graph, SEXP node,
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    Agnode_t *n = agfindnode(g, STR(node));
+    char *cnode = ALLOC_CHAR(node, 0);
+    Agnode_t *n = agfindnode(g, cnode);
+    Free(cnode);
     if ( !n ) return(R_NilValue);
 
-    int r = agsafeset(n, STR(attrname), STR(attrval), STR(default_val));
+    char *cname = ALLOC_CHAR(attrname, 0),
+        *cval = ALLOC_CHAR(attrval, 0),
+        *cdefault = ALLOC_CHAR(default_val, 0);
+    int r = agsafeset(n, cname, cval, cdefault);
+    Free(cdefault); Free(cval); Free(cname);
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -312,7 +341,10 @@ SEXP Rgraphviz_setDefAttrsEdge(SEXP graph, SEXP attrname, SEXP attrval)
     Agraph_t *g = getAgraphPtr(graph);
     if ( !g ) return(R_NilValue);
 
-    Agsym_t *r = agedgeattr(g, STR(attrname), STR(attrval));
+    char *cname = ALLOC_CHAR(attrname, 0),
+        *cval = ALLOC_CHAR(attrval, 0);
+    Agsym_t *r = agedgeattr(g, cname, cval);
+    Free(cval); Free(cname);
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -324,16 +356,23 @@ SEXP Rgraphviz_setDefAttrsEdge(SEXP graph, SEXP attrname, SEXP attrval)
 SEXP Rgraphviz_getAttrsEdge(SEXP graph, SEXP from, SEXP to, SEXP attrname)
 {
     Agraph_t *g = getAgraphPtr(graph);
+    char *cval;
     if ( !g ) return(R_NilValue);
 
-    Agnode_t *u = agfindnode(g, STR(from));
-    Agnode_t *v = agfindnode(g, STR(to));
+    cval = ALLOC_CHAR(from, 0);
+    Agnode_t *u = agfindnode(g, cval);
+    Free(cval);
+    cval = ALLOC_CHAR(to, 0);
+    Agnode_t *v = agfindnode(g, cval);
+    Free(cval);
     if ( !u || !v ) return(R_NilValue);
 
     Agedge_t *e = agfindedge(g, u, v);
     if ( !e ) return(R_NilValue);
 
-    char *val = agget(e, STR(attrname));
+    cval = ALLOC_CHAR(attrname, 0);
+    char *val = agget(e, cval);
+    Free(cval);
 
     if ( !val ) /* no such attr */
     {
@@ -353,16 +392,25 @@ SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
                             SEXP attrname, SEXP attrval, SEXP default_val)
 {
     Agraph_t *g = getAgraphPtr(graph);
+    char *cval, *cname, *cdefault;
     if ( !g ) return(R_NilValue);
 
-    Agnode_t *u = agfindnode(g, STR(from));
-    Agnode_t *v = agfindnode(g, STR(to));
+    cval = ALLOC_CHAR(from, 0);
+    Agnode_t *u = agfindnode(g, cval);
+    Free(cval);
+    cval = ALLOC_CHAR(to, 0);
+    Agnode_t *v = agfindnode(g, cval);
+    Free(cval);
     if ( !u || !v ) return(R_NilValue);
 
     Agedge_t *e = agfindedge(g, u, v);
     if ( !e ) return(R_NilValue);
 
-    int r = agsafeset(e, STR(attrname), STR(attrval), STR(default_val));
+    cname = ALLOC_CHAR(attrname, 0);
+    cval = ALLOC_CHAR(attrval, 0);
+    cdefault = ALLOC_CHAR(default_val, 0);
+    int r = agsafeset(e, cname, cval, cdefault);
+    Free(cdefault); Free(cval); Free(cname); 
 
     SEXP ans;
     PROTECT(ans = NEW_LOGICAL(1));
@@ -375,19 +423,23 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
 {
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 4
     Agraph_t *g = getAgraphPtr(graph);
+    char *clayout, *cfiletype, *cfilename;
     if ( !g ) return(R_NilValue);
 
-    gvLayout(gvc, g, STR(layoutType));
+    clayout = ALLOC_CHAR(layoutType, 0);
+    gvLayout(gvc, g, clayout);
 
+    cfilename = ALLOC_CHAR(filename, 0);
+    cfiletype = ALLOC_CHAR(filetype, 0);
 #if GRAPHVIZ_MINOR == 4
-    FILE *fp = fopen(STR(filename), "w");
-    gvRender(gvc, g, STR(filetype), fp);
+    FILE *fp = fopen(cfilename, "w");
+    gvRender(gvc, g, cfiletype, fp);
     fclose(fp);
 #else
-    gvRenderFilename(gvc, g, STR(filetype), STR(filename));
+    gvRenderFilename(gvc, g, cfiletype, cfilename);
     gvFreeLayout(gvc, g);
 #endif
-
+    Free(cfiletype); Free(cfilename);
 #endif
 
     return(R_NilValue);
@@ -415,6 +467,7 @@ SEXP Rgraphviz_agopenSimple(SEXP name, SEXP kind,
 
     int recip = INTEGER(recipK)[0];
     char subGName[256];
+    char *cname, *cnode;
     int ag_k = 0;
     int nsg = INTEGER(nsubG)[0];
     int i;
@@ -435,7 +488,9 @@ SEXP Rgraphviz_agopenSimple(SEXP name, SEXP kind,
         error("kind must be an integer value between 0 and 3");
 
     aginit();
-    g = agopen(STR(name), ag_k);
+    cname = ALLOC_CHAR(name, 0);
+    g = agopen(cname, ag_k);
+    Free(cname);
 
     /* create subgraphs */
     sgs = (Agraph_t **)R_alloc(nsg, sizeof(Agraph_t *));
@@ -476,7 +531,9 @@ SEXP Rgraphviz_agopenSimple(SEXP name, SEXP kind,
         whichSubG = INTEGER(subGIndex)[i];
         tmpGraph = whichSubG > 0 ? sgs[whichSubG-1] : g;
 
-        curNode = agnode(tmpGraph, CHAR(STRING_ELT(nodes, i)));
+        cnode = ALLOC_CHAR(nodes, i);
+        curNode = agnode(tmpGraph, cnode);
+        Free(cnode);
 
         /*	printf(" node %d in subgraph %d \n", i, whichSubG); */
     }
@@ -484,13 +541,14 @@ SEXP Rgraphviz_agopenSimple(SEXP name, SEXP kind,
     /* create the edges */
     char* node_f; char* node_t;
     for (i = 0; i < length(edges_from); i++) {
-        node_f = CHAR(STRING_ELT(nodes, INTEGER(edges_from)[i]-1));
-        node_t = CHAR(STRING_ELT(nodes, INTEGER(edges_to)[i]-1));
-
+        node_f = ALLOC_CHAR(nodes, INTEGER(edges_from)[i]-1);
         tail = agfindnode(g, node_f);
+        Free(node_f);
         if ( !tail ) error("Missing tail node");
 
+        node_t = ALLOC_CHAR(nodes, INTEGER(edges_to)[i]-1);
         head = agfindnode(g, node_t);
+        Free(node_t);
         if ( !head ) error("Missing head node");
 
         whichSubG = INTEGER(subGIndex)[INTEGER(edges_from)[i]-1];
