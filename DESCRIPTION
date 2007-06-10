@@ -7,7 +7,7 @@ Version: 1.15.4
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>, Li Long <li.long@isb-sib.ch>,
    Robert Gentleman <rgentlem@fhcrc.org>, Seth Falcon <sethf@fhcrc.org>
 Maintainer: Li Long <li.long@isb-sib.ch>
-Depends: R (>= 2.4.0), methods, graph
+Depends: R (>= 2.6.0), methods, graph
 SystemRequirements: Graphviz version >= 2.2
 License: The Artistic License, Version 2.0
 LazyLoad: Yes
