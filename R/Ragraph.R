@@ -135,7 +135,8 @@ setMethod("sp", "AgEdge", function(object) object@sp)
 setGeneric("ep", function(object) standardGeneric("ep"))
 setMethod("ep", "AgEdge", function(object) object@ep)
 
-setGeneric("head", function(x,...) standardGeneric("head"))
+### Don't make "head" a generic again here, it's already defined as a generic
+### in package utils.
 setMethod("head", "AgEdge", function(x, ...) x@head)
 
 setGeneric("tail", function(x, ...) standardGeneric("tail"))
