@@ -1,6 +1,7 @@
 importFrom("graphics", "plot", "lines")
 
 import("methods")
+import("utils") # for the "head" generic
                                                                                 
 export(
         agopen,			# Rgraphviz

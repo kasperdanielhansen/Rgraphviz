@@ -3,11 +3,12 @@ Title: Provides plotting capabilities for R graph objects
 Description: Interfaces R with the AT&T GraphViz library to provide
         the ability for plotting R graph objects from the graph
         package
-Version: 1.15.4
+Version: 1.15.5
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>, Li Long <li.long@isb-sib.ch>,
    Robert Gentleman <rgentlem@fhcrc.org>, Seth Falcon <sethf@fhcrc.org>
 Maintainer: Li Long <li.long@isb-sib.ch>
-Depends: R (>= 2.6.0), methods, graph
+Depends: R (>= 2.6.0), methods, utils, graph
+Imports: utils
 SystemRequirements: Graphviz version >= 2.2
 License: The Artistic License, Version 2.0
 LazyLoad: Yes
