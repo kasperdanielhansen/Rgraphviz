@@ -1,6 +1,6 @@
-AC_INIT(src/Rgraphviz.c)
 AC_PREREQ(2.13)
 
+AC_INIT([Rgraphviz], 1.x, [biocore@stat.math.ethz.ch], [Rgraphviz])
 
 AC_ARG_WITH(graphviz,
            [AS_HELP_STRING([--with-graphviz=DIR],
@@ -82,7 +82,7 @@ AC_MSG_NOTICE(Found graphviz $GRAPHVIZ_VERSTR)
 MAJOR=`echo ${GRAPHVIZ_VERSTR} | cut -f1 -d"."`
 MINOR=`echo ${GRAPHVIZ_VERSTR} | cut -f2 -d"."`
 
-if test ${MAJOR} -lt "2" || (test ${MAJOR} -eq "2" && test ${MINOR} -lt "2") ; then
+if (test ${MAJOR} -lt "2") || (test ${MAJOR} -eq "2" && test ${MINOR} -lt "2") ; then
    AC_MSG_ERROR("Need graphviz >= 2.2")
    exit 1
 fi
@@ -91,13 +91,12 @@ AC_MSG_NOTICE(We have inferred the following flags for graphviz)
 AC_MSG_NOTICE(..PKG_CPPFLAGS=${PKG_CPPFLAGS})
 AC_MSG_NOTICE(..PKG_LIBS=${PKG_LIBS})
 
-GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_MAJOR=${MAJOR} -DGRAPHVIZ_MINOR=${MINOR}"
+GVIZ_DEFS=" -DGRAPHVIZ_MAJOR=${MAJOR} -DGRAPHVIZ_MINOR=${MINOR} "
 
-if test ${MAJOR} -le "2" && test ${MINOR} -le "12"; then
-   AC_MSG_CHECKING([for whether compiler has bool])
-   AC_HEADER_STDBOOL
-   AC_TRY_COMPILE([
-   #ifdef HAVE_STDBOOL_H>
+AC_MSG_CHECKING([for whether compiler has bool])
+AC_HEADER_STDBOOL
+AC_TRY_COMPILE([
+   #ifdef HAVE_STDBOOL_H
    #include <stdbool.h>
    #endif
    ],[
@@ -107,7 +106,6 @@ if test ${MAJOR} -le "2" && test ${MINOR} -le "12"; then
    GVIZ_DEFS="${GVIZ_DEFS} -DHAVE_STDBOOL_H=1 -DHAVE_BOOL=1"
    ],[
    AC_MSG_RESULT(no)])
-fi
 
 AC_SUBST(GVIZ_DEFS)
 AC_SUBST(PKG_CPPFLAGS)
