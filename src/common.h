@@ -39,8 +39,20 @@ extern char *Info[];
 #include <gvcjob.h>
 #endif
 
+#if GRAPHVIZ_MINOR <= 12
 #include <gvcint.h>
 #include <globals.h>
+#endif
+
+//FIXME: 
+//       gvcint.h is NOT installed automatically w/ graphviz install
+//       need to manually put it in installed dir,
+//       w/o this, RgraphvizVersion.c gets compile time error:
+//         dereferencing pointer to incomplete type
+#if GRAPHVIZ_MINOR >= 14
+#include <gvcint.h>
+#endif
+
 #endif
 
 #endif
