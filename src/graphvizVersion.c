@@ -8,29 +8,31 @@
  * So for now, we hard code the version of graphviz that we
  * hand-built.
  */
+SEXP Rgraphviz_graphvizVersion(void) {
+
 #ifdef Win32
-SEXP Rgraphviz_graphvizVersion(void) {
+
     return(mkString("2.2.1"));
-}
-#else
-SEXP Rgraphviz_graphvizVersion(void) {
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 3
+#elif GRAPHVIZ_MAJOR == 2 
+
+#if GRAPHVIZ_MINOR <= 3
     return(Rgraphviz_ScalarStringOrNull(Info[1]));
-#endif
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >=4 && GRAPHVIZ_MINOR <= 9
+#elif GRAPHVIZ_MINOR >=4 && GRAPHVIZ_MINOR <= 9
     return(Rgraphviz_ScalarStringOrNull(gvc->info[1]));
-#endif
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10  && GRAPHVIZ_MINOR < 14
+#elif GRAPHVIZ_MINOR >= 10  && GRAPHVIZ_MINOR < 14
     return(Rgraphviz_ScalarStringOrNull(gvc->common.info[1]));
+
+#else /* GRAPHVIZ_MINOR >= 14 */
+    return(Rgraphviz_ScalarStringOrNull(gvcVersion(gvc)));
+
 #endif
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 14
-    return(Rgraphviz_ScalarStringOrNull(gvcVersion(gvc)));
+#else
+    return(mkString("Unknown graphviz version"));
 #endif
 
 }
-#endif
 
