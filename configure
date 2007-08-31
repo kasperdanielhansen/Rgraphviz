@@ -1318,6 +1318,7 @@ else
   GRAPHVIZ_DIR=""
 fi;
 
+GRAPHVIZ_DEFAULT_DIR=""
 if test -z "${GRAPHVIZ_DIR}" ; then
    { echo "$as_me:$LINENO: No --with-graphviz option was specified. Trying to find graphviz using other methods." >&5
 echo "$as_me: No --with-graphviz option was specified. Trying to find graphviz using other methods." >&6;}
@@ -1419,17 +1420,30 @@ fi
 
       fi
       if test -z "${DOTNEATO_CONFIG}" ; then
-         { echo "$as_me:$LINENO: dotneato-config not found in PATH.  Try specifying location of graphviz using --with-graphviz" >&5
-echo "$as_me: dotneato-config not found in PATH.  Try specifying location of graphviz using --with-graphviz" >&6;}
+         { echo "$as_me:$LINENO: dotneato-config not found in PATH." >&5
+echo "$as_me: dotneato-config not found in PATH." >&6;}
+         GRAPHVIZ_DEFAULT_DIR="/usr/local"
       else
          GRAPHVIZ_VERSTR=`${DOTNEATO_CONFIG} --version`
          PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
          PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
       fi
    fi
-else
-        { echo "$as_me:$LINENO: Using user specified graphviz root directory ${GRAPHVIZ_DIR}" >&5
+fi
+
+if ! test -z "${GRAPHVIZ_DEFAULT_DIR}" ; then
+   { echo "$as_me:$LINENO: Trying default graphviz dir ${GRAPHVIZ_DEFAULT_DIR}.  Consider specifying --with-graphviz" >&5
+echo "$as_me: Trying default graphviz dir ${GRAPHVIZ_DEFAULT_DIR}.  Consider specifying --with-graphviz" >&6;}
+   GRAPHVIZ_DIR=${GRAPHVIZ_DEFAULT_DIR}
+fi
+if ! test -z "${GRAPHVIZ_DIR}"; then
+    if test -z "${GRAPHVIZ_DEFAULT_DIR}" ; then
+                { echo "$as_me:$LINENO: Using user specified graphviz root directory ${GRAPHVIZ_DIR}" >&5
 echo "$as_me: Using user specified graphviz root directory ${GRAPHVIZ_DIR}" >&6;}
+    else
+        { echo "$as_me:$LINENO: Using graphviz root directory ${GRAPHVIZ_DIR}" >&5
+echo "$as_me: Using graphviz root directory ${GRAPHVIZ_DIR}" >&6;}
+    fi
     DOT="${GRAPHVIZ_DIR}/bin/dot"
     if ! test -x "${DOT}" ; then
        { { echo "$as_me:$LINENO: error: $DOT not found.  Check graphviz installation." >&5

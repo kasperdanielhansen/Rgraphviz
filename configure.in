@@ -14,6 +14,7 @@ AC_ARG_WITH(graphviz,
 
 dnl If user doesn't specify --with-graphviz arg, try pkg-config first
 dnl and then try dotneato-config.
+GRAPHVIZ_DEFAULT_DIR=""
 if test -z "${GRAPHVIZ_DIR}" ; then
    AC_MSG_NOTICE(No --with-graphviz option was specified. Trying to find graphviz using other methods.)
    if test -z "${PKG_CONFIG}" ; then
@@ -36,16 +37,27 @@ if test -z "${GRAPHVIZ_DIR}" ; then
          AC_PATH_PROG(DOTNEATO_CONFIG, dotneato-config)
       fi
       if test -z "${DOTNEATO_CONFIG}" ; then
-         AC_MSG_NOTICE(dotneato-config not found in PATH.  Try specifying location of graphviz using --with-graphviz)
+         AC_MSG_NOTICE(dotneato-config not found in PATH.)
+         GRAPHVIZ_DEFAULT_DIR="/usr/local"
       else
          GRAPHVIZ_VERSTR=`${DOTNEATO_CONFIG} --version`
          PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
          PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
       fi
    fi
-else 
-    dnl User specified --with-graphviz DIR
-    AC_MSG_NOTICE(Using user specified graphviz root directory ${GRAPHVIZ_DIR})
+fi
+
+if ! test -z "${GRAPHVIZ_DEFAULT_DIR}" ; then
+   AC_MSG_NOTICE(Trying default graphviz dir ${GRAPHVIZ_DEFAULT_DIR}.  Consider specifying --with-graphviz)
+   GRAPHVIZ_DIR=${GRAPHVIZ_DEFAULT_DIR}
+fi
+if ! test -z "${GRAPHVIZ_DIR}"; then
+    if test -z "${GRAPHVIZ_DEFAULT_DIR}" ; then
+        dnl User specified --with-graphviz DIR
+        AC_MSG_NOTICE(Using user specified graphviz root directory ${GRAPHVIZ_DIR})
+    else
+        AC_MSG_NOTICE(Using graphviz root directory ${GRAPHVIZ_DIR})
+    fi
     DOT="${GRAPHVIZ_DIR}/bin/dot"
     if ! test -x "${DOT}" ; then
        AC_MSG_ERROR($DOT not found.  Check graphviz installation.)
