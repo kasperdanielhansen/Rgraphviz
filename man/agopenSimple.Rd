@@ -63,7 +63,7 @@ agopenSimple(graph, name, kind = NULL, edgeMode=edgemode(graph),
   An object of class \code{Ragraph}
 }
 \references{http://www.research.att.com/sw/tools/graphviz/}
-\author{Jeff Gentry}
+\author{Li Long <li.long@isb-sib.ch>}
 \seealso{\code{\link{layoutGraph}},
   \code{\link{Ragraph}}, \code{\link{plot}}}
 \examples{
