@@ -73,42 +73,8 @@ plot(g1, "twopi")
 \end{center} \end{figure}
 The result is shown in Figure~\ref{plotNeatoTwopi}.
 
-A word of warning: some versions of graphviz (notably 2.4, 2.6 and
-2.8) have a problem using the \textit{neato} layout on graphs with
-singletons (single nodes, unconnected to any other node). If you are
-trying to run these examples on such a system, just add an edge to
-these singleton nodes (that however, will change the output).
-
-% wh 16.6.06):
-%  I have commented the following remarks about fully connectedness 
-%  and the definition of g2 out. Note that g2 is not connected, either!
-%
-% The "twopi" layout method requires a graph to be fully connected.
-% To determine if your graph is fully connected:
-%
-% <<connected>>=
-% isConnected(g1)
-% @
-%
-% A working "twopi" layout can be seen with this graph:
-% <<workingTwopi, fig=TRUE>>=
-% set.seed(123)
-% V <- letters[14:22]
-% g2 <- randomEGraph(V, .2)
-% isConnected(g2)
-% z <- plot(g2,"twopi")
-% @
-%
-%And finally, to demonstrate how the differing layout methods work on
-%this second graph:
-% <<g2dot, fig=TRUE>>=
-% z <- plot(g2,"dot")
-% @
-% <<g2neato, fig=TRUE>>=
-% z <- plot(g2,"neato")
-% @
-
 \subsection{Reciprocated edges}
+
 There is an option \Robject{recipEdges} that details how to
 deal with reciprocated edges in a graph.  The two options are
 \Robject{combined} (the default) and \Robject{distinct}.  This is
@@ -148,12 +114,14 @@ removedEdges(g1)
 
 \section{Subgraphs}
 
-\Rpackage{Rgraphviz} supports the ability to define specific
-clustering of nodes.  This will instruct the layout algorithm to
-attempt to keep the clustered nodes close together.  To do this, one
-must first generate the desired set (one or more) of subgraphs with
-the \Robject{graph} object.
+A user can request that a subset of the nodes in a graph be kept together.
+Graphviz then attempts to find a layout where the specified subgraphs are
+plotted with all nodes relatively close.  This is particularly useful
+when laying out graphs that represent some real physical entity 
+(one biological example is pathways).
 
+In the code below we construct three subgraphs that we will use to group
+the corresponding nodes when \Robject{g1} is rendered.
 <<getSubgraphs>>=
 sg1 <- subGraph(c("a","d","j","i"), g1)
 sg1

@@ -20,7 +20,6 @@ setMethod("plot", "graph",
     invisible(plot(g, y, ...))
   })
 
-
 setMethod("plot", "Ragraph",
   function(x, y, edgeAttrs=list(), ...,
            main=NULL, cex.main=NULL, col.main="black",
@@ -111,12 +110,11 @@ setMethod("plot", "Ragraph",
     } ## else
 
     ## Use the smallest node radius as a means to scale the size of
-    ## the arrowheads -- in INCHES! see man page for "arrows", which is called
-    ## from bLines, which is called from lines.
+    ## the arrowheads -- in INCHES! see man page for "arrows", 
     arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * min(nodeDims) / pi
 
     ## Plot the edges
-    lapply(AgEdge(x), lines, len=arrowLen, edgemode=edgemode)
+    lapply(AgEdge(x), lines, len=arrowLen, edgemode=edgemode, ...)
 
     invisible(x)
   })
