@@ -183,6 +183,7 @@ setGeneric("bLines", function(x, ...) standardGeneric("bLines"))
 setMethod("bLines", "BezierCurve", 
 		function(x,...,col=par("col"), len=0.25, lty=par("lty"),
                          lwd=par("lwd"), arrowtail="none", arrowhead="none") {
+    .Deprecated("bLines", package="Rgraphviz")
     z <- bezierPoints(x)
 
     numSegs <- nrow(z)
@@ -236,6 +237,7 @@ setMethod("show", "BezierCurve", function(object) {
 
 
 ## lines
+##FIXME: do we need this anymore?
 setMethod("lines", "BezierCurve", 
 		function(x,...,col=par("col"), lty=par("lty"), lwd=par("lwd")) {
     z <- bezierPoints(x)
