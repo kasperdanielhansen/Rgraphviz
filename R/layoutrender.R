@@ -1,7 +1,7 @@
 ## Wrapper around paste for simple yet flexible namespacing of the attribute
 ## names
 myAtt <- function(att)
-  paste(prefix="rgraphviz:::", att, sep="")
+  paste(prefix="rgraphviz_", att, sep="")
 
 
 
@@ -264,7 +264,7 @@ setMethod("layoutg", "graph",
 
     ## Set nodeData in the graph instance if missing.
     ## The default for label text will be set to node names
-    prefix <- "rgraphviz:::"
+    prefix <- "rgraphviz_"
     nn <- names(x@nodeData@defaults)
     nd <- myAtt(names(defNodeAttrs))
     missNodeDefs <- nd[!nd %in% nn]
