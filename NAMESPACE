@@ -109,6 +109,8 @@ exportMethods(
                 "to",			# plot only
                 "toDot",		# graph only
                 "txtLabel",
-                "upRight"
+                "upRight",
+                "layoutg",
+                "renderg"
 	)
 
