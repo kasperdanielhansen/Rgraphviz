@@ -1,8 +1,10 @@
 ## Wrapper around paste for simple yet flexible namespacing of the attribute
 ## names
-myAtt <- function(att)
-  paste(prefix="rgraphviz_", att, sep="")
 
+## myAtt <- function(att)
+##   paste(prefix="rgraphviz_", att, sep="")
+
+myAtt <- function(att) att
 
 
 ## This function will draw individual nodes to the plotting device.
@@ -12,50 +14,141 @@ myAtt <- function(att)
 ## lapply(nodeData(thegraph), drawAgNode)
 ## For now this has to be called for each node separately because the user
 ## can give different drawing functions for each node (do we really need that?)
+
 ## FIXME: In the end this should all be vectorized if possible
-myDrawAgNode <- function(node) { 
-  nodeX <- node[[myAtt("x")]]
-  nodeY <- node[[myAtt("y")]]
-  lw <- node[[myAtt("lWidth")]]
-  rw <- node[[myAtt("rWidth")]]
-  rad    <- (lw+rw)/2
-  height <- node[[myAtt("height")]]
-  fg <- node[[myAtt("color")]]
-  style <- node[[myAtt("style")]]
-  shape <- node[[myAtt("shape")]]
 
-  ## Make sure the colors and shapes are set OK
-  if (shape =="") shape <- "ellipse" 
-  if (fg == "") fg <- "black"
-  bg <- node[[myAtt("fillcolor")]]
-  if (bg == "") {
-      if (style == "filled") bg <- "grey"
-      else bg <- "transparent"
-  }
+## myDrawAgNode <- function(node) { ... }
 
- ## Normal Rgraphviz defaults to circle, but DOT defaults to ellipse
-  switch(shape,
-         "circle"    = Rgraphviz:::drawCircleNode(x=nodeX, y=nodeY,
-                                      rad=rad, fg=fg, bg=bg),
-
-         "ellipse"   = Rgraphviz:::ellipse(x=nodeX, y=nodeY,
-                    		   height=height, width=rad*2, fg=fg, bg=bg),
-         "box"=,
-         "rect"=,
-         "rectangle" = rect(nodeX-lw, nodeY-(height/2), 
-			    nodeX+rw, nodeY+(height/2), 
-			    col=bg, border=fg),
-
-         "plaintext"= { if (style == "filled")
-                          rect(nodeX-lw, nodeY-(height/2),
-                               nodeX+rw, nodeY+(height/2),
-                               col=bg, border=FALSE) },
-         stop("Unimplemented node shape: ", shape(node))
-         ) ## switch
+## Update: removed, to be replaced by vectorized form (user can still
+## supply a function, but that has to deal with vectorized data)
 
 
-  myDrawTxtLabel(node, xLoc=nodeX, yLoc=nodeY)
+getLayoutPar <-
+    function(name, node.info, length.out)
+{
+    ans <- node.info[[myAtt(name), exact = TRUE]]
+    if (is.null(ans)) # error if length.out not supplied
+        rep(graph.par(myAtt(name))[[1]], length.out = length.out)
+    else if (!missing(length.out) && length(ans) < length.out)
+    {
+        ans2 <- rep(ans, length.out = length.out)
+        ans2[] <- NA
+        ans2[seq_along(ans)] <- ans
+        ans2
+    }
+    else ans
 }
+
+
+renderNodeInfo <-  ## FIXME: node.info should have names already
+    function(node.info, node.names) 
+{
+    nodeX <- getLayoutPar("nodeX", node.info)
+    nodeY <- getLayoutPar("nodeY", node.info)
+    n <- length(nodeX)
+    lw <- getLayoutPar("lWidth", node.info, n)
+    rw <- getLayoutPar("rWidth", node.info, n)
+    rad    <- (lw+rw)/2
+    height <- getLayoutPar("height", node.info, n)
+    fill <- getLayoutPar("fill", node.info, n)
+    col <- getLayoutPar("col", node.info, n)
+    style <- getLayoutPar("style", node.info, n)
+    shape <- getLayoutPar("shape", node.info, n)
+    label <- getLayoutPar("label", node.info, n)
+    if (is.null(label)) label <- node.names
+
+    possible.shapes <-
+        c("circle", "ellipse", "box", "rectangle", "plaintext")
+    shape <-
+        possible.shapes[pmatch(shape,
+                               possible.shapes,
+                               duplicates.ok = TRUE)]
+    ## shape == circle
+    i <- shape == "circle"
+    if (any(i))
+    {
+        symbols(nodeX[i], nodeY[i], circles = rad[i],
+                fg = col[i], bg = fill[i],
+                inches = FALSE, add = TRUE)
+    }
+    ## shape == box, rect, etc
+    i <- shape %in% c("box", "rectangle")
+    if (any(i))
+    {
+        rect(nodeX[i] - lw[i], nodeY[i] - (height[i] / 2),
+             nodeX[i] + rw[i], nodeY[i] + (height[i] / 2),
+             col = fill[i], border = col[i])
+    }
+    ## shape == ellipse
+    i <- shape == "ellipse"
+    if (any(i))
+    {
+        npoints <- 51
+        tt <- c(seq(-pi, pi, length = npoints), NA)
+        xx <-
+            rep(nodeX[i], each = npoints + 1) +
+                sin(tt) * rep(rad[i], each = npoints + 1)
+        yy <-
+            rep(nodeY[i], each = npoints + 1) +
+                cos(tt) * rep(height[i] / 2, each = npoints + 1)
+        polygon(xx, yy, border = col[i], col = fill[i])
+    }
+
+    ## shape == plaintext
+    ## nothing to do (for style = "filled", use fill = "grey")
+
+    ## draw labels
+
+    ## determine whether node labels fit into nodes and set "cex" accordingly
+    nodeDims <-
+        rbind(x@nodeInfo[[myAtt("rWidth")]] + x@nodeInfo[[myAtt("lWidth")]],
+              x@nodeInfo[[myAtt("height")]])
+##     strWidths  <- 1.1 * strwidth(ifelse(nzchar(labels), labels, "W"))     ## FIXME: something weird going on
+##     strHeights  <- 1.4 * strheight(ifelse(nzchar(labels), labels, "Tg"))
+##     strDims <- rbind(strWidths, strHeights)
+##     cex <- min(nodeDims / strDims)
+    text(nodeX, nodeY, label, cex = 1)
+}
+
+
+renderSpline <-
+    function(spline, head = FALSE, tail = FALSE, len = 1, ...)
+{
+    lapply(spline, lines, ...)
+    if (head)
+    {
+        xy <- tail(bezierPoints(spline[[length(spline)]]), 2)
+        arrows(xy[1], xy[3], xy[2], xy[4], length = len)
+    }
+    if (tail)
+    {
+        xy <- head(bezierPoints(spline[[1]]), 2)
+        arrows(xy[2], xy[4], xy[1], xy[3], length = len)
+    }
+}
+
+
+renderEdgeInfo <-
+    function(edge.info, len, edgemode)
+{
+    n <- length(edge.info$enamesFrom)
+    ## col, lty, lwd, etc
+    ## arrowsize
+    ## direction <- getLayoutPar("direction", edge.info, n) ## UNUSED (isn't this redundant?)
+    arrowhead <- getLayoutPar("arrowhead", edge.info, n) != "none"
+    arrowtail <- getLayoutPar("arrowtail", edge.info, n) != "none"
+    for (i in seq_len(n))
+    {
+        suppressWarnings(renderSpline(edge.info$splines[[i]],
+                                      head = arrowhead[i],
+                                      tail = arrowtail[i],
+                                      len = len))
+    }
+    ## FIXME: handle labels (try to share code)
+}
+
+
+
 
 
 ## This function draws the node and edge labels on the plotting device.
@@ -87,48 +180,12 @@ myDrawTxtLabel <- function(attr, xLoc, yLoc) {
       xLoc <- yLoc <- 0
     }
   }
-  
-  ## NOTE: labelFontsize is translated into cex parameter: fontsize 14 = cex 1 
+
+  ## NOTE: labelFontsize is translated into cex parameter: fontsize 14 = cex 1
   text(xLoc, yLoc, txt, col=attr[[myAtt("fontcolor")]],
        cex=as.numeric(attr[[myAtt("fontsize")]])/14)
 }
 
-
-## Draw the edges from the Bezier curves.
-myEdgeLines <- function(edge, ..., len, edgemode){
-  z <- edge[[myAtt("splines")]]
-  edgeColor <- edge[[myAtt("color")]]
-  if (edgeColor == "") edgeColor <- "black"
-  arrowSize <- edge[[myAtt("arrowsize")]]
-  if ( arrowSize == "" ) arrowSize = "1"
-  len <- len * as.numeric(arrowSize)
-  lty <- edge[[myAtt("lty")]]
-  lwd <- edge[[myAtt("lwd")]]
-  
-  mapply(lines, z, MoreArgs=list(len=len, col=edgeColor, lty=lty, lwd=lwd, ...))
-
-  dir <- edge[[myAtt("dir")]]
-  ## TODO: arrow shapes should/could be from arrowtail/head 
-  if(dir == "both" || dir == "back")
-    {
-      tails = bezierPoints(z[[1]])
-      tail_from = tails[2, ]
-      tail_to   = tails[1, ]
-      arrows(tail_from[1], tail_from[2], tail_to[1], tail_to[2],
-			col=edgeColor, length=len, lty=lty, lwd=lwd)
-    }
-    if(dir == "both" || dir == "forward")
-    {
-       heads = bezierPoints(z[[length(z)]])
-       head_from = heads[nrow(heads)-1, ]
-       head_to   = heads[nrow(heads),]
-       arrows(head_from[1], head_from[2], head_to[1], head_to[2],
-			col=edgeColor, length=len, lty=lty, lwd=lwd)
-    }
-
-    myDrawTxtLabel(edge)
-}
-  
 
 ## Grab the node and node label information from an Ragraph
 ## and put it into graph's nodeData
@@ -143,7 +200,12 @@ myEdgeLines <- function(edge, ..., len, edgemode){
 ##   - labelJust: the adjustment of the node label
 ##   - labelWidth: the width of the node label
 ##   - style: no idea where this comes from
+
 ## FIXME: Need vectorization here, this is terribly inefficient
+## (Update: FIXED)
+
+
+
 nodeRagraph2graph <- function(g, x){
   ## get everything from the Ragraph
   agn <- AgNode(g)
@@ -157,21 +219,24 @@ nodeRagraph2graph <- function(g, x){
   labelY <- sapply(agn, function(f) labelLoc(txtLabel(f))@y)
   labelJust <- sapply(agn, function(f) labelJust(txtLabel(f)))
   labelWidth <- sapply(agn, function(f) labelWidth(txtLabel(f)))
+  ## FIXME?: agopen should have shape=ellipse when layouttype=dot, but
+  ## seems to give circle.  So, we're going to ignore agn@shape and
+  ## use g@layoutType instead
+  shape <- if (g@layoutType == "dot") "ellipse" else "circle"
   style <- sapply(agn, style)
-  
-  ## fill nodeData
-  for(n in seq(along=nnames)){
-    nodeData(x, nnames[n], myAtt("rWidth")) <- rw[n] 
-    nodeData(x, nnames[n], myAtt("lWidth")) <- lw[n]
-    nodeData(x, nnames[n], myAtt("height")) <- height[n]
-    nodeData(x, nnames[n], myAtt("x")) <- centerX[n]
-    nodeData(x, nnames[n], myAtt("y")) <- centerY[n]
-    nodeData(x, nnames[n], myAtt("labelX")) <- labelX[n]
-    nodeData(x, nnames[n], myAtt("labelY")) <- labelY[n]
-    nodeData(x, nnames[n], myAtt("labelJust")) <- labelJust[n]
-    nodeData(x, nnames[n], myAtt("labelWidth")) <- labelWidth[n]
-    nodeData(x, nnames[n], myAtt("style")) <- style[n]
-  }
+  x@nodeInfo <- 
+      list(rWidth = rw, 
+           lWidth = lw, 
+           height = height, 
+           nodeX = centerX, 
+           nodeY = centerY, 
+           labelX = labelX, 
+           labelY = labelY,
+           labelJust = labelJust, 
+           labelWidth = labelWidth,
+           shape = shape,
+           style = style)
+  names(x@nodeInfo) <- myAtt(names(x@nodeInfo))
   return(x)
 }
 
@@ -188,31 +253,50 @@ nodeRagraph2graph <- function(g, x){
 ##   - arrowtail: the type of arrow tails for directed graphs
 ##   - dir: the direction of arrows for directed graphs
 ## FIXME: Need vectorization here, this is terribly inefficient
+
 edgeRagraph2graph <- function(g, x){
   ## get everything from the Ragraph
+
+  getLabelPos <- function(f, slot = "x"){
+      ans <- slot(labelLoc(txtLabel(f)), slot)
+      if (length(ans) == 0) NA_real_
+      else ans
+  }
+  getLabelJust <- function(f){
+      ans <- labelJust(txtLabel(f))
+      if (length(ans) == 0) NA_character_
+      else ans
+  }
+  getLabelWidth <- function(f){
+      ans <- labelWidth(txtLabel(f))
+      if (length(ans) == 0) NA_integer_
+      else ans
+  }
+
   age <- AgEdge(g)
   enamesFrom <- sapply(age, slot, "tail")
   enamesTo <- sapply(age, slot, "head")
   splines <- lapply(age, splines)
-  labelX <- sapply(age, function(f) labelLoc(txtLabel(f))@x)
-  labelY <- sapply(age, function(f) labelLoc(txtLabel(f))@y)
-  labelJust <- sapply(age, function(f) labelJust(txtLabel(f)))
-  labelWidth <- sapply(age, function(f) labelWidth(txtLabel(f)))
+  labelX <- sapply(age, getLabelPos, "x")
+  labelY <- sapply(age, getLabelPos, "y")
+  labelJust <- sapply(age, getLabelJust)
+  labelWidth <- sapply(age, getLabelWidth)
   arrowhead <- sapply(age, arrowhead)
   arrowtail <- sapply(age, arrowtail)
   dir <- sapply(age, slot, "dir")
 
-  ## fill edgeData
-  for(n in seq(along=enamesFrom)){
-    edgeData(x, enamesFrom[n], enamesTo[n], myAtt("splines")) <- splines[n]
-    edgeData(x, enamesFrom[n], enamesTo[n], myAtt("labelX")) <- labelX[n]
-    edgeData(x, enamesFrom[n], enamesTo[n], myAtt("labelY")) <- labelY[n]
-    edgeData(x, enamesFrom[n], enamesTo[n], myAtt("labelJust")) <- labelJust[n]
-    edgeData(x, enamesFrom[n], enamesTo[n], myAtt("labelWidth")) <- labelWidth[n]
-    edgeData(x, enamesFrom[n], enamesTo[n], myAtt("arrowhead")) <- arrowhead[n]
-    edgeData(x, enamesFrom[n], enamesTo[n], myAtt("arrowtail")) <- arrowtail[n]
-    edgeData(x, enamesFrom[n], enamesTo[n], myAtt("dir")) <- dir[n]
-  }
+  x@edgeInfo <-
+      list(enamesFrom = enamesFrom,
+           enamesTo = enamesTo,
+           splines = splines,
+           labelX = labelX,
+           labelY = labelY,
+           labelJust = labelJust,
+           labelWidth = labelWidth,
+           arrowhead = arrowhead,
+           arrowtail = arrowtail,
+           direction = dir)
+  names(x@edgeInfo) <- myAtt(names(x@edgeInfo))
   return(x)
 }
 
@@ -247,7 +331,7 @@ graphRagraph2graph <- function(g, x){
 ##        subGraphs need to be incoorporated
 
 setGeneric("layoutg", function(x, layout="dot", name="", recipEdges=c("combined", "distinct")) standardGeneric("layoutg"))
-           
+
 setMethod("layoutg", "graph",
   function(x, layout="dot", name="", recipEdges=c("combined", "distinct")){
 
@@ -283,7 +367,7 @@ setMethod("layoutg", "graph",
     nn <- gsub(prefix, "", names(x@nodeData@defaults))
     for(i in which(!na %in% nn))
       nodeDataDefaults(x, myAtt(na[i])) <- defs[[i]]
-   
+
     ## set edgeData defaults in the graph instance if missing.
     en <- names(x@edgeData@defaults)
     ed <- myAtt(names(defEdgeAttrs))
@@ -298,7 +382,7 @@ setMethod("layoutg", "graph",
     en <- gsub(prefix, "", names(x@edgeData@defaults))
     for(i in which(!ea %in% en))
       edgeDataDefaults(x, myAtt(ea[i])) <- defs[[i]]
-    
+
     ## set graphData in the graph instance if missing.
     ## FIXME: There are no methods for this in graph yet.
     defGraphAttrs$laydout <- FALSE #flag to indicate layout status
@@ -309,8 +393,8 @@ setMethod("layoutg", "graph",
     names(ga) <- missGraphDefs
     for(n in names(ga))
       x@graphData[[n]] <- ga[[n]]
-   
-    
+
+
     ## ##########################################################
     ## layout graph:
     ## ##########################################################
@@ -323,7 +407,7 @@ setMethod("layoutg", "graph",
                    arrowhead=unlist(edgeData(x, att=myAtt("arrowhead"))),
                    arrowtail=unlist(edgeData(x, att=myAtt("arrowtail"))),
                    arrowsize=unlist(edgeData(x, att=myAtt("arrowsize"))))
-    
+
     g <- agopen(x, name="test", layoutType=layout, nodeAttrs=nattrs,
                 recipEdges=recipEdges)
     x <- nodeRagraph2graph(g,x)
@@ -336,110 +420,103 @@ setMethod("layoutg", "graph",
       edgeDataDefaults(x, attr=myAtt("lwd")) <- 1
     if(!myAtt("lty") %in% names(x@edgeData@defaults))
       edgeDataDefaults(x, attr=myAtt("lty")) <- "solid"
-    
+
     return(x)
   })
-          
+
 
 
 ############################################################
 ## render graph to plotting device
 ############################################################
-setGeneric("renderg", function(x, ..., main=NULL, cex.main=NULL, col.main="black",
-           sub=NULL, cex.sub=NULL, col.sub="black",
-           drawNode=myDrawAgNode, xlab, ylab) standardGeneric("renderg"))
+setGeneric("renderg",
+           function(x, ..., main=NULL, cex.main=NULL, col.main="black",
+                    sub=NULL, cex.sub=NULL, col.sub="black",
+                    drawNode = myDrawAgNode,
+                    xlab, ylab) standardGeneric("renderg"))
 
-setMethod("renderg", "graph",  
-  function(x, ..., main=NULL, cex.main=NULL, col.main="black",
-           sub=NULL, cex.sub=NULL, col.sub="black",
-           drawNode=myDrawAgNode, xlab, ylab){
-    
-  
-    if(is.null(x@graphData[[myAtt("laydout")]]) || !x@graphData[[myAtt("laydout")]])
-      stop("Graph has not been layd out yet. Please use method'layoutg'")
-    plot.new()
 
-    ## eliminate all plot borders
-    old.mai=par(mai=0.01+c(0.83*(!is.null(sub)), 0, 0.83*(!is.null(main)), 0))
-    on.exit(par(mai=old.mai), add=TRUE)
+setGeneric("renderg",
+           function(x, ...) standardGeneric("renderg"))
 
-    ## This grabs the bg and fg color from the default graph attributes.
-    ## FIXME: Should this be stored in the graph as well? Where?
-    ##        Where does the fg come from? It's not in the defaults. For now
-    ## I hardcode this to "black"
-    bg <- x@graphData[[myAtt("bgcolor")]]
-    par(bg=bg)
-    par(fg="black")
 
-    ## Set up the plot region.  We need
-    ## to emulate what happens in 'plot.default' as
-    ## we called plot.new() above, and for the same
-    ## reasons as doing that, calling 'plot' now
-    ## will mung up the thing if people are using
-    ## 'layout' with this.
+setMethod("renderg", "graph",
+          function(x, ...,
+                   drawNodes = renderNodeInfo,
+                   drawEdges = renderEdgeInfo,
 
-    ## !! Currently hardcoding log & asp,
-    ## !! probably want to change that over time.
-    bbox <- x@graphData[[myAtt("bbox")]]
-    plot.window(xlim=c(bbox[,1]), ylim=c(bbox[,2]), log="", asp=NA, ...)
-    xy <- xy.coords(NA, NA)
+                   main=NULL, cex.main=NULL, col.main="black",
+                   sub=NULL, cex.sub=NULL, col.sub="black",
+                   xlab, ylab,
 
-    ## !! Also still hardcoding 'type'
-    plot.xy(xy, type="n", ...)
+                   graph.pars = list())
+      {
 
-    ## That's really strange! Should simply be ignored...
-    if(!missing(xlab) && !missing(ylab))
-      stop("Arguments 'xlab' and 'ylab' are not handled.")
+          old.pars <- graph.par(graph.pars)
+          on.exit(graph.par(old.pars))
+          if(is.null(x@graphData[[myAtt("laydout")]]) || !x@graphData[[myAtt("laydout")]])
+              stop("Graph has not been laid out yet. Please use method 'layoutg'")
+          plot.new()
 
-    ## Add title if necessary
-    if(!is.null(sub)||!is.null(main))
-      title(main, sub, cex.main=cex.main, col.main=col.main, 
-		       cex.sub=cex.sub, col.sub=col.sub)
-    
-    ## determine whether node labels fit into nodes and set "cex" accordingly
-    nodeDims <- t(cbind((unlist(nodeData(x, attr=myAtt("rWidth"))) +
-                  unlist(nodeData(x, attr=myAtt("lWidth")))),
-                  unlist(nodeData(x, attr=myAtt("height")))))
-    strDims  <- sapply(nodeData(x, attr=myAtt("label")),
-                       function(s) {
-      			if(length(s)==0) {
-        			rv <- c(strwidth(" "), strheight(" "))
-      			} else {
-        			rv <- c(strwidth(s)*1.1, strheight(s)*1.4)
-      			}
-      			return(rv)
-    			} )
-    cex <- min(nodeDims / strDims)
-    if(is.finite(cex)) {
-      old.cex <- par(cex=cex)
-      on.exit(par(cex=old.cex), add=TRUE)
-    }
+          ## eliminate all plot borders
+          old.mai <- par(mai=0.01+c(0.83*(!is.null(sub)), 0, 0.83*(!is.null(main)), 0))
+          on.exit(par(mai=old.mai), add=TRUE)
 
-    ## draw nodes
-    if (length(drawNode) == 1) {
-      lapply(nodeData(x), drawNode)
-    } else {
-      ## individual drawing function for each node
-      if (length(drawNode) == length(AgNode(x))) {
-        for (i in seq(along=drawNode)) {
-          drawNode[[i]](nodeData(x)[[i]])
-        }
-      } else {
-        stop(paste("Length of the drawNode parameter is ", length(drawNode),
-                   ", it must be either length 1 or the number of nodes.", sep=""))
-      } ## else
-    } ## else
+          ## This grabs the bg and fg color from the default graph attributes.
+          ## FIXME: Should this be stored in the graph as well? Where?
+          ##        Where does the fg come from? It's not in the defaults. For now
+          ## I hardcode this to "black"
+          bg <- x@graphData[[myAtt("bgcolor")]]
+          par(bg = bg)
+          par(fg = "black")
 
-    ## Use the smallest node radius as a means to scale the size of
-    ## the arrowheads -- in INCHES! see man page for "arrows", which is called
-    ## from bLines, which is called from lines.
-    arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * min(nodeDims) / pi
+          ## Set up the plot region.  We need
+          ## to emulate what happens in 'plot.default' as
+          ## we called plot.new() above, and for the same
+          ## reasons as doing that, calling 'plot' now
+          ## will mung up the thing if people are using
+          ## 'layout' with this.
 
-    ## Plot the edges
-    lapply(edgeData(x), myEdgeLines, len=arrowLen, edgemode=edgemode(x))
+          ## !! Currently hardcoding log & asp,
+          ## !! probably want to change that over time.
 
-    return(invisible(x))
+          bbox <- x@graphData[[myAtt("bbox")]]
+          plot.window(xlim = bbox[,1],
+                      ylim = bbox[,2],
+                      log="", asp=NA)
 
-  })
+          ## xy <- xy.coords(NA, NA)
+          ##     ## !! Also still hardcoding 'type'
+          ##     plot.xy(xy, type="n", ...)
+
+          ## That's really strange! Should simply be ignored...
+          if(!missing(xlab) || !missing(ylab))
+              warning("Arguments 'xlab' and 'ylab' are not handled.")
+
+          ## Add title if necessary
+          if(!is.null(sub)||!is.null(main))
+              title(main, sub, cex.main=cex.main, col.main=col.main,
+                    cex.sub=cex.sub, col.sub=col.sub)
+
+
+
+
+          ## Draw Nodes
+          node.info <- x@nodeInfo # FIXME: write accessor
+          drawNodes(node.info, nodes(x)) 
+
+          ## Use the smallest node radius as a means to scale the size of
+          ## the arrowheads -- in INCHES! see man page for "arrows", which is called
+          ## from bLines, which is called from lines.
+          minDim <-
+              min(getLayoutPar("rWidth", node.info) + getLayoutPar("lWidth", node.info),
+                  getLayoutPar("height", node.info))
+          arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * minDim / pi
+
+          ## Draw Edges
+          edge.info <- x@edgeInfo
+          drawEdges(edge.info, len = arrowLen, edgemode = edgemode(x))
+          return(invisible(x))
+      })
 
 
