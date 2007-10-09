@@ -31,6 +31,7 @@ getLayoutPar <-
         rep(graph.par(myAtt(name))[[1]], length.out = length.out)
     else if (!missing(length.out) && length(ans) < length.out)
     {
+        ## FIXME: That doesn't seem to make sense yet...
         ans2 <- rep(ans, length.out = length.out)
         ans2[] <- NA
         ans2[seq_along(ans)] <- ans
@@ -65,7 +66,7 @@ renderNodeInfo <-  ## FIXME: node.info should have names already
                                duplicates.ok = TRUE)]
     ## shape == circle
     i <- shape == "circle"
-    if (any(i))
+    if (any(i, na.rm=TRUE))
     {
         symbols(nodeX[i], nodeY[i], circles = rad[i],
                 fg = col[i], bg = fill[i],
@@ -73,7 +74,7 @@ renderNodeInfo <-  ## FIXME: node.info should have names already
     }
     ## shape == box, rect, etc
     i <- shape %in% c("box", "rectangle")
-    if (any(i))
+    if (any(i, na.rm=TRUE))
     {
         rect(nodeX[i] - lw[i], nodeY[i] - (height[i] / 2),
              nodeX[i] + rw[i], nodeY[i] + (height[i] / 2),
@@ -81,7 +82,7 @@ renderNodeInfo <-  ## FIXME: node.info should have names already
     }
     ## shape == ellipse
     i <- shape == "ellipse"
-    if (any(i))
+    if (any(i, na.rm=TRUE))
     {
         npoints <- 51
         tt <- c(seq(-pi, pi, length = npoints), NA)
@@ -221,8 +222,10 @@ nodeRagraph2graph <- function(g, x){
   labelWidth <- sapply(agn, function(f) labelWidth(txtLabel(f)))
   ## FIXME?: agopen should have shape=ellipse when layouttype=dot, but
   ## seems to give circle.  So, we're going to ignore agn@shape and
-  ## use g@layoutType instead
-  shape <- if (g@layoutType == "dot") "ellipse" else "circle"
+  ## use g@layoutType instead. Should this be set on all node then? What if
+  ## someone wants to use different shapes for different nodes? Would make more
+  ## more sense to dynamically set this as a graph.par 
+  shape <- rep(if (g@layoutType == "dot") "ellipse" else "circle", length(nnames))
   style <- sapply(agn, style)
   x@nodeInfo <- 
       list(rWidth = rw, 
@@ -429,12 +432,6 @@ setMethod("layoutg", "graph",
 ############################################################
 ## render graph to plotting device
 ############################################################
-setGeneric("renderg",
-           function(x, ..., main=NULL, cex.main=NULL, col.main="black",
-                    sub=NULL, cex.sub=NULL, col.sub="black",
-                    drawNode = myDrawAgNode,
-                    xlab, ylab) standardGeneric("renderg"))
-
 
 setGeneric("renderg",
            function(x, ...) standardGeneric("renderg"))
@@ -484,10 +481,6 @@ setMethod("renderg", "graph",
           plot.window(xlim = bbox[,1],
                       ylim = bbox[,2],
                       log="", asp=NA)
-
-          ## xy <- xy.coords(NA, NA)
-          ##     ## !! Also still hardcoding 'type'
-          ##     plot.xy(xy, type="n", ...)
 
           ## That's really strange! Should simply be ignored...
           if(!missing(xlab) || !missing(ylab))
