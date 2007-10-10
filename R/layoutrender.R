@@ -31,25 +31,19 @@ getRenderPar <-
     ans <- switch(what,
                   nodes = nodeRenderInfo(g, name), 
                   edges = edgeRenderInfo(g, name))
-    if (is.null(ans))
+    if (!is.null(ans) && !any(is.na(ans)))
+        ans[nms]
+    else
     {
-        ans <- parRenderInfo(g, what)[[name]][1]
-        if (is.null(ans)) ans <- graph.par.get(what)[[name]][1]
-        rep(ans, length(nms))
+        default <- parRenderInfo(g, what)[[name]][1]
+        if (is.null(default)) default <- graph.par.get(what)[[name]][1]
+        if (is.null(ans)) rep(default, length(nms))
+        else
+        {
+            ans[is.na(ans)] <- default
+            ans[nms]
+        }
     }
-    else ans[nms]
-##     ans <- node.info[[myAtt(name), exact = TRUE]]
-##     if (is.null(ans)) # error if length.out not supplied
-##         rep(graph.par(myAtt(name))[[1]], length.out = length.out)
-##     else if (!missing(length.out) && length(ans) < length.out)
-##     {
-##         ## FIXME: That doesn't seem to make sense yet...
-##         ans2 <- rep(ans, length.out = length.out)
-##         ans2[] <- NA
-##         ans2[seq_along(ans)] <- ans
-##         ans2
-##     }
-##     else ans
 }
 
 
