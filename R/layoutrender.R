@@ -23,40 +23,51 @@ myAtt <- function(att) att
 ## supply a function, but that has to deal with vectorized data)
 
 
-getLayoutPar <-
-    function(name, node.info, length.out)
+getRenderPar <-
+    function(g, name, what = c("nodes", "edges"))
 {
-    ans <- node.info[[myAtt(name), exact = TRUE]]
-    if (is.null(ans)) # error if length.out not supplied
-        rep(graph.par(myAtt(name))[[1]], length.out = length.out)
-    else if (!missing(length.out) && length(ans) < length.out)
+    what <- match.arg(what)
+    nms <- switch(what, nodes = nodes(g), edges = edgeNames(g))
+    ans <- switch(what,
+                  nodes = nodeRenderInfo(g, name), 
+                  edges = edgeRenderInfo(g, name))
+    if (is.null(ans))
     {
-        ## FIXME: That doesn't seem to make sense yet...
-        ans2 <- rep(ans, length.out = length.out)
-        ans2[] <- NA
-        ans2[seq_along(ans)] <- ans
-        ans2
+        ans <- parRenderInfo(g, what)[[name]][1]
+        if (is.null(ans)) ans <- graph.par.get(what)[[name]][1]
+        rep(ans, length(nms))
     }
-    else ans
+    else ans[nms]
+##     ans <- node.info[[myAtt(name), exact = TRUE]]
+##     if (is.null(ans)) # error if length.out not supplied
+##         rep(graph.par(myAtt(name))[[1]], length.out = length.out)
+##     else if (!missing(length.out) && length(ans) < length.out)
+##     {
+##         ## FIXME: That doesn't seem to make sense yet...
+##         ans2 <- rep(ans, length.out = length.out)
+##         ans2[] <- NA
+##         ans2[seq_along(ans)] <- ans
+##         ans2
+##     }
+##     else ans
 }
 
 
-renderNodeInfo <-  ## FIXME: node.info should have names already
-    function(node.info, node.names) 
+renderNodes <- function(g) 
 {
-    nodeX <- getLayoutPar("nodeX", node.info)
-    nodeY <- getLayoutPar("nodeY", node.info)
-    n <- length(nodeX)
-    lw <- getLayoutPar("lWidth", node.info, n)
-    rw <- getLayoutPar("rWidth", node.info, n)
+    nodeX <- getRenderPar(g, "nodeX", "nodes")
+    nodeY <- getRenderPar(g, "nodeY", "nodes")
+    lw <- getRenderPar(g, "lWidth", "nodes")
+    rw <- getRenderPar(g, "rWidth", "nodes")
     rad    <- (lw+rw)/2
-    height <- getLayoutPar("height", node.info, n)
-    fill <- getLayoutPar("fill", node.info, n)
-    col <- getLayoutPar("col", node.info, n)
-    style <- getLayoutPar("style", node.info, n)
-    shape <- getLayoutPar("shape", node.info, n)
-    label <- getLayoutPar("label", node.info, n)
-    if (is.null(label)) label <- node.names
+    height <- getRenderPar(g, "height", "nodes")
+    fill <- getRenderPar(g, "fill", "nodes")
+    col <- getRenderPar(g, "col", "nodes")
+    textCol <- getRenderPar(g, "textCol", "nodes")
+    style <- getRenderPar(g, "style", "nodes")
+    shape <- getRenderPar(g, "shape", "nodes")
+    label <- getRenderPar(g, "label", "nodes")
+    if (is.null(label)) label <- nodes(g)
 
     possible.shapes <-
         c("circle", "ellipse", "box", "rectangle", "plaintext")
@@ -101,49 +112,54 @@ renderNodeInfo <-  ## FIXME: node.info should have names already
     ## draw labels
 
     ## determine whether node labels fit into nodes and set "cex" accordingly
-    nodeDims <-
-        rbind(x@nodeInfo[[myAtt("rWidth")]] + x@nodeInfo[[myAtt("lWidth")]],
-              x@nodeInfo[[myAtt("height")]])
+    nodeDims <- rbind(rw + lw, height)
 ##     strWidths  <- 1.1 * strwidth(ifelse(nzchar(labels), labels, "W"))     ## FIXME: something weird going on
 ##     strHeights  <- 1.4 * strheight(ifelse(nzchar(labels), labels, "Tg"))
 ##     strDims <- rbind(strWidths, strHeights)
 ##     cex <- min(nodeDims / strDims)
-    text(nodeX, nodeY, label, cex = 1)
+    text(nodeX, nodeY, label, col = textCol, cex = 1)
 }
 
 
 renderSpline <-
-    function(spline, head = FALSE, tail = FALSE, len = 1, ...)
+    function(spline, head = FALSE, tail = FALSE, len = 1,
+             col = "black", ...)
 {
-    lapply(spline, lines, ...)
+    lapply(spline, lines, col = col, ...)
     if (head)
     {
         xy <- tail(bezierPoints(spline[[length(spline)]]), 2)
-        arrows(xy[1], xy[3], xy[2], xy[4], length = len)
+        arrows(xy[1], xy[3], xy[2], xy[4], length = len, col = col)
     }
     if (tail)
     {
         xy <- head(bezierPoints(spline[[1]]), 2)
-        arrows(xy[2], xy[4], xy[1], xy[3], length = len)
+        arrows(xy[2], xy[4], xy[1], xy[3], length = len, col = col)
     }
 }
 
 
-renderEdgeInfo <-
-    function(edge.info, len, edgemode)
+renderEdges <- function(g) ## edge.info, len, edgemode)
 {
-    n <- length(edge.info$enamesFrom)
-    ## col, lty, lwd, etc
-    ## arrowsize
-    ## direction <- getLayoutPar("direction", edge.info, n) ## UNUSED (isn't this redundant?)
-    arrowhead <- getLayoutPar("arrowhead", edge.info, n) != "none"
-    arrowtail <- getLayoutPar("arrowtail", edge.info, n) != "none"
-    for (i in seq_len(n))
+    lw <- getRenderPar(g, "lWidth", "nodes")
+    rw <- getRenderPar(g, "rWidth", "nodes")
+    height <- getRenderPar(g, "height", "nodes")
+    col <- getRenderPar(g, "col", "edges")
+    lty <- getRenderPar(g, "lty", "edges")
+    lwd <- getRenderPar(g, "lwd", "edges")
+    splines <- getRenderPar(g, "splines", "edges")
+    ## direction <- getRenderPar(g, "direction", "edges") ## UNUSED (isn't this redundant?)
+    arrowhead <- getRenderPar(g, "arrowhead", "edges") != "none"
+    arrowtail <- getRenderPar(g, "arrowtail", "edges") != "none"
+    minDim <- min(rw + lw, height)
+    arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * minDim / pi
+    for (i in seq_along(splines))
     {
-        suppressWarnings(renderSpline(edge.info$splines[[i]],
+        suppressWarnings(renderSpline(splines[[i]],
                                       head = arrowhead[i],
                                       tail = arrowtail[i],
-                                      len = len))
+                                      len = len,
+                                      col = col, lty = lty, lwd = lwd))
     }
     ## FIXME: handle labels (try to share code)
 }
@@ -227,7 +243,7 @@ nodeRagraph2graph <- function(g, x){
   ## more sense to dynamically set this as a graph.par 
   shape <- rep(if (g@layoutType == "dot") "ellipse" else "circle", length(nnames))
   style <- sapply(agn, style)
-  x@nodeInfo <- 
+  ans <- 
       list(rWidth = rw, 
            lWidth = lw, 
            height = height, 
@@ -239,8 +255,8 @@ nodeRagraph2graph <- function(g, x){
            labelWidth = labelWidth,
            shape = shape,
            style = style)
-  names(x@nodeInfo) <- myAtt(names(x@nodeInfo))
-  return(x)
+  for (i in names(ans)) names(ans[[i]]) <- nodes(x)
+  ans
 }
 
 
@@ -288,7 +304,7 @@ edgeRagraph2graph <- function(g, x){
   arrowtail <- sapply(age, arrowtail)
   dir <- sapply(age, slot, "dir")
 
-  x@edgeInfo <-
+  ans <- 
       list(enamesFrom = enamesFrom,
            enamesTo = enamesTo,
            splines = splines,
@@ -299,9 +315,10 @@ edgeRagraph2graph <- function(g, x){
            arrowhead = arrowhead,
            arrowtail = arrowtail,
            direction = dir)
-  names(x@edgeInfo) <- myAtt(names(x@edgeInfo))
-  return(x)
+  for (i in names(ans)) names(ans[[i]]) <- edgeNames(x)
+  ans
 }
+
 
 ## Grab the graph-wide information from an Ragraph
 ## and put it into graph's graphData
@@ -413,9 +430,9 @@ setMethod("layoutg", "graph",
 
     g <- agopen(x, name="test", layoutType=layout, nodeAttrs=nattrs,
                 recipEdges=recipEdges)
-    x <- nodeRagraph2graph(g,x)
-    x <- edgeRagraph2graph(g,x)
     x <- graphRagraph2graph(g,x)
+    nodeRenderInfo(x) <- nodeRagraph2graph(g, x)
+    edgeRenderInfo(x) <- edgeRagraph2graph(g, x)
 
     ## The edgeDataDefault for lwd and lty will be set to default
     ## par settings if missing at this point
@@ -439,8 +456,8 @@ setGeneric("renderg",
 
 setMethod("renderg", "graph",
           function(x, ...,
-                   drawNodes = renderNodeInfo,
-                   drawEdges = renderEdgeInfo,
+                   drawNodes = renderNodes,
+                   drawEdges = renderEdges,
 
                    main=NULL, cex.main=NULL, col.main="black",
                    sub=NULL, cex.sub=NULL, col.sub="black",
@@ -491,24 +508,28 @@ setMethod("renderg", "graph",
               title(main, sub, cex.main=cex.main, col.main=col.main,
                     cex.sub=cex.sub, col.sub=col.sub)
 
+          drawNodes(x)
+          drawEdges(x)
 
+          if (FALSE)
+          {
+              ## Draw Nodes
+              node.info <- x@nodeInfo # FIXME: write accessor
+              drawNodes(node.info, nodes(x)) 
 
+              ## Use the smallest node radius as a means to scale the size of
+              ## the arrowheads -- in INCHES! see man page for "arrows", which is called
+              ## from bLines, which is called from lines.
+              minDim <-
+                  min(getLayoutPar("rWidth", node.info) + getLayoutPar("lWidth", node.info),
+                      getLayoutPar("height", node.info))
+              arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * minDim / pi
 
-          ## Draw Nodes
-          node.info <- x@nodeInfo # FIXME: write accessor
-          drawNodes(node.info, nodes(x)) 
+              ## Draw Edges
+              edge.info <- x@edgeInfo
+              drawEdges(edge.info, len = arrowLen, edgemode = edgemode(x))
+          }
 
-          ## Use the smallest node radius as a means to scale the size of
-          ## the arrowheads -- in INCHES! see man page for "arrows", which is called
-          ## from bLines, which is called from lines.
-          minDim <-
-              min(getLayoutPar("rWidth", node.info) + getLayoutPar("lWidth", node.info),
-                  getLayoutPar("height", node.info))
-          arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * minDim / pi
-
-          ## Draw Edges
-          edge.info <- x@edgeInfo
-          drawEdges(edge.info, len = arrowLen, edgemode = edgemode(x))
           return(invisible(x))
       })
 
