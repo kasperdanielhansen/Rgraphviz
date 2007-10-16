@@ -74,10 +74,10 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     ## Allows lwd (line width) and lty (line type) to be set in same manner
     ## color is set
     ## FIXME:  fix examples in AgNode/AgEdge
-    ##       shouldn't do layoutGraph here, but AgEdge/AgNode count on it 
+    ##       shouldn't do graphLayout here, but AgEdge/AgNode count on it 
     ##       to fill in data entries, hence, examples from man-pages...
     ## 
-    if (layout) g <- layoutGraph(g)
+    if (layout) g <- graphLayout(g)
     
     if (!is.null(edgeAttrs$lwd)) {
         for (i in seq(along=edgeAttrs$lwd)) {   
@@ -107,11 +107,11 @@ agread <- function(filename, layoutType=c("dot","neato","twopi","circo","fdp"),
     g@layoutType <- layoutType
 
     ## FIXME:
-    ##       shouldn't do layoutGraph here, but AgEdge/AgNode count on it 
+    ##       shouldn't do graphLayout here, but AgEdge/AgNode count on it 
     ##       to fill in data entries, hence, examples from man-pages...
     ## 
     if (layout)
-        return(layoutGraph(g))
+        return(graphLayout(g))
     else
         return(g)
 }
@@ -122,7 +122,7 @@ agwrite <- function(graph, filename)
                PACKAGE="Rgraphviz")
 }
 
-layoutGraph <- function(graph, layoutType=graph@layoutType) 
+graphLayout <- function(graph, layoutType=graph@layoutType) 
 {
     if (is(graph,"graph"))
         stop("Please use function agopen() for graph objects")

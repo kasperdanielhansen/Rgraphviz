@@ -16,13 +16,15 @@ export(
         getNodeLabels,		# Rgraphviz
         getNodeNames,		# Rgraphviz
         graphvizVersion,	# Rgraphviz
-        layoutGraph,		# Rgraphviz
+        graphLayout,		# Rgraphviz
         makeNodeAttrs,		# own
         pieGlyph,		# own
         removedEdges,		# Rgraphviz
-
+       
 	toFile,
-	agopenSimple
+	agopenSimple,
+
+        layoutGraph
 	)
 
 exportClasses(			# Ragraph
@@ -110,7 +112,6 @@ exportMethods(
                 "toDot",		# graph only
                 "txtLabel",
                 "upRight",
-                "layoutg",
-                "renderg"
+                "renderGraph"
 	)
 

@@ -30,7 +30,7 @@ setMethod("plot", "Ragraph",
     ## layout graph
     ############################################################
     if ( missing(y) ) y <- x@layoutType
-    x <- layoutGraph(x, y)
+    x <- graphLayout(x, y)
 
     ############################################################
     ## render graph

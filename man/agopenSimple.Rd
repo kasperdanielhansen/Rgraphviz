@@ -64,7 +64,7 @@ agopenSimple(graph, name, kind = NULL, edgeMode=edgemode(graph),
 }
 \references{http://www.research.att.com/sw/tools/graphviz/}
 \author{Li Long <li.long@isb-sib.ch>}
-\seealso{\code{\link{layoutGraph}},
+\seealso{\code{\link{graphLayout}},
   \code{\link{Ragraph}}, \code{\link{plot}}}
 \examples{
 set.seed(123)
