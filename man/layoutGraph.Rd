@@ -1,34 +1,79 @@
 \name{layoutGraph}
 \alias{layoutGraph}
-\title{A function to layout graph locations}
+\title{ A function to do layout graph objects }
+
 \description{
-  This function will take an object of class \code{Ragraph} and will
-  perform a libgraph layout on the graph locations.
+  This is a wrapper to layout graph objects using arbitrary layout
+  engines.
 }
+
 \usage{
-layoutGraph(graph, layoutType=graph@layoutType)
+layoutGraph(x, layoutFun = layoutGraphviz, ...)
 }
+
 \arguments{
-  \item{graph}{An object of type \code{Ragraph}}
-  \item{layoutType}{layout algorithm to use}
+  
+  \item{x}{ A graph object }
+  \item{layoutFun}{ A function that performs the graph layout and
+    returns a graph object with all necessary rendering information }
+  \item{\dots}{ Further arguments that are passed t \code{layoutFun} }
+  
 }
-\details{
-  If the graph has already been laid out, this function merely returns
-  its parameter.  Otherwise, it will perform a libgraph layout and
-  retrieve the appropriate location information.
+
+\details{  
+  Layout of a graph and rendering are two separate processes. This
+  function provides an API to use any algorithm for the layout. The only
+  requirements to the \code{layoutFun} is to return a valid graph object
+  with all the necessary rendering information stored in its
+  \code{renderInfo} slot. This comprises
+
+  for nodes:
+  \item{nodeX, nodeY}{the locations of the nodes}
+  \item{lw, rw}{the width components of the nodes, \code{lw+rw=total
+      width}}
+  \item{height}{the heights of the nodes}
+  \item{labelX, labelY}{node label locations}
+  \item{label}{node label text}
+    
+  for edges:
+  \item{splines}{representation of the edge splines as list of
+    \code{\link{BezierCurve}} objects.}
+  \item{labelX, labelY}{edge label locations}
+  \item{label}{edge label text}
+
+  To indicate that this information has been added to the graph, the
+  function should also set the laidout flag in the \code{graphData} slot
+  to \code{TRUE} and add the bounding box information in the format of a
+  two-by-two matrix as item \code{bbox} in the \code{graphData} slot.
+
+  AT&T's \code{Graphviz} is the default layout algoritm to use when
+  \code{layoutGraph} is called without a specific \code{layoutFun}
+  function. See \code{\link{agopen}} for details about how to tweak
+  \code{Graphviz}.
 }
+
+
 \value{
-  A laid out object of type \code{Ragraph}.
+  An object inheriting from class \code{\link[graph]{graph}}
 }
-\author{Jeff Gentry}
-\seealso{\code{\link{agopen}}}
+
+\author{ Florian Hahne, Deepayan Sarkar }
+
+
+\seealso{ \code{\link[graph]{renderGraph}},
+  \code{\link[graph]{graph.par}},
+  \code{\link[graph]{nodeRenderInfo}},
+  \code{\link[graph]{edgeRenderInfo}}
+}
+
 \examples{
+library(graph)
+set.seed(123)
 V <- letters[1:10]
 M <- 1:4
-g1 <- randomGraph(V, M, .2)
-z <- agopen(g1,"foo",layout=FALSE)
-x <- z
-a <- layoutGraph(z)
+g1 <- randomGraph(V, M, 0.8)
+x <- layoutGraph(g1)
 }
-\keyword{graphs}
+
+\keyword{ graphs }
 

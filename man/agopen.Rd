@@ -92,7 +92,7 @@ agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
 }
 \references{http://www.research.att.com/sw/tools/graphviz/}
 \author{Jeff Gentry}
-\seealso{\code{\link{layoutGraph}},
+\seealso{\code{\link{graphLayout}},
   \code{\link{Ragraph}}, \code{\link{plot}}}
 \examples{
 set.seed(123)
