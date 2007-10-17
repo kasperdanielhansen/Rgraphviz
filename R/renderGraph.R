@@ -13,7 +13,9 @@ getRenderPar <-
     function(g, name, what = c("nodes", "edges", "graph"))
 {
     what <- match.arg(what)
-    nms <- switch(what, nodes = nodes(g), edges = edgeNames(g),
+    nms <- switch(what, nodes=nodes(g),
+                  edges=edgeNames(g, recipEdges=graphRenderInfo(g,
+                                     "recipEdges")),
                   graph="graph") #FIXME: Deal with graph names 
     ans <- switch(what,
                   nodes = nodeRenderInfo(g, name), 
@@ -131,7 +133,13 @@ renderSpline <-
     function(spline, head = FALSE, tail = FALSE, len = 1,
              col = "black", lwd=1, lty="solid", ...)
 {
+    ## may get numerics as characters (e.g. "1") which doesn't work
+    ## for 'lines'
+    mylty <- as.numeric(lty)
+    if(!is.na(mylty)) lty <- mylty
     lapply(spline, lines, col = col, lwd=lwd, lty=lty, ...)
+
+    ## the arrow heads
     if (head)
     {
         xy <- tail(bezierPoints(spline[[length(spline)]]), 2)

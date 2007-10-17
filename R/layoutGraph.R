@@ -133,7 +133,8 @@ edgeRagraph2graph <- function(g, x)
              arrowhead = arrowhead,
              arrowtail = arrowtail,
              direction = dir)
-    for (i in names(ans)) names(ans[[i]]) <- edgeNames(x)
+    for (i in names(ans))
+        names(ans[[i]]) <- paste(enamesFrom, enamesTo, sep="~")
     ans
 }
 
@@ -173,10 +174,13 @@ layoutGraph <- function(x, layoutFun=layoutGraphviz, ...){
 ## through Rgraphviz by calling agopen only to get the edge and node
 ## coordinates and the label locations and save all layout information
 ## to the graph
-layoutGraphviz <- function(x, layoutType="dot", name="graph", ...)
+layoutGraphviz <- function(x, layoutType="dot", name="graph",
+                           recipEdges="combined", ...)
 {
-    g <- agopen(x, name="test", layoutType=layoutType, ...)
+    g <- agopen(x, name=name, layoutType=layoutType,
+                recipEdges=recipEdges, ...)
     x <- graphRagraph2graph(g,x)
+    graphRenderInfo(x) <- list(recipEdges=recipEdges)
     nodeRenderInfo(x) <- nodeRagraph2graph(g, x)
     edgeRenderInfo(x) <- edgeRagraph2graph(g, x)
     return(invisible(x))
