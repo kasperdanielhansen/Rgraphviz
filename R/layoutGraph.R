@@ -59,7 +59,7 @@ nodeRagraph2graph <- function(g, x)
     labelY <- centerY
     labelJust <- sapply(agn, getLabelJust)
     labelWidth <- sapply(agn, getLabelWidth)
-    label <- sapply(agn, function(f) labelText(txtLabel(f)))
+    #label <- sapply(agn, function(f) labelText(txtLabel(f)))
     
     ## FIXME?: agopen should have shape=ellipse when layouttype=dot,
     ## but seems to give circle.  So, we're going to ignore agn@shape
@@ -76,7 +76,7 @@ nodeRagraph2graph <- function(g, x)
              height = height, 
              nodeX = centerX, 
              nodeY = centerY,
-             label=label,
+             #label=label,
              labelX = labelX, 
              labelY = labelY,
              labelJust = labelJust, 

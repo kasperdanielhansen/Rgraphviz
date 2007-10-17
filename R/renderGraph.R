@@ -110,8 +110,18 @@ renderNodes <- function(g)
     ## shape == plaintext
     ## nothing to do (for style = "filled", use fill = "grey")
 
+    ## compute label cex from node dimensions if not set
+    cex <- getRenderPar(g, "cex", "nodes")
+    if(is.null(cex)){
+        nodeDims <- cbind(lw+rw, height)
+        strDims  <- cbind(strwidth(label)*1.1, strheight(label)*1.4)
+        strDims[!nzchar(label),] <- c(strwidth(" "), strheight(" "))
+        cex <- min(nodeDims / strDims)
+    }
+    
     ## draw labels
-    text(labelX, labelY, label, col = textCol, cex = as.numeric(fontsize)/14)
+    text(labelX, labelY, label, col=textCol,
+         cex=cex*as.numeric(fontsize)/14)
 }
 
 
@@ -163,6 +173,7 @@ renderEdges <- function(g)
     col <- getRenderPar(g, "col", "edges")
     lty <- getRenderPar(g, "lty", "edges")
     lwd <- getRenderPar(g, "lwd", "edges")
+    cex <- getRenderPar(g, "cex", "edges")
     
     ## set the arrow size
     minDim <- min(rw + lw, height)
@@ -179,7 +190,7 @@ renderEdges <- function(g)
     }
 
     ## draw text labels
-    text(labelX, labelY, label, col = textCol, cex = as.numeric(fontsize)/14)
+    text(labelX, labelY, label, col = textCol, cex = cex)
 }
 
 

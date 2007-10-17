@@ -13,18 +13,19 @@ renderGraph(x, ...)
 
 \arguments{
   \item{x}{ An object derived from class \code{graph}}
-  \item{drawNodes}{ A function that is used for the node rendering. The
-    details of its API are still undecided. Defaults to
-    \code{renderNodes}}
-  \item{drawEdges}{ A function that is used for the edge
-    rendering. Defaults to \code{renderNodes}}
-  \item{graph.par}{A list of rendering paramters to use as default}
   \item{\dots}{further arguments}
 }
 \details{
   This method can render graph objects that have previously been laid
   out using the function \code{\link{layoutGraph}}. The details for user
   defined node drawing remain to be decided.
+  The graph method has the following additional arguments:
+  \item{drawNodes}{ A function that is used for the node rendering. The
+    details of its API are still undecided. Defaults to
+    \code{renderNodes}}
+  \item{drawEdges}{ A function that is used for the edge
+    rendering. Defaults to \code{renderNodes}}
+  \item{graph.par}{A list of rendering paramters to use as default}
 }
 \value{
   This method is called for its side effect.
