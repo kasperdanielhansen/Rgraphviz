@@ -108,15 +108,19 @@ renderNodes <- function(g)
                 cos(tt) * rep(height[i] / 2, each = npoints + 1)
         polygon(xx, yy, border = col[i], col = fill[i])
     }
-
+    
     ## shape == plaintext
     ## nothing to do (for style = "filled", use fill = "grey")
-
+    
     ## compute label cex from node dimensions if not set
     cex <- getRenderPar(g, "cex", "nodes")
     if(is.null(cex)){
         nodeDims <- cbind(lw+rw, height)
-        strDims  <- cbind(strwidth(label)*1.1, strheight(label)*1.4)
+        ## have to deal with  multi-line labels
+        multLine <- strsplit(label, "\n")
+        stw <- sapply(multLine, function(z) max(strwidth(z)))
+        sth <- sapply(multLine, function(z) sum(strheight(z)))
+        strDims  <- cbind(stw*1.2, sth*1.8)
         strDims[!nzchar(label),] <- c(strwidth(" "), strheight(" "))
         cex <- min(nodeDims / strDims)
     }
@@ -126,7 +130,7 @@ renderNodes <- function(g)
          cex=cex*as.numeric(fontsize)/14)
 }
 
-
+    
 
 ## A vectorized function that draws the splines for the edges
 renderSpline <-
@@ -138,7 +142,7 @@ renderSpline <-
     mylty <- as.numeric(lty)
     if(!is.na(mylty)) lty <- mylty
     lapply(spline, lines, col = col, lwd=lwd, lty=lty, ...)
-
+    
     ## the arrow heads
     if (head)
     {
