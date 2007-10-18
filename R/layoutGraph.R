@@ -67,7 +67,8 @@ nodeRagraph2graph <- function(g, x)
     ## then? What if someone wants to use different shapes for
     ## different nodes? Would make more more sense to dynamically set
     ## this as a graph.par
-    shape <- rep(if (g@layoutType == "dot") "ellipse" else "circle", length(nnames))
+    ##shape <- rep(if (g@layoutType == "dot") "ellipse" else "circle", length(nnames))
+    shape <- sapply(agn,shape)
     style <- sapply(agn, style)
 
     ans <- 
@@ -125,7 +126,7 @@ edgeRagraph2graph <- function(g, x)
         list(enamesFrom = enamesFrom,
              enamesTo = enamesTo,
              splines = splines,
-             label=label,
+             #label=label,
              labelX = labelX,
              labelY = labelY,
              labelJust = labelJust,
@@ -175,10 +176,18 @@ layoutGraph <- function(x, layoutFun=layoutGraphviz, ...){
 ## coordinates and the label locations and save all layout information
 ## to the graph
 layoutGraphviz <- function(x, layoutType="dot", name="graph",
-                           recipEdges="combined", ...)
+                           recipEdges="combined", nodeAttrs=list(),
+                           edgeAttrs=list(), ...)
 {
+    ## pass along labels if present
+    nodeLabels <- nodeRenderInfo(x, "label")
+    if(!is.null(nodeLabels)) nodeAttrs$label <- nodeLabels
+    edgeLabels <- edgeRenderInfo(x, "label")
+    if(!is.null(edgeLabels)) edgeAttrs$label <- edgeLabels
+    
     g <- agopen(x, name=name, layoutType=layoutType,
-                recipEdges=recipEdges, ...)
+                recipEdges=recipEdges, nodeAttrs=nodeAttrs,
+                edgeAttrs=edgeAttrs, ...)
     x <- graphRagraph2graph(g,x)
     graphRenderInfo(x) <- list(recipEdges=recipEdges)
     nodeRenderInfo(x) <- nodeRagraph2graph(g, x)
