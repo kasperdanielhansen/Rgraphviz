@@ -60,15 +60,13 @@ nodeRagraph2graph <- function(g, x)
     labelJust <- sapply(agn, getLabelJust)
     labelWidth <- sapply(agn, getLabelWidth)
     #label <- sapply(agn, function(f) labelText(txtLabel(f)))
-    
-    ## FIXME?: agopen should have shape=ellipse when layouttype=dot,
-    ## but seems to give circle.  So, we're going to ignore agn@shape
-    ## and use g@layoutType instead. Should this be set on all node
-    ## then? What if someone wants to use different shapes for
-    ## different nodes? Would make more more sense to dynamically set
-    ## this as a graph.par
-    ##shape <- rep(if (g@layoutType == "dot") "ellipse" else "circle", length(nnames))
     shape <- sapply(agn,shape)
+    ##FIXME: graphviz should return "ellipse" for layoutType dot
+    ##      but does return "circle". This fix will substitute
+    ##       any circles by ellipses, which isn't really what we
+    ##       want. Need to fix this in the C code some time
+    if (g@layoutType == "dot") shape <- gsub("circle", "ellipse", shape)
+    
     style <- sapply(agn, style)
 
     ans <- 

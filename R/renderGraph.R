@@ -65,7 +65,7 @@ renderNodes <- function(g)
     col <- getRenderPar(g, "col", "nodes")
     textCol <- getRenderPar(g, "textCol", "nodes")
     style <- getRenderPar(g, "style", "nodes")
-    shape <- getRenderPar(g, "shape", "nodes")
+    shape <- getRenderPar(g, "shape", "nodes") 
     label <- getRenderPar(g, "label", "nodes")
     fontsize <- getRenderPar(g, "fontsize", "nodes")
     if (is.null(label)) label <- nodes(g)
@@ -116,11 +116,9 @@ renderNodes <- function(g)
     cex <- getRenderPar(g, "cex", "nodes")
     if(is.null(cex)){
         nodeDims <- cbind(lw+rw, height)
-        ## have to deal with  multi-line labels
-        multLine <- strsplit(label, "\n")
-        stw <- sapply(multLine, function(z) max(strwidth(z)))
-        sth <- sapply(multLine, function(z) sum(strheight(z)))
-        strDims  <- cbind(stw*1.2, sth*1.8)
+        stw <- strwidth(label)
+        sth <- strheight(label)
+        strDims  <- cbind(stw*1.1, sth*1.4)
         strDims[!nzchar(label),] <- c(strwidth(" "), strheight(" "))
         cex <- min(nodeDims / strDims)
     }
@@ -250,7 +248,7 @@ setMethod("renderGraph", "graph",
           cex.sub <- getRenderPar(x, "cex.sub", "graph")
           col.main <- getRenderPar(x, "col.main", "graph")
           col.sub <- getRenderPar(x, "col.sub", "graph")
-          if(!is.null(sub)||!is.null(main))
+          if((!is.null(sub)&&main!="")||(!is.null(main)&&sub!=""))
               title(main, sub, cex.main=cex.main, col.main=col.main,
                     cex.sub=cex.sub, col.sub=col.sub)
           
