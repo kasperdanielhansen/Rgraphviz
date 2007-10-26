@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sed s/GRAPHVIZ_PATH/C:\\/R-tools\\/graphviz-2.15/ src/Makevars.win.in > src/Makevars.win
+
