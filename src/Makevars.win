@@ -1,6 +1,0 @@
-PKG_CPPFLAGS=-I../graphviz-2.15/include -DGRAPHVIZ_MAJOR=2 -DGRAPHVIZ_MINOR=15 -DWin32
-
-PKG_LIBS = -L../graphviz-2.15/lib -lgvc -lgraph -lcdt
-
-
-
