@@ -12,7 +12,11 @@ SEXP Rgraphviz_graphvizVersion(void) {
 
 #ifdef Win32
 
-    return(mkString("2.2.1"));
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 15
+    return(Rgraphviz_ScalarStringOrNull(gvcVersion(gvc)));
+#else
+    return(mkString("Unsupported graphviz version on Windows"));
+#endif
 
 #elif GRAPHVIZ_MAJOR == 2 
 
