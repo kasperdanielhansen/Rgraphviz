@@ -1,5 +1,0 @@
-This directory contains a hand-compiled version of graphviz for
-Windows.  The graphviz components required by Rgraphviz were built
-using mingw and linked into static libraries.  These files are not
-used for non-Windows Rgraphviz builds.
-

@@ -1,5 +1,6 @@
-PKG_CPPFLAGS=-I../graphviz-win32/include -DGRAPHVIZ_MAJOR=2 -DGRAPHVIZ_MINOR=2 -DWin32
+PKG_CPPFLAGS=-I../graphviz-2.15/include -DGRAPHVIZ_MAJOR=2 -DGRAPHVIZ_MINOR=15 -DWin32
 
-PKG_LIBS = -L../graphviz-win32/lib -ldotgen -ltwopigen -lcircogen -lneatogen -lpack -lcommon -lpathplan -lgvrender -lgvgd -lgraph -lagraph -lcdt   
+PKG_LIBS = -L../graphviz-2.15/lib -lgvc -lgraph -lcdt
+
 
 
