@@ -19,10 +19,15 @@ o. install graphviz ***2.15*** Windows ***binary*** distribution from
 
 o. set the following Windows environment variables accordingly
    (control panel -> systems -> Advanced -> Environment Variables ):
+   (a) create new user variables:
      GRAPHVIZ_INSTALL_DIR   (e.g., C:\/R-tools\/graphviz-2.15)
      GRAPHVIZ_INSTALL_MAJOR (e.g., 2)
      GRAPHVIZ_INSTALL_MINOR (e.g., 15)
-   Notice the way "\/" are used for the paths.
+
+     Notice the way "\/" are used for the paths above.
+
+   (b) add to user variable 'path': $GRAPHVIZ_INSTALL_DIR/bin
+     e.g., C:\R-tools\graphviz-2.15\bin
 
 o. run "R CMD INSTALL ...Rgraphviz" as usual
 
