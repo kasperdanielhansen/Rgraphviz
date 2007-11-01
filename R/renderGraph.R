@@ -193,10 +193,10 @@ renderEdges <- function(g)
     label <- getRenderPar(g, "label", "edges")
     labelX <- getRenderPar(g, "labelX", "edges")
     labelY  <- getRenderPar(g, "labelY", "edges")
-    #labelJust <- getRenderPar(g, "labelJust", "edges") ## FIXME: do we need this
+    #labelJust <- getRenderPar(g, "labelJust", "edges") ## FIXME:do we need this
     #labelJust <- as.numeric(gsub("l", 0, gsub("n", -0.5, gsub("r", -1,
     #                        labelJust))))              
-    #labelWidth <- getRenderPar(g, "labelWidth", "edges") ## FIXME: do we need this?
+    #labelWidth <- getRenderPar(g, "labelWidth", "edges")
     ## these only live within R
     fontsize <- getRenderPar(g, "fontsize", "edges")
     textCol <- getRenderPar(g, "textCol", "edges")
@@ -220,7 +220,8 @@ renderEdges <- function(g)
     }
 
     ## draw text labels
-    text(labelX, labelY, label, col = textCol, cex = cex)
+    text(labelX, labelY, label, col=textCol,
+         cex=cex*as.numeric(fontsize)/14)
 }
 
 
@@ -236,12 +237,16 @@ setMethod("renderGraph", "graph",
                    graph.pars=list())
       {
 
+          ## evaluate defaults passed in via the graph.pars argument
           old.graph.pars <- graph.par(graph.pars)
           on.exit(graph.par(old.graph.pars))
+
+          ## check that the graph has been laid out
           laidout <- getRenderPar(x, "laidout", "graph")
           bbox <- getRenderPar(x, "bbox", "graph")
           if(!laidout)
-              stop("Graph has not been laid out yet. Please use function 'layoutGraph'")
+              stop("Graph has not been laid out yet. Please use function ",
+                   "'layoutGraph'")
           plot.new()
 
           ## eliminate all plot borders but leave space for title and
@@ -250,30 +255,38 @@ setMethod("renderGraph", "graph",
           main <- getRenderPar(x, "main", "graph")
           cex.main <- getRenderPar(x, "cex.main", "graph")
           cex.sub <- getRenderPar(x, "cex.sub", "graph")
-          mheight <- if(nchar(main)>0) strheight(main, "inches", cex.main) else 0
-          sheight <- if(nchar(sub)>0) strheight(sub, "inches", cex.sub) else 0
-          old.pars <- par(mai=c(sheight+0.1, 0, mheight+0.1,0))
+          mheight <- if(nchar(main)>0) strheight(main, "inches",
+                                                  cex.main)+0.3 else 0.1
+          sheight <- if(nchar(sub)>0) strheight(sub, "inches",
+                                                cex.sub)+0.2 else 0.1
+          old.pars <- par(mai=c(sheight, 0, mheight,0))
           on.exit(par(old.pars), add=TRUE)
 
           ## set coordinate system to the values of the bounding box
-          plot.window(xlim = bbox[,1],
-                      ylim = bbox[,2],
+          ## and keep aspect ratio fixed when margins increase due to
+          ## title and subtitle
+          aspFact <- (sheight+mheight)/par("din")[2]
+          usr <- c(bbox[1,1] - (bbox[2,1] * (aspFact/2)),
+                    bbox[2,1] + (bbox[2,1] * (aspFact/2)),
+                    bbox[,2])
+          plot.window(xlim=usr[1:2], ylim=usr[3:4],
                       log="", asp=NA)
-          old.pars <- append(old.pars, par(usr=c(bbox[,1], bbox[,2])))
+          old.pars <- append(old.pars, par(usr=usr))
 
           ## Add title and subtitle if available
           old.pars <- append(old.pars, par(xpd=NA))
-          if(mheight>0){
+          if(mheight>0.1){
               col.main <- getRenderPar(x, "col.main", "graph")
-              text(bbox[2,1]/2, bbox[2,2], main, cex=cex.main,
-                   col=col.main, adj=c(0.5, 0))
+              moffset <- (bbox[2,2]/par("pin")[2] * mheight)/2
+              text(bbox[2,1]/2, bbox[2,2] + moffset, main,
+                   cex=cex.main, col=col.main, adj=c(0.5))
           }
-          if(sheight>0){
+          if(sheight>0.1){
               col.sub<- getRenderPar(x, "col.sub", "graph")
-              text(bbox[2,1]/2, bbox[1,2], sub, cex=cex.sub,
-                   col=col.sub, adj=c(0.5, 1))
+              soffset <- (bbox[2,2]/par("pin")[2] * sheight)/2
+              text(bbox[2,1]/2, bbox[1,2] - soffset,
+                   sub, cex=cex.sub, col=col.sub, adj=c(0.5))
           }
-          
           
           ## Draw Nodes, using default vectorized function or a
           ## node-by-node user-defined function   
@@ -283,21 +296,39 @@ setMethod("renderGraph", "graph",
               }else  drawNodes(x)
 
 
-          ## Draw edges
+          ## Draw edges using default edge rendering function
           drawEdges(x)
 
-          ## compute node coordinates (native, inch and pixel)
-          x1 <- getRenderPar(x, "nodeX", "nodes")-getRenderPar(x, "lWidth", "nodes")
-          y1 <- getRenderPar(x, "nodeY", "nodes")-getRenderPar(x, "height", "nodes")/2
-          x2 <- getRenderPar(x, "nodeX", "nodes")+getRenderPar(x, "rWidth", "nodes")
-          y2 <- getRenderPar(x, "nodeY", "nodes")+getRenderPar(x, "height", "nodes")/2
+          ## compute native node coordinates for imageMaps
+          x1 <- {getRenderPar(x, "nodeX", "nodes") -
+                     getRenderPar(x, "lWidth", "nodes")}
+          y1 <- {getRenderPar(x, "nodeY", "nodes") -
+                     getRenderPar(x, "height", "nodes")/2}
+          x2 <- {getRenderPar(x, "nodeX", "nodes") +
+                     getRenderPar(x, "rWidth", "nodes")}
+          y2 <- {getRenderPar(x, "nodeY", "nodes") +
+                     getRenderPar(x, "height", "nodes")/2}
           figDims <- par("din")
+          ## these factors should accomodate for any figure margins
+          xfac <- diff(par("plt")[1:2])
+          xoffset <- par("plt")[1]
           yfac <- diff(par("plt")[3:4])
           yoffset <- par("plt")[3]
-          nativeCoords <- cbind(x1=x1/bbox[2,1], y1=1-(((y1/bbox[2,2])*yfac)+yoffset),
-                                x2=x2/bbox[2,1], y2=1-(((y2/bbox[2,2])*yfac)+yoffset))
+          ## need to take into account the aspect factor for x values
+          x1n <- {((x1/diff(usr[1:2])) * xfac) + xoffset +
+                      (bbox[1,1]-usr[1])/diff(usr[1:2])}
+          x2n <- {((x2/diff(usr[1:2])) * xfac) + xoffset +
+                      (bbox[1,1]-usr[1])/diff(usr[1:2])}
+          ## invert y values because [0,0] is on top left for imageMap
+          y1n <- 1-(((y1/bbox[2,2])*yfac)+yoffset)
+          y2n <- 1-(((y2/bbox[2,2])*yfac)+yoffset)
+          nativeCoords <- cbind(x1n, y1n, x2n,y2n)
+
+          ## store information about the rendering process in the graph
           graphRenderInfo(x) <- list(nativeCoords=nativeCoords,
-                                     figDim=figDims*devRes())
+                                     figDim=figDims*devRes(),
+                                     usr=usr, mai=par("mai"))
+          
           return(invisible(x))
       })
 
