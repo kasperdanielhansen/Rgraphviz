@@ -182,6 +182,11 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     if(!is.null(nodeLabels)) nodeAttrs$label <- nodeLabels
     edgeLabels <- edgeRenderInfo(x, "label")
     if(!is.null(edgeLabels)) edgeAttrs$label <- edgeLabels
+
+    ## pass fontsize
+    fontsize <- getRenderPar(x, "fontsize")
+    names(fontsize) <- nodes(x)
+    nodeAttrs$fontsize <- fontsize
     
     g <- agopen(x, name=name, layoutType=layoutType,
                 recipEdges=recipEdges, nodeAttrs=nodeAttrs,

@@ -128,7 +128,7 @@ renderNodes <- function(g)
          cex=cex*as.numeric(fontsize)/14)
 }
 
-    
+
 
 ## A vectorized function that draws the splines for the edges
 renderSpline <-
@@ -154,6 +154,26 @@ renderSpline <-
         arrows(xy[2], xy[4], xy[1], xy[3], length = len, col = col,
                lwd=lwd, lty=lty)
     }
+}
+
+
+
+## find R's resolution for the current device
+devRes <- function(){
+    require(grid)
+    if(current.viewport()$name != "ROOT"){
+        vpt <- current.vpTree()
+        popViewport(0)
+        xres <- abs(as.numeric(convertWidth(unit(1, "inches"), "native")))
+        yres <- abs(as.numeric(convertHeight(unit(1, "inches"), "native")))
+    pushViewport(vpt)
+    }else{
+        xres <- abs(as.numeric(convertWidth(unit(1, "inches"), "native")))
+        yres <- abs(as.numeric(convertHeight(unit(1, "inches"), "native")))
+    }
+    retval <- c(xres, yres)
+    names(retval) <- c("xres", "yres")
+    return(retval)
 }
 
 
@@ -187,7 +207,7 @@ renderEdges <- function(g)
     
     ## set the arrow size
     minDim <- min(rw + lw, height)
-    arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * minDim / pi
+    arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * minDim / (1.5*pi)
 
     ## plot the edge splines
     for (i in seq_along(splines))
@@ -216,56 +236,70 @@ setMethod("renderGraph", "graph",
                    graph.pars=list())
       {
 
-          old.pars <- graph.par(graph.pars)
-          on.exit(graph.par(old.pars))
+          old.graph.pars <- graph.par(graph.pars)
+          on.exit(graph.par(old.graph.pars))
           laidout <- getRenderPar(x, "laidout", "graph")
           bbox <- getRenderPar(x, "bbox", "graph")
           if(!laidout)
               stop("Graph has not been laid out yet. Please use function 'layoutGraph'")
           plot.new()
 
-          ## eliminate all plot borders
+          ## eliminate all plot borders but leave space for title and
+          ## subtitle if needed
           sub <-  getRenderPar(x, "sub", "graph")
           main <- getRenderPar(x, "main", "graph")
-          old.mai <- par(mai=0.01+c(0.83*(!is.null(sub)), 0, 0.83*(!is.null(main)), 0))
-          on.exit(par(mai=old.mai), add=TRUE)
+          cex.main <- getRenderPar(x, "cex.main", "graph")
+          cex.sub <- getRenderPar(x, "cex.sub", "graph")
+          mheight <- if(nchar(main)>0) strheight(main, "inches", cex.main) else 0
+          sheight <- if(nchar(sub)>0) strheight(sub, "inches", cex.sub) else 0
+          old.pars <- par(mai=c(sheight+0.1, 0, mheight+0.1,0))
+          on.exit(par(old.pars), add=TRUE)
 
-          ## Set up the plot region.  We need
-          ## to emulate what happens in 'plot.default' as
-          ## we called plot.new() above, and for the same
-          ## reasons as doing that, calling 'plot' now
-          ## will mung up the thing if people are using
-          ## 'layout' with this.
-
-          ## !! Currently hardcoding log & asp,
-          ## !! probably want to change that over time.
+          ## set coordinate system to the values of the bounding box
           plot.window(xlim = bbox[,1],
                       ylim = bbox[,2],
                       log="", asp=NA)
+          old.pars <- append(old.pars, par(usr=c(bbox[,1], bbox[,2])))
 
-          ## Add title if necessary
-          cex.main <- getRenderPar(x, "cex.main", "graph")
-          cex.sub <- getRenderPar(x, "cex.sub", "graph")
-          col.main <- getRenderPar(x, "col.main", "graph")
-          col.sub <- getRenderPar(x, "col.sub", "graph")
-          if((!is.null(sub)&&main!="")||(!is.null(main)&&sub!=""))
-              title(main, sub, cex.main=cex.main, col.main=col.main,
-                    cex.sub=cex.sub, col.sub=col.sub)
+          ## Add title and subtitle if available
+          old.pars <- append(old.pars, par(xpd=NA))
+          if(mheight>0){
+              col.main <- getRenderPar(x, "col.main", "graph")
+              text(bbox[2,1]/2, bbox[2,2], main, cex=cex.main,
+                   col=col.main, adj=c(0.5, 0))
+          }
+          if(sheight>0){
+              col.sub<- getRenderPar(x, "col.sub", "graph")
+              text(bbox[2,1]/2, bbox[1,2], sub, cex=cex.sub,
+                   col=col.sub, adj=c(0.5, 1))
+          }
           
-          ## Draw Nodes, using default vectorized function or a node-by-node user-defined
-          ## function   
+          
+          ## Draw Nodes, using default vectorized function or a
+          ## node-by-node user-defined function   
           if(is.character(drawNodes)){
                   if(match.arg(drawNodes)=="renderNodes")
-                    renderNodes(x)
+                    Rgraphviz:::renderNodes(x)
               }else  drawNodes(x)
 
 
           ## Draw edges
           drawEdges(x)
 
+          ## compute node coordinates (native, inch and pixel)
+          x1 <- getRenderPar(x, "nodeX", "nodes")-getRenderPar(x, "lWidth", "nodes")
+          y1 <- getRenderPar(x, "nodeY", "nodes")-getRenderPar(x, "height", "nodes")/2
+          x2 <- getRenderPar(x, "nodeX", "nodes")+getRenderPar(x, "rWidth", "nodes")
+          y2 <- getRenderPar(x, "nodeY", "nodes")+getRenderPar(x, "height", "nodes")/2
+          figDims <- par("din")
+          yfac <- diff(par("plt")[3:4])
+          yoffset <- par("plt")[3]
+          nativeCoords <- cbind(x1=x1/bbox[2,1], y1=1-(((y1/bbox[2,2])*yfac)+yoffset),
+                                x2=x2/bbox[2,1], y2=1-(((y2/bbox[2,2])*yfac)+yoffset))
+          graphRenderInfo(x) <- list(nativeCoords=nativeCoords,
+                                     figDim=figDims*devRes())
           return(invisible(x))
       })
-
 
 
 
