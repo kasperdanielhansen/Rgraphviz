@@ -255,10 +255,10 @@ setMethod("renderGraph", "graph",
           main <- getRenderPar(x, "main", "graph")
           cex.main <- getRenderPar(x, "cex.main", "graph")
           cex.sub <- getRenderPar(x, "cex.sub", "graph")
-          mheight <- if(nchar(main)>0) strheight(main, "inches",
-                                                  cex.main)+0.3 else 0.1
-          sheight <- if(nchar(sub)>0) strheight(sub, "inches",
-                                                cex.sub)+0.2 else 0.1
+          mheight <- if(!is.null(main) && nchar(main)>0)
+              strheight(main, "inches", cex.main)+0.3 else 0.1
+          sheight <- if(!is.null(sub) && nchar(sub)>0)
+              strheight(sub, "inches", cex.sub)+0.2 else 0.1
           old.pars <- par(mai=c(sheight, 0, mheight,0))
           on.exit(par(old.pars), add=TRUE)
 
