@@ -15,7 +15,9 @@ o. make sure your MSVCR80.DLL is from Microsoft Visual C++ 2005 SP1
 
 o. install graphviz ***2.15*** Windows ***binary*** distribution from
       http://www.graphviz.org/Download_windows.php
-   , say, in dir $DIR
+   , say, in dir $DIR.  We use the following as an example:
+         C:\R-tools\graphviz-2.15
+   .  If you install it in other dir, just use your dir correspondingly.
 
 o. set the following Windows environment variables accordingly
    (control panel -> systems -> Advanced -> Environment Variables ):
@@ -36,6 +38,7 @@ o. when running R, do the following in THE FOLLOWING order:
     > dyn.load("c:/R-tools/graphviz-2.15/bin/gvc.dll")
     > library("Rgraphviz")
     > ...operate as normal...
+   The point is to explicitly load in graphviz/bin/gvc.dll.
    This is to work around an issue related to libs name conflicts.
 
 Source based installation
