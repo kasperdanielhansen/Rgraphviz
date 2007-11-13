@@ -9,7 +9,7 @@
 }
 \usage{
 renderGraph(x, ...)
-\S4method{renderGraph}{x, drawNodes, drawEdges,graph.par}
+\S4method{renderGraph}{graph}{x, drawNodes, drawEdges,graph.pars}
 }
 
 \arguments{
@@ -19,7 +19,7 @@ renderGraph(x, ...)
     \code{renderNodes}}
   \item{drawEdges}{ A function that is used for the edge
     rendering. Defaults to \code{renderNodes}}
-  \item{graph.par}{A list of rendering paramters to use as default}
+  \item{graph.pars}{A list of rendering paramters to use as default}
   \item{\dots}{further arguments}
 }
 \details{
