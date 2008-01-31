@@ -63,6 +63,8 @@ renderNodes <- function(g)
     ## these only live within R
     fill <- getRenderPar(g, "fill", "nodes")
     col <- getRenderPar(g, "col", "nodes")
+    lwd <- getRenderPar(g, "lwd", "nodes")
+    lty <- getRenderPar(g, "lty", "nodes")
     textCol <- getRenderPar(g, "textCol", "nodes")
     style <- getRenderPar(g, "style", "nodes")
     shape <- getRenderPar(g, "shape", "nodes") 
@@ -83,7 +85,7 @@ renderNodes <- function(g)
     if (any(i, na.rm=TRUE))
     {
         symbols(nodeX[i], nodeY[i], circles = rad[i],
-                fg = col[i], bg = fill[i],
+                fg = col[i], bg = fill[i], lwd = lwd[i], lty = lty[i],
                 inches = FALSE, add = TRUE)
     }
     ## shape == box, rect, etc
@@ -92,7 +94,7 @@ renderNodes <- function(g)
     {
         rect(nodeX[i] - lw[i], nodeY[i] - (height[i] / 2),
              nodeX[i] + rw[i], nodeY[i] + (height[i] / 2),
-             col = fill[i], border = col[i])
+             col = fill[i], border = col[i], lty = lty[i], lwd = lwd[i])
     }
     ## shape == ellipse
     i <- shape == "ellipse"
@@ -106,7 +108,8 @@ renderNodes <- function(g)
         yy <-
             rep(nodeY[i], each = npoints + 1) +
                 cos(tt) * rep(height[i] / 2, each = npoints + 1)
-        polygon(xx, yy, border = col[i], col = fill[i])
+        polygon(xx, yy, border = col[i], col = fill[i], lwd = lwd[i],
+                lty = lty[i])
     }
     
     ## shape == plaintext
@@ -216,7 +219,8 @@ renderEdges <- function(g)
                                       head = arrowhead[i],
                                       tail = arrowtail[i],
                                       len = arrowLen,
-                                      col = col[i], lty = lty[i], lwd = lwd[i]))
+                                      col = col[i], lty = lty[i],
+                                      lwd = lwd[i]))
     }
 
     ## draw text labels

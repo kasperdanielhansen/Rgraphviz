@@ -59,7 +59,7 @@ nodeRagraph2graph <- function(g, x)
     labelY <- centerY
     labelJust <- sapply(agn, getLabelJust)
     labelWidth <- sapply(agn, getLabelWidth)
-    #label <- sapply(agn, function(f) labelText(txtLabel(f)))
+    label <- sapply(agn, function(f) labelText(txtLabel(f)))
     shape <- sapply(agn,shape)
     ##FIXME: graphviz should return "ellipse" for layoutType dot
     ##      but does return "circle". This fix will substitute
@@ -179,9 +179,11 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
 {
     ## pass along labels if present
     nodeLabels <- nodeRenderInfo(x, "label")
-    if(!is.null(nodeLabels)) nodeAttrs$label <- nodeLabels
+    if(!is.null(nodeLabels) && is.null(nodeAttrs$label))
+        nodeAttrs$label <- nodeLabels
     edgeLabels <- edgeRenderInfo(x, "label")
-    if(!is.null(edgeLabels)) edgeAttrs$label <- edgeLabels
+    if(!is.null(edgeLabels) && is.null(edgeAttrs$label))
+        edgeAttrs$label <- edgeLabels
 
     ## pass fontsize
     fontsize <- getRenderPar(x, "fontsize")
@@ -193,8 +195,16 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
                 edgeAttrs=edgeAttrs, ...)
     x <- graphRagraph2graph(g,x)
     graphRenderInfo(x) <- list(recipEdges=recipEdges)
-    nodeRenderInfo(x) <- nodeRagraph2graph(g, x)
-    edgeRenderInfo(x) <- edgeRagraph2graph(g, x)
+    ## get information from the Ragraph object. Only replace labels if 
+    ## they have been  explicitely specified in the edgeAttrs or nodeAttrs
+    nri <- nodeRagraph2graph(g, x)
+    if(!is.null(nodeAttrs$label))
+        nri$label <- nodeAttrs$label
+    nodeRenderInfo(x) <- nri
+    eri <- edgeRagraph2graph(g, x)
+    if(!is.null(edgeAttrs$label))
+        eri$label <- edgeAttrs$label
+    edgeRenderInfo(x) <- eri
     return(invisible(x))
   }
 
