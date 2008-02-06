@@ -5,7 +5,7 @@ Installing Rgraphviz
 Windows
 =======
 
-Oct 30, 2007
+Feb 5, 2008
 
 Here are the steps to build Rgraphviz on Windows:
 
@@ -13,33 +13,36 @@ o. make sure your MSVCR80.DLL is from Microsoft Visual C++ 2005 SP1
    Redistributable Package 
    http://www.microsoft.com/downloads/details.aspx?familyid=200B2FD9-AE1A-4A14-984D-389C36F85647&displaylang=en
 
-o. install graphviz ***2.15*** Windows ***binary*** distribution from
+o. install graphviz ***2.16*** Windows ***binary*** distribution from
       http://www.graphviz.org/Download_windows.php
    , say, in dir $DIR.  We use the following as an example:
-         C:\R-tools\graphviz-2.15
+         C:\R-tools\graphviz-2.16
    .  If you install it in other dir, just use your dir correspondingly.
 
 o. set the following Windows environment variables accordingly
    (control panel -> systems -> Advanced -> Environment Variables ):
    (a) create new user variables:
-     GRAPHVIZ_INSTALL_DIR   (e.g., C:\/R-tools\/graphviz-2.15)
+     GRAPHVIZ_INSTALL_DIR   (e.g., C:\/R-tools\/graphviz-2.16)
      GRAPHVIZ_INSTALL_MAJOR (e.g., 2)
-     GRAPHVIZ_INSTALL_MINOR (e.g., 15)
+     GRAPHVIZ_INSTALL_MINOR (e.g., 16)
 
      Notice the way "\/" are used for the paths above.
 
    (b) add to user variable 'path': $GRAPHVIZ_INSTALL_DIR/bin
-     e.g., C:\R-tools\graphviz-2.15\bin
+     e.g., C:\R-tools\graphviz-2.16\bin
 
 o. run "R CMD INSTALL ...Rgraphviz" as usual
 
-o. when running R, do the following in THE FOLLOWING order:
-    > ...make sure NO library("graph") is loaded...
-    > dyn.load("c:/R-tools/graphviz-2.15/bin/gvc.dll")
+o. to be safe when running R, do the following in THE FOLLOWING order:
+    > ## ...make sure NO library("graph") is loaded...
+    > dyn.load("c:/R-tools/graphviz-2.16/bin/gvc.dll")
     > library("Rgraphviz")
-    > ...operate as normal...
-   The point is to explicitly load in graphviz/bin/gvc.dll.
-   This is to work around an issue related to libs name conflicts.
+    > ## ...operate as normal...
+   This explicit loading of graphviz-2.16/bin/gvc.dll is a workaround
+   for resolving libs name conflicts with the graph package. Code has
+   been added to Rgraphviz's .onLoad function to resolve these libs
+   name conflicts with the graph package, but this code is considered
+   to be experimental.
 
 Source based installation
 =========================
