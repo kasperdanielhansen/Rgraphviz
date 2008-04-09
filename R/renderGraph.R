@@ -75,7 +75,7 @@ renderNodes <- function(g)
 
     ## deal with different shapes
     possible.shapes <-
-        c("circle", "ellipse", "box", "rectangle", "plaintext")
+        c("circle", "ellipse", "box", "rectangle", "plaintext", "triangle")
     shape <-
         possible.shapes[pmatch(shape,
                                possible.shapes,
@@ -89,18 +89,32 @@ renderNodes <- function(g)
                 inches = FALSE, add = TRUE)
     }
     ## shape == box, rect, etc
-    i <- shape %in% c("box", "rectangle")
+    i <- shape %in% c("box", "rectangle", "rect")
     if (any(i, na.rm=TRUE))
     {
         rect(nodeX[i] - lw[i], nodeY[i] - (height[i] / 2),
              nodeX[i] + rw[i], nodeY[i] + (height[i] / 2),
              col = fill[i], border = col[i], lty = lty[i], lwd = lwd[i])
     }
+    ## shape == triangle
+    ## FIXME: The edges are not computed for triangle shapes in Graphviz
+    ##        allthough the correct shape is stored in the agraph object.
+    ##        There must be something weird going on internally in the
+    ##        C code....
+    i <- shape == "triangle"
+    if (any(i, na.rm=TRUE))
+    {
+        polygon(x=c(nodeX[i] - lw[i], nodeX[i], nodeX[i] + lw[i]),
+                y=c(nodeY[i] - (height[i] / 2), nodeY[i] + (height[i] / 2),
+                nodeY[i] - (height[i] / 2)),
+                col = fill[i], border = col[i], lty = lty[i], lwd = lwd[i])
+    }
+    
     ## shape == ellipse
     i <- shape == "ellipse"
     if (any(i, na.rm=TRUE))
     {
-        npoints <- 51
+        npoints <- 101
         tt <- c(seq(-pi, pi, length = npoints), NA)
         xx <-
             rep(nodeX[i], each = npoints + 1) +

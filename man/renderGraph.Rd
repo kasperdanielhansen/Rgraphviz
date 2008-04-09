@@ -8,7 +8,6 @@
   render it on a plotting device.
 }
 \usage{
-renderGraph(x, ...)
 \S4method{renderGraph}{graph}(x, drawNodes, drawEdges, graph.pars)
 }
 \arguments{
