@@ -1,3 +1,10 @@
+replaceAtt <- function(attributes, what, which, with)
+{
+    if (is.null(attributes[[what]][[which]]))
+        attributes[[what]][[which]] <- with
+    attributes
+}
+
 getDefaultAttrs <- function(curAttrs=list(),
                             layoutType=c("dot","neato","twopi","circo","fdp")) {
     layoutType <- match.arg(layoutType)
@@ -28,18 +35,14 @@ getDefaultAttrs <- function(curAttrs=list(),
     col <- "black"
 
     ## Define the graph attributes
-    if (is.null(curAttrs$graph$bgcolor))
-        curAttrs$graph$bgcolor <- bg
-    if (is.null(curAttrs$graph$fontcolor))
-        curAttrs$graph$fontcolor <- fg
-    if (is.null(curAttrs$graph$ratio))
-        curAttrs$graph$ratio <- "fill"
-    if (is.null(curAttrs$graph$overlap))
-        curAttrs$graph$overlap <- ""
-    if (is.null(curAttrs$graph$splines))
-        curAttrs$graph$splines <- TRUE
-    if (is.null(curAttrs$graph$rank))
-        curAttrs$graph$rank <- "same"
+    curAttrs <- replaceAtt(curAttrs, "graph", "bgcolor", bg)
+    curAttrs <- replaceAtt(curAttrs, "graph", "fontcolor", fg)
+    curAttrs <- replaceAtt(curAttrs, "graph", "ratio", "fill")
+    curAttrs <- replaceAtt(curAttrs, "graph", "overlap", "")
+    curAttrs <- replaceAtt(curAttrs, "graph", "splines", "TRUE")
+    curAttrs <- replaceAtt(curAttrs, "graph", "rank", "same")
+   
+    
 
     ## Use the 'fin' value for the Graphviz size, if there's no
     ## plot device open right now, then use a sensible default
@@ -54,93 +57,62 @@ getDefaultAttrs <- function(curAttrs=list(),
 
 
     ## Now do layout specific graph attributes
-    if (layoutType == "dot") {
-        if (is.null(curAttrs$graph$rankdir))
-            curAttrs$graph$rankdir <- "TB"
-    }
+    if (layoutType == "dot")
+        curAttrs <- replaceAtt(curAttrs, "graph", "rankdir", "TB")
+     
 
     ## Now do cluster attributes
-    if (is.null(curAttrs$cluster$bgcolor))
-        curAttrs$cluster$bgcolor <- bg
-    if (is.null(curAttrs$cluster$color))
-        curAttrs$cluster$color <- col
-    if (is.null(curAttrs$cluster$rank))
-        curAttrs$cluster$rank <- "same"
-
+    curAttrs <- replaceAtt(curAttrs, "cluster", "bgcolor", bg)
+    curAttrs <- replaceAtt(curAttrs, "cluster", "color", col)
+    curAttrs <- replaceAtt(curAttrs, "cluster", "rank", "same")
+    
+   
     ## node attributes
-    if (is.null(curAttrs$node$shape))
-        curAttrs$node$shape <- "circle"
-    if (is.null(curAttrs$node$fixedsize))
-        curAttrs$node$fixedsize <- TRUE
-    if (is.null(curAttrs$node$fillcolor))
-        curAttrs$node$fillcolor <- bg
-    if (is.null(curAttrs$node$label))
-        curAttrs$node$label <- "\\N"
-    if (is.null(curAttrs$node$color))
-        curAttrs$node$color <- col
-    if (is.null(curAttrs$node$fontcolor))
-        curAttrs$node$fontcolor <- fg
-    if (is.null(curAttrs$node$fontsize))
-        curAttrs$node$fontsize <- "14"
-#    if (is.null(curAttrs$node$style))
-#        curAttrs$node$style <- "solid"
-#    if (is.null(curAttrs$node$distortion))
-#        curAttrs$node$distortion <- "0.0"
-    if (is.null(curAttrs$node$height))
-        curAttrs$node$height <- "0.5"
-#    if (is.null(curAttrs$node$layer))
-#        curAttrs$node$layer <- ""
-#    if (is.null(curAttrs$node$regular))
-#        curAttrs$node$regular <- FALSE
-#    if (is.null(curAttrs$node$sides))
-#        curAttrs$node$sides <- "4"
-#    if (is.null(curAttrs$node$skew))
-#        curAttrs$node$skew <- "0.0"
-    if (is.null(curAttrs$node$width))
-        curAttrs$node$width <- "0.75"
+    curAttrs <- replaceAtt(curAttrs, "node", "shape", "circle")
+    curAttrs <- replaceAtt(curAttrs, "node", "fixedsize", TRUE)
+    curAttrs <- replaceAtt(curAttrs, "node", "fillcolor", bg)
+    curAttrs <- replaceAtt(curAttrs, "node", "label", "\\N")
+    curAttrs <- replaceAtt(curAttrs, "node", "color", col)
+    curAttrs <- replaceAtt(curAttrs, "node", "fontcolor", fg)
+    curAttrs <- replaceAtt(curAttrs, "node", "fontsize", "14")
+    curAttrs <- replaceAtt(curAttrs, "node", "height", "0.5")
+    curAttrs <- replaceAtt(curAttrs, "node", "width", "0.75")
+    #curAttrs <- replaceAtt(curAttrs, "node", "style", "solid")
+    #curAttrs <- replaceAtt(curAttrs, "node", "distortion", "0.0")
+    #curAttrs <- replaceAtt(curAttrs, "node", "layer", "solid")
+    #curAttrs <- replaceAtt(curAttrs, "node", "regular", "0.0")
+    #curAttrs <- replaceAtt(curAttrs, "node", "sides", "4")
+    #curAttrs <- replaceAtt(curAttrs, "node", "skew", "0.0")
+   
 
-
+   
     ## edge attrs
-    if (is.null(curAttrs$edge$color))
-        curAttrs$edge$color <- col
-    if (is.null(curAttrs$edge$dir))
-        curAttrs$edge$dir <- "none"
-    if (is.null(curAttrs$edge$weight))
-        curAttrs$edge$weight <- "1.0"
-    if (is.null(curAttrs$edge$label))
-        curAttrs$edge$label <- ""
-    if (is.null(curAttrs$edge$fontcolor))
-        curAttrs$edge$fontcolor <- fg
-    if (is.null(curAttrs$edge$arrowhead))
-        curAttrs$edge$arrowhead <- "none"
-    if (is.null(curAttrs$edge$arrowtail))
-        curAttrs$edge$arrowtail <- "none"
-    if (is.null(curAttrs$edge$fontsize))
-        curAttrs$edge$fontsize <- "14"
-    if (is.null(curAttrs$edge$labelfontsize))
-        curAttrs$edge$labelfontsize <- "11"
-    if (is.null(curAttrs$edge$arrowsize))
-        curAttrs$edge$arrowsize <- "1"
-    if (is.null(curAttrs$edge$headport))
-        curAttrs$edge$headport <- "center"
-    if (is.null(curAttrs$edge$layer))
-       curAttrs$edge$layer <- ""
-    if (is.null(curAttrs$edge$style))
-        curAttrs$edge$style <- "solid"
-
+    curAttrs <- replaceAtt(curAttrs, "edge", "color", col)
+    curAttrs <- replaceAtt(curAttrs, "edge", "dir", "none")
+    curAttrs <- replaceAtt(curAttrs, "edge", "weight", "1.0")
+    curAttrs <- replaceAtt(curAttrs, "edge", "label", "")
+    curAttrs <- replaceAtt(curAttrs, "edge", "fontcolor", fg)
+    curAttrs <- replaceAtt(curAttrs, "edge", "arrowhead", "none")
+    curAttrs <- replaceAtt(curAttrs, "edge", "arrowtail", "none")
+    curAttrs <- replaceAtt(curAttrs, "edge", "fontsize", "14")
+    curAttrs <- replaceAtt(curAttrs, "edge", "labelfontsize", "11")
+    curAttrs <- replaceAtt(curAttrs, "edge", "arrowsize", "1")
+    curAttrs <- replaceAtt(curAttrs, "edge", "headport", "center")
+    curAttrs <- replaceAtt(curAttrs, "edge", "layer", "")
+    curAttrs <- replaceAtt(curAttrs, "edge", "style", "solid")
+   
+   
+    ## Now do layout specific edge attributes
     if (layoutType == "dot") {
-#        if (is.null(curAttrs$edge$constraint))
-#            curAttrs$edge$constraint <- FALSE
-
-        if (is.null(curAttrs$edge$minlen))
-            curAttrs$edge$minlen <- "1"
+        #curAttrs <- replaceAtt(curAttrs, "edge", "constraint", FALSE)
+        curAttrs <- replaceAtt(curAttrs, "edge", "minlen", "1")
     }
 
     if (layoutType == "neato")
-        if (is.null(curAttrs$edge$len))
-            curAttrs$edge$len <- "1.0"
+        curAttrs <- replaceAtt(curAttrs, "edge", "len", "1.0")
+       
 
-    curAttrs
+    return(curAttrs)
 }
 
 

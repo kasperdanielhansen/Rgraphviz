@@ -60,13 +60,7 @@ nodeRagraph2graph <- function(g, x)
     labelJust <- sapply(agn, getLabelJust)
     labelWidth <- sapply(agn, getLabelWidth)
     label <- sapply(agn, function(f) labelText(txtLabel(f)))
-    shape <- sapply(agn,shape)
-    ##FIXME: graphviz should return "ellipse" for layoutType dot
-    ##      but does return "circle". This fix will substitute
-    ##       any circles by ellipses, which isn't really what we
-    ##       want. Need to fix this in the C code some time
-    if (g@layoutType == "dot") shape <- gsub("circle", "ellipse", shape)
-    
+    shape <- sapply(agn,shape) 
     style <- sapply(agn, style)
 
     ans <- 
@@ -189,7 +183,34 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     fontsize <- getRenderPar(x, "fontsize")
     names(fontsize) <- nodes(x)
     nodeAttrs$fontsize <- fontsize
+
+
+    ##FIXME: graphviz should return "ellipse" for layoutType dot
+    ##       (at least that's what the edges are computed for)
+    ##       but does return "circle". This fix will substitute
+    ##       any circles by ellipses, and mess around with the
+    ##       node dimensions to make them look like circles
+    ##       which isn't really what we . Somebody with too much
+    ##       free time should fix this in  the C code some time
+    shapes <- getRenderPar(x, "shape", "nodes")
+    widths <- getRenderPar(x, "iwidth", "nodes")
+    names(shapes) <- names(widths)  <- nodes(x)
+    attrShapes <- nodeAttrs$shape
+    shapes[names(attrShapes)] <- attrShapes
+    oshape <- shapes
+    circ <- shapes=="circle"
+    ell <- shapes=="ellipse"
+    attrWidths <- nodeAttrs$width
+    widths[names(attrWidths)] <- attrWidths
+    if(layoutType == "dot"){
+        shapes[circ] <- "ellipse"
+        widths[circ] <- widths[circ]*0.96
+        widths[ell] <- widths[ell]*1.3
+    }
     
+    ## go on here....
+    nodeAttrs$shape <- shapes
+    nodeAttrs$width <- widths
     g <- agopen(x, name=name, layoutType=layoutType,
                 recipEdges=recipEdges, nodeAttrs=nodeAttrs,
                 edgeAttrs=edgeAttrs, ...)
@@ -198,6 +219,7 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     ## get information from the Ragraph object. Only replace labels if 
     ## they have been  explicitely specified in the edgeAttrs or nodeAttrs
     nri <- nodeRagraph2graph(g, x)
+    nri$shape <- oshape
     if(!is.null(nodeAttrs$label))
         nri$label <- nodeAttrs$label
     nodeRenderInfo(x) <- nri
@@ -208,5 +230,44 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     return(invisible(x))
   }
 
+
+
+## export a graph in the dot language
+writeGraph <- function(g, outfile="graph.dot")
+{
+    header <- "digraph dtree {\n node [fontsize=10, shape=circle];"
+    nri <- nodeRenderInfo(g)
+    nAttrs <- cbind(graphviz=c("color", "fillcolor", "fixedsize",
+                     "fontsize", "fontcolor", "height",
+                     "width", "label", "shape"),
+                     R=c("col", "fill", "fixedsize",
+                     "fontsize", "textCol", "iheight",
+                     "iwidth", "label", "shape"))
+     nAttrs <- cbind(graphviz=c("fixedsize", "label", "shape"),
+                     R=c("fixedsize", "label", "shape"))
+    nodes <- nodes(g)
+    nodeMarkup <- character(length(nodes))
+    for(n in seq_along(nodes)){
+        att <- sapply(nAttrs[,2], function(x)
+                      Rgraphviz:::getRenderPar(g, x, "nodes")[n])
+        #att$height <- att$height * 0.00925926
+        if(is.null(att$label)) att$label <- nodes[n]
+        nodeMarkup[n] <- paste(nodes[n], " [", paste(nAttrs[,1], "=",
+                                          att, "", sep="",
+                                          collapse=", "),
+                               "];", sep="")
+    }
+
+    edges <- edgeNames(g)
+    edgeMarkup <- paste(gsub("~", " -> ", edges, fixed=TRUE),
+                        "[arrowhead=none];")
+    con <- file(outfile, open="w")
+    on.exit(close(con))
+    writeLines(header, con)
+    writeLines(nodeMarkup,con)
+    writeLines(c(edgeMarkup, "}"),con)
+    cat("written to file", outfile, "\n")
+    return(invisible(NULL))
+}
 
 
