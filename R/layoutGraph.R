@@ -196,7 +196,8 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     widths <- getRenderPar(x, "iwidth", "nodes")
     names(shapes) <- names(widths)  <- nodes(x)
     attrShapes <- nodeAttrs$shape
-    shapes[names(attrShapes)] <- attrShapes
+    if(!is.null(attrShapes))
+        shapes[names(attrShapes)] <- attrShapes
     oshape <- shapes
     circ <- shapes=="circle"
     ell <- shapes=="ellipse"
