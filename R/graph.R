@@ -88,7 +88,7 @@ setMethod("plot", "Ragraph",
       			return(rv)
     			} )
     cex <- min(nodeDims / strDims)
-    if(is.finite(cex)) {
+    if(is.finite(cex) && cex > 0 ) {
       old.cex <- par(cex=cex)
       on.exit(par(cex=old.cex), add=TRUE)
     }
