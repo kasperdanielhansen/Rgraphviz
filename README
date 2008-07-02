@@ -24,7 +24,7 @@ o. set the following Windows environment variables accordingly
    (a) create new user variables:
      GRAPHVIZ_INSTALL_DIR   (e.g., C:\/R-tools\/graphviz-2.18)
      GRAPHVIZ_INSTALL_MAJOR (e.g., 2)
-     GRAPHVIZ_INSTALL_MINOR (e.g., 16)
+     GRAPHVIZ_INSTALL_MINOR (e.g., 18)
 
      Notice the way "\/" are used for the paths above.
 
