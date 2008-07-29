@@ -10,7 +10,7 @@ toFile(graph,
           filename,
           fileType=c("canon", "dot", "xdot", "dia", "fig",
                      "gd", "gd2", "gif", "hpgl", "imap", "cmapx",
-                     "ismap", "mif", "mp", "pcl", "pic",
+                     "ismap", "mif", "mp", "pcl", "pdf", "pic",
                      "plain", "plain-ext", "png", "ps", "ps2",
                      "svg", "svgz", "vrml", "vtx", "wbmp"))
 }
