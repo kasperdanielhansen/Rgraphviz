@@ -2,6 +2,19 @@ importFrom("graphics", "plot", "lines")
 
 import("methods")
 import("utils") # for the "head" generic
+
+importFrom("graph",
+           "edgeDataDefaults<-",
+           "edgeDataDefaults",
+           "edgeData<-",
+           "edgeData",
+           "edgemode",
+           "edgeNames",
+           "nodeDataDefaults<-",
+           "nodeDataDefaults",
+           "nodeData<-",
+           "nodeData")
+
                                                                                 
 export(
         agopen,			# Rgraphviz
