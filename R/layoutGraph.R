@@ -194,15 +194,19 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     ##       free time should fix this in  the C code some time
     shapes <- getRenderPar(x, "shape", "nodes")
     widths <- getRenderPar(x, "iwidth", "nodes")
+
     names(shapes) <- names(widths)  <- nodes(x)
+
     attrShapes <- nodeAttrs$shape
-    if(!is.null(attrShapes))
-        shapes[names(attrShapes)] <- attrShapes
+    if(!is.null(attrShapes)) shapes[names(attrShapes)] <- attrShapes
+
     oshape <- shapes
     circ <- shapes=="circle"
     ell <- shapes=="ellipse"
+
     attrWidths <- nodeAttrs$width
-    widths[names(attrWidths)] <- attrWidths
+    if(!is.null(attrWidths)) widths[names(attrWidths)] <- attrWidths
+
     if(layoutType == "dot"){
         shapes[circ] <- "ellipse"
         widths[circ] <- widths[circ]*0.96
