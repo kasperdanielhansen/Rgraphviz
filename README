@@ -44,6 +44,15 @@ o. to be safe when running R, do the following in THE FOLLOWING order:
    name conflicts with the graph package, but this code is considered
    to be experimental.
 
+OSX installation
+================
+according to Eric Wexler (ewexler@ucla.edu):
+
+FYI: Rgraphviz will not load (at least under leopard) unless the user  
+has the developer Xcode tools installed.  It was very frustrating  
+untill I figured this out.  PLease pass it on in the Rgraphviz install  
+under OSX instructions
+
 Source based installation
 =========================
 
