@@ -459,7 +459,4 @@
 \references{\url{http://www.graphviz.org/pub/scm/graphviz2/doc/info/attrs.html}}
 \author{Jeff Gentry}
 \seealso{\code{\link{plot.graph}}, \code{\link{agopen}}, \code{\link{GraphvizLayouts}}}
-\examples{
-
-}
 \keyword{graphs}

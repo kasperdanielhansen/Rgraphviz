@@ -35,8 +35,6 @@ with corresponding viewer.
 
 \author{Li Long <li.long@isb-sib.ch>}
 
-\seealso{}
-
 \examples{
 
 library("graph")

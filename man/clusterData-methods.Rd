@@ -28,8 +28,6 @@ clusterData(self, cluster, attr) <- value
 
 \author{Li Long <li.long@isb-sib.ch>}
 
-\seealso{}
-
 \examples{
 
 library(graph)
@@ -49,7 +47,5 @@ clusterData(ng, 2, c("bgcolor")) <- c("red")
 toFile(ng, layoutType="dot", filename="g1_11_dot.ps", fileType="ps")
 
 }
-
-
 \keyword{methods}
 

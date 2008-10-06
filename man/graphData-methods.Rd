@@ -25,8 +25,5 @@ graphData(self, attr) <- value
 
 \author{Li Long <li.long@isb-sib.ch>}
 
-\seealso{}
-
-
 \keyword{methods}
 

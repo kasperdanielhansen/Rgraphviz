@@ -69,7 +69,7 @@ buildEdgeList(graph, recipEdges=c("combined", "distinct"),
   A list of class \code{pNode} or \code{pEdge} objects.
 }
 \author{Jeff Gentry}
-\seealso{\code{\link{agopen}}, \code{link{plot.graph}},
+\seealso{\code{\link{agopen}}, \code{\link{plot.graph}},
   \code{\link{pNode}},\code{\link{pEdge}}}
 \examples{
    set.seed(123)
