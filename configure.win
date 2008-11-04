@@ -7,6 +7,6 @@ echo GRAPHVIZ_INSTALL_MINOR=$GRAPHVIZ_INSTALL_MINOR
 sed s/GRAPHVIZ_INSTALL_PATH/$GRAPHVIZ_INSTALL_DIR/ src/Makevars.win.in > src/Makevars.win.1 
 sed s/GRAPHVIZ_INSTALL_MAJOR/$GRAPHVIZ_INSTALL_MAJOR/ src/Makevars.win.1 > src/Makevars.win.2 
 sed s/GRAPHVIZ_INSTALL_MINOR/$GRAPHVIZ_INSTALL_MINOR/ src/Makevars.win.2 > src/Makevars.win.3 
-sed s/GRAPHVIZ_LIBS/"-lgvc -lgraph -lcdt"/ src/Makevars.win.3 > src/Makevars.win 
+sed s/GRAPHVIZ_LIBS/"-lgvc-4 -lgraph-4 -lcdt-4"/ src/Makevars.win.3 > src/Makevars.win 
 rm src/Makevars.win.1 src/Makevars.win.2 src/Makevars.win.3 
 
