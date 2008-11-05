@@ -1,23 +1,17 @@
 .onLoad <- function(lib, pkg, where) {
-	if(.Platform$OS.type == "windows") {
-		whichGvcDll <- unname(Sys.which("gvc.dll"))
-		if(nchar(whichGvcDll) >= 7) {
-			loadedDlls <- getLoadedDLLs()
-			graphPackagePosition <- which("graph" == names(loadedDlls))
-			graphPackageLoaded <- (length(graphPackagePosition) > 0)
-			if(graphPackageLoaded) {
-				graphDllPath <- loadedDlls[[graphPackagePosition]][["path"]]
-				graphLibraryPath <- dirname(dirname(graphDllPath))
-				graphDllName <- basename(graphDllPath)
-				library.dynam.unload(graphDllName, graphLibraryPath)
-			}
-			dyn.load(whichGvcDll)
-			if(graphPackageLoaded) {
-				library.dynam(graphDllName, "graph")
-			}
-		}
-	}
-	library.dynam( "Rgraphviz", pkg, lib )
-	.Call("Rgraphviz_init", PACKAGE="Rgraphviz")
-	require("methods")
+    library.dynam( "Rgraphviz", pkg, lib )
+    .Call("Rgraphviz_init", PACKAGE="Rgraphviz")
+	if (.Platform$OS.type == "windows") {
+	    .graphviz_installed_version <-
+	      as.list(numeric_version(.Call("Rgraphviz_graphvizVersion", PACKAGE="Rgraphviz")))
+	    .graphviz_installed_version[[1]] <- .graphviz_installed_version[[1]][1:2]
+	    oldClass(.graphviz_installed_version) <- "numeric_version"
+	    if (.graphviz_installed_version != .graphviz_build_version)
+	        warning("Rgraphviz built with Graphviz version ",
+	                .graphviz_build_version,
+	                ".\nFound Graphviz version ",
+	                .graphviz_installed_version,
+	                ".")
+    }
+    require("methods")
 }
