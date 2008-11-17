@@ -5,15 +5,19 @@ Installing Rgraphviz
 Windows
 =======
 
-Nov 4, 2008
+Nov 17, 2008
 
 Here are the steps to build Rgraphviz on Windows:
 
 o. install graphviz ***2.20.3*** Windows ***binary*** distribution from
+
       http://www.graphviz.org/pub/graphviz/stable/windows/graphviz-2.20.3.msi
-   , say, in dir $DIR.  We use the following as an example:
+
+   in a directory that we'll call $DIR.  We use the following as an example:
+
          C:\Graphviz-2.21
-   .  If you install it in other dir, just use your dir correspondingly.
+   
+   If you install it in other dir, just use your dir correspondingly.
 
 o. set the following Windows environment variables accordingly
    (control panel -> systems -> Advanced -> Environment Variables ):
@@ -27,7 +31,7 @@ o. set the following Windows environment variables accordingly
    (b) add to user variable 'path': $GRAPHVIZ_INSTALL_DIR/bin
      e.g., C:\Graphviz-2.21\bin
 
-o. run "R CMD INSTALL ...Rgraphviz" as usual
+o. run "R CMD INSTALL Rgraphviz" or "biocLite("Rgraphviz")' as usual
 
 OSX installation
 ================
