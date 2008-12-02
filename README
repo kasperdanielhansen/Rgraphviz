@@ -5,9 +5,10 @@ Installing Rgraphviz
 Windows
 =======
 
-Nov 17, 2008
+2 December, 2008
 
-Here are the steps to build Rgraphviz on Windows:
+
+Hare the steps to INSTALL Rgraphviz
 
 o. install graphviz ***2.20.3*** Windows ***binary*** distribution from
 
@@ -19,19 +20,38 @@ o. install graphviz ***2.20.3*** Windows ***binary*** distribution from
    
    If you install it in other dir, just use your dir correspondingly.
 
+o. Add graphviz' bin diretory to the user PATH variable, e.g.,
+
+     c:\Graphviz-2.21\bin
+
+o. Check the configuration by starting a new DOS window and dispalying
+   the PATH environment variable, e.g.,
+
+      c:\> echo %PATH%
+
+o.  Use biocLite('Rgraphviz') to install Rgraphviz
+
+
+It is also possible to build Rgraphviz from source, e.g., because you
+want to link against a different version of the graphviz
+libraries. Here are the steps to build Rgraphviz on Windows:
+
+o. Install graphviz as outlined in the previous section
+
 o. set the following Windows environment variables accordingly
    (control panel -> systems -> Advanced -> Environment Variables ):
    (a) create new user variables:
-     GRAPHVIZ_INSTALL_DIR   (e.g., C:\Graphviz-2.21)
+     GRAPHVIZ_INSTALL_DIR   (e.g., C:\/Graphviz-2.21)
      GRAPHVIZ_INSTALL_MAJOR (e.g., 2)
-     GRAPHVIZ_INSTALL_MINOR (e.g., 20)
+     GRAPHVIZ_INSTALL_MINOR (e.g., 21)
 
      Notice the way "\/" are used for the paths above.
 
-   (b) add to user variable 'path': $GRAPHVIZ_INSTALL_DIR/bin
-     e.g., C:\Graphviz-2.21\bin
+   (b) add to user variable 'PATH': %GRAPHVIZ_INSTALL_DIR%/bin
+     e.g., C:/Graphviz-2.21/bin
 
 o. run "R CMD INSTALL Rgraphviz" or "biocLite("Rgraphviz")' as usual
+
 
 OSX installation
 ================
