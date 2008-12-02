@@ -155,7 +155,9 @@ currently available node parameters are:
   \Robject{solid}. Valid values are the same as for the R's base
   graphic parameter \Robject{lty}.}
 \item{lwd:} {the width of the line drawn as node border. Defaults to
-  \Robject{1}.}
+  \Robject{1}.Note that the underlying low level plotting functions
+  do not support vectorized \Robject{lwd} values. Instead, only the
+  first item of the vector will be used.}
 \item{fill:} {the color used to fill a node. Defaults to
   \Robject{transparent}.}
 \item{textCol:}{the font color used for the node labels. Defaults to

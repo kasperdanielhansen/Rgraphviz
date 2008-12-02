@@ -49,7 +49,8 @@ layoutGraph(x, layoutFun = layoutGraphviz, ...)
   AT&T's \code{Graphviz} is the default layout algoritm to use when
   \code{layoutGraph} is called without a specific \code{layoutFun}
   function. See \code{\link{agopen}} for details about how to tweak
-  \code{Graphviz}.
+  \code{Graphviz}. The most common argument to set in this context might
+  be \code{layoutType} which controls the type of layout to compute.
 }
 
 
