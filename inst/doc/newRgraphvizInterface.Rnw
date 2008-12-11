@@ -74,7 +74,7 @@ in the \Rfunction{layoutGraph} function. Calling this function without
 any further arguments will result in using one of the \textit{Graphviz}
 layout algorithms via the the \Rpackage{Rgraphviz} package. We assume
 a knowledge of graph layout and the available \textit{Graphviz}
-options in the remainder of this Vignette and will only deal with the
+options in the remainder of this Vignette and will mostly deal with the
 rendering part, here.
 
 The rendering of a graph relies solely on \R{}'s internal plotting
@@ -92,13 +92,11 @@ To demonstrate the new rendering interface we first generate a graph
 using the \Rpackage{graph} package and lay it out using the default
 \textit{Graphviz} dot layout.
 %
-<<createGraph1, results=hide>>=
+<<createGraph1, fig=TRUE>>=
 library("Rgraphviz")
 set.seed(123)
 V <- letters[1:10]
 M <- 1:4
-@ 
-<<createGraph2, print=TRUE, fig=TRUE>>=
 g1 <- randomGraph(V, M, 0.2)
 g1 <- layoutGraph(g1)
 renderGraph(g1)
@@ -111,17 +109,29 @@ renderGraph(g1)
 There is a hierarchy to set rendering parameters for a graph. The
 levels of this hierarchy are
 \begin{enumerate}
+  
 \item{The session:} These are the defaults that will be used for a
   parameter if not set somewhere further down the hierarchy. You can
   change the session defaults at any time using the function
   \Rfunction{graph.par}.
+  
 \item{Rendering operation:} Defaults can be set for a single rendering
-  operation, that is, a call to \Rfunction{renderGraph} using its
-  \Robject{graph.pars} argument.
+  operation, that is, for a single call to \Rfunction{renderGraph}
+  using its \Robject{graph.pars} argument.
+  
 \item{Individual nodes or edges:} Parameters for individual nodes or
-  edges can be set using the \Rfunction{nodeRenderInfo} and
-  \Rfunction{edgeRenderInfo} functions.
+  edges in a graph object can be set using the
+  \Rfunction{nodeRenderInfo} and \Rfunction{edgeRenderInfo} functions.
+  
 \end{enumerate}
+
+Note that all parameters set in \Rfunction{renderGraph's}
+\Robject{graph.pars} argument are transient, whereas setting
+session-wide parameters will affect all subsequent rendering
+operations. Setting parameters via the \Rfunction{nodeRenderInfo} and
+\Rfunction{edgeRenderInfo} functions affects the individual graph
+objects, and these changes will obviously be retained in all
+subsequent layout or rendering operations of that particular graph.
 
 
 %- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -136,7 +146,10 @@ to all nodes, we set a global rendering parameter using
 graph.par(list(nodes=list(fill="lightgray", textCol="red")))
 renderGraph(g1)
 @
-%% 
+
+Setting a session-wide parameter has side-effects for all subsequent
+rendering operations, and we will soon see how to archive the same
+setting using the \Rfunction{nodeRenderInfo} function. 
 
 Note that \Rfunction{graph.par} takes as single argument a list of
 rendering parameters. There are three different types of parameters
@@ -144,9 +157,9 @@ the user might want to set: nodewide parameters, edgewide parameters
 and parameters that control features of the whole graph. Accordingly,
 the parameters list passed to \Rfunction{graph.par} may contain the
 list items \Robject{nodes}, \Robject{edges} and \Robject{graph}. Each
-of these list items can again be a list, now of parameters. In our
-example, the parameters are \Robject{fill} and \Robject{textCol}. All
-currently available node parameters are:
+of these list items can again be a list of available plotting
+parameters. In our example, the parameters are \Robject{fill} and
+\Robject{textCol}. All currently available node parameters are:
 
 \begin{itemize}
 \item{col:} {the color of the line drawn as node border. Defaults to
@@ -173,23 +186,34 @@ currently available node parameters are:
   be clipped to the node size. This mainly exists to for consistency
   with the base graphic parameters and to override the clipping of
   fontsize to nodesize.}
+\item{shape:} {This is not really a graphical parameter. See Section
+    \ref{layoutpars} for details.}
+
 \end{itemize}
 
 In the next code chunk we set the defaults for all remaining node parameters:
 <<nodepardefs, fig=TRUE>>=
-graph.par(list(nodes=list(col="green", lty="dashed", lwd=2, fontsize=6)))
+graph.par(list(nodes=list(col="darkgreen", lty="dotted", lwd=2, fontsize=6)))
 renderGraph(g1)
 @ 
 
 Similar to \R{}'s base \Rfunction{par} function, the original values
 of a modified paramter are returned by \Rfunction{graph.par} and you
-may want to assign them to an object in order to revert them later.
+may want to assign them to an object in order to later revert your
+changes.
+
+A useful feature when plotting graphs is to control the shape of the
+nodes. However, shapes have an impact on the ideal location of nodes
+and, even more so, the edges between them. Hence, the layout algorithm
+needs to be re-run whenever there are changes in node shapes. In
+Section \ref{layoutpars} we will learn how to control node shapes and
+also some features of the edges.
 
 %- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 \subsection{Default edge parameters}
 %- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Now, let's take a look at the parameters that control the appearence
-of the edges. They are:
+of edges. They are:
 
 \begin{itemize}
 \item{col:} {the color of the edge line. Defaults to \Robject{black}.}
@@ -203,11 +227,13 @@ of the edges. They are:
   to \Robject{14}.}
 \item{cex:} {Expansion factor to further control the fontsize. This
   mainly exists to be consistent with the base graphic parameters.}
+\item{arrowhead, arrowtail} {Again, not really a plotting
+    parameter. Section \ref{layoutpars} provides details. }
 \end{itemize}
 
 First, we set some attributes that control the edge lines.
 <<edgepardefs, fig=TRUE>>=
-graph.par(list(edges=list(col="blue", lty="dotted", lwd=3)))
+graph.par(list(edges=list(col="lightblue", lty="dashed", lwd=3)))
 renderGraph(g1)
 @ 
 
@@ -223,9 +249,9 @@ renderGraph(g1)
 
 Now we can start tweaking them:
 <<tweaklabesl, fig=TRUE>>=
-graph.par(list(edges=list(fontsize=24, textCol="blue")))
+graph.par(list(edges=list(fontsize=18, textCol="darkred")))
 renderGraph(g1)
-@   
+@
 
 
 %- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -240,9 +266,6 @@ parameters:
   explicitely, no title will be plotted.}
 \item{sub:} {text that is plotted as subtitle at the bottom of the
   graph. Unless set explicitely, no subtitle will be plotted.}
-\item{lwd:} {the width of the edge line. Defaults to \Robject{1}.}
-\item{textCol:} {the font color used for the edge labels. Defaults to
-  \Robject{black}.}
 \item{col.main:} {the font color used for the title. Defaults
   to \Robject{black}.}
 \item{cex.main:} {Expansion factor for the fontsize used for the
@@ -261,7 +284,6 @@ graph.par(list(graph=list(main="A main title...",
                cex.sub=1.4, col.sub="gray")))
 renderGraph(g1)
 @ 
-%%
 
 Of course we could set all graph-, node-, and edgewide parameters in
 one single call to \Rfunction{graph.par}. Instead of defining global
@@ -282,41 +304,42 @@ individual nodes and edges can be set using the
 \Rfunction{nodeRenderInfo} and \Rfunction{edgeRenderInfo}
 functions. Both \Rfunction{nodeRenderInfo} and
 \Rfunction{edgeRenderInfo} are replacement functions that operate
-directly on the \Rclass{graph} object. When you change a parameter in
-the \Rclass{graph} object this will be carried on across all further
-rendering and layout operations. The settings made by
-\Rfunction{edgeRenderInfo} and \Rfunction{nodeRenderInfo} take
-precedence over all default settings.
+directly on the \Rclass{graph} object. For completeness,
+\Rfunction{graphRenderInfo} is the function that can be used to
+control the graph-wide attributes (like captions and subtitles). When
+you change a parameter in the \Rclass{graph} object this will be
+carried on across all further rendering and layout operations. The
+settings made by \Rfunction{edgeRenderInfo} and
+\Rfunction{nodeRenderInfo} take precedence over all other default
+settings.
 
 The parameters to be set have to be given as named lists, where each
 list item can contain named vectors for certain options. For example,
 the following code sets the fill color of nodes \Robject{a} and
 \Robject{b} to \Robject{yellow}.
 <<nodePars, fig=TRUE>>=
-nodeRenderInfo(g1) <- list(fill=c(a="yellow", b="yellow"))
+nodeRenderInfo(g1) <- list(fill=c(a="lightyellow", b="lightyellow"))
 renderGraph(g1) 
 @ 
-%%
 
 The names of the vectors have to match the node or edge names of the
-graph. Node names are straightforward (the result of
-calling the function \Rfunction{nodes} on a \Rclass{graph} object),
-however edge names are made up of the names of the connected nodes
-separated by \verb+~+, the tilde symbol.  An edge between nodes
-\verb+a+ and \verb+b+ would be named \verb+a~b+. For a directed
-graph \verb+a~b+ is the edge fom \verb+a+ to \verb+b+, and
-\verb+b~a+ is the edge from \verb+b+ to \verb+a+. For undirected
-graphs the two are equivalent. \Rfunction{edgeNames} returns the names
-of all edges in a graph. The following code changes the line type of
-the edges between nodes \verb+g+ and \verb+h+ and nodes \verb+g+ and
-\verb+j+ to \Robject{solid} and the line color to \Robject{orange}.
+graph. Node names are straightforward (the result of calling the
+function \Rfunction{nodes} on a \Rclass{graph} object), however edge
+names are made up of the names of the connected nodes separated by
+\verb+~+, the tilde symbol.  An edge between nodes \verb+a+ and
+\verb+b+ would be named \verb+a~b+. For a directed graph \verb+a~b+ is
+the edge fom \verb+a+ to \verb+b+, and \verb+b~a+ is the edge from
+\verb+b+ to \verb+a+. For undirected graphs the two are
+equivalent. \Rfunction{edgeNames} returns the names of all edges in a
+graph. The following code changes the line type of the edges between
+nodes \verb+b+ and \verb+f+ and nodes \verb+b+ and \verb+h+ to
+\Robject{solid} and their line color to \Robject{orange}.
 
 <<edgePars, fig=TRUE>>=
-edgeRenderInfo(g1) <- list(lty=c("g~h"="solid", "g~j"="solid"),
-                          col=c("g~h"="orange", "g~j"="orange"))
+edgeRenderInfo(g1) <- list(lty=c("b~f"="solid", "b~h"="solid"),
+                          col=c("b~f"="orange", "b~h"="orange"))
 renderGraph(g1)
 @ 
-%%
 
 Changes in the rendering of specific nodes or edges is often motivated
 by certain classes or features they represent and we don't want to set
@@ -328,6 +351,149 @@ names(fill) <- baseNodes
 nodeRenderInfo(g1) <- list(fill=fill)
 renderGraph(g1)
 @ 
+
+Both \Rfunction{nodeRenderInfo} and
+\Rfunction{edgeRenderInfo} also allow to set parameters for all edges
+or nodes of the graph at once. The syntax is simple: instead of a
+named vector one can pass a scalar for a given parameter. This value
+will then be assigned to all available nodes or edges.
+
+<<setallatonce, fig=TRUE>>=
+nodeRenderInfo(g1) <- list(lty=1)
+edgeRenderInfo(g1) <- list(lty=1, lwd=2, col="gray")
+renderGraph(g1)
+@ 
+
+The easiest way to set an attribute back to its default (the session
+default if it has been set) is to pass in a \Robject{NULL} list item
+via the respective setter function.
+
+<<reset, fig=TRUE>>=
+nodeRenderInfo(g1) <- list(fill=list(b=NULL, d=NULL))
+renderGraph(g1)
+@ 
+
+
+\section{Graphical parameters that affect the layout}\label{layoutpars}
+As mentioned before, some graphical parameters are somewhat on the
+border between graph layout and graph rendering. The shape of the node
+for example does not drastically affect it's location, however the
+layout of the edges pointing to and from this node might slightly
+change. Since manipulating these attributes is a frequent operation in
+graph plotting, we decided to make them available through the
+rendering interface.
+
+\subsection{Node shapes}
+Node shapes can be set using the \Robject{shape} parameter. Currently,
+the rendering function supports the following shape types:
+
+\begin{itemize}
+\item{circle} {this is the default value. Circular nodes are not
+    affected by changes in width or height, the algorithm will
+    always use a quadratic bounding box}
+\item{ellipse} {this shape allows for differences in width and
+    height. Elliptical nodes often fit node labels better without
+    wasting too much real estate. }
+\item{box, rectangle} {A rectangular node.}
+\item{triangle}  {this  is  currently  only partly  supported  due  to
+    restrictions in the Graphviz  interface. Edges locations might not
+    be optimal when triangular nodes are used.}
+\item{plaintext} {no node shape at all, only the node labels are
+    plotted.}
+\end{itemize}
+
+Lets change all nodes shapes to ellipses first and then try out some
+of the remaining shapes on single nodes. Because of their impact on
+the overall layout, we have to run \Rfunction{layoutGraph} again in
+order for these modifications to work.
+<<nshape, fig=TRUE>>=
+nodeRenderInfo(g1) <- list(shape="ellipse")
+nodeRenderInfo(g1) <- list(shape=c(g="box", i="triangle", 
+                                   j="circle", c="plaintext"))
+g1 <- layoutGraph(g1)
+renderGraph(g1)
+@ 
+
+To provide even more flexibility, the values of the \Robject{shape}
+attributes can also be user-defined functions. \Rfunction{renderGraph}
+will call these functions internally, passing on a number of
+parameters. The most important parameter is a two-by-two matrix giving
+the bounding box of the respective node. This information should be
+used in the self-defined node plotting function to control the node
+location and also its size. No clipping ever occurs to this bounding
+box, and if the user decides to extend the node size beyond these
+limits, overplotting with other nodes or edges is very likely. The
+additional parameters that are passsed on to the function are:
+\Robject{labelX}, \Robject{labelY}, \Robject{fill}, \Robject{col},
+\Robject{lwd}, \Robject{lty}, \Robject{textCol}, \Robject{style},
+\Robject{label} and \Robject{fontsize}. Consult the help pages of the
+\Rfunction{layoutGraph} and \Rfunction{renderGraph} functions for
+details.
+
+As an example we will use a function that creates random thermometer
+plots as node glyphs in the following code chunk. Note that we make
+use of the \Robject{...} argument to catch all of the passed
+parameters that we don't really need. We also remove the edge labels
+from the graph to tidy it up a little.
+<<userDefinedNode, fig=TRUE>>=
+edgeRenderInfo(g1) <- list(label=NULL)
+
+myNode <- function(x, col, fill, ...)
+symbols(x=mean(x[,1]), y=mean(x[,2]), thermometers=cbind(.5, 1,
+runif(1)), inches=0.5,
+fg=col, bg=fill, add=TRUE)
+
+nodeRenderInfo(g1) <- list(shape=list(d=myNode, f=myNode), 
+                           fill=c(d="white", f="white"),
+                           col=c(d="black", f="black"))
+g1 <- layoutGraph(g1)
+renderGraph(g1)
+@ 
+
+\subsection{Edge arrowheads and arrowtails}
+
+Similar to the control of node shapes, \Rfunction{renderGraph}
+supports different types of shapes for the tips of the edges. In
+undirected graphs this feature is not really supported because edges
+are merely connecting nodes, they don't convey any information about
+direction. We can change the mode of our sample graph to
+\Robject{directed} to further explore this feature.
+<<changeMode>>=
+edgemode(g1) <- "directed"
+@ 
+
+The valid values for both arrowheads and arrowtails of the edges are
+\Robject{open}, \Robject{normal}, \Robject{dot}, \Robject{odot},
+\Robject{box}, \Robject{obox}, \Robject{tee}, \Robject{diamond},
+\Robject{odiamond} and \Robject{none}. The little helper function
+\Rfunction{edgeNames} can be used to list all available edge names.
+<<arrowheads, fig=TRUE>>=
+edgeRenderInfo(g1) <- list(arrowhead=c("e~h"="dot", "c~h"="odot",
+                                       "a~h"="diamond", "b~f"="box",
+                                       "a~b"="box", "f~h"="odiamond"),
+                           arrowtail="tee")
+g1 <- layoutGraph(g1)
+renderGraph(g1)
+@ 
+
+There is also the option to pass a user-defined function as
+\Robject{arrowhead} or \Robject{arrowtail} parameter to gain even more
+control. Similar to node shapes, the function has to be able to deal
+with several parameters: The first parameter gives the center of the
+location of the arrowhead or tail. The additional parameters
+\Robject{col}, \Robject{lwd} and \Robject{lty} are color and line
+styles defined for the edges.
+<<userDefinedEdge, fig=TRUE>>=
+myArrows <- function(x, ...)
+{
+for(i in 1:3)
+points(x,cex=i, ...)
+}
+edgeRenderInfo(g1) <- list(arrowtail=c("c~h"=myArrows))
+g1 <- layoutGraph(g1)
+renderGraph(g1)
+@
+
 
 <<reset, echo=FALSE, results=hide>>=
 # reset the defaults
