@@ -169,7 +169,7 @@ layoutGraph <- function(x, layoutFun=layoutGraphviz, ...){
 ## to the graph
 layoutGraphviz <- function(x, layoutType="dot", name="graph",
                            recipEdges="combined", nodeAttrs=list(),
-                           edgeAttrs=list(), ...)
+                           edgeAttrs=list(), attrs=list(), ...)
 {
     ## pass along labels if present
     nodeLabels <- nodeRenderInfo(x, "label")
@@ -179,42 +179,60 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     if(!is.null(edgeLabels) && is.null(edgeAttrs$label))
         edgeAttrs$label <- edgeLabels
 
+    ## make sure that arrowheads are passed on to graphviz
+    ## but only if they are not functions
+    edgeHead <- edgeHeadOrig <-
+        if(length(edgeAttrs$arrowhead)) edgeAttrs$arrowhead else edgeRenderInfo(x, "arrowhead")
+    hsel <- FALSE
+    if(!is.null(edgeHead)){
+        hsel <- sapply(edgeHead, is.function)
+        edgeHead[hsel] <- "open"
+        edgeAttrs$arrowhead <- edgeHead
+    }
+    tsel <- FALSE
+    edgeTail <- edgeTailOrig <-
+        if(length(edgeAttrs$arrowtail)) edgeAttrs$arrowtail else edgeRenderInfo(x, "arrowtail")
+    if(!is.null(edgeTail)){
+        tsel <- sapply(edgeTail, is.function)
+        edgeTail[tsel] <- "open"
+        edgeAttrs$arrowtail <- edgeTail
+    }
+    
     ## pass fontsize
     fontsize <- getRenderPar(x, "fontsize")
     names(fontsize) <- nodes(x)
     nodeAttrs$fontsize <- fontsize
 
-
-    ##FIXME: graphviz should return "ellipse" for layoutType dot
-    ##       (at least that's what the edges are computed for)
-    ##       but does return "circle". This fix will substitute
-    ##       any circles by ellipses, and mess around with the
-    ##       node dimensions to make them look like circles
-    ##       which isn't really what we . Somebody with too much
-    ##       free time should fix this in  the C code some time
+    ## The node shapes, only pass them on if they are not functions
     shapes <- getRenderPar(x, "shape", "nodes")
     widths <- getRenderPar(x, "iwidth", "nodes")
-
     names(shapes) <- names(widths)  <- nodes(x)
-
     attrShapes <- nodeAttrs$shape
-    if(!is.null(attrShapes)) shapes[names(attrShapes)] <- attrShapes
+    if(!is.null(attrShapes))
+        shapes[names(attrShapes)] <- attrShapes
+    shapesOrig <- shapes
+    ssel <- FALSE
+    if(!is.null(shapes)){
+        ssel <- sapply(shapes, is.function)
+        shapes[ssel] <- "circle"
+        nodeAttrs$shape <- unlist(shapes)
+    }
 
-    oshape <- shapes
-    circ <- shapes=="circle"
-    ell <- shapes=="ellipse"
+    #oshape <- shapes
+    #circ <- shapes=="circle"
+    #ell <- shapes=="ellipse"
 
     attrWidths <- nodeAttrs$width
     if(!is.null(attrWidths)) widths[names(attrWidths)] <- attrWidths
 
-    if(layoutType == "dot"){
-        shapes[circ] <- "ellipse"
-        widths[circ] <- widths[circ]*0.96
-        widths[ell] <- widths[ell]*1.3
-    }
+    ## No clue what that was good for...
+    ##     if(layoutType == "dot"){
+    ##         shapes[circ] <- "ellipse"
+    ##         widths[circ] <- widths[circ]*0.96
+    ##         widths[ell] <- widths[ell]*1.3
+    ##     }
     
     ## go on here....
-    nodeAttrs$shape <- shapes
     nodeAttrs$width <- widths
     g <- agopen(x, name=name, layoutType=layoutType,
                 recipEdges=recipEdges, nodeAttrs=nodeAttrs,
@@ -224,13 +242,19 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     ## get information from the Ragraph object. Only replace labels if 
     ## they have been  explicitely specified in the edgeAttrs or nodeAttrs
     nri <- nodeRagraph2graph(g, x)
-    nri$shape <- oshape
+    ## nri$shape <- oshape
     if(!is.null(nodeAttrs$label))
         nri$label <- nodeAttrs$label
+    if(any(ssel))
+        nri$shape[names(which(ssel))] <- shapesOrig[ssel]
     nodeRenderInfo(x) <- nri
     eri <- edgeRagraph2graph(g, x)
     if(!is.null(edgeAttrs$label))
         eri$label <- edgeAttrs$label
+    if(any(hsel))
+        eri$arrowhead[names(which(hsel))] <- edgeHeadOrig[hsel]
+    if(any(tsel))
+        eri$arrowtail[names(which(tsel))] <- edgeTailOrig[tsel]
     edgeRenderInfo(x) <- eri
     return(invisible(x))
   }

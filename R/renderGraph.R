@@ -21,23 +21,21 @@ getRenderPar <-
                   nodes = nodeRenderInfo(g, name), 
                   edges = edgeRenderInfo(g, name),
                   graph = graphRenderInfo(g, name))
-    if (!is.null(ans) && !any(is.na(ans)))
+    if (!is.null(ans) && !any(is.na(ans))){
         if(!is.null(names(ans)))
-            ans[nms]
-        else
-            ans
-    else
-    {
+            ans <- ans[nms]
+    }else{
         default <- parRenderInfo(g, what)[[name]][1]
         if (is.null(default)) default <- graph.par.get(what)[[name]][1]
-        if (is.null(ans)) rep(default, length(nms))
-        else
-        {
+        if (is.null(ans)){
+            ans <- rep(default, length(nms))
+        }else{
             if(!is.null(default))
                 ans[is.na(ans)] <- default
-            ans[nms]
+            ans <- ans[nms]
         }
     }
+    ans
 }
 
 
@@ -54,36 +52,50 @@ renderNodes <- function(g)
     lw <- getRenderPar(g, "lWidth", "nodes")
     rw <- getRenderPar(g, "rWidth", "nodes")
     height <- getRenderPar(g, "height", "nodes")
-    rad    <- (lw+rw)/2
     labelX <- getRenderPar(g, "labelX", "nodes")
     labelY <- getRenderPar(g, "labelY", "nodes")
     #labelJust <- getRenderPar(g, "labelJust", "nodes") ## FIXME: do we need this
     #labelJust <- as.numeric(gsub("l", 0, gsub("n", -0.5, gsub("r", -1,
     #                        labelJust))))
     ## these only live within R
-    fill <- getRenderPar(g, "fill", "nodes")
-    col <- getRenderPar(g, "col", "nodes")
-    lwd <- getRenderPar(g, "lwd", "nodes")
+    fill <- unlist(getRenderPar(g, "fill", "nodes"))
+    col <- unlist(getRenderPar(g, "col", "nodes"))
+    lwd <- unlist(getRenderPar(g, "lwd", "nodes"))
     lty <- getRenderPar(g, "lty", "nodes")
-    textCol <- getRenderPar(g, "textCol", "nodes")
-    style <- getRenderPar(g, "style", "nodes")
-    shape <- getRenderPar(g, "shape", "nodes") 
-    label <- getRenderPar(g, "label", "nodes")
-    fontsize <- getRenderPar(g, "fontsize", "nodes")
+    textCol <- unlist(getRenderPar(g, "textCol", "nodes"))
+    style <- unlist(getRenderPar(g, "style", "nodes"))
+    shape <- getRenderPar(g, "shape", "nodes")
+    label <- unlist(getRenderPar(g, "label", "nodes"))
+    fontsize <- unlist(getRenderPar(g, "fontsize", "nodes"))
     if (is.null(label)) label <- nodes(g)
    
 
     ## deal with different shapes
+    ## first deal with user-defined functions
+    funs <- sapply(shape, is.function)
+    if(any(funs)){
+        for(i in which(funs)){
+            bbox <- matrix(c(nodeX[i]-lw[i], nodeX[i]+rw[i], nodeY[i]-height[i]/2,
+                             nodeY[i]+height[i]/2), ncol=2)
+            try(shape[[i]](bbox, labelX=labelX[i], labelY=labelY[i], fill=fill[i],
+                           col=col[i], lwd=lwd[i], lty=lty[i], textCol=textCol[i],
+                           style=style[i], label=label[i], fontsize=fontsize[i]))
+        }
+    }
+
+    ## now the default shapes
     possible.shapes <-
         c("circle", "ellipse", "box", "rectangle", "plaintext", "triangle")
     shape <-
         possible.shapes[pmatch(shape,
                                possible.shapes,
-                               duplicates.ok = TRUE)]
+                               duplicates.ok = TRUE,
+                               nomatch=5)]
     ## shape == circle
     i <- shape == "circle"
     if (any(i, na.rm=TRUE))
     {
+        rad    <- pmin(height, (lw+rw))/2
         symbols(nodeX[i], nodeY[i], circles = rad[i],
                 fg = col[i], bg = fill[i], lwd = lwd[i], lty = lty[i],
                 inches = FALSE, add = TRUE)
@@ -114,6 +126,7 @@ renderNodes <- function(g)
     i <- shape == "ellipse"
     if (any(i, na.rm=TRUE))
     {
+        rad <- (lw+rw)/2
         npoints <- 101
         tt <- c(seq(-pi, pi, length = npoints), NA)
         xx <-
@@ -147,29 +160,95 @@ renderNodes <- function(g)
 
 
 
+## rotate a karthesian coordinate system around its origin by alpha
+## and retain x and y values through a translocation by offset.
+rotate <- function(x, y, alpha, offset){
+    xn <- x*cos(alpha)-y*sin(alpha)+offset[1]
+    yn <- x*sin(alpha)+y*cos(alpha)+offset[2]
+    list(x=xn,y=yn)
+}
+
+
+## draw different types of arrowheads
+drawHead <- function(type, xy, bbox, col, lwd, lty, len){
+    db <- as.numeric(diff(bbox))
+    dxy <- diff(xy)*db
+    alpha <- atan(dxy[2]/dxy[1])
+    r <- max(bbox)/130
+    switch(unlist(type),
+           "none"={},
+           "box"={
+               x <- c(-1,-1,1,1)*r
+               y <- c(-1,1,1,-1)*r
+               xyr <- rotate(x,y,alpha, xy[2,])
+               polygon(xyr, col=col, border=col, lwd=lwd, lty=lty)
+           },
+           "obox"={
+               x <- c(-1,-1,1,1)*r
+               y <- c(-1,1,1,-1)*r
+               xyr <- rotate(x,y,alpha, xy[2,])
+               polygon(xyr, border=col, col="white", lwd=lwd, lty=lty)
+           },
+           "dot"={
+               symbols(xy[2,1], xy[2,2], circles=r, inches=FALSE, add=TRUE, fg=col,
+                       lwd=lwd, lty=lty, bg=col)
+           },
+           "odot"={
+               symbols(xy[2,1], xy[2,2], circles=r, inches=FALSE, add=TRUE, fg=col,
+                       lwd=lwd, lty=lty, bg="white")
+           },
+           "diamond"={
+               x <- c(-1,-1,1,1)*r
+               y <- c(-1,1,1,-1)*r
+               xyr <- rotate(x,y,alpha+45*(pi/180), xy[2,])
+               polygon(xyr, col=col, border=col, lwd=lwd, lty=lty)
+           },
+           "odiamond"={
+               x <- c(-1,-1,1,1)*r
+               y <- c(-1,1,1,-1)*r
+               xyr <- rotate(x,y,alpha+45*(pi/180), xy[2,])
+               polygon(xyr, col="white", border=col, lwd=lwd, lty=lty)
+           },
+           "tee"={
+               x <- c(0, 0)*r
+               y <- c(-1,1)*r
+               xyr <- rotate(x,y,alpha, xy[2,])
+               lines(xyr, col=col, lwd=lwd*2, lty=lty)
+           },
+           arrows(xy[1], xy[3], xy[2], xy[4], length=len, col=col,
+                  lwd=lwd, lty=lty)
+       )
+}
+           
+
 ## A vectorized function that draws the splines for the edges
 renderSpline <-
-    function(spline, head = FALSE, tail = FALSE, len = 1,
-             col = "black", lwd=1, lty="solid", ...)
+    function(spline, arrowhead = FALSE, arrowtail = FALSE, len = 1,
+             col = "black", lwd=1, lty="solid", bbox, ...)
 {
     ## may get numerics as characters (e.g. "1") which doesn't work
     ## for 'lines'
     mylty <- as.numeric(lty)
     if(!is.na(mylty)) lty <- mylty
     lapply(spline, lines, col = col, lwd=lwd, lty=lty, ...)
-    
-    ## the arrow heads
-    if (head)
-    {
-        xy <- tail(bezierPoints(spline[[length(spline)]]), 2)
-        arrows(xy[1], xy[3], xy[2], xy[4], length = len, col = col,
-               lwd=lwd, lty=lty)
+
+    ## the arrow heads, both head or tail may be a user supplied function
+    ## or one of the following predefined shapes: nomal, none, box, obox, dot, odot
+    ## the default shape will always be "normal".
+    xyhead <- tail(bezierPoints(spline[[length(spline)]]), 2)
+    if(is.function(arrowhead[[1]])){
+        xy <- list(x=xyhead[2,1], y=xyhead[2,2])
+        try(arrowhead[[1]](xy, col=col, lwd=lwd, lty=lty))
+    }else{
+        drawHead(arrowhead, xyhead, bbox, col, lwd, lty, len)
     }
-    if (tail)
-    {
-        xy <- head(bezierPoints(spline[[1]]), 2)
-        arrows(xy[2], xy[4], xy[1], xy[3], length = len, col = col,
-               lwd=lwd, lty=lty)
+    ## now the arrow tails
+    xytail <- head(bezierPoints(spline[[length(spline)]]), 2)
+    if(is.function(arrowtail[[1]])){
+        xy <- list(x=xytail[1,1], y=xytail[1,2])
+        try(arrowtail[[1]](xy, col=col, lwd=lwd, lty=lty))
+    }else{
+        drawHead(arrowtail, xytail[2:1,], bbox, col, lwd, lty, len)
     }
 }
 
@@ -205,8 +284,8 @@ renderEdges <- function(g)
     height <- getRenderPar(g, "height", "nodes")
     splines <- getRenderPar(g, "splines", "edges")
     ## direction <- getRenderPar(g, "direction", "edges") ## UNUSED (isn't this redundant?)
-    arrowhead <- getRenderPar(g, "arrowhead", "edges") != "none"
-    arrowtail <- getRenderPar(g, "arrowtail", "edges") != "none"
+    arrowhead <- getRenderPar(g, "arrowhead", "edges")# != "none"
+    arrowtail <- getRenderPar(g, "arrowtail", "edges")# != "none"
     label <- getRenderPar(g, "label", "edges")
     labelX <- getRenderPar(g, "labelX", "edges")
     labelY  <- getRenderPar(g, "labelY", "edges")
@@ -230,11 +309,12 @@ renderEdges <- function(g)
     for (i in seq_along(splines))
     {
         suppressWarnings(renderSpline(splines[[i]],
-                                      head = arrowhead[i],
-                                      tail = arrowtail[i],
+                                      arrowhead = arrowhead[i],
+                                      arrowtail = arrowtail[i],
                                       len = arrowLen,
                                       col = col[i], lty = lty[i],
-                                      lwd = lwd[i]))
+                                      lwd = lwd[i],
+                                      bbox= getRenderPar(g, "bbox", "graph")))
     }
 
     ## draw text labels
@@ -310,7 +390,7 @@ setMethod("renderGraph", "graph",
           ## node-by-node user-defined function   
           if(is.character(drawNodes)){
                   if(match.arg(drawNodes)=="renderNodes")
-                    Rgraphviz:::renderNodes(x)
+                      renderNodes(x)
               }else  drawNodes(x)
 
 
