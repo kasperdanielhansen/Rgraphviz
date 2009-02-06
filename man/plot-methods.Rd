@@ -19,6 +19,7 @@
     sub=sub, drawNode=drawAgNode, nodeAttrs=list(), edgeAttrs=list())}
 }
 \section{arguments}{
+ \describe{
   \item{x}{The \code{graph} object to plot}
   \item{y}{The layout method to use: One of \code{\link{dot}},
     \code{\link{neato}}, \code{\link{twopi}}, \code{\link{circo}}, and
@@ -38,6 +39,7 @@
   \item{recipEdges}{Determines how to draw reciprocating edges.  See
     \code{\link{agopen}}} 
   \item{...}{General commands to be sent to plot}
+ }
 }
 \section{details}{
   The first plot method in the \code{usage} section corresponds to the
