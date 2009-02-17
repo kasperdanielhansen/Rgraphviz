@@ -1,21 +1,3 @@
-###################################################################
-# graph attributes
-###################################################################
-
-setGeneric("graphDataDefaults", function(self)
-           standardGeneric("graphDataDefaults"))
-
-setGeneric("graphDataDefaults<-", function(self, attr, value)
-           standardGeneric("graphDataDefaults<-"))
-
-setGeneric("graphData", function(self, attr)
-           standardGeneric("graphData"))
-
-setGeneric("graphData<-", function(self, attr, value)
-           standardGeneric("graphData<-"))
-
-###################################################################
-
 setMethod("graphDataDefaults",
           signature(self="Ragraph"),
           function(self) {
@@ -52,17 +34,6 @@ setReplaceMethod("graphData",
              }
           })
 
-###################################################################
-# cluster attributes
-###################################################################
-
-setGeneric("clusterData", function(self, cluster, attr)
-           standardGeneric("clusterData"))
-
-setGeneric("clusterData<-", function(self, cluster, attr, value)
-           standardGeneric("clusterData<-"))
-
-###################################################################
 
 setMethod("clusterData",
           signature(self="Ragraph", cluster="numeric", attr="vector"),
