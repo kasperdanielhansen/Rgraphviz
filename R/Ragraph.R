@@ -1,138 +1,66 @@
-### CLass xyPoint
-setClass("xyPoint", representation(x="numeric", y="numeric"))
 
-setGeneric("getX", function(object) standardGeneric("getX"))
 setMethod("getX", "xyPoint", function(object) object@x)
 
-setGeneric("getY", function(object) standardGeneric("getY"))
 setMethod("getY", "xyPoint", function(object) object@y)
 
-setGeneric("getPoints", function(object) standardGeneric("getPoints"))
 setMethod("getPoints", "xyPoint", function(object) c(object@x, object@y))
 
-
-### Class AgTextLabel
-## used to represent a 'textlabel_t' and related information
-setClass("AgTextLabel", representation(labelText="character",
-                                       labelLoc="xyPoint",
-                                       labelJust="character",
-                                       labelWidth="integer",
-                                       labelColor="character",
-                                       labelFontsize="numeric"))
-setGeneric("labelText", function(object) standardGeneric("labelText"))
 setMethod("labelText", "AgTextLabel", function(object) object@labelText)
 
-setGeneric("labelColor", function(object) standardGeneric("labelColor"))
 setMethod("labelColor", "AgTextLabel", function(object) object@labelColor)
 
-setGeneric("labelLoc", function(object) standardGeneric("labelLoc"))
 setMethod("labelLoc", "AgTextLabel", function(object) object@labelLoc)
 
-setGeneric("labelJust", function(object) standardGeneric("labelJust"))
 setMethod("labelJust", "AgTextLabel", function(object) object@labelJust)
 
-setGeneric("labelWidth", function(object) standardGeneric("labelWidth"))
 setMethod("labelWidth","AgTextLabel", function(object) object@labelWidth)
 
-setGeneric("labelFontsize", function(object) standardGeneric("labelFontsize"))
 setMethod("labelFontsize", "AgTextLabel", function(object) object@labelFontsize)
 
-
-### Class boundingBox
-setClass("boundingBox", representation(botLeft="xyPoint", upRight="xyPoint"))
-
-setGeneric("botLeft", function(object) standardGeneric("botLeft"))
 setMethod("botLeft", "boundingBox", function(object) object@botLeft)
 
-setGeneric("upRight", function(object) standardGeneric("upRight"))
 setMethod("upRight", "boundingBox", function(object) object@upRight)
 
-
-### Class AgNode
-setClass("AgNode", representation(center="xyPoint",
-                                  name="character",
-                                  txtLabel="AgTextLabel",
-                                  height="integer",
-                                  rWidth="integer",
-                                  lWidth="integer",
-                                  color="character",
-                                  fillcolor="character",
-                                  shape="character",
-                                  style="character"))
-
-setGeneric("shape", function(object) standardGeneric("shape"))
 setMethod("shape", "AgNode", function(object) object@shape)
 
-setGeneric("style", function(object) standardGeneric("style"))
 setMethod("style", "AgNode", function(object) object@style)
 
-setGeneric("color", function(object) standardGeneric("color"))
 setMethod("color","AgNode", function(object) object@color)
 
-setGeneric("fillcolor", function(object) standardGeneric("fillcolor"))
 setMethod("fillcolor", "AgNode", function(object) object@fillcolor)
 
-setGeneric("getNodeCenter", function(object) standardGeneric("getNodeCenter"))
 setMethod("getNodeCenter", "AgNode", function(object) object@center)
 
-setGeneric("getNodeHeight", function(object) standardGeneric("getNodeHeight"))
 setMethod("getNodeHeight", "AgNode", function(object) object@height)
 
-setGeneric("getNodeRW", function(object) standardGeneric("getNodeRW"))
 setMethod("getNodeRW", "AgNode", function(object) object@rWidth)
 
-setGeneric("getNodeLW", function(object) standardGeneric("getNodeLW"))
 setMethod("getNodeLW", "AgNode", function(object) object@lWidth)
 
-setGeneric("name", function(object) standardGeneric("name"))
 setMethod("name", "AgNode", function(object) object@name)
 
-setGeneric("txtLabel", function(object) standardGeneric("txtLabel"))
 setMethod("txtLabel", "AgNode", function(object) object@txtLabel)
 
-setGeneric("getNodeXY", function(object) standardGeneric("getNodeXY"))
 setMethod("getNodeXY", "AgNode", function(object) {
     cen <- getNodeCenter(object)
     out <- list(x=getX(cen), y=getY(cen))
     out
 })
 
-
-### Class AgEdge
-setClass("AgEdge", representation(splines="list",
-                                  sp="xyPoint",
-                                  ep="xyPoint",
-                                  head="character",
-                                  tail="character",
-			          dir="character",
-                                  arrowhead="character",
-                                  arrowtail="character",
-                                  arrowsize="character",
-                                  color="character",
-                                  lty="character",
-                                  lwd="numeric",
-                                  txtLabel="AgTextLabel"))
-
 setMethod("color","AgEdge", function(object) object@color)
 
-setGeneric("arrowsize", function(object) standardGeneric("arrowsize"))
 setMethod("arrowsize", "AgEdge", function(object) object@arrowsize)
 
-setGeneric("arrowhead", function(object) standardGeneric("arrowhead"))
 setMethod("arrowhead", "AgEdge", function(object) object@arrowhead)
 
-setGeneric("arrowtail", function(object) standardGeneric("arrowtail"))
 setMethod("arrowtail", "AgEdge", function(object) object@arrowtail)
 
 setMethod("txtLabel", "AgEdge", function(object) object@txtLabel)
 
-setGeneric("splines", function(object) standardGeneric("splines"))
 setMethod("splines", "AgEdge", function(object) object@splines)
 
-setGeneric("sp", function(object) standardGeneric("sp"))
 setMethod("sp", "AgEdge", function(object) object@sp)
 
-setGeneric("ep", function(object) standardGeneric("ep"))
 setMethod("ep", "AgEdge", function(object) object@ep)
 
 ### Don't make "head" or "tail" generics here: they are already defined as
@@ -140,10 +68,8 @@ setMethod("ep", "AgEdge", function(object) object@ep)
 setMethod("head", "AgEdge", function(x, ...) x@head)
 setMethod("tail", "AgEdge", function(x, ...) x@tail)
 
-setGeneric("numSplines", function(object) standardGeneric("numSplines"))
 setMethod("numSplines", "AgEdge", function(object) length(object@splines))
 
-setGeneric("getSpline", function(object, pos) standardGeneric("getSpline"))
 setMethod("getSpline", "AgEdge", function(object, pos) {
     if ((pos > 0)&&(pos <= numSplines(object)))
         return(object@splines[[pos]])
@@ -153,20 +79,14 @@ setMethod("getSpline", "AgEdge", function(object, pos) {
 })
 
 
-### Class BezierCurve
-setClass("BezierCurve", representation(cPoints="list"))
-
-setGeneric("cPoints", function(object) standardGeneric("cPoints"))
 setMethod("cPoints", "BezierCurve", function(object) object@cPoints)
 
-setGeneric("pointList", function(object) standardGeneric("pointList"))
 setMethod("pointList", "BezierCurve", function(object) {
     z <- cPoints(object)
     out <- lapply(z, getPoints)
     out
 })
 
-setGeneric("bezierPoints", function(object) standardGeneric("bezierPoints"))
 setMethod("bezierPoints", "BezierCurve", function(object) {
     z <- pointList(object)
     out <- vector("list", length=11)
@@ -179,7 +99,6 @@ setMethod("bezierPoints", "BezierCurve", function(object) {
 })
 
 ## TODO: this should be obsolete
-setGeneric("bLines", function(x, ...) standardGeneric("bLines"))
 setMethod("bLines", "BezierCurve", 
 		function(x,...,col=par("col"), len=0.25, lty=par("lty"),
                          lwd=par("lwd"), arrowtail="none", arrowhead="none") {
@@ -281,39 +200,24 @@ setMethod("lines", "AgEdge",
     drawTxtLabel(txtLabel(x))
 })
 
-### Class Ragraph
-setClass("Ragraph", representation(agraph="externalptr",
-                                   laidout="logical",
-                                   layoutType="character",
-                                   edgemode="character",
-                                   AgNode="list",
-                                   AgEdge="list",
-                                   boundBox="boundingBox",
-				   fg="character",
-				   bg="character"))
 
-setGeneric("agraph", function(object) standardGeneric("agraph"))
+
 setMethod("agraph", "Ragraph", function(object) object@agraph)
 
 setMethod("edgemode", "Ragraph", function(object) object@edgemode)
 
-setGeneric("laidout", function(object) standardGeneric("laidout"))
 setMethod("laidout", "Ragraph", function(object) object@laidout)
 
-setGeneric("layoutType", function(object) standardGeneric("layoutType"))
 setMethod("layoutType", "Ragraph", function(object) object@layoutType)
 
-setGeneric("boundBox", function(object) standardGeneric("boundBox"))
 setMethod("boundBox", "Ragraph", function(object) object@boundBox)
 
 
 ##------------------------------------------------------------
 ## accessor and replacement methods for AgEdge slot
 ##------------------------------------------------------------
-setGeneric("AgEdge", function(object) standardGeneric("AgEdge"))
 setMethod("AgEdge", "Ragraph", function(object) object@AgEdge)
 
-setGeneric("AgEdge<-", function(object, value) standardGeneric("AgEdge<-"))
 setReplaceMethod("AgEdge", "Ragraph", function(object, value) {
                    object@AgEdge = value
                    return(object)
@@ -322,10 +226,8 @@ setReplaceMethod("AgEdge", "Ragraph", function(object, value) {
 ##------------------------------------------------------------
 ## accessor and replacement methods for AgNode slot
 ##------------------------------------------------------------
-setGeneric("AgNode", function(object) standardGeneric("AgNode"))
 setMethod("AgNode", "Ragraph", function(object) object@AgNode)
 
-setGeneric("AgNode<-", function(object, value) standardGeneric("AgNode<-"))
 setReplaceMethod("AgNode", "Ragraph", function(object, value) {
                    object@AgNode = value
                    return(object)

@@ -15,4 +15,19 @@ Imports: utils
 SystemRequirements: Graphviz version >= 2.2
 License: Artistic-2.0
 LazyLoad: Yes
+Collate: AllGenerics.R
+	 AllClasses.R
+	 Ragraph.R 
+	 defaultAttrs.R  
+	 graph.R        
+	 makeNodeAttrs.R  
+	 Rgraphviz.R
+	 ellipse.R       
+	 layoutGraph.R  
+	 pieGlyph.R
+	 gcneData.R      
+	 LL_funcs.R     
+	 plot.R           
+	 renderGraph.R
+ 	 zzz.R
 biocViews: GraphsAndNetworks
