@@ -5,7 +5,7 @@ Description: Interfaces R with the AT and T graphviz library for
         platforms must install graphviz; see the README file,
         available in the source distribution of this file, for
         details.
-Version: 1.21.7
+Version: 1.21.8
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>, Li Long <li.long@isb-sib.ch>,
    Robert Gentleman <rgentlem@fhcrc.org>, Seth Falcon <sethf@fhcrc.org>,
    Florian Hahne <fhahne@fhcrc.org>, Deepayan Sarkar <dsarkar@fhcrc.org>
@@ -17,17 +17,18 @@ License: Artistic-2.0
 LazyLoad: Yes
 Collate: AllGenerics.R
 	 AllClasses.R
-	 Ragraph.R 
-	 defaultAttrs.R  
-	 graph.R        
-	 makeNodeAttrs.R  
+	 Ragraph.R
+	 defaultAttrs.R
+	 graph.R
+	 makeNodeAttrs.R
 	 Rgraphviz.R
-	 ellipse.R       
-	 layoutGraph.R  
+	 ellipse.R
+	 layoutGraph.R
 	 pieGlyph.R
-	 gcneData.R      
-	 LL_funcs.R     
-	 plot.R           
+	 gcneData.R
+	 LL_funcs.R
+	 plot.R
 	 renderGraph.R
+	 graphviz_build_version.R
  	 zzz.R
 biocViews: GraphsAndNetworks
