@@ -124,8 +124,13 @@ SEXP getEdgeLocs(Agraph_t *g) {
 #endif
                 /* Get the X/Y location of the label */
                 PROTECT(curXY = NEW_OBJECT(xyClass));
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR > 20
+                SET_SLOT(curXY, Rf_install("x"), Rf_ScalarInteger(ED_label(edge)->pos.x));
+                SET_SLOT(curXY, Rf_install("y"), Rf_ScalarInteger(ED_label(edge)->pos.y));
+#else
                 SET_SLOT(curXY, Rf_install("x"), Rf_ScalarInteger(edge->u.label->p.x));
                 SET_SLOT(curXY, Rf_install("y"), Rf_ScalarInteger(edge->u.label->p.y));
+#endif
                 SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
                 UNPROTECT(1);
 
@@ -231,8 +236,13 @@ SEXP getNodeLayouts(Agraph_t *g) {
 
             /* Get the X/Y location of the label */
             PROTECT(curXY = NEW_OBJECT(xyClass));
+#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR > 20
+	    SET_SLOT(curXY, Rf_install("x"), Rf_ScalarInteger(ND_label(node)->pos.x));
+	    SET_SLOT(curXY, Rf_install("y"), Rf_ScalarInteger(ND_label(node)->pos.y));
+#else
             SET_SLOT(curXY, Rf_install("x"), Rf_ScalarInteger(node->u.label->p.x));
             SET_SLOT(curXY, Rf_install("y"), Rf_ScalarInteger(node->u.label->p.y));
+#endif
             SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
             UNPROTECT(1);
 

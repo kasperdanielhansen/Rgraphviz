@@ -1,13 +1,35 @@
 #!/bin/sh
 
+# We assume that the following three variables comes from the environment
 echo GRAPHVIZ_INSTALL_DIR=$GRAPHVIZ_INSTALL_DIR
 echo GRAPHVIZ_INSTALL_MAJOR=$GRAPHVIZ_INSTALL_MAJOR
 echo GRAPHVIZ_INSTALL_MINOR=$GRAPHVIZ_INSTALL_MINOR
 
-sed s/GRAPHVIZ_INSTALL_PATH/$GRAPHVIZ_INSTALL_DIR/ src/Makevars.win.in > src/Makevars.win.1 
-sed s/GRAPHVIZ_INSTALL_MAJOR/$GRAPHVIZ_INSTALL_MAJOR/ src/Makevars.win.1 > src/Makevars.win.2 
-sed s/GRAPHVIZ_INSTALL_MINOR/$GRAPHVIZ_INSTALL_MINOR/ src/Makevars.win.2 > src/Makevars.win.3 
-sed s/GRAPHVIZ_LIBS/"-lgvc-4 -lgraph-4 -lcdt-4"/ src/Makevars.win.3 > src/Makevars.win 
-rm src/Makevars.win.1 src/Makevars.win.2 src/Makevars.win.3 
+if (test ${GRAPHVIZ_INSTALL_MAJOR} -eq "2" && test ${GRAPHVIZ_INSTALL_MINOR} -lt "2") ; then
+   echo "Need Graphviz >= 2.2"
+   exit 1
+fi
 
-sed s/%GRAPHVIZ_BUILD_VERSION%/\"${GRAPHVIZ_INSTALL_MAJOR}.${GRAPHVIZ_INSTALL_MINOR}\"/ src/graphviz_build_version.R.win > R/graphviz_build_version.R
+PKG_CPPFLAGS="-I${GRAPHVIZ_INSTALL_DIR}/include/graphviz"
+GVIZ_DEFS="-DGRAPHVIZ_MAJOR=${GRAPHVIZ_INSTALL_MAJOR} -DGRAPHVIZ_MINOR=${GRAPHVIZ_INSTALL_MINOR} -DWin32"
+GRAPHVIZ_BUILD_VERSION="${GRAPHVIZ_INSTALL_MAJOR}.${GRAPHVIZ_INSTALL_MINOR}"
+
+if (test ${GRAPHVIZ_INSTALL_MAJOR} -eq "2" && test ${GRAPHVIZ_INSTALL_MINOR} -le "20") ; then
+   PKG_LIBS="-L${GRAPHVIZ_INSTALL_DIR}/bin -lgvc-4 -lgraph-4 -lcdt-4"
+else 
+   PKG_LIBS="-L${GRAPHVIZ_INSTALL_DIR}/bin -lgvc-5 -lgraph-4 -lcdt-4"
+fi 
+
+echo "We have inferred the following flags for graphviz"
+echo "..PKG_CPPFLAGS=${PKG_CPPFLAGS}"
+echo "..PKG_LIBS=${PKG_LIBS}"
+echo "..GVIZ_DEFS=${GVIZ_DEFS}"
+
+
+sed "s!@PKG_LIBS@!${PKG_LIBS}!" src/Makevars.win.in > src/Makevars.win
+sed -i "s!@PKG_CPPFLAGS@!${PKG_CPPFLAGS}!" src/Makevars.win
+sed -i "s!@GVIZ_DEFS@!${GVIZ_DEFS}!" src/Makevars.win
+echo "Created file src/Makevars.win"
+
+sed "s!@GRAPHVIZ_BUILD_VERSION@!${GRAPHVIZ_BUILD_VERSION}!" R/graphviz_build_version.R.in > R/graphviz_build_version.R
+echo "Created file R/graphviz_build_version.R"

@@ -9,9 +9,14 @@
 graphvizVersion()
 }
 \value{
-  A character string reporting the version of Graphviz that is being used.
+  A list with two elements, each of class \code{numeric_version}. The first
+  element named \code{installed_version} represents the version of
+  Graphviz that is being used by the package. The second element named
+  \code{build_version} represents the version of Graphviz that was used
+  to build the package. A mismatch between these two versions may
+  indicate problems.
 }
-\author{Jeff Gentry}
+\author{Jeff Gentry, modified by Kasper Daniel Hansen}
 \examples{
 graphvizVersion()
 }
