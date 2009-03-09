@@ -2,15 +2,56 @@
 Installing Rgraphviz
 ====================
 
+Current as of 3 March, 2009
+
+What version of Graphviz do I need?
+===================================
+
+Graphviz uses a numbering scheme where odd version numbers are
+development versions and even version numbers are stable releases
+(meaning 2.21 is a development version).
+
+Graphviz greater than 2.2.1 is required.
+
+In the context of Rgraphviz, little has changed in the Graphviz
+internals since version 2.8 or so. There is generally no reason to go
+for a newer version, it will not provide extra functionality. Indeed
+using a "new" version of Graphviz often cause Rgraphviz to break. See
+below for platform specific notes on this.
+
+For Windows and OS X, it is common to use a binary version of
+Rgraphviz. Installation problems typically occur when Rgraphviz is
+being _used_ not while _installing_ it. In order to check that
+Rgraphviz is working properly, it is adviced to try
+
+R> example(layoutGraph)
+
+If this runs without an error, most like Rgraphviz is working properly.
+
 Windows
 =======
 
-2 December, 2008
+Most users would want to use a binary (by which we mean pre-compiled)
+version of Graphviz. When preparing the binary version, it is assumed
+that a _specific_ version of Graphviz exists on the user's computer -
+using a different version of Graphviz will most likely cause Rgraphviz
+to fail. Rgraphviz will inform you of any version inconsistency when
+loaded. 
 
+The right version of Graphviz for Bioconductor 2.3 is version
+2.20.3. This version will not work with Vista 64 bit, so the user will
+need to compile from source, and in addition make sure that a version
+strictly greater than 2.20 is used - at the time of writing this means
+using a development version of Graphviz (despite the warnings not to
+do so above)..
 
-Hare the steps to INSTALL Rgraphviz
+Here are the steps to INSTALL Graphiz/Rgraphviz if you want to use the
+_binary_ version.
 
-o. install graphviz ***2.20.3*** Windows ***binary*** distribution from
+Using the Windows binary
+------------------------
+
+o. install Graphviz ***2.20.3*** Windows ***binary*** distribution from
 
       http://www.graphviz.org/pub/graphviz/stable/windows/graphviz-2.20.3.msi
 
@@ -20,25 +61,28 @@ o. install graphviz ***2.20.3*** Windows ***binary*** distribution from
    
    If you install it in other dir, just use your dir correspondingly.
 
-o. Add graphviz' bin diretory to the user PATH variable, e.g.,
+o. Add Graphviz' bin diretory to the user PATH variable, e.g.,
 
      c:\Graphviz-2.21\bin
 
-o. Check the configuration by starting a new DOS window and dispalying
+o. Check the configuration by starting a new DOS window and displaying
    the PATH environment variable, e.g.,
 
       c:\> echo %PATH%
 
 o.  Use biocLite('Rgraphviz') to install Rgraphviz
 
+Compiling from source on Windows
+--------------------------------
 
-It is also possible to build Rgraphviz from source, e.g., because you
-want to link against a different version of the graphviz
-libraries. Here are the steps to build Rgraphviz on Windows:
+If you want to compile Rgraphviz from source you can use any version
+of Graphviz you want (but in general, stay away from development
+versions). Older version so Graphviz (2.2.1 to say 2.16 might not
+work). 
 
-o. Install graphviz as outlined in the previous section
+o. Install Graphviz as outlined in the previous section
 
-o. set the following Windows environment variables accordingly
+o. Set the following Windows environment variables accordingly
    (control panel -> systems -> Advanced -> Environment Variables ):
    (a) create new user variables:
      GRAPHVIZ_INSTALL_DIR   (e.g., C:\/Graphviz-2.21)
@@ -52,15 +96,26 @@ o. set the following Windows environment variables accordingly
 
 o. run "R CMD INSTALL Rgraphviz" or "biocLite("Rgraphviz")' as usual
 
-
 OSX installation
 ================
-according to Eric Wexler (ewexler@ucla.edu):
 
-FYI: Rgraphviz will not load (at least under leopard) unless the user  
-has the developer Xcode tools installed.  It was very frustrating  
-untill I figured this out.  PLease pass it on in the Rgraphviz install  
-under OSX instructions
+Most users would want to use a binary version of Rgraphviz. This means
+obtaining the exact same version of Graphviz as is being used on the
+build machine. Rgraphviz will inform you of any version
+inconsistencies when loaded.
+
+At the moment the Graphviz website only distribute binaries for
+Leopard. For Bioconductor 2.3 you will need version 2.20.3 from their
+website. 
+
+For OS X Tiger you will need to compile from source (Bioconductor 2.3
+uses a binary version of Graphviz from Simon Urbanek, but he has
+removed his link to this version).
+
+According to Eric Wexler (ewexler@ucla.edu): Rgraphviz will not load
+(at least under leopard) unless the user has the developer Xcode tools
+installed.  It was very frustrating untill I figured this out.  Please
+pass it on in the Rgraphviz install under OSX instructions
 
 Source based installation
 =========================
@@ -86,16 +141,20 @@ To install Graphviz:
 A word of warning, especially on the Mac OS X platform: Rgraphviz may
 not work if Graphviz is compiled with optimization.
 
-For the most recent version of Graphviz, you will also need to make
-sure that pkg-config (http://pkgconfig.freedesktop.org/wiki/) is
-installed on your system.  If you install Graphviz to a non-standard
-location, you may need to set the PKG_CONFIG_PATH environment variable
-to tell pkg-config where the Graphviz metadata lives.  Here is an example:
+In order for Rgraphviz to find your version of Graphviz you can either
+make sure that pkg-config is installed on your system
+(http://pkgconfig.freedesktop.org/wiki/), you can use the default
+location (/usr/local) or you can use --with-graphviz as a installation
+argument (use it like
+# R CMD INSTALL --command-args='--with-graphviz=/usr/local' Rgraphviz_****
+)
+ 
+If you install Graphviz to a non-standard location and you are using
+pkg-config, you may need to set the PKG_CONFIG_PATH environment
+variable to tell pkg-config where the Graphviz metadata lives.  Here
+is an example:
 
     export PKG_CONFIG_PATH=/home/me/graphviz/lib/pkgconfig
-
-At this point you should be able to install Rgraphviz either via R CMD
-INSTALL or by starting R and using install.packages.
 
 Note that older versions of Graphviz use a configure script called
 dotneato-config which must be in your PATH for Rgraphviz to find it.

@@ -68,6 +68,9 @@ if ! test -z "${GRAPHVIZ_DIR}"; then
        if test "${GRAPHVIZ_VERSTR}" = "Graphviz"; then
                   GRAPHVIZ_VERSTR=`${DOT} -V 2>&1 | cut -f5 -d" "`
        fi
+       if test "${GRAPHVIZ_VERSTR}" = "graphviz"; then
+                  GRAPHVIZ_VERSTR=`${DOT} -V 2>&1 | cut -f5 -d" "`
+       fi
        dnl We need to do version computation here
        dnl since the user-specified graphviz could be version 2.2.1
        dnl in which gase -lgvc will fail
@@ -90,14 +93,17 @@ fi
 
 dnl Verify we have a usable graphviz version.
 dnl Currently, this means graphviz >= 2.2.x
-AC_MSG_NOTICE(Found graphviz $GRAPHVIZ_VERSTR)
-MAJOR=`echo ${GRAPHVIZ_VERSTR} | cut -f1 -d"."`
-MINOR=`echo ${GRAPHVIZ_VERSTR} | cut -f2 -d"."`
+AC_MSG_NOTICE(Found Graphviz version $GRAPHVIZ_VERSTR)
+AC_MSG_NOTICE(Corresponding to major version $MAJOR and minor version $MINOR)
 
 if (test ${MAJOR} -lt "2") || (test ${MAJOR} -eq "2" && test ${MINOR} -lt "2") ; then
    AC_MSG_ERROR("Need graphviz >= 2.2")
    exit 1
 fi
+
+AC_CONFIG_FILES([R/graphviz_build_version.R])
+GRAPHVIZ_BUILD_VERSION=${GRAPHVIZ_VERSTR}
+AC_MSG_NOTICE(Build Version = $GRAPHVIZ_BUILD_VERSION)
 
 AC_MSG_NOTICE(We have inferred the following flags for graphviz)
 AC_MSG_NOTICE(..PKG_CPPFLAGS=${PKG_CPPFLAGS})
@@ -122,4 +128,5 @@ AC_TRY_COMPILE([
 AC_SUBST(GVIZ_DEFS)
 AC_SUBST(PKG_CPPFLAGS)
 AC_SUBST(PKG_LIBS)
+AC_SUBST(GRAPHVIZ_BUILD_VERSION)
 AC_OUTPUT(src/Makevars)

@@ -29,7 +29,8 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     ##  the 2.5 devel branch (and thus 2.6).  Try and work
     ##  around this in a less hassling manner.
     ## FIXME: This seems to still be around in 2.6
-    if ((graphvizVersion() %in% c("2.4","2.6")) && (layoutType == "neato")) {
+    if ((graphvizVersion()$installed_version > 2.3) && (graphvizVersion()$installed_version < 2.7) &&
+        (layoutType == "neato")) {
         singletonGraph <- any(sapply(connComp(graph), length)<=1)
         if (singletonGraph)
             stop("There is a bad interaction between ",
@@ -74,19 +75,19 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     ## Allows lwd (line width) and lty (line type) to be set in same manner
     ## color is set
     ## FIXME:  fix examples in AgNode/AgEdge
-    ##       shouldn't do graphLayout here, but AgEdge/AgNode count on it 
+    ##       shouldn't do graphLayout here, but AgEdge/AgNode count on it
     ##       to fill in data entries, hence, examples from man-pages...
-    ## 
+    ##
     if (layout) g <- graphLayout(g)
-    
+
     if (!is.null(edgeAttrs$lwd)) {
-        for (i in seq(along=edgeAttrs$lwd)) {   
+        for (i in seq(along=edgeAttrs$lwd)) {
             attr(attr(g, "AgEdge")[[i]], "lwd") <- edgeAttrs$lwd[i]
         }
     }
-        
+
     if (!is.null(edgeAttrs$lty)) {
-        for (i in seq(along=edgeAttrs$lty)) {   
+        for (i in seq(along=edgeAttrs$lty)) {
             attr(attr(g, "AgEdge")[[i]], "lty") <- edgeAttrs$lty[i]
         }
     }
@@ -95,7 +96,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
 }
 
 agread <- function(filename, layoutType=c("dot","neato","twopi","circo","fdp"),
-                   layout=TRUE	) 
+                   layout=TRUE	)
 {
     layoutType <- match.arg(layoutType)
 
@@ -107,22 +108,22 @@ agread <- function(filename, layoutType=c("dot","neato","twopi","circo","fdp"),
     g@layoutType <- layoutType
 
     ## FIXME:
-    ##       shouldn't do graphLayout here, but AgEdge/AgNode count on it 
+    ##       shouldn't do graphLayout here, but AgEdge/AgNode count on it
     ##       to fill in data entries, hence, examples from man-pages...
-    ## 
+    ##
     if (layout)
         return(graphLayout(g))
     else
         return(g)
 }
 
-agwrite <- function(graph, filename) 
+agwrite <- function(graph, filename)
 {
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename),
                PACKAGE="Rgraphviz")
 }
 
-graphLayout <- function(graph, layoutType=graph@layoutType) 
+graphLayout <- function(graph, layoutType=graph@layoutType)
 {
     if (is(graph,"graph"))
         stop("Please use function agopen() for graph objects")
@@ -132,7 +133,7 @@ graphLayout <- function(graph, layoutType=graph@layoutType)
 
     if ( graph@layoutType != layoutType || !graph@laidout )
     {
-       graph@layoutType <- layoutType 
+       graph@layoutType <- layoutType
        type <- switch(layoutType,
                    "dot"=0,
                    "neato"=1,
@@ -152,8 +153,9 @@ graphLayout <- function(graph, layoutType=graph@layoutType)
 }
 
 graphvizVersion <- function() {
-    z <- .Call("Rgraphviz_graphvizVersion", PACKAGE="Rgraphviz")
-    z
+    installed_version <- numeric_version(.Call("Rgraphviz_graphvizVersion", PACKAGE="Rgraphviz"))
+    build_version <- numeric_version(.graphviz_build_version)
+    list(installed_version = installed_version, build_version = build_version)
 }
 
 buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
