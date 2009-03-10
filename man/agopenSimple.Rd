@@ -72,7 +72,7 @@ V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
 z <- agopenSimple(g1,name="foo")
-if(as.numeric(strsplit(graphvizVersion(), "[.]")[[1]][2]) >= 10) {
+if(graphvizVersion() >= "2.10") {
   ## This example will only run with Graphviz >= 2.10
   plot(z, "twopi")
 }
