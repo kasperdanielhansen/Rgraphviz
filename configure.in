@@ -106,13 +106,15 @@ if (test ${MAJOR} -lt "2") || (test ${MAJOR} -eq "2" && test ${MINOR} -lt "2") ;
    exit 1
 fi
 
-dnl Infer PKG_LIBS and PJG_CPPFLAGS
-if (test ${MAJOR} -eq "2" && test ${MINOR} -le "2") ; then
-   PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
-   PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -ldotneato -lm"
-else
-   PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
-   PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -L${GRAPHVIZ_DIR}/lib -lgvc"
+dnl Infer PKG_LIBS and PJG_CPPFLAGS, but only if pkg_config was not used
+if test -z ${PKG_CONFIG} ; then
+   if (test ${MAJOR} -eq "2" && test ${MINOR} -le "2") ; then
+      PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
+      PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -ldotneato -lm"
+   else
+      PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
+      PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -L${GRAPHVIZ_DIR}/lib -lgvc"
+   fi
 fi
 AC_MSG_NOTICE([Using the following compilation and linking flags for Rgraphviz])
 AC_MSG_NOTICE([   PKG_CPPFLAGS=${PKG_CPPFLAGS}])
