@@ -171,12 +171,21 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
                            recipEdges="combined", nodeAttrs=list(),
                            edgeAttrs=list(), attrs=list(), ...)
 {
+    ## defaults can be passed in via the attrs argument and we want to
+    ## set those first
+    if(!is.null(attrs$node))
+        nodeRenderInfo(x) <- attrs$node
+    if(!is.null(attrs$edge))
+        edgeRenderInfo(x) <- attrs$edge
+    if(!is.null(attrs$graph))
+        graphRenderInfo(x) <- attrs$graph
+    
     ## pass along labels if present
     nodeLabels <- nodeRenderInfo(x, "label")
-    if(!is.null(nodeLabels) && is.null(nodeAttrs$label))
+    if(!is.null(nodeLabels) && is.null(nodeAttrs$label) && is.null(attrs$node$label))
         nodeAttrs$label <- nodeLabels
     edgeLabels <- edgeRenderInfo(x, "label")
-    if(!is.null(edgeLabels) && is.null(edgeAttrs$label))
+    if(!is.null(edgeLabels) && is.null(edgeAttrs$label) && is.null(attrs$edge$label))
         edgeAttrs$label <- edgeLabels
 
     ## make sure that arrowheads are passed on to graphviz
@@ -224,19 +233,10 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
 
     attrWidths <- nodeAttrs$width
     if(!is.null(attrWidths)) widths[names(attrWidths)] <- attrWidths
-
-    ## No clue what that was good for...
-    ##     if(layoutType == "dot"){
-    ##         shapes[circ] <- "ellipse"
-    ##         widths[circ] <- widths[circ]*0.96
-    ##         widths[ell] <- widths[ell]*1.3
-    ##     }
-    
-    ## go on here....
     nodeAttrs$width <- widths
     g <- agopen(x, name=name, layoutType=layoutType,
                 recipEdges=recipEdges, nodeAttrs=nodeAttrs,
-                edgeAttrs=edgeAttrs, ...)
+                edgeAttrs=edgeAttrs, attrs=attrs, ...)
     x <- graphRagraph2graph(g,x)
     graphRenderInfo(x) <- list(recipEdges=recipEdges)
     ## get information from the Ragraph object. Only replace labels if 
