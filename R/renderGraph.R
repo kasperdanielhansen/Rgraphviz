@@ -170,11 +170,26 @@ rotate <- function(x, y, alpha, offset){
 
 
 ## draw different types of arrowheads
-drawHead <- function(type, xy, bbox, col, lwd, lty, len){
+drawHead <- function(type, xy, bbox, col, lwd, lty, len, out=TRUE){
     db <- as.numeric(diff(bbox))
     dxy <- diff(xy)*db
     alpha <- atan(dxy[2]/dxy[1])
+    ## This computes the arrowhead size from the total graph bounding box.
+    ## Not optimal, but computing from the terminal spline sections seems
+    ## not to work...
     r <- max(bbox)/130
+    warn=FALSE
+    ## the default arrow. We want to be able to reuse this...
+    normArrow <- function(r, alpha, xy, col, lwd, lty, out)
+    {
+        r <- r*0.5
+        x <- c(-1,0,1)*r
+        y <- c(-1,1,-1)*r
+        off <- if(out) 90 else -90
+        alpha <- alpha-off*(pi/180)
+        xyr <- rotate(x,y,alpha, xy[2,])
+        polygon(xyr, col=col, border=col, lwd=lwd, lty=lty)
+    }
     switch(unlist(type),
            "none"={},
            "box"={
@@ -215,9 +230,21 @@ drawHead <- function(type, xy, bbox, col, lwd, lty, len){
                xyr <- rotate(x,y,alpha, xy[2,])
                lines(xyr, col=col, lwd=lwd*2, lty=lty)
            },
-           arrows(xy[1], xy[3], xy[2], xy[4], length=len, col=col,
-                  lwd=lwd, lty=lty)
+           "normal"={
+               normArrow(r, alpha, xy, col, lwd, lty, out)
+           },
+           "open"={
+               normArrow(r, alpha, xy, col, lwd, lty, out)
+            },
+           "vee"={
+               arrows(xy[1], xy[3], xy[2], xy[4], length=len, col=col,
+                      lwd=lwd, lty=lty)
+           },{
+               warn <- TRUE
+               normArrow(r, alpha, xy, col, lwd, lty, out)
+           }
        )
+    return(warn)
 }
            
 
@@ -231,6 +258,7 @@ renderSpline <-
     mylty <- as.numeric(lty)
     if(!is.na(mylty)) lty <- mylty
     lapply(spline, lines, col = col, lwd=lwd, lty=lty, ...)
+    warn <- FALSE
 
     ## the arrow heads, both head or tail may be a user supplied function
     ## or one of the following predefined shapes: nomal, none, box, obox, dot, odot
@@ -240,7 +268,7 @@ renderSpline <-
         xy <- list(x=xyhead[2,1], y=xyhead[2,2])
         try(arrowhead[[1]](xy, col=col, lwd=lwd, lty=lty))
     }else{
-        drawHead(arrowhead, xyhead, bbox, col, lwd, lty, len)
+        warn <- drawHead(arrowhead, xyhead, bbox, col, lwd, lty, len, out=TRUE)
     }
     ## now the arrow tails
     xytail <- head(bezierPoints(spline[[length(spline)]]), 2)
@@ -248,8 +276,10 @@ renderSpline <-
         xy <- list(x=xytail[1,1], y=xytail[1,2])
         try(arrowtail[[1]](xy, col=col, lwd=lwd, lty=lty))
     }else{
-        drawHead(arrowtail, xytail[2:1,], bbox, col, lwd, lty, len)
+        warn <- warn | drawHead(arrowtail, xytail[2:1,], bbox, col, lwd,
+                                lty, len, out=FALSE)
     }
+    return(warn)
 }
 
 
@@ -306,16 +336,19 @@ renderEdges <- function(g)
     arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * minDim / (1.5*pi)
 
     ## plot the edge splines
+    warn <- FALSE
     for (i in seq_along(splines))
     {
-        suppressWarnings(renderSpline(splines[[i]],
-                                      arrowhead = arrowhead[i],
-                                      arrowtail = arrowtail[i],
-                                      len = arrowLen,
-                                      col = col[i], lty = lty[i],
-                                      lwd = lwd[i],
-                                      bbox= getRenderPar(g, "bbox", "graph")))
+        warn <- warn | suppressWarnings(renderSpline(splines[[i]],
+                                                     arrowhead = arrowhead[i],
+                                                     arrowtail = arrowtail[i],
+                                                     len = arrowLen,
+                                                     col = col[i], lty = lty[i],
+                                                     lwd = lwd[i],
+                                                     bbox= getRenderPar(g, "bbox", "graph")))
     }
+    if(warn)
+        warning("Unknown or unsupported arrowhead type. Using default instead.")
 
     ## draw text labels
     text(labelX, labelY, label, col=textCol,
