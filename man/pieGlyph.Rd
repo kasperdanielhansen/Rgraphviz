@@ -36,7 +36,7 @@ pieGlyph(x, xpos, ypos, labels = names(x), edges = 200, radius = 0.8, density = 
   \item{\dots}{graphical parameters can be given as arguments to
     \code{pie}.  They will affect the main title and labels only.}
 }
-\author{R. Gentleman}
+\author{R. Gentleman, F. Sim}
 \seealso{\code{\link{pie}}}
 \examples{
    plot(1:10, col="white")

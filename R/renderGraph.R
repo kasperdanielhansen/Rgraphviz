@@ -234,14 +234,18 @@ drawHead <- function(type, xy, bbox, col, lwd, lty, len, out=TRUE){
                normArrow(r, alpha, xy, col, lwd, lty, out)
            },
            "open"={
-               normArrow(r, alpha, xy, col, lwd, lty, out)
+               ## normArrow(r, alpha, xy, col, lwd, lty, out)
+	       arrows(xy[1], xy[3], xy[2], xy[4], length=len, col=col,
+                      lwd=lwd, lty=lty)
             },
            "vee"={
                arrows(xy[1], xy[3], xy[2], xy[4], length=len, col=col,
                       lwd=lwd, lty=lty)
            },{
                warn <- TRUE
-               normArrow(r, alpha, xy, col, lwd, lty, out)
+               ##normArrow(r, alpha, xy, col, lwd, lty, out)
+	       arrows(xy[1], xy[3], xy[2], xy[4], length=len, col=col,
+                      lwd=lwd, lty=lty)
            }
        )
     return(warn)
