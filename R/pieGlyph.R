@@ -26,6 +26,17 @@ pieGlyph <- function (x, xpos, ypos, labels = names(x), edges = 200,
         yc <- c(sin(t2p), 0) * radius+ypos
         polygon(xc, yc, density = density[i], angle = angle[i],
             border = border[i], col = col[i], lty = lty[i])
+        ## plot labels (this is a patch by Fraser Sim)
+        t2p <- 2 * pi * mean(x[i + 0:1])
+        xc <- cos(t2p) * radius * c(1,1.1,1.2) + xpos
+        yc <- sin(t2p) * radius * c(1,1.1,1.2) + ypos
+        lab <- as.character(labels[i])
+        if (!is.na(lab) && nzchar(lab)) { 
+            lines(xc[1:2], yc[1:2])
+            text(xc[3], yc[3], labels[i], xpd = TRUE, 
+                 adj = ifelse(xc < xpos, 1, ifelse(xc == xpos, 0.5,
+                                                   0)), ...)
+        }
     }
     invisible(NULL)
 }
