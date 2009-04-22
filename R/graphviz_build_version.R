@@ -1,1 +1,0 @@
-## This is a stub to be replaced on Windows with graphviz version information

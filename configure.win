@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # We assume that the following three variables comes from the environment
+echo "Using the following environment variables"
 echo GRAPHVIZ_INSTALL_DIR=$GRAPHVIZ_INSTALL_DIR
 echo GRAPHVIZ_INSTALL_MAJOR=$GRAPHVIZ_INSTALL_MAJOR
 echo GRAPHVIZ_INSTALL_MINOR=$GRAPHVIZ_INSTALL_MINOR
@@ -16,14 +17,16 @@ GRAPHVIZ_BUILD_VERSION="${GRAPHVIZ_INSTALL_MAJOR}.${GRAPHVIZ_INSTALL_MINOR}"
 
 if (test ${GRAPHVIZ_INSTALL_MAJOR} -eq "2" && test ${GRAPHVIZ_INSTALL_MINOR} -le "20") ; then
    PKG_LIBS="-L${GRAPHVIZ_INSTALL_DIR}/bin -lgvc-4 -lgraph-4 -lcdt-4"
-else 
+elif (test ${GRAPHVIZ_INSTALL_MAJOR} -eq "2" && test ${GRAPHVIZ_INSTALL_MINOR} -eq "21") ; then 
    PKG_LIBS="-L${GRAPHVIZ_INSTALL_DIR}/bin -lgvc-5 -lgraph-4 -lcdt-4"
+else
+   PKG_LIBS="-L${GRAPHVIZ_INSTALL_DIR}/bin -lgvc -lgraph -lcdt"
 fi 
 
-echo "We have inferred the following flags for graphviz"
-echo "..PKG_CPPFLAGS=${PKG_CPPFLAGS}"
-echo "..PKG_LIBS=${PKG_LIBS}"
-echo "..GVIZ_DEFS=${GVIZ_DEFS}"
+echo "Using the following compilation and linking flags for Rgraphviz"
+echo "   PKG_CPPFLAGS=${PKG_CPPFLAGS}"
+echo "   PKG_LIBS=${PKG_LIBS}"
+echo "   GVIZ_DEFS=${GVIZ_DEFS}"
 
 
 sed "s!@PKG_LIBS@!${PKG_LIBS}!" src/Makevars.win.in > src/Makevars.win
