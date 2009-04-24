@@ -2,14 +2,14 @@
 Installing Rgraphviz
 ====================
 
-Current as of 3 March, 2009
+Current as of 24 April, 2009
 
 What version of Graphviz do I need?
 ===================================
 
 Graphviz uses a numbering scheme where odd version numbers are
 development versions and even version numbers are stable releases
-(meaning 2.21 is a development version).
+(meaning 2.23 is a development version).
 
 Graphviz greater than 2.2.1 is required.
 
@@ -22,7 +22,7 @@ below for platform specific notes on this.
 For Windows and OS X, it is common to use a binary version of
 Rgraphviz. Installation problems typically occur when Rgraphviz is
 being _used_ not while _installing_ it. In order to check that
-Rgraphviz is working properly, it is adviced to try
+Rgraphviz is working properly, it is advised to try
 
 R> example(layoutGraph)
 
@@ -38,10 +38,10 @@ using a different version of Graphviz will most likely cause Rgraphviz
 to fail. Rgraphviz will inform you of any version inconsistency when
 loaded. 
 
-The right version of Graphviz for Bioconductor 2.3 is version
-2.20.3. This version will not work with Vista 64 bit, so the user will
+The right version of Graphviz for Bioconductor 2.5 is version
+2.22.2. This version will not work with Vista 64 bit, so the user will
 need to compile from source, and in addition make sure that a version
-strictly greater than 2.20 is used - at the time of writing this means
+strictly greater than 2.22 is used - at the time of writing this means
 using a development version of Graphviz (despite the warnings not to
 do so above)..
 
@@ -51,19 +51,19 @@ _binary_ version.
 Using the Windows binary
 ------------------------
 
-o. install Graphviz ***2.20.3*** Windows ***binary*** distribution from
+o. install Graphviz ***2.22.2*** Windows ***binary*** distribution from
 
-      http://www.graphviz.org/pub/graphviz/stable/windows/graphviz-2.20.3.msi
+      http://www.graphviz.org/pub/graphviz/stable/windows/graphviz-2.22.2.msi
 
    in a directory that we'll call $DIR.  We use the following as an example:
 
-         C:\Graphviz-2.21
+         C:\Graphviz-2.22
    
    If you install it in other dir, just use your dir correspondingly.
 
 o. Add Graphviz' bin diretory to the user PATH variable, e.g.,
 
-     c:\Graphviz-2.21\bin
+     c:\Graphviz-2.22\bin
 
 o. Check the configuration by starting a new DOS window and displaying
    the PATH environment variable, e.g.,
@@ -106,10 +106,10 @@ build machine. Rgraphviz will inform you of any version
 inconsistencies when loaded.
 
 At the moment the Graphviz website only distribute binaries for
-Leopard. For Bioconductor 2.3 you will need version 2.20.3 from their
+Leopard. For Bioconductor 2.5 you will need version 2.22.2 from their
 website. 
 
-For OS X Tiger you will need to compile from source (Bioconductor 2.3
+For OS X Tiger you will need to compile from source (Bioconductor 2.5
 uses a binary version of Graphviz from Simon Urbanek, but he has
 removed his link to this version).
 
