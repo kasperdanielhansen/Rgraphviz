@@ -1,19 +1,35 @@
-importFrom("graphics", "plot", "lines")
+useDynLib(Rgraphviz)
 
-import("methods")
-import("utils") # for the "head" generic
+importClassesFrom(graph, graph)
 
-importFrom("graph",
-           "edgeDataDefaults<-",
-           "edgeDataDefaults",
-           "edgeData<-",
-           "edgeData",
-           "edgemode",
-           "edgeNames",
-           "nodeDataDefaults<-",
-           "nodeDataDefaults",
-           "nodeData<-",
-           "nodeData")
+importClassesFrom(methods, character, externalptr, integer, list,
+                  logical, missing, numeric, vector)
+
+importMethodsFrom(graph, connComp, edgeData, "edgeData<-",
+                  edgeDataDefaults, "edgeDataDefaults<-", edgeL,
+                  edgeMatrix, edgemode, edgeNames, nodeData,
+                  "nodeData<-", nodeDataDefaults, "nodeDataDefaults<-",
+                  nodes, numNodes)
+
+importMethodsFrom(methods, show)
+
+importFrom(graph, edgeRenderInfo, "edgeRenderInfo<-", graph.par,
+           graph.par.get, graphRenderInfo, "graphRenderInfo<-",
+           nodeRenderInfo, "nodeRenderInfo<-", parRenderInfo,
+           validGraph)
+
+importFrom(graphics, arrows, lines, par, plot, plot.new, plot.window,
+           plot.xy, polygon, rect, strheight, strwidth, symbols, text,
+           title)
+
+importFrom(grDevices, xy.coords)
+
+importFrom(grid, convertHeight, convertWidth, current.viewport,
+           current.vpTree, popViewport, pushViewport, unit)
+
+importFrom(methods, "@<-", is, slot)
+
+importFrom(utils, head, tail)
 
                                                                                 
 export(
@@ -33,10 +49,8 @@ export(
         makeNodeAttrs,		# own
         pieGlyph,		# own
         removedEdges,		# Rgraphviz
-       
-	toFile,
-	agopenSimple,
-
+        toFile,
+        agopenSimple,
         layoutGraph
 	)
 
@@ -54,17 +68,17 @@ exportClasses(			# Ragraph
 
 exportMethods(	
 		graphDataDefaults,
-      		"graphDataDefaults<-", 
+		"graphDataDefaults<-", 
 		graphData,
-      		"graphData<-", 
+		"graphData<-", 
 
 		clusterData,
-      		"clusterData<-", 
+		"clusterData<-", 
 
-      		nodeDataDefaults, 
+		nodeDataDefaults, 
 		"nodeDataDefaults<-", 
 		nodeData,
-      		"nodeData<-",
+		"nodeData<-",
 
 		edgeDataDefaults, 
 		"edgeDataDefaults<-",
@@ -127,4 +141,3 @@ exportMethods(
                 "upRight",
                 "renderGraph"
 	)
-

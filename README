@@ -85,14 +85,15 @@ o. Install Graphviz as outlined in the previous section
 o. Set the following Windows environment variables accordingly
    (control panel -> systems -> Advanced -> Environment Variables ):
    (a) create new user variables:
-     GRAPHVIZ_INSTALL_DIR   (e.g., C:\/Graphviz-2.21)
+     GRAPHVIZ_INSTALL_DIR   (e.g., C:\/Graphviz-2.22)
      GRAPHVIZ_INSTALL_MAJOR (e.g., 2)
-     GRAPHVIZ_INSTALL_MINOR (e.g., 21)
+     GRAPHVIZ_INSTALL_MINOR (e.g., 22)
+     GRAPHVIZ_INSTALL_SUBMINOR (e.g., 2)
 
      Notice the way "\/" are used for the paths above.
 
    (b) add to user variable 'PATH': %GRAPHVIZ_INSTALL_DIR%/bin
-     e.g., C:/Graphviz-2.21/bin
+     e.g., C:/Graphviz-2.22/bin
 
 o. run "R CMD INSTALL Rgraphviz" or "biocLite("Rgraphviz")' as usual
 
