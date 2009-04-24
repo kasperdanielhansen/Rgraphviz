@@ -5,14 +5,14 @@ Description: Interfaces R with the AT and T graphviz library for
         platforms must install graphviz; see the README file,
         available in the source distribution of this file, for
         details.
-Version: 1.23.1
+Version: 1.23.2
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>, Li Long <li.long@isb-sib.ch>,
    Robert Gentleman <rgentlem@fhcrc.org>, Seth Falcon <sethf@fhcrc.org>,
    Florian Hahne <fhahne@fhcrc.org>, Deepayan Sarkar <dsarkar@fhcrc.org>,
    Kasper Hansen <khansen@stat.berkeley.edu>
 Maintainer: Kasper Hansen <khansen@stat.berkeley.edu>
 Depends: R (>= 2.6.0), methods, utils, graph, grid
-Imports: utils
+Imports: graph, graphics, grDevices, grid, methods, utils
 SystemRequirements: Graphviz version >= 2.2
 License: Artistic-2.0
 LazyLoad: Yes
