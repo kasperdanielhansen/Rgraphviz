@@ -43,6 +43,7 @@ if test -z "${GRAPHVIZ_DIR}" ; then
       else
          PKG_CPPFLAGS="`${GRAPHVIZ_CONFIG} --cflags`"
          PKG_LIBS="`${GRAPHVIZ_CONFIG} --libs`"
+	 GVIZ_FLAGS_SET="yes"
       fi
    fi
    dnl Now we try dotneato-config; the existence of dotneato-config implies
@@ -59,6 +60,7 @@ if test -z "${GRAPHVIZ_DIR}" ; then
          GRAPHVIZ_VERSTR=`${DOTNEATO_CONFIG} --version`
          PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
          PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
+	 GVIZ_FLAGS_SET="yes"
       fi
    fi
 else
@@ -106,8 +108,8 @@ if (test ${MAJOR} -lt "2") || (test ${MAJOR} -eq "2" && test ${MINOR} -lt "2") ;
    exit 1
 fi
 
-dnl Infer PKG_LIBS and PJG_CPPFLAGS, but only if pkg_config was not used
-if test -z ${PKG_CONFIG} ; then
+dnl Infer PKG_LIBS and PKG_CPPFLAGS, but only if pkg_config was not used
+if test -z ${GVIZ_FLAGS_SET} ; then
    if (test ${MAJOR} -eq "2" && test ${MINOR} -le "2") ; then
       PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
       PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -ldotneato -lm"
