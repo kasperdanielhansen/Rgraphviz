@@ -3560,6 +3560,7 @@ echo "$as_me: pkg-config was not able to find the Graphviz library libgvc. This 
       else
          PKG_CPPFLAGS="`${GRAPHVIZ_CONFIG} --cflags`"
          PKG_LIBS="`${GRAPHVIZ_CONFIG} --libs`"
+	 GVIZ_FLAGS_SET="yes"
       fi
    fi
          if test -z "${GRAPHVIZ_VERSTR}" ; then
@@ -3615,6 +3616,7 @@ echo "$as_me: Using default directory /usr/local, consider specifiying --with-gr
          GRAPHVIZ_VERSTR=`${DOTNEATO_CONFIG} --version`
          PKG_CPPFLAGS="`${DOTNEATO_CONFIG} --cflags`"
          PKG_LIBS="`${DOTNEATO_CONFIG} --ldflags` `${DOTNEATO_CONFIG} --libs` -lm"
+	 GVIZ_FLAGS_SET="yes"
       fi
    fi
 else
@@ -3669,7 +3671,7 @@ echo "$as_me: error: Need Graphviz >= 2.2" >&2;}
    exit 1
 fi
 
-if test -z ${PKG_CONFIG} ; then
+if test -z ${GVIZ_FLAGS_SET} ; then
    if (test ${MAJOR} -eq "2" && test ${MINOR} -le "2") ; then
       PKG_CPPFLAGS="-I${GRAPHVIZ_DIR}/include/graphviz"
       PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -ldotneato -lm"
@@ -3678,12 +3680,16 @@ if test -z ${PKG_CONFIG} ; then
       PKG_LIBS="-L${GRAPHVIZ_DIR}/lib/graphviz -L${GRAPHVIZ_DIR}/lib -lgvc"
    fi
 fi
+
+GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_MAJOR=${MAJOR} -DGRAPHVIZ_MINOR=${MINOR} "
 { echo "$as_me:$LINENO: Using the following compilation and linking flags for Rgraphviz" >&5
 echo "$as_me: Using the following compilation and linking flags for Rgraphviz" >&6;}
 { echo "$as_me:$LINENO:    PKG_CPPFLAGS=${PKG_CPPFLAGS}" >&5
 echo "$as_me:    PKG_CPPFLAGS=${PKG_CPPFLAGS}" >&6;}
 { echo "$as_me:$LINENO:    PKG_LIBS=${PKG_LIBS}" >&5
 echo "$as_me:    PKG_LIBS=${PKG_LIBS}" >&6;}
+{ echo "$as_me:$LINENO:    GVIZ_DEFS=${GVIZ_DEFS}" >&5
+echo "$as_me:    GVIZ_DEFS=${GVIZ_DEFS}" >&6;}
 
 ac_config_files="$ac_config_files R/graphviz_build_version.R"
 
@@ -3691,7 +3697,6 @@ GRAPHVIZ_BUILD_VERSION=${GRAPHVIZ_VERSTR}
 { echo "$as_me:$LINENO: Setting Graphviz Build version to '${GRAPHVIZ_BUILD_VERSION}'." >&5
 echo "$as_me: Setting Graphviz Build version to '${GRAPHVIZ_BUILD_VERSION}'." >&6;}
 
-GVIZ_DEFS="${GVIZ_DEFS} -DGRAPHVIZ_MAJOR=${MAJOR} -DGRAPHVIZ_MINOR=${MINOR} "
 
 
 
