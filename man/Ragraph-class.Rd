@@ -52,20 +52,36 @@ Objects can be created by calls to the function \code{agopen}.
 }
 \section{Slots}{
   \describe{
+    
     \item{\code{agraph}:}{Object of class \code{"externalptr"}: A C
       based structure containing the libgraph information}
+    
     \item{\code{laidout}:}{Object of class \code{"logical"}: Whether or
       not this graph has been laid out or not.}
+    
     \item{\code{layoutType}:}{Object of class \code{"character"}: The
       layout method used for this object}
+    
     \item{\code{edgemode}:}{Object of class \code{"character"}: The
-      edgemode for this graph - \dQuote{directed} or \dQuote{undirected}}
+      edgemode for this graph - \dQuote{directed} or
+      \dQuote{undirected}}
+    
     \item{\code{AgNode}:}{Object of class \code{"list"}: A list of
       \code{AgNode} objects.}
+    
     \item{\code{AgEdge}:}{Object of class \code{"list"}: A list of
       \code{AgEdge} objects.}
+    
     \item{\code{boundBox}:}{Object of class \code{"boundBox"}: Defines
       the bounding box of the plot.}
+    
+    \item{\code{bg}:}{Object of class \code{"character"}: The background
+      color.}
+
+    \item{\code{fg}:}{Object of class \code{"character"}: The foreground
+      color.}
+    
+    
   }
 }
 

@@ -37,22 +37,45 @@ Objects can be created by calls of the form \code{new("AgEdge", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{splines}:}{Object of class \code{"list"} A list of
-      \code{BezierCurve} objects}
-   \item{\code{sp}:}{Object of class \code{"xyPoint"} The starting
-      point of the edge.}
-    \item{\code{ep}:}{Object of class \code{"xyPoint"} The end point of
-      the edge.}
-    \item{\code{head}:}{Object of class \code{"character"} The head node
-      for this edge.}
-    \item{\code{tail}:}{Object of class \code{"character"} The tail node
-      for this edge.}
+
     \item{\code{arrowhead}:}{Object of class \code{"character"} The
       style of arrowhead for this edge.}
-    \item{\code{arrowtail}:}{Object of class \code{"character"} The
-      style of arrowtail for this edge.}
+
     \item{\code{arrowsize}:}{Object of class \code{"character"} A scale
       factor for the length of the arrow heads & tails}
+    
+    \item{\code{arrowtail}:}{Object of class \code{"character"} The
+      style of arrowtail for this edge.}
+    
+    \item{\code{color}:}{Object of class \code{"character"} The edge
+      color.}
+
+    \item{\code{dir}:}{Object of class \code{"character"} The edge direction.}
+    
+    \item{\code{ep}:}{Object of class \code{"xyPoint"} The end point of
+      the edge.}
+
+    \item{\code{head}:}{Object of class \code{"character"} The head node
+      for this edge.}
+
+    \item{\code{lty}:}{Object of class \code{"character"} The edge
+      line type.}
+
+    \item{\code{lwd}:}{Object of class \code{"numeric"} The edge
+      line width.}
+
+    \item{\code{sp}:}{Object of class \code{"xyPoint"} The starting
+      point of the edge.}
+
+    \item{\code{splines}:}{Object of class \code{"list"} A list of
+      \code{BezierCurve} objects}
+    
+    \item{\code{tail}:}{Object of class \code{"character"} The tail node
+      for this edge.}
+
+    \item{\code{txtLabel}:}{Object of class \code{"character"} The edge
+      text label.}    
+   
   }
 }
 
