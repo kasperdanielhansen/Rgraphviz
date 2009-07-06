@@ -35,25 +35,37 @@ Objects can be created by calls of the form \code{new("AgNode", ...)}.
 }
 \section{Slots}{
   \describe{
+    
     \item{\code{center}:}{Object of class \code{"xyPoint"}: The center
       point of the node}
+    
     \item{\code{name}:}{Object of class \code{"character"}: The name of
       the node, used to reference it}
-    \item{\code{txtlabel}:}{Object of class \code{"AgTextLabel"}: Label
+    
+    \item{\code{txtLabel}:}{Object of class \code{"AgTextLabel"}: Label
       for this edge}
+    
     \item{\code{height}:}{Object of class \code{"integer"}: Height of
       the node in points}
+    
     \item{\code{rWidth}:}{Object of class \code{"integer"}: The right
       half of the node in points.}
+    
     \item{\code{lWidth}:}{Object of class \code{"integer"}: The left
       half of the node in points.}
+    
     \item{\code{color}:}{Object of class \code{"character"}: The drawing
-    color of the node.}
+      color of the node.}
+    
     \item{\code{fillcolor}:}{Object of class \code{"character"}: The
       color to fill in the node with.}
+    
     \item{\code{shape}:}{Object of class \code{"character"}: The shape
       of the node.}
-    \item{\code{style}:}{Object of class \code{"character"}: The style of the node.}
+    
+    \item{\code{style}:}{Object of class \code{"character"}: The style
+      of the node.}
+    
   }
 }
 \section{Methods}{

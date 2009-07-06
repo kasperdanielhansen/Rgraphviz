@@ -14,7 +14,7 @@
 
 \usage{
 
-\S4method{renderGraph}{graph}(x, drawNodes, drawEdges, graph.pars)
+\S4method{renderGraph}{graph}(x, \dots, drawNodes="renderNodes", drawEdges=renderEdges, graph.pars=list())
 
 }
 
