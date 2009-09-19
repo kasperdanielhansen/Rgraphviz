@@ -117,17 +117,17 @@ layoutGraph(x, layoutFun = layoutGraphviz, ...)
 
 \value{
   
-  An object inheriting from class \code{\link[graph]{graph}}
+  An object inheriting from class \code{\link[graph:graph-class]{graph}}
   
 }
 
 \author{ Florian Hahne, Deepayan Sarkar }
 
 
-\seealso{ \code{\link[graph]{renderGraph}},
-  \code{\link[graph]{graph.par}},
-  \code{\link[graph]{nodeRenderInfo}},
-  \code{\link[graph]{edgeRenderInfo}},
+\seealso{ \code{\link[graph:renderInfo-class]{renderGraph}},
+  \code{\link[graph:settings]{graph.par}},
+  \code{\link[graph:renderInfo-class]{nodeRenderInfo}},
+  \code{\link[graph:renderInfo-class]{edgeRenderInfo}},
   \code{\link{agopen}},
 }
 

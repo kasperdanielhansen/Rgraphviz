@@ -51,11 +51,11 @@
   
   \item{graph.pars}{A list of rendering parameters to use as
     defaults. Parameters that have been explicitely set using
-    \code{\link[graph:nodeRenderInfo]{nodeRenderInfo}},
-    \code{\link[graph:edgeRenderInfo]{edgeRenderInfo}} or
-    \code{\link[graph:graphRenderInfo]{graphRenderInfo}} take
+    \code{\link[graph:renderInfo-class]{nodeRenderInfo}},
+    \code{\link[graph:renderInfo-class]{edgeRenderInfo}} or
+    \code{\link[graph:renderInfo-class]{graphRenderInfo}} take
     precendence. If not explicitely supplied, the value of a call to
-    \code{\link[graph:graph.par]{graph.par}} is used. This design allows
+    \code{\link[graph:settings]{graph.par}} is used. This design allows
     to set session-wide defaults. }
   
   \item{\dots}{further arguments}
@@ -82,9 +82,10 @@
 
 \seealso{
 
-  \code{\link{layoutGraph}}, \code{link[graph]{nodeRenderInfo}},
-   \code{link[graph]{edgeRenderInfo}},
-   \code{link[graph]{graphRenderInfo}},
+  \code{\link{layoutGraph}},
+   \code{link[graph:renderInfo-class]{nodeRenderInfo}}, 
+   \code{link[graph:renderInfo-class]{edgeRenderInfo}},
+   \code{link[graph:renderInfo-class]{graphRenderInfo}},
   
 }
 

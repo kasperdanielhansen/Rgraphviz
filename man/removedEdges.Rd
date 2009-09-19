@@ -21,7 +21,8 @@ removedEdges(graph)
   A numerical vector, where the values correspond to removed edges.
 }
 \author{Jeff Gentry}
-\seealso{\code{\link[graph]{edgeNames}}, \code{\link{agopen}}, \code{\link{buildEdgeList}}}
+\seealso{\code{\link[graph:graph-class]{edgeNames}},
+  \code{\link{agopen}}, \code{\link{buildEdgeList}}}
 \examples{
 set.seed(123)
 V <- letters[1:10]
