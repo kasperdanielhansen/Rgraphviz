@@ -39,11 +39,9 @@ to fail. Rgraphviz will inform you of any version inconsistency when
 loaded. 
 
 The right version of Graphviz for Bioconductor 2.5 is version
-2.20.3. This version will not work with Vista 64 bit, so the user will
+2.24.0. This version will not work with Vista 64 bit, so the user will
 need to compile from source, and in addition make sure that a version
-strictly greater than 2.22 is used - at the time of writing 
-Graphviz 2.24.0 has just been released and we expect this to work based 
-on the fact that a beta release of this version worked.
+strictly greater than 2.22 is used.
 
 Here are the steps to INSTALL Graphiz/Rgraphviz if you want to use the
 _binary_ version.
@@ -51,19 +49,19 @@ _binary_ version.
 Using the Windows binary
 ------------------------
 
-o. install Graphviz ***2.20.3*** Windows ***binary*** distribution from
+o. install Graphviz ***2.24*** Windows ***binary*** distribution from
 
-      http://www.graphviz.org/pub/graphviz/stable/windows/graphviz-2.20.3.msi
+      http://www.graphviz.org/pub/graphviz/stable/windows/graphviz-2.24.msi
 
    in a directory that we'll call $DIR.  We use the following as an example:
 
-         C:\Graphviz-2.20
+         C:\Graphviz-2.24
    
    If you install it in other dir, just use your dir correspondingly.
 
 o. Add Graphviz' bin diretory to the user PATH variable, e.g.,
 
-     c:\Graphviz-2.20\bin
+     c:\Graphviz-2.24\bin
 
 o. Check the configuration by starting a new DOS window and displaying
    the PATH environment variable, e.g.,
@@ -85,15 +83,15 @@ o. Install Graphviz as outlined in the previous section
 o. Set the following Windows environment variables accordingly
    (control panel -> systems -> Advanced -> Environment Variables ):
    (a) create new user variables:
-     GRAPHVIZ_INSTALL_DIR   (e.g., C:\/Graphviz-2.22)
+     GRAPHVIZ_INSTALL_DIR   (e.g., C:\/Graphviz-2.24)
      GRAPHVIZ_INSTALL_MAJOR (e.g., 2)
-     GRAPHVIZ_INSTALL_MINOR (e.g., 20)
-     GRAPHVIZ_INSTALL_SUBMINOR (e.g., 3)
+     GRAPHVIZ_INSTALL_MINOR (e.g., 24)
+     GRAPHVIZ_INSTALL_SUBMINOR (e.g., 0)
 
      Notice the way "\/" are used for the paths above.
 
    (b) add to user variable 'PATH': %GRAPHVIZ_INSTALL_DIR%/bin
-     e.g., C:/Graphviz-2.20/bin
+     e.g., C:/Graphviz-2.24/bin
 
 o. run "R CMD INSTALL Rgraphviz" or "biocLite("Rgraphviz", type = "Source")' as usual
 
