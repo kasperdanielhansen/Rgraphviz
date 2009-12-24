@@ -2,8 +2,7 @@
     tryCatch({
         library.dynam('Rgraphviz', package='Rgraphviz')
     }, error=function(err) {
-        msg <- sprintf("%s
-
+        msg <- sprintf("
             Check that (1) graphviz is installed on your system; (2)
             the installed version of graphviz matches '%s'; this is
             the version used to build this Rgraphviz package; (3)
@@ -18,9 +17,9 @@
 
             http://bioconductor.org/docs/mailList.html
 
-            ", conditionMessage(err),
-               as.character(Rgraphviz:::.graphviz_build_version))
-        stop(paste(strwrap(msg, indent=4, exdent=4), collapse="\n"))
+            ", as.character(Rgraphviz:::.graphviz_build_version))
+        stop(conditionMessage(err), "\n\n",
+             paste(strwrap(msg, indent=2, exdent=2), collapse="\n"))
     })
     .Call("Rgraphviz_init", PACKAGE = "Rgraphviz")
     versions <- graphvizVersion()
