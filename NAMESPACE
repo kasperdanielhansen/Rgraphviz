@@ -1,5 +1,3 @@
-useDynLib(Rgraphviz)
-
 importClassesFrom(graph, graph)
 
 importClassesFrom(methods, character, externalptr, integer, list,
