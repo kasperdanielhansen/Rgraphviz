@@ -145,7 +145,7 @@ make sure that pkg-config is installed on your system
 (http://pkgconfig.freedesktop.org/wiki/), you can use the default
 location (/usr/local) or you can use --with-graphviz as a installation
 argument (use it like
-# R CMD INSTALL --command-args='--with-graphviz=/usr/local' Rgraphviz_****
+# R CMD INSTALL --configure-args='--with-graphviz=/usr/local' Rgraphviz_****
 )
  
 If you install Graphviz to a non-standard location and you are using
