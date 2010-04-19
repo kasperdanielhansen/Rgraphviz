@@ -10,7 +10,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
     SEXP peClass, curPE;
     SEXP curAttrs, curFrom, curTo, curWeights;
     SEXP attrNames;
-    SEXP tmpToSTR, tmpWtSTR;
+    SEXP tmpToSTR, tmpWtSTR, tmpW;
     SEXP curSubG, subGEdgeL, subGEdges, elt;
     SEXP recipAttrs, newRecipAttrs, recipAttrNames, newRecipAttrNames;
     SEXP goodEdgeNames;
@@ -146,8 +146,9 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
                 SET_VECTOR_ELT(curAttrs, 2, mkString("none"));
             }
             PROTECT(tmpWtSTR = allocVector(STRSXP, 1));
-            SET_STRING_ELT(tmpWtSTR, 0,
-                           asChar(Rf_ScalarReal(REAL(curWeights)[y])));
+            PROTECT(tmpW = Rf_ScalarReal(REAL(curWeights)[y]));
+            SET_STRING_ELT(tmpWtSTR, 0, asChar(tmpW));
+            UNPROTECT(1);
             SET_VECTOR_ELT(curAttrs, 1, tmpWtSTR);
             SET_SLOT(curPE, Rf_install("attrs"), curAttrs);
             SET_STRING_ELT(goodEdgeNames, curEle, mkChar(edgeName));
