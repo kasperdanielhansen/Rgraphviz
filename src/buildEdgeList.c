@@ -8,7 +8,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
     SEXP from;
     SEXP peList;
     SEXP peClass, curPE;
-    SEXP curAttrs, curFrom, curTo, curWeights;
+    SEXP curAttrs, curFrom, curTo, curWeights = R_NilValue;
     SEXP attrNames;
     SEXP tmpToSTR, tmpWtSTR, tmpW;
     SEXP curSubG, subGEdgeL, subGEdges, elt;
@@ -51,16 +51,17 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
         SET_STRING_ELT(curFrom, 0, STRING_ELT(from, x));
         if (length(VECTOR_ELT(edgeL, x)) == 0)
             error("Invalid edgeList element given to buildEdgeList in Rgraphviz, is NULL");
-
-        curTo = coerceVector(VECTOR_ELT(VECTOR_ELT(edgeL, x), 0),
-                             INTSXP);
-        if (length(VECTOR_ELT(edgeL, x)) > 1)
-            PROTECT(curWeights = VECTOR_ELT(VECTOR_ELT(edgeL, x), 1));
-        else {
-            PROTECT(curWeights = allocVector(REALSXP, length(curTo)));
+        PROTECT(curTo = coerceVector(VECTOR_ELT(VECTOR_ELT(edgeL, x), 0),
+                                     INTSXP));
+        if (length(VECTOR_ELT(edgeL, x)) > 1) {
+            curWeights = VECTOR_ELT(VECTOR_ELT(edgeL, x), 1);
+        }
+        if (curWeights == R_NilValue || (length(curWeights) != length(curTo))) {
+            curWeights = allocVector(REALSXP, length(curTo));
             for (i = 0; i < length(curWeights); i++)
                 REAL(curWeights)[i] = 1;
         }
+        PROTECT(curWeights);
 
         for (y = 0; y < length(curTo); y++) {
             PROTECT(toName = STRING_ELT(from, INTEGER(curTo)[y]-1));
@@ -177,7 +178,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
             free(edgeName);
             UNPROTECT(4);
         }
-        UNPROTECT(2);
+        UNPROTECT(3);
     }
     setAttrib(peList, R_NamesSymbol, goodEdgeNames);
     peList = assignAttrs(edgeAttrs, peList, defAttrs);
