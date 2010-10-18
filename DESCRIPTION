@@ -5,7 +5,7 @@ Description: Interfaces R with the AT and T graphviz library for
         platforms must install graphviz; see the README file,
         available in the source distribution of this file, for
         details.
-Version: 1.28.0
+Version: 1.29.0
 Author: Jeff Gentry <jgentry@jimmy.harvard.edu>, Li Long <li.long@isb-sib.ch>,
    Robert Gentleman <rgentlem@fhcrc.org>, Seth Falcon <sfalcon@fhcrc.org>,
    Florian Hahne <fhahne@fhcrc.org>, Deepayan Sarkar <dsarkar@fhcrc.org>,
