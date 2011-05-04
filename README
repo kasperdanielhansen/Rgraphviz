@@ -75,7 +75,7 @@ Compiling from source on Windows
 
 If you want to compile Rgraphviz from source you can use any version
 of Graphviz you want (but in general, stay away from development
-versions). Older version so Graphviz (2.2.1 to say 2.16 might not
+versions). Older versions of Graphviz (2.2.1 to say 2.16 might not
 work). 
 
 o. Install Graphviz as outlined in the previous section
@@ -93,7 +93,8 @@ o. Set the following Windows environment variables accordingly
    (b) add to user variable 'PATH': %GRAPHVIZ_INSTALL_DIR%/bin
      e.g., C:/Graphviz2.20/bin
 
-o. run "R CMD INSTALL Rgraphviz" or "biocLite("Rgraphviz", type = "Source")' as usual
+o. run "R CMD INSTALL Rgraphviz" or "biocLite("Rgraphviz", type = "source")'
+   as usual
 
 OSX installation
 ================
