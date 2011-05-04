@@ -18,7 +18,7 @@ GRAPHVIZ_BUILD_VERSION="${GRAPHVIZ_INSTALL_MAJOR}.${GRAPHVIZ_INSTALL_MINOR}.${GR
 
 if (test ${GRAPHVIZ_INSTALL_MAJOR} -eq "2" && test ${GRAPHVIZ_INSTALL_MINOR} -le "20") ; then
    PKG_LIBS="-L${GRAPHVIZ_INSTALL_DIR}/bin -lgvc-4 -lgraph-4 -lcdt-4"
-elif (test ${GRAPHVIZ_INSTALL_MAJOR} -eq "2" && test ${GRAPHVIZ_INSTALL_MINOR} -eq "21") ; then 
+elif (test ${GRAPHVIZ_INSTALL_MAJOR} -eq "2" && test ${GRAPHVIZ_INSTALL_MINOR} -ge "21") ; then 
    PKG_LIBS="-L${GRAPHVIZ_INSTALL_DIR}/bin -lgvc-5 -lgraph-4 -lcdt-4"
 else
    PKG_LIBS="-L${GRAPHVIZ_INSTALL_DIR}/bin -lgvc -lgraph -lcdt"
