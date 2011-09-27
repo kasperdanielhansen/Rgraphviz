@@ -85,7 +85,7 @@ renderNodes <- function(g)
 
     ## now the default shapes
     possible.shapes <-
-        c("circle", "ellipse", "box", "rectangle", "plaintext", "triangle")
+        c("circle", "ellipse", "box", "rectangle", "plaintext", "triangle", "diamond")
     shape <-
         possible.shapes[pmatch(shape,
                                possible.shapes,
@@ -138,7 +138,16 @@ renderNodes <- function(g)
         polygon(xx, yy, border = col[i], col = fill[i], lwd = lwd[i],
                 lty = lty[i])
     }
-    
+
+    ## shape == diamond
+    i <- shape == "diamond"
+    if (any(i, na.rm=TRUE))
+    {
+        for(j in which(i)) polygon(x=c(nodeX[j] - lw[j], nodeX[j], nodeX[j] + rw[j], nodeX[j]),
+        y=c(nodeY[j], nodeY[j] + (height[j] / 2), nodeY[j], nodeY[j] - (height[j] / 2)),
+        col = fill[j], border = col[j], lty = lty[j], lwd = lwd[j])
+    }
+
     ## shape == plaintext
     ## nothing to do (for style = "filled", use fill = "grey")
     
