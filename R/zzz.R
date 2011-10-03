@@ -1,6 +1,6 @@
-.onLoad <- function(lib, pkg, where) {
+.onLoad <- function(libname, pkgname) {
     tryCatch({
-        library.dynam('Rgraphviz', package='Rgraphviz')
+        library.dynam('Rgraphviz', pkgname, libname)
     }, error=function(err) {
         msg <- sprintf("
             Check that (1) graphviz is installed on your system; (2)
