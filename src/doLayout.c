@@ -52,7 +52,7 @@ SEXP getEdgeLocs(Agraph_t *g) {
 
     for (i = 0; i < nodes; i++) {
         edge = agfstout(g, node);
-        while (edge != NULL) {
+        while (edge != NULL && edge->u.spl != NULL) {
             PROTECT(curEP = NEW_OBJECT(epClass));
             bez = edge->u.spl->list[0];
             PROTECT(pntList = allocVector(VECSXP, ((bez.size-1)/3)));
@@ -214,7 +214,8 @@ SEXP getNodeLayouts(Agraph_t *g) {
         PROTECT(curLab = NEW_OBJECT(labClass));
 
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
-        if (ND_label(node)->u.txt.para != NULL) {
+	if (ND_label(node)  == NULL) {
+	} else if (ND_label(node)->u.txt.para != NULL) {
             SET_SLOT(curLab, Rf_install("labelText"),
                      Rgraphviz_ScalarStringOrNull(ND_label(node)->u.txt.para->str));
             snprintf(tmpString, 2, "%c",ND_label(node)->u.txt.para->just);
