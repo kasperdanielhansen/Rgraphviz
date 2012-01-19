@@ -48,13 +48,17 @@ getDefaultAttrs <- function(curAttrs=list(),
     ## plot device open right now, then use a sensible default
     ## instead of letting Graphviz choose whatever it wants.  This
     ## helps prevent visual distortion when scaling down the image.
-    if ((.Device != "null device")&&(is.null(curAttrs$graph$size))) {
-        fin <- par("fin")
-        curAttrs$graph$size <- paste(fin[1],fin[2],sep=",")
-    }
-    else
-        curAttrs$graph$size <- "6.99,6.99"
 
+    if(is.null(curAttrs$graph$size)) {
+        ## we need to set the size
+        ## if a device is open, use that size, otherwise default to 7,7
+        if (.Device != "null device"){
+            cutAttrs <- replaceAtt(curAttrs, "graph", "size",
+                                   paste(par("fin")[1], par("fin")[2], sep= ","))
+        } else {
+            curAttrs <- replaceAtt(curAttrs, "graph", "size", "6.99,6.99")
+        }
+    }
 
     ## Now do layout specific graph attributes
     if (layoutType == "dot")

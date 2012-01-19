@@ -215,7 +215,8 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     ## The node shapes, only pass them on if they are not functions
     shapes <- getRenderPar(x, "shape", "nodes")
     widths <- getRenderPar(x, "iwidth", "nodes")
-    names(shapes) <- names(widths)  <- nodes(x)
+    heights <- getRenderPar(x, "iheight", "nodes")
+    names(shapes) <- names(widths) <- names(heights) <- nodes(x)
     attrShapes <- nodeAttrs$shape
     if(!is.null(attrShapes))
         shapes[names(attrShapes)] <- attrShapes
@@ -232,8 +233,11 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
     #ell <- shapes=="ellipse"
 
     attrWidths <- nodeAttrs$width
+    attrHeights <- nodeAttrs$height
     if(!is.null(attrWidths)) widths[names(attrWidths)] <- attrWidths
+    if(!is.null(attrHeights)) heights[names(attrHeights)] <- attrHeights
     nodeAttrs$width <- widths
+    nodeAttrs$height <- heights
     g <- agopen(x, name=name, layoutType=layoutType,
                 recipEdges=recipEdges, nodeAttrs=nodeAttrs,
                 edgeAttrs=edgeAttrs, attrs=attrs, ...)

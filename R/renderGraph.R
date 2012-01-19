@@ -54,6 +54,8 @@ renderNodes <- function(g)
     height <- getRenderPar(g, "height", "nodes")
     labelX <- getRenderPar(g, "labelX", "nodes")
     labelY <- getRenderPar(g, "labelY", "nodes")
+    iheight <- getRenderPar(g, "iheight", "nodes")
+
     #labelJust <- getRenderPar(g, "labelJust", "nodes") ## FIXME: do we need this
     #labelJust <- as.numeric(gsub("l", 0, gsub("n", -0.5, gsub("r", -1,
     #                        labelJust))))
@@ -61,7 +63,8 @@ renderNodes <- function(g)
     fill <- unlist(getRenderPar(g, "fill", "nodes"))
     col <- unlist(getRenderPar(g, "col", "nodes"))
     lwd <- unlist(getRenderPar(g, "lwd", "nodes"))
-    lty <- getRenderPar(g, "lty", "nodes")
+    lty <- unlist(getRenderPar(g, "lty", "nodes"))
+
     textCol <- unlist(getRenderPar(g, "textCol", "nodes"))
     style <- unlist(getRenderPar(g, "style", "nodes"))
     shape <- getRenderPar(g, "shape", "nodes")
@@ -237,14 +240,14 @@ drawHead <- function(type, xy, bbox, col, lwd, lty, len, out=TRUE){
                x <- c(0, 0)*r
                y <- c(-1,1)*r
                xyr <- rotate(x,y,alpha, xy[2,])
-               lines(xyr, col=col, lwd=lwd*2, lty=lty)
+               lines(xyr, col=col, lwd=lwd, lty=lty)
            },
            "normal"={
                normArrow(r, alpha, xy, col, lwd, lty, out)
            },
            "open"={
                ## normArrow(r, alpha, xy, col, lwd, lty, out)
-	       arrows(xy[1], xy[3], xy[2], xy[4], length=len, col=col,
+	       arrows(xy[1], xy[3], xy[2], xy[4], length=len,col=col,
                       lwd=lwd, lty=lty)
             },
            "vee"={
@@ -327,7 +330,7 @@ renderEdges <- function(g)
     height <- getRenderPar(g, "height", "nodes")
     splines <- getRenderPar(g, "splines", "edges")
     ## direction <- getRenderPar(g, "direction", "edges") ## UNUSED (isn't this redundant?)
-    arrowhead <- getRenderPar(g, "arrowhead", "edges")# != "none"
+    arrowhead <- unlist(getRenderPar(g, "arrowhead", "edges"))# != "none"
     arrowtail <- getRenderPar(g, "arrowtail", "edges")# != "none"
     label <- getRenderPar(g, "label", "edges")
     labelX <- getRenderPar(g, "labelX", "edges")
@@ -339,13 +342,13 @@ renderEdges <- function(g)
     ## these only live within R
     fontsize <- getRenderPar(g, "fontsize", "edges")
     textCol <- getRenderPar(g, "textCol", "edges")
-    col <- getRenderPar(g, "col", "edges")
+    col <- unlist(getRenderPar(g, "col", "edges"))
     lty <- getRenderPar(g, "lty", "edges")
-    lwd <- getRenderPar(g, "lwd", "edges")
+    lwd <- unlist(getRenderPar(g, "lwd", "edges"))
     cex <- getRenderPar(g, "cex", "edges")
     
     ## set the arrow size
-    minDim <- min(rw + lw, height)
+    minDim <- min(max(rw + lw), max(height))
     arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * minDim / (1.5*pi)
 
     ## plot the edge splines
@@ -438,7 +441,6 @@ setMethod("renderGraph", "graph",
                   if(match.arg(drawNodes)=="renderNodes")
                       renderNodes(x)
               }else  drawNodes(x)
-
 
           ## Draw edges using default edge rendering function
           drawEdges(x)
