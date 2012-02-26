@@ -11,12 +11,14 @@ importMethodsFrom(graph, connComp, edgeData, "edgeData<-",
 
 importMethodsFrom(methods, show)
 
+importFrom(BiocGenerics, plot)
+
 importFrom(graph, edgeRenderInfo, "edgeRenderInfo<-", graph.par,
            graph.par.get, graphRenderInfo, "graphRenderInfo<-",
            nodeRenderInfo, "nodeRenderInfo<-", parRenderInfo,
            validGraph)
 
-importFrom(graphics, arrows, lines, par, plot, plot.new, plot.window,
+importFrom(graphics, arrows, lines, par, plot.new, plot.window,
            plot.xy, polygon, rect, strheight, strwidth, symbols, text,
            title)
 
