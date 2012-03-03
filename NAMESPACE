@@ -11,7 +11,7 @@ importMethodsFrom(graph, connComp, edgeData, "edgeData<-",
 
 importMethodsFrom(methods, show)
 
-importFrom(BiocGenerics, plot)
+importFrom(stats4, plot)
 
 importFrom(graph, edgeRenderInfo, "edgeRenderInfo<-", graph.par,
            graph.par.get, graphRenderInfo, "graphRenderInfo<-",
