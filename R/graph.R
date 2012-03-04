@@ -138,6 +138,14 @@ drawAgNode <- function(node) {
   fg     <- color(node)
   style <- style(node)
   shape <- shape(node)
+  border.lwd <- border.lwd(node)
+  border.color <- border.color(node)
+
+  if (border.lwd=='')
+    border.lwd=1
+  if (border.color=='')
+    border.color='black'
+
 
   ## Normal Rgraphviz defaults to circle, but DOT defaults to ellipse
   if (shape =="") shape <- "ellipse" 
@@ -151,15 +159,15 @@ drawAgNode <- function(node) {
 
   switch(shape,
          "circle"    = Rgraphviz:::drawCircleNode(x=nodeX, y=nodeY,
-                                      rad=rad, fg=fg, bg=bg),
+                                      rad=rad, fg=border.color, bg=bg),
 
          "ellipse"   = Rgraphviz:::ellipse(x=nodeX, y=nodeY,
-                    		   height=height, width=rad*2, fg=fg, bg=bg),
+                    		   height=height, width=rad*2, fg=border.color, bg=bg, lwd=border.lwd),
          "box"=,
          "rect"=,
          "rectangle" = rect(nodeX-lw, nodeY-(height/2), 
 			    nodeX+rw, nodeY+(height/2), 
-			    col=bg, border=fg),
+			    col=bg, border=border.color, lwd=border.lwd),
 
          "plaintext"= { if (style == "filled")
                           rect(nodeX-lw, nodeY-(height/2),

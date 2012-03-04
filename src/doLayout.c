@@ -209,6 +209,8 @@ SEXP getNodeLayouts(Agraph_t *g) {
         SET_SLOT(curNL, Rf_install("fillcolor"), Rgraphviz_ScalarStringOrNull(agget(node, "fillcolor")));
         SET_SLOT(curNL, Rf_install("shape"), Rgraphviz_ScalarStringOrNull(agget(node, "shape")));
         SET_SLOT(curNL, Rf_install("style"), Rgraphviz_ScalarStringOrNull(agget(node, "style")));
+        SET_SLOT(curNL, Rf_install("border.lwd"), Rgraphviz_ScalarStringOrNull(agget(node, "border.lwd")));
+        SET_SLOT(curNL, Rf_install("border.color"), Rgraphviz_ScalarStringOrNull(agget(node, "border.color")));
 
 
         PROTECT(curLab = NEW_OBJECT(labClass));
