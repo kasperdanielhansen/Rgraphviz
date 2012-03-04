@@ -81,6 +81,8 @@ getDefaultAttrs <- function(curAttrs=list(),
     curAttrs <- replaceAtt(curAttrs, "node", "fontsize", "14")
     curAttrs <- replaceAtt(curAttrs, "node", "height", "0.5")
     curAttrs <- replaceAtt(curAttrs, "node", "width", "0.75")
+    curAttrs <- replaceAtt(curAttrs, "node", "border.lwd", 1)
+    curAttrs <- replaceAtt(curAttrs, "node", "border.color", 'black')
     #curAttrs <- replaceAtt(curAttrs, "node", "style", "solid")
     #curAttrs <- replaceAtt(curAttrs, "node", "distortion", "0.0")
     #curAttrs <- replaceAtt(curAttrs, "node", "layer", "solid")

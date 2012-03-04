@@ -62,6 +62,8 @@ nodeRagraph2graph <- function(g, x)
     label <- sapply(agn, function(f) labelText(txtLabel(f)))
     shape <- sapply(agn,shape) 
     style <- sapply(agn, style)
+    border.lwd <- sapply(agn, border.lwd)
+    border.color <- sapply(agn, border.color)
 
     ans <- 
         list(rWidth = rw, 
@@ -75,7 +77,9 @@ nodeRagraph2graph <- function(g, x)
              labelJust = labelJust, 
              labelWidth = labelWidth,
              shape = shape,
-             style = style)
+             style = style,
+border.color = border.color,
+border.lwd = border.lwd)
     for (i in names(ans)) names(ans[[i]]) <- nodes(x)
     ans
 }
@@ -275,7 +279,7 @@ writeGraph <- function(g, outfile="graph.dot")
                      "width", "label", "shape"),
                      R=c("col", "fill", "fixedsize",
                      "fontsize", "textCol", "iheight",
-                     "iwidth", "label", "shape"))
+                     "iwidth", "label", "shape",'border.color','border.lwd'))
      nAttrs <- cbind(graphviz=c("fixedsize", "label", "shape"),
                      R=c("fixedsize", "label", "shape"))
     nodes <- nodes(g)

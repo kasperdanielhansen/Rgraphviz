@@ -1,5 +1,5 @@
-makeNodeAttrs <- function(g, label=nodes(g), shape="ellipse", fillcolor="#e0e0e0", ...) {
-  rv = list(label=label, shape=shape, fillcolor=fillcolor,  ...)
+makeNodeAttrs <- function(g, label=nodes(g), shape="ellipse", fillcolor="#e0e0e0", border.lwd=1, border.color='black', ...) {
+  rv = list(label=label, shape=shape, fillcolor=fillcolor, border.lwd=border.lwd, border.color=border.color, ...)
   for(i in seq(along=rv)) {
     if(length(rv[[i]])==1) {
       rv[[i]] = rep(rv[[i]], numNodes(g))

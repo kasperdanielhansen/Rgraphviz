@@ -4,7 +4,7 @@
 ellipse <- function(x,y,
                     width,height=width,theta=2*pi,
                     npoints=100, fg=par("fg"),
-                    bg=par("bg")) {
+                    bg=par("bg"),lwd=1) {
   # x = x coordinate of center
   # y = y coordinate of center
   # width = length of major axis
@@ -21,8 +21,7 @@ ellipse <- function(x,y,
   yy <- c(ycoord.neg,ycoord.pos)
   x.theta <- xx*cos(2*pi-theta)+yy*sin(2*pi-theta)+x
   y.theta <- yy*cos(2*pi-theta)-xx*sin(2*pi-theta)+y
-
-  polygon(x.theta,y.theta, density=NA, border=fg, col=bg)
+  polygon(x.theta,y.theta, density=NA, border=fg, col=bg, lwd=lwd)
 
   ## Return the width in screen points
   width/72

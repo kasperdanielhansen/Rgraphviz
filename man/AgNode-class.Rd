@@ -65,7 +65,13 @@ Objects can be created by calls of the form \code{new("AgNode", ...)}.
     
     \item{\code{style}:}{Object of class \code{"character"}: The style
       of the node.}
-    
+
+    \item{\code{border.color}:}{Object of class \code{"character"}: The
+      color of the border of the node.}
+
+    \item{\code{border.lwd}:}{Object of class \code{"character"}: The
+      line width of the border of the node.}
+
   }
 }
 \section{Methods}{
@@ -93,6 +99,10 @@ Objects can be created by calls of the form \code{new("AgNode", ...)}.
       of the node.}
     \item{txtLabel}{\code{signature(object = "AgNode")}: Retrieves the
       node label.}
+    \item{border.color}{\code{signature(object = "AgNode")}: Retrieves the
+      color of the border of the node.}
+    \item{border.lwd}{\code{signature(object = "AgNode")}: Retrieves the
+      line width of the border of the node.}
   }
 }
 \author{Jeff Gentry}
