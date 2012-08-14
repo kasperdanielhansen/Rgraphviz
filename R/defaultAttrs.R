@@ -53,7 +53,7 @@ getDefaultAttrs <- function(curAttrs=list(),
         ## we need to set the size
         ## if a device is open, use that size, otherwise default to 7,7
         if (.Device != "null device"){
-            cutAttrs <- replaceAtt(curAttrs, "graph", "size",
+            curAttrs <- replaceAtt(curAttrs, "graph", "size",
                                    paste(par("fin")[1], par("fin")[2], sep= ","))
         } else {
             curAttrs <- replaceAtt(curAttrs, "graph", "size", "6.99,6.99")
