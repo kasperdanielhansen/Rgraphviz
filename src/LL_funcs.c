@@ -44,31 +44,6 @@ static void getDefAttrs(void *obj, int *n, char*** attr_name, char*** attr_defva
     }
 }
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 7
-
-int agsafeset(void* obj, char* name, char* value, char* def)
-{  
-  Agsym_t* a = agfindattr(obj, name);
-   
-  if (a == NULL) {
-    if (!def) def = "";
-    switch (agobjkind(obj)) {
-    case AGGRAPH:
-        a = agraphattr(((Agraph_t*)obj)->root, name, def);
-        break;
-    case AGNODE:
-        a = agnodeattr(((Agnode_t*)obj)->graph, name, def);
-        break;     
-    case AGEDGE:
-        a = agedgeattr(((Agedge_t*)obj)->head->graph, name, def);
-        break;
-    }
-  }
-  return agxset(obj, a->index, value);
-}  
-
-#endif
-
 /*
  * TODO:
  * o. validate ptrs to graph/node/edge
@@ -421,7 +396,6 @@ SEXP Rgraphviz_setAttrsEdge(SEXP graph, SEXP from, SEXP to,
 
 SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
 {
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 4
     Agraph_t *g = getAgraphPtr(graph);
     char *clayout, *cfiletype, *cfilename;
     if ( !g ) return(R_NilValue);
@@ -431,17 +405,9 @@ SEXP Rgraphviz_toFile(SEXP graph, SEXP layoutType, SEXP filename, SEXP filetype)
 
     cfilename = ALLOC_CHAR(filename, 0);
     cfiletype = ALLOC_CHAR(filetype, 0);
-#if GRAPHVIZ_MINOR == 4
-    FILE *fp = fopen(cfilename, "w");
-    gvRender(gvc, g, cfiletype, fp);
-    fclose(fp);
-#else
     gvRenderFilename(gvc, g, cfiletype, cfilename);
     gvFreeLayout(gvc, g);
-#endif
     Free(cfiletype); Free(cfilename);
-#endif
-
     return(R_NilValue);
 }
 
