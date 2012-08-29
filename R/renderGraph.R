@@ -1,8 +1,3 @@
-## Wrapper around paste for simple yet flexible namespacing of the attribute
-## names. Is set to do nothing for now
-myAtt <- function(att) att
-
-
 ## Mechanism to draw render information from a graph or from the
 ## defaults if not specified in the graph. The hierarchy is:
 ##   1. graph package defaults as set by graph.par
@@ -54,8 +49,7 @@ renderNodes <- function(g)
     height <- getRenderPar(g, "height", "nodes")
     labelX <- getRenderPar(g, "labelX", "nodes")
     labelY <- getRenderPar(g, "labelY", "nodes")
-    iheight <- getRenderPar(g, "iheight", "nodes")
-
+    
     #labelJust <- getRenderPar(g, "labelJust", "nodes") ## FIXME: do we need this
     #labelJust <- as.numeric(gsub("l", 0, gsub("n", -0.5, gsub("r", -1,
     #                        labelJust))))
@@ -64,7 +58,6 @@ renderNodes <- function(g)
     col <- unlist(getRenderPar(g, "col", "nodes"))
     lwd <- unlist(getRenderPar(g, "lwd", "nodes"))
     lty <- unlist(getRenderPar(g, "lty", "nodes"))
-
     textCol <- unlist(getRenderPar(g, "textCol", "nodes"))
     style <- unlist(getRenderPar(g, "style", "nodes"))
     shape <- getRenderPar(g, "shape", "nodes")
@@ -247,7 +240,7 @@ drawHead <- function(type, xy, bbox, col, lwd, lty, len, out=TRUE){
            },
            "open"={
                ## normArrow(r, alpha, xy, col, lwd, lty, out)
-	       arrows(xy[1], xy[3], xy[2], xy[4], length=len,col=col,
+	       arrows(xy[1], xy[3], xy[2], xy[4], length=len, col=col,
                       lwd=lwd, lty=lty)
             },
            "vee"={
@@ -260,7 +253,7 @@ drawHead <- function(type, xy, bbox, col, lwd, lty, len, out=TRUE){
                       lwd=lwd, lty=lty)
            }
        )
-    return(warn)
+    warn
 }
            
 
@@ -288,21 +281,20 @@ renderSpline <-
     }
     ## now the arrow tails
     xytail <- head(bezierPoints(spline[[length(spline)]]), 2)
-    if(is.function(arrowtail[[1]])){
+    if(is.function(arrowtail[[1]])) {
         xy <- list(x=xytail[1,1], y=xytail[1,2])
         try(arrowtail[[1]](xy, col=col, lwd=lwd, lty=lty))
-    }else{
+    } else {
         warn <- warn | drawHead(arrowtail, xytail[2:1,], bbox, col, lwd,
                                 lty, len, out=FALSE)
     }
-    return(warn)
+    warn
 }
 
 
 
 ## find R's resolution for the current device
 devRes <- function(){
-    require(grid)
     if(current.viewport()$name != "ROOT"){
         vpt <- current.vpTree()
         popViewport(0)
@@ -315,7 +307,7 @@ devRes <- function(){
     }
     retval <- c(xres, yres)
     names(retval) <- c("xres", "yres")
-    return(retval)
+    retval
 }
 
 
@@ -371,158 +363,104 @@ renderEdges <- function(g)
          cex=cex*as.numeric(fontsize)/14)
 }
 
-
-
 ## render graph to plotting device
 setGeneric("renderGraph",
            function(x, ...) standardGeneric("renderGraph"))
 
-setMethod("renderGraph", "graph",
-          function(x, ...,
-                   drawNodes = "renderNodes",
-                   drawEdges = renderEdges,
-                   graph.pars=list())
-      {
-
-          ## evaluate defaults passed in via the graph.pars argument
-          old.graph.pars <- graph.par(graph.pars)
-          on.exit(graph.par(old.graph.pars))
-
-          ## check that the graph has been laid out
-          laidout <- getRenderPar(x, "laidout", "graph")
-          bbox <- getRenderPar(x, "bbox", "graph")
-          if(!laidout)
-              stop("Graph has not been laid out yet. Please use function ",
-                   "'layoutGraph'")
-          plot.new()
-
-          ## eliminate all plot borders but leave space for title and
-          ## subtitle if needed
-          sub <-  getRenderPar(x, "sub", "graph")
-          main <- getRenderPar(x, "main", "graph")
-          cex.main <- getRenderPar(x, "cex.main", "graph")
-          cex.sub <- getRenderPar(x, "cex.sub", "graph")
-          mheight <- if(!is.null(main) && nchar(main)>0)
-              strheight(main, "inches", cex.main)+0.3 else 0.1
-          sheight <- if(!is.null(sub) && nchar(sub)>0)
-              strheight(sub, "inches", cex.sub)+0.2 else 0.1
-          old.pars <- par(mai=c(sheight, 0, mheight,0))
-          on.exit(par(old.pars), add=TRUE)
-
-          ## set coordinate system to the values of the bounding box
-          ## and keep aspect ratio fixed when margins increase due to
-          ## title and subtitle
-          aspFact <- (sheight+mheight)/par("din")[2]
-          usr <- c(bbox[1,1] - (bbox[2,1] * (aspFact/2)),
-                    bbox[2,1] + (bbox[2,1] * (aspFact/2)),
-                    bbox[,2])
-          plot.window(xlim=usr[1:2], ylim=usr[3:4],
-                      log="", asp=NA)
-          old.pars <- append(old.pars, par(usr=usr))
-
-          ## Add title and subtitle if available
-          old.pars <- append(old.pars, par(xpd=NA))
-          if(mheight>0.1){
-              col.main <- getRenderPar(x, "col.main", "graph")
-              moffset <- (bbox[2,2]/par("pin")[2] * mheight)/2
-              text(bbox[2,1]/2, bbox[2,2] + moffset, main,
-                   cex=cex.main, col=col.main, adj=c(0.5))
-          }
-          if(sheight>0.1){
-              col.sub<- getRenderPar(x, "col.sub", "graph")
-              soffset <- (bbox[2,2]/par("pin")[2] * sheight)/2
-              text(bbox[2,1]/2, bbox[1,2] - soffset,
-                   sub, cex=cex.sub, col=col.sub, adj=c(0.5))
-          }
-          
-          ## Draw Nodes, using default vectorized function or a
-          ## node-by-node user-defined function   
-          if(is.character(drawNodes)){
-                  if(match.arg(drawNodes)=="renderNodes")
-                      renderNodes(x)
-              }else  drawNodes(x)
-
-          ## Draw edges using default edge rendering function
-          drawEdges(x)
-
-          ## compute native node coordinates for imageMaps
-          x1 <- {getRenderPar(x, "nodeX", "nodes") -
-                     getRenderPar(x, "lWidth", "nodes")}
-          y1 <- {getRenderPar(x, "nodeY", "nodes") -
-                     getRenderPar(x, "height", "nodes")/2}
-          x2 <- {getRenderPar(x, "nodeX", "nodes") +
-                     getRenderPar(x, "rWidth", "nodes")}
-          y2 <- {getRenderPar(x, "nodeY", "nodes") +
-                     getRenderPar(x, "height", "nodes")/2}
-          figDims <- par("din")
-          ## these factors should accomodate for any figure margins
-          xfac <- diff(par("plt")[1:2])
-          xoffset <- par("plt")[1]
-          yfac <- diff(par("plt")[3:4])
-          yoffset <- par("plt")[3]
-          ## need to take into account the aspect factor for x values
-          x1n <- {((x1/diff(usr[1:2])) * xfac) + xoffset +
-                      (bbox[1,1]-usr[1])/diff(usr[1:2])}
-          x2n <- {((x2/diff(usr[1:2])) * xfac) + xoffset +
-                      (bbox[1,1]-usr[1])/diff(usr[1:2])}
-          ## invert y values because [0,0] is on top left for imageMap
-          y1n <- 1-(((y1/bbox[2,2])*yfac)+yoffset)
-          y2n <- 1-(((y2/bbox[2,2])*yfac)+yoffset)
-          nativeCoords <- cbind(x1n, y1n, x2n,y2n)
-
-          ## store information about the rendering process in the graph
-          graphRenderInfo(x) <- list(nativeCoords=nativeCoords,
-                                     figDim=figDims*devRes(),
-                                     usr=usr, mai=par("mai"))
-          
-          return(invisible(x))
-      })
-
-
-
-
-
-
-
-
-
-#############################################################################
-##---------------------------------------------------------------------------
-#############################################################################
-## THE ATTIC
-#############################################################################
-##---------------------------------------------------------------------------
-#############################################################################
-
-
-## This function draws the node and edge labels on the plotting device.
-## It is called by myDrawAgNode. The input is again a list of nodeData## as well as the x and y location of the nodes.
-## FIXME: This doesn't have to be called every time by myDrawAgNode. It could be
-## a vectorized version of text that gets called after the node plotting.
-myDrawTxtLabel <- function(attr, xLoc, yLoc) {
-  txt <- attr[[myAtt("label")]]
-
-  if(length(txt)>1) stop("label must have length 1.")
-
-  if(length(txt)==0 || txt=="") return(invisible(NULL))
-
-  if(xor(missing(xLoc), missing(yLoc)))
-    stop("'xLoc' and 'yLoc' must be either be both specified or both missing.")
-  ## When there's no x location it is computed according to the adjustment
-  if(missing(xLoc)) {
-    lj <- attr[[myAtt("labelJust")]]
-    if(length(lj)){
-      justMod <- switch(lj,
-                        "l" = 0,
-                        "n" = -0.5,
-                        "r" = -1)
-      xLoc <-   as.numeric(attr[[myAtt("labelX")]]) +(justMod * as.numeric(attr[[myAtt("labelWidth")]]))
-      yLoc <-  as.numeric(attr[[myAtt("labelY")]])
-    }else{
-      xLoc <- yLoc <- 0
+setMethod("renderGraph", "graph", function(x, ..., drawNodes = "renderNodes",
+                                           drawEdges = renderEdges, graph.pars=list()) {
+    ## evaluate defaults passed in via the graph.pars argument
+    old.graph.pars <- graph.par(graph.pars)
+    on.exit(graph.par(old.graph.pars))
+    
+    ## check that the graph has been laid out
+    laidout <- getRenderPar(x, "laidout", "graph")
+    bbox <- getRenderPar(x, "bbox", "graph")
+    if(!laidout)
+        stop("Graph has not been laid out yet. Please use function ",
+             "'layoutGraph'")
+    plot.new()
+    
+    ## eliminate all plot borders but leave space for title and
+    ## subtitle if needed
+    sub <-  getRenderPar(x, "sub", "graph")
+    main <- getRenderPar(x, "main", "graph")
+    cex.main <- getRenderPar(x, "cex.main", "graph")
+    cex.sub <- getRenderPar(x, "cex.sub", "graph")
+    mheight <- if(!is.null(main) && nchar(main)>0)
+        strheight(main, "inches", cex.main)+0.3 else 0.1
+    sheight <- if(!is.null(sub) && nchar(sub)>0)
+        strheight(sub, "inches", cex.sub)+0.2 else 0.1
+    old.pars <- par(mai=c(sheight, 0, mheight,0))
+    on.exit(par(old.pars), add=TRUE)
+    
+    ## set coordinate system to the values of the bounding box
+    ## and keep aspect ratio fixed when margins increase due to
+    ## title and subtitle
+    aspFact <- (sheight+mheight)/par("din")[2]
+    usr <- c(bbox[1,1] - (bbox[2,1] * (aspFact/2)),
+             bbox[2,1] + (bbox[2,1] * (aspFact/2)),
+             bbox[,2])
+    plot.window(xlim=usr[1:2], ylim=usr[3:4],
+                log="", asp=NA)
+    old.pars <- append(old.pars, par(usr=usr))
+    
+    ## Add title and subtitle if available
+    old.pars <- append(old.pars, par(xpd=NA))
+    if(mheight>0.1){
+        col.main <- getRenderPar(x, "col.main", "graph")
+        moffset <- (bbox[2,2]/par("pin")[2] * mheight)/2
+        text(bbox[2,1]/2, bbox[2,2] + moffset, main,
+             cex=cex.main, col=col.main, adj=c(0.5))
     }
-  }
-  ## NOTE: labelFontsize is translated into cex parameter: fontsize 14 = cex 1
-  text(xLoc, yLoc, txt, col=attr[[myAtt("fontcolor")]],
-       cex=as.numeric(attr[[myAtt("fontsize")]])/14)
-}
+    if(sheight>0.1){
+        col.sub<- getRenderPar(x, "col.sub", "graph")
+        soffset <- (bbox[2,2]/par("pin")[2] * sheight)/2
+        text(bbox[2,1]/2, bbox[1,2] - soffset,
+             sub, cex=cex.sub, col=col.sub, adj=c(0.5))
+    }
+    
+    ## Draw Nodes, using default vectorized function or a
+    ## node-by-node user-defined function   
+    if(is.character(drawNodes)){
+        if(match.arg(drawNodes)=="renderNodes")
+                      renderNodes(x)
+    }else  drawNodes(x)
+    
+    
+    ## Draw edges using default edge rendering function
+    drawEdges(x)
+    
+    ## compute native node coordinates for imageMaps
+    x1 <- {getRenderPar(x, "nodeX", "nodes") -
+               getRenderPar(x, "lWidth", "nodes")}
+    y1 <- {getRenderPar(x, "nodeY", "nodes") -
+               getRenderPar(x, "height", "nodes")/2}
+    x2 <- {getRenderPar(x, "nodeX", "nodes") +
+               getRenderPar(x, "rWidth", "nodes")}
+    y2 <- {getRenderPar(x, "nodeY", "nodes") +
+               getRenderPar(x, "height", "nodes")/2}
+    figDims <- par("din")
+    ## these factors should accomodate for any figure margins
+          xfac <- diff(par("plt")[1:2])
+    xoffset <- par("plt")[1]
+    yfac <- diff(par("plt")[3:4])
+    yoffset <- par("plt")[3]
+    ## need to take into account the aspect factor for x values
+    x1n <- {((x1/diff(usr[1:2])) * xfac) + xoffset +
+                (bbox[1,1]-usr[1])/diff(usr[1:2])}
+    x2n <- {((x2/diff(usr[1:2])) * xfac) + xoffset +
+                (bbox[1,1]-usr[1])/diff(usr[1:2])}
+    ## invert y values because [0,0] is on top left for imageMap
+          y1n <- 1-(((y1/bbox[2,2])*yfac)+yoffset)
+    y2n <- 1-(((y2/bbox[2,2])*yfac)+yoffset)
+    nativeCoords <- cbind(x1n, y1n, x2n,y2n)
+    
+    ## store information about the rendering process in the graph
+    graphRenderInfo(x) <- list(nativeCoords=nativeCoords,
+                               figDim=figDims*devRes(),
+                               usr=usr, mai=par("mai"))
+    
+    return(invisible(x))
+})
+

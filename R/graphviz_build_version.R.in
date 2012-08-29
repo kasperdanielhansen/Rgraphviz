@@ -1,1 +1,2 @@
-.graphviz_build_version <- numeric_version("@GRAPHVIZ_BUILD_VERSION@")
+.graphviz_build_version <- list(version = numeric_version("@GRAPHVIZ_VERSION@"),
+                                bundled = @GRAPHVIZ_BUNDLED@)
