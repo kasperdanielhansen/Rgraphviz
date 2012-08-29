@@ -1,0 +1,24 @@
+diff -rupN graphviz-2.28.0/lib/circogen/circularinit.c graphviz-2.28.0-slimbug/lib/circogen/circularinit.c
+--- graphviz-2.28.0/lib/circogen/circularinit.c	2011-02-15 11:27:53.000000000 -0500
++++ graphviz-2.28.0-slimbug/lib/circogen/circularinit.c	2012-06-21 10:43:44.000000000 -0400
+@@ -282,7 +282,7 @@ void circo_cleanup(graph_t * g)
+ 
+     closeDerivedGraph((graph_t*)GD_alg(g));	/* delete derived graph */
+ 
+-    free (ND_alg(n));
++    
+     for (; n; n = agnxtnode(g, n)) {
+ 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+ 	    gv_cleanup_edge(e);
+diff -rupN graphviz-2.28.0/lib/twopigen/twopiinit.c graphviz-2.28.0-slimbug/lib/twopigen/twopiinit.c
+--- graphviz-2.28.0/lib/twopigen/twopiinit.c	2011-04-15 13:02:44.000000000 -0400
++++ graphviz-2.28.0-slimbug/lib/twopigen/twopiinit.c	2012-06-21 10:43:44.000000000 -0400
+@@ -184,7 +184,7 @@ void twopi_cleanup(graph_t * g)
+ 
+     n = agfstnode (g);
+     if (!n) return; /* empty graph */
+-    free (ND_alg(n));
++    
+     for (; n; n = agnxtnode(g, n)) {
+ 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+ 	    gv_cleanup_edge(e);

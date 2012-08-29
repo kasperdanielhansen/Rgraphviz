@@ -1,10 +1,7 @@
-% NOTE -- ONLY EDIT Rgraphviz.Rnw!!!
-% Rgraphviz.tex file will get overwritten.
-%
 %\VignetteIndexEntry{How To Plot A Graph Using Rgraphviz}
-%\VignetteDepends{Rgraphviz, graph}
+%\VignetteDepends{Rgraphviz2, graph}
 %\VignetteKeywords{tools, graphs}
-%\VignettePackage{Rgraphviz}
+%\VignettePackage{Rgraphviz2}
 
 \documentclass{article}
 \usepackage{hyperref}
@@ -32,13 +29,11 @@ This vignette demonstrate how to easily render a graph from R into
 various formats using the \Rpackage{Rgraphviz} package.  To do this,
 let us generate a graph using the \Rpackage{graph} package:
 %
-<<createGraph1, results=hide>>=
-library("Rgraphviz")
+<<createGraph1>>=
+library("Rgraphviz2")
 set.seed(123)
 V <- letters[1:10]
 M <- 1:4
-@ 
-<<createGraph2, print=TRUE>>=
 g1 <- randomGraph(V, M, 0.2)
 @
 
@@ -53,6 +48,7 @@ plot(g1)
 @
 %
 \inclfig{plotDot}{0.4\textwidth}{\Robject{g1} laid out with \textit{dot}.}
+
 The result is shown in Figure~\ref{plotDot}.
 The \Rpackage{Rgraphviz} package allows you to specify varying layout
 engines, such as \textit{dot} (the default), \textit{neato} 
@@ -305,7 +301,7 @@ have a label.  However, both can have custom labels supplied via
 attributes.
 
 <<makeLabels1>>=
-z <- strsplit(packageDescription("Rgraphviz")$Description, " ")[[1]]
+z <- strsplit(packageDescription("Rgraphviz2")$Description, " ")[[1]]
 z <- z[1:numNodes(g1)]
 names(z) = nodes(g1)
 nAttrs$label <- z
@@ -734,8 +730,8 @@ its nodes are layed out and drawn together and within a bounding rectangel.
 
 <<agopenSimpleDemo>>=
 library("graph")
-g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",package="graph"), open="rb")
-g11_gz <- gzfile(system.file("GXL/graphExample-11.gxl.gz",package="graph"), open="rb")
+g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",package="graph"))
+g11_gz <- gzfile(system.file("GXL/graphExample-11.gxl.gz",package="graph"))
 g1 <- fromGXL(g1_gz)
 g11 <- fromGXL(g11_gz)
 g1_11 <- join(g1, g11)
@@ -743,6 +739,8 @@ sgl <- vector(mode="list", length=2)
 sgl[[1]] <- list(graph=g1, cluster=FALSE)
 sgl[[2]] <- list(graph=g11, cluster=TRUE)
 ng <- agopenSimple(g1_11, "tmpsg", subGList=sgl)
+close(g1_gz)
+close(g11_gz)
 @
 
 Note: this instance of \Robject{Ragraph} class from \Rfunction{agopenSimple} 
@@ -855,9 +853,9 @@ those from \Robject{buildNodelist} and \Robject{buildEdgeList}.
 To do layout and then output to a file, you can do:
 
 <<layoutRenderDemo1>>=
-toFile(ng, layoutType="dot", filename="test_dot.svg", fileType="svg")
-toFile(ng, layoutType="circo", filename="test_circo.ps", fileType="ps")
-toFile(ng, layoutType="twopi", filename="test_twopi.dot", fileType="dot")
+# toFile(ng, layoutType="dot", filename="test_dot.svg", fileType="svg")
+# toFile(ng, layoutType="circo", filename="test_circo.ps", fileType="ps")
+toFile(ng, layoutType="dot", filename="test_twopi.dot", fileType="dot")
 @
 
 These examples use various renderer provided by graphviz, which honor a lot 
@@ -879,11 +877,8 @@ capability should see the \Rfunction{imageMap} function in the
 
 \section{Sessioninfo}
 
-This document was produced using
-<<echo=FALSE>>=
-sessionInfo()
+<<echo=FALSE,results=tex>>=
+toLatex(sessionInfo())
 @ 
-together with version \Sexpr{graphvizVersion()} of graphviz.
-
 
 \end{document}

@@ -1,0 +1,174 @@
+diff -rupN graphviz-2.28.0/Makefile.am graphviz-2.28.0_slim/Makefile.am
+--- graphviz-2.28.0/Makefile.am	2011-04-19 13:10:13.000000000 -0400
++++ graphviz-2.28.0_slim/Makefile.am	2012-06-21 10:36:23.000000000 -0400
+@@ -17,7 +17,7 @@ pkginclude_HEADERS = graphviz_version.h
+ man_MANS = graphviz.7
+ 
+ # $(subdirs) contains the list from: AC_CONFIG_SUBDIRS
+-SUBDIRS = $(subdirs) lib plugin cmd tclpkg doc contrib share graphs rtest
++SUBDIRS = $(subdirs) lib plugin
+ 
+ .PHONY: doxygen
+ doxygen:
+@@ -41,7 +41,7 @@ EXTRA_DIST = $(txt) $(html) graphviz.spe
+ 	m4/README m4/iconv.m4 m4/lib-ld.m4 m4/lib-link.m4 m4/lib-prefix.m4 \
+ 	graphviz.7 Doxyfile.in Doxyfile makearch features awk \
+ 	config/config_perl.pl config/config_python.py \
+-	config/config_ruby.rb config/config_tcl.tcl dot.demo  plugin.demo \
++	config/config_ruby.rb config/config_tcl.tcl dot.demo   \
+ 	macosx windows debian graphviz.vcproj graphviz.sln
+ 
+ .PHONY: rpm
+diff -rupN graphviz-2.28.0/configure.ac graphviz-2.28.0_slim/configure.ac
+--- graphviz-2.28.0/configure.ac	2011-05-06 23:25:24.000000000 -0400
++++ graphviz-2.28.0_slim/configure.ac	2012-06-21 10:36:23.000000000 -0400
+@@ -3174,121 +3174,35 @@ rm -f conftest*
+ 
+ # Generate Makefiles
+ AC_CONFIG_FILES(Makefile
+-	debian/changelog
+-	doc/Makefile
+-	doc/info/Makefile
+-	doc/schema/Makefile
+-	contrib/Makefile
+-	contrib/prune/Makefile
+-	contrib/diffimg/Makefile
+-	graphs/Makefile
+-	graphs/directed/Makefile
+-	graphs/undirected/Makefile
+ 	lib/Makefile
+ 	lib/cdt/Makefile
+ 	lib/cdt/libcdt.pc
+ 	lib/graph/Makefile
+ 	lib/graph/libgraph.pc
+-	lib/cgraph/Makefile
+-	lib/cgraph/libcgraph.pc
+-	lib/gd/Makefile
+ 	lib/rbtree/Makefile
+ 	lib/pathplan/Makefile
+ 	lib/pathplan/libpathplan.pc
+-	lib/ast/Makefile
+-	lib/sfio/Makefile
+-	lib/sfio/Sfio_f/Makefile
+-	lib/vmalloc/Makefile
+ 	lib/dotgen/Makefile
+-	lib/dotgen2/Makefile
+ 	lib/neatogen/Makefile
+ 	lib/fdpgen/Makefile
+ 	lib/sparse/Makefile
+ 	lib/sfdpgen/Makefile
+ 	lib/osage/Makefile
+-	lib/gvpr/Makefile
+-	lib/gvpr/libgvpr.pc
+ 	lib/circogen/Makefile
+ 	lib/twopigen/Makefile
+ 	lib/patchwork/Makefile
+ 	lib/pack/Makefile
+ 	lib/ortho/Makefile
+-	lib/expr/Makefile
+-	lib/expr/libexpr.pc
+ 	lib/common/Makefile
+-	lib/ingraphs/Makefile
+ 	lib/vpsc/Makefile
+ 	lib/gvc/Makefile
+ 	lib/gvc/libgvc.pc
+ 	lib/xdot/Makefile
+ 	lib/xdot/libxdot.pc
+-	lib/topfish/Makefile
+-	lib/glcomp/Makefile
+-	macosx/Info.plist
+-	macosx/build/graphviz.pmdoc/01local.xml
+-	macosx/build/graphviz.pmdoc/02graphviz.xml
+-	windows/build/graphviz.wxs
+-	windows/Properties/AssemblyInfo.cs
+ 	plugin/Makefile
+ 	plugin/core/Makefile
+-	plugin/devil/Makefile
+-	plugin/gd/Makefile
+-	plugin/gdk_pixbuf/Makefile
+-	plugin/gdiplus/Makefile
+-	plugin/glitz/Makefile
+-	plugin/gs/Makefile
+-	plugin/gtk/Makefile
+-	plugin/lasi/Makefile
+-	plugin/ming/Makefile
+-	plugin/pango/Makefile
+-	plugin/quartz/Makefile
+-	plugin/rsvg/Makefile
+-	plugin/visio/Makefile
+-	plugin/xlib/Makefile
+ 	plugin/dot_layout/Makefile
+ 	plugin/neato_layout/Makefile
+-	cmd/Makefile
+-	cmd/dot/Makefile
+-	cmd/tools/Makefile
+-	cmd/gvpr/Makefile
+-	cmd/lefty/ws/x11/libfilereq/Makefile
+-	cmd/lefty/ws/x11/Makefile
+-	cmd/lefty/ws/mswin32/Makefile
+-	cmd/lefty/ws/Makefile
+-	cmd/lefty/os/unix/Makefile
+-	cmd/lefty/os/mswin32/Makefile
+-	cmd/lefty/os/Makefile
+-	cmd/lefty/dot2l/Makefile
+-	cmd/lefty/examples/Makefile
+-	cmd/lefty/Makefile
+-	cmd/lneato/Makefile
+-	cmd/dotty/Makefile
+-	cmd/smyrna/Makefile
+-	cmd/gvmap/Makefile
+-	cmd/gvedit/Makefile
+-	cmd/gvedit/gvedit.pro
+-	cmd/gvedit/ui/Makefile
+-	cmd/gvedit/images/Makefile
+-	tclpkg/Makefile
+-	tclpkg/tclstubs/Makefile
+-	tclpkg/tkstubs/Makefile
+-	tclpkg/tclhandle/Makefile
+-	tclpkg/gdtclft/Makefile
+-	tclpkg/gdtclft/demo/Makefile
+-	tclpkg/tcldot/Makefile
+-	tclpkg/tcldot/demo/Makefile
+-	tclpkg/tclpathplan/Makefile
+-	tclpkg/tclpathplan/demo/Makefile
+-	tclpkg/tclpathplan/demo/pathplan_data/Makefile
+-	tclpkg/tkspline/Makefile
+-	tclpkg/tkspline/demo/Makefile
+-	tclpkg/gv/Makefile
+-	tclpkg/gv/demo/Makefile
+-	tclpkg/gv/META.gv
+-	rtest/Makefile
+-	share/Makefile
+-	share/examples/Makefile
+-	share/gui/Makefile
+ 	graphviz.spec
+ 	Doxyfile
+ 	)
+diff -rupN graphviz-2.28.0/lib/Makefile.am graphviz-2.28.0_slim/lib/Makefile.am
+--- graphviz-2.28.0/lib/Makefile.am	2010-07-29 21:54:10.000000000 -0400
++++ graphviz-2.28.0_slim/lib/Makefile.am	2012-06-21 10:36:23.000000000 -0400
+@@ -2,9 +2,9 @@
+ ## Process this file with automake to produce Makefile.in
+ 
+ 
+-SUBDIRS = cdt graph cgraph gd pathplan sfio vmalloc ast \
+-	vpsc rbtree ortho sparse patchwork expr common \
+-	pack xdot gvc ingraphs topfish glcomp \
+-	circogen dotgen dotgen2 fdpgen neatogen twopigen sfdpgen osage gvpr
++SUBDIRS = cdt graph pathplan \
++	vpsc rbtree ortho sparse patchwork common \
++	pack xdot gvc \
++	circogen dotgen fdpgen neatogen twopigen sfdpgen osage
+ 
+ EXTRA_DIST = Makefile.old gvc.vcproj gvc.def
+diff -rupN graphviz-2.28.0/plugin/Makefile.am graphviz-2.28.0_slim/plugin/Makefile.am
+--- graphviz-2.28.0/plugin/Makefile.am	2009-06-02 21:10:56.000000000 -0400
++++ graphviz-2.28.0_slim/plugin/Makefile.am	2012-06-21 10:36:23.000000000 -0400
+@@ -1,6 +1,6 @@
+ # $Id: Makefile.am,v 1.16 2009/06/03 01:10:56 ellson Exp $ $Revision: 1.16 $
+ ## Process this file with automake to produce Makefile.in
+ 
+-SUBDIRS = core devil gd gdk_pixbuf gdiplus glitz gs gtk lasi ming pango quartz rsvg visio xlib dot_layout neato_layout
++SUBDIRS = core dot_layout neato_layout
+ 
+ EXTRA_DIST = Makefile.old
