@@ -1,0 +1,104 @@
+Building Rgraphviz
+==================
+
+We now bundle Graphviz together with Rgraphviz.  Building Rgraphviz
+consists of (for Linux and OS X)
+  - running configure and make in Rgraphviz/src/graphviz
+  - install into Rgraphviz/src/usr
+  - copy files from Rgraphviz/src/usr and subdirs into Rgraphviz/src
+We build Rgraphviz statically, and we build in the source directory
+(experiments have shown that Graphviz cannot really be build in a
+separate build directory).
+
+For Windows, we provide pre-build static libraries, included in
+  Rgraphviz/src/libwin/ARCH
+with ARCH being i386 and x64.
+
+
+
+Preparing Graphviz for inclusion into Rgraphviz
+===============================================
+
+In order to bundled Graphviz with Rgraphviz, two tasks needs to be
+accomplished
+ 1) Removal of unnecessary components (slimming) of Graphviz
+ 2) Building static libraries under MinGW.
+
+
+
+Slimming Graphviz
+=================
+
+This is accomplished using the script
+  slim_graphviz_2.28.0.sh
+It requires a source tarball (graphviz-2.28.0.tar.gz) obtained from
+  www.graphviz.org.  
+
+Graphviz itself consists of the main layout routines, a number of
+rendering routines and finally the command line tools.  We only need
+the layout routines for Rgraphviz, and by remocing the rendering
+routines and command line tools, we minimize the number of
+dependencies (and of things going wrong).  The code is organized as a
+number of subdirectories of lib.  Each subdirectory contains either
+part of, or a complete library or command line tools.
+
+In order to remove the subdirectories we need to identify which
+subdirectories are needed (non-trivial) and then remove any mention of
+them from the configure.ac script and the Makefile.am scripts.  This
+is done by patching the source code using graphviz-2.28.0-slim.patch.
+
+After we have removed the mention of these subdirectories from
+configure.ac and the various Makefile.am, we also physically remove
+the subdirectories in order to reduce file size.
+
+After this is done, we use the tool autoreconf to regenerate
+Makefile.in's from Makefile.am's.  This tools requires both autoconf
+(at least 2.65) and automake.  I have been using autoconf 2.69 and
+automake 1.12.1 and both of these tools are straightforward to install
+(at least under OS X Lion).
+
+Finally we patch Graphviz 2.28.0 in order to fix a couple of bugs
+(that have been fixed in the devel version of Graphviz).  Patches are
+contained in graphviz-2.28.0-bugs.patch.
+
+After the script finishes, the resulting graphviz-2.28.0 tree is ready
+to be copied into Rgraphviz/src (rename it from graphviz-2.28.0 to
+graphviz), like
+  cp -R graphviz-2.28.0/* Rgraphviz/src/graphviz
+
+
+
+Building Windows DLLs
+=====================
+
+We need to build Graphviz as a static library using MinGW.  As an
+added complication we want to use the compilers the R project provides
+in Rtools, but we also need the rest of the MinGW environment.  For
+the first round of development I used 
+  Rtools215.exe
+  mingw-get-inst-20111118.exe
+although I believe newer sets of tools should be fine.  Both MinGW and
+Rtools need to be installed.
+
+The build script is
+  build_graphviz_mingw.sh
+
+At the top of, a number of variables are set, giving the location
+of R, two bin dirs from Rtootls, two bin dirs from MinGW and the
+location of Rgraphviz.
+
+The first part of the build_graphviz_mingw.sh script uses 'R CMD
+config' to grab relevant variables from R in order to feed them to the
+configure script from Graphviz.  Next, Graphviz is patched and build.
+This is happening for both i386 and x64.  The end result is contained
+in libwin, which can be copied into Rgraphviz/src.
+
+
+
+Lessons
+=======
+
+The following section contains some notes on things we have had to
+deal with, in the hope that it may be helpful to solve future
+problems.
+

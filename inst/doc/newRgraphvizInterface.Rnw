@@ -2,9 +2,9 @@
 % Rgraphviz.tex file will get overwritten.
 %
 %\VignetteIndexEntry{A New Interface to Plot Graphs Using Rgraphviz}
-%\VignetteDepends{Rgraphviz, graph}
+%\VignetteDepends{Rgraphviz2, graph}
 %\VignetteKeywords{tools, graphs}
-%\VignettePackage{Rgraphviz}
+%\VignettePackage{Rgraphviz2}
 
 \documentclass{article}
 \usepackage{hyperref}
@@ -93,7 +93,7 @@ using the \Rpackage{graph} package and lay it out using the default
 \textit{Graphviz} dot layout.
 %
 <<createGraph1, fig=TRUE>>=
-library("Rgraphviz")
+library("Rgraphviz2")
 set.seed(123)
 V <- letters[1:10]
 M <- 1:4
@@ -502,11 +502,7 @@ graph.par(graph:::.default.graph.pars())
 
 \section{Sessioninfo}
 
-This document was produced using
-<<echo=FALSE>>=
-sessionInfo()
+<<echo=FALSE,results=tex>>=
+toLatex(sessionInfo())
 @ 
-together with version \Sexpr{graphvizVersion()} of graphviz.
-
-
 \end{document}
