@@ -1,34 +1,34 @@
-Package: Rgraphviz
+Package: Rgraphviz2
 Title: Provides plotting capabilities for R graph objects
 Description: Interfaces R with the AT and T graphviz library for
         plotting R graph objects from the graph package. Users on all
         platforms must install graphviz; see the README file,
         available in the source distribution of this file, for
         details.
-Version: 1.35.3
-Author: Jeff Gentry, Li Long, Robert Gentleman, Seth,
-   Florian Hahne, Deepayan Sarkar, Kasper Hansen
-Maintainer: Kasper Hansen <khansen@jhsph.edu>
+Version: 1.9.8
+Author: Jeff Gentry, Li Long, Robert Gentleman, Seth Falcon,
+   Florian Hahne, Deepayan Sarkar, Kasper Daniel Hansen
+Maintainer: Kasper Daniel Hansen <khansen@jhsph.edu>
 Depends: R (>= 2.6.0), methods, utils, graph, grid
-Imports: stats4, graph, graphics, grDevices, grid,
-        methods, utils
-SystemRequirements: Graphviz version >= 2.2
+Imports: stats4, graph, graphics, grDevices, grid, methods, utils
+Suggests: RUnit, BiocGenerics
+SystemRequirements: Graphviz version >= 2.16
+GraphvizDetails: Graphviz 2.28.0
 License: Artistic-2.0
 LazyLoad: Yes
 Collate: AllGenerics.R
 	 AllClasses.R
-	 Ragraph.R
-	 defaultAttrs.R
-	 graph.R
-	 makeNodeAttrs.R
-	 Rgraphviz.R
-	 ellipse.R
-	 layoutGraph.R
-	 pieGlyph.R
-	 gcneData.R
-	 LL_funcs.R
-	 plot.R
-	 renderGraph.R
+	 SimpleMethods.R
+	 graphvizVersion.R
 	 graphviz_build_version.R
+	 agfunctions.R
+         attrs.R
+	 graphLayout.R
+	 plotGraph.R
+	 plotUtils.R
+	 layoutGraph.R
+	 renderGraph.R
+	 graph_methods.R
+	 writers.R
  	 zzz.R
 biocViews: GraphsAndNetworks, NetworkVisualization
