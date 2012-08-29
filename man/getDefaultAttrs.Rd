@@ -8,8 +8,8 @@
   can be used to verify that such a list is valid for use.
 }
 \usage{
-getDefaultAttrs(curAttrs = list(), layoutType = c("dot", "neato",
-                 "twopi","circo","fdp"))
+getDefaultAttrs(curAttrs = list(),
+                layoutType = graphvizCapabilities()$layoutTypes)
 checkAttrs(attrs)
 }
 \arguments{

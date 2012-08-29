@@ -30,11 +30,8 @@ clusterData(self, cluster, attr) <- value
 
 \examples{
 
-library(graph)
-library(Rgraphviz)
-
-g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",package="graph"), open="rb")
-g11_gz <- gzfile(system.file("GXL/graphExample-11.gxl.gz",package="graph"), open="rb")
+g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz", package="graph"), open="rb")
+g11_gz <- gzfile(system.file("GXL/graphExample-11.gxl.gz", package="graph"), open="rb")
 g1 <- fromGXL(g1_gz)
 g11 <- fromGXL(g11_gz)
 g1_11 <- join(g1, g11)

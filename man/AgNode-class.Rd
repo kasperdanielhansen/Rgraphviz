@@ -24,8 +24,11 @@
 \alias{name,AgNode-method}
 \alias{shape,AgNode-method}
 \alias{txtLabel,AgNode-method}
+\alias{border.color}
+\alias{border.lwd}
+\alias{border.color,AgNode-method}
+\alias{border.lwd,AgNode-method}
 \alias{drawAgNode}
-\alias{drawCircleNode}
 \title{Class "AgNode": A class to describe a node for a Ragraph object}
 \description{This class is used to represent nodes for the
   \code{Ragraph} class.  One can retrieve various pieces of information
@@ -65,13 +68,12 @@ Objects can be created by calls of the form \code{new("AgNode", ...)}.
     
     \item{\code{style}:}{Object of class \code{"character"}: The style
       of the node.}
-
+    
     \item{\code{border.color}:}{Object of class \code{"character"}: The
       color of the border of the node.}
 
     \item{\code{border.lwd}:}{Object of class \code{"character"}: The
       line width of the border of the node.}
-
   }
 }
 \section{Methods}{
