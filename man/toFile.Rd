@@ -6,13 +6,9 @@
 
 \usage{
 toFile(graph,
-          layoutType=c("dot","neato","twopi","circo","fdp"),
-          filename,
-          fileType=c("canon", "dot", "xdot", "dia", "fig",
-                     "gd", "gd2", "gif", "hpgl", "imap", "cmapx",
-                     "ismap", "mif", "mp", "pcl", "pdf", "pic",
-                     "plain", "plain-ext", "png", "ps", "ps2",
-                     "svg", "svgz", "vrml", "vtx", "wbmp"))
+       layoutType = graphvizCapabilities()$layoutTypes,
+       filename,
+       fileType = graphvizCapabilities()$deviceTypes)
 }
 
 \arguments{
@@ -36,10 +32,6 @@ with corresponding viewer.
 \author{Li Long <li.long@isb-sib.ch>}
 
 \examples{
-
-library("graph")
-library("Rgraphviz")
-
 g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",package="graph"), open="rb")
 g1 <- fromGXL(g1_gz)
 ag <- agopen(g1, name="test")
@@ -47,8 +39,6 @@ ag <- agopen(g1, name="test")
 toFile(ag, layoutType="dot", filename="g1_dot.svg", fileType="svg")
 toFile(ag, layoutType="neato", filename="g1_neato.ps", fileType="ps")
 toFile(ag, layoutType="twopi", filename="g1_twopi.svg", fileType="svg")
-toFile(ag, layoutType="circo", filename="g1_circo.png", fileType="png")
-
 }
 \keyword{ models }
 

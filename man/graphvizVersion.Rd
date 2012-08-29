@@ -9,12 +9,14 @@
 graphvizVersion()
 }
 \value{
-  A list with two elements, each of class \code{numeric_version}. The first
+  A list with three elements, two of class \code{numeric_version}. The first
   element named \code{installed_version} represents the version of
   Graphviz that is being used by the package. The second element named
   \code{build_version} represents the version of Graphviz that was used
   to build the package. A mismatch between these two versions may
-  indicate problems.
+  indicate problems.  The third element is a logical named
+  \code{bundled_graphviz} and indicates if Rgraphviz is using the
+  bundled Graphviz (default) or an external Graphviz.
 }
 \author{Jeff Gentry, modified by Kasper Daniel Hansen}
 \examples{

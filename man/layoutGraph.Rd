@@ -132,7 +132,6 @@ layoutGraph(x, layoutFun = layoutGraphviz, ...)
 }
 
 \examples{
-library(graph)
 set.seed(123)
 V <- letters[1:5]
 M <- 1:2

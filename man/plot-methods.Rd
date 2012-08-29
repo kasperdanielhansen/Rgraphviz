@@ -3,7 +3,6 @@
 \alias{plot.graphNEL}
 \alias{plot.graph}
 \alias{plot.Ragraph}
-\alias{drawCircleNodes}
 \alias{plot,Ragraph,ANY-method}
 \alias{plot,graph,ANY-method}
 \title{ Plot a graph object - methods}

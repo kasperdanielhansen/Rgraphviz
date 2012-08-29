@@ -5,8 +5,8 @@
 \description{make a list of character vectors that can be used as a value for
   the nodeAttrs argument in agopen}
 \usage{
-makeNodeAttrs(g, label=nodes(g), shape="ellipse", fillcolor="#e0e0e0",
-border.lwd=1, border.color="black", ...)
+makeNodeAttrs(g, label = nodes(g), shape = "ellipse", fillcolor = "#e0e0e0",
+              border.lwd = 1, border.color = "black", ...)
 }
 \arguments{
   \item{g}{graph}
@@ -30,8 +30,7 @@ length \code{numNodes(g)}.}
 
 \author{Wolfgang Huber <huber@ebi.ac.uk>}
 \examples{
-library(graph)
-g = randomEGraph(letters[1:10], p=0.2)
+g <- randomEGraph(letters[1:10], p=0.2)
 makeNodeAttrs(g)
 }
 \keyword{dplot}
