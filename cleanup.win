@@ -1,0 +1,23 @@
+#!/bin/sh
+rm -f \
+  src/*.o \
+  src/libgvc.a \
+  src/libgvc.la \
+  src/libcdt.a \
+  src/libcdt.la \
+  src/libgraph.a \
+  src/libgraph.la \
+  src/libcgraph.a \
+  src/libcgraph.la \
+  src/libpathplan.a \
+  src/libpathplan.la \
+  src/libxdot.a \
+  src/libxdot.la \
+  src/libgvplugin_core.a \
+  src/libgvplugin_core.la \
+  src/libgvplugin_dot_layout.a \
+  src/libgvplugin_dot_layout.la \
+  src/libgvplugin_neato_layout.a \
+  src/libgvplugin_neato_layout.la \
+  src/Rgraphviz2/dll
+

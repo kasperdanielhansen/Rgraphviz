@@ -24,7 +24,7 @@ importFrom(graphics, arrows, lines, par, plot.new, plot.window,
 
 importFrom(grDevices, xy.coords)
 
-importFrom(grid, convertHeight, convertWidth, current.viewport,
+importFrom(grid, bezierPoints, convertHeight, convertWidth, current.viewport,
            current.vpTree, popViewport, pushViewport, unit)
 
 importFrom(methods, "@<-", is, slot)
@@ -33,37 +33,38 @@ importFrom(utils, head, tail)
 
                                                                                 
 export(
-        agopen,			# Rgraphviz
-        agread,			# Rgraphviz
-        agwrite,		# Rgraphviz
-        buildEdgeList,		# Rgraphviz
-        buildNodeList,		# Rgraphviz
-        checkAttrs,		# defaultAttrs
-        drawAgNode,		# graph
-        drawTxtLabel,		# graph
-        getDefaultAttrs,	# defaultAttrs
-        getNodeLabels,		# Rgraphviz
-        getNodeNames,		# Rgraphviz
-        graphvizVersion,	# Rgraphviz
-        graphLayout,		# Rgraphviz
-        makeNodeAttrs,		# own
-        pieGlyph,		# own
-        removedEdges,		# Rgraphviz
-        toFile,
+        agopen,
         agopenSimple,
+        agread,
+        agwrite,
+        buildEdgeList,
+        buildNodeList,
+        checkAttrs,
+        drawAgNode,
+        drawTxtLabel,
+        getDefaultAttrs,
+        getNodeLabels,
+        getNodeNames,
+        graphvizVersion,
+        graphvizCapabilities,
+        graphLayout,
+        makeNodeAttrs,
+        pieGlyph,
+        removedEdges,
+        toFile,
         layoutGraph
 	)
 
-exportClasses(			# Ragraph
-                "AgEdge",
-                "AgNode",
-                "AgTextLabel",
-                "BezierCurve",
-                "boundingBox",
-                "pEdge",	# plot, related to buildEdgeList only
-                "pNode",	# plot, related to buildNodeList only
-                "Ragraph",
-                "xyPoint"
+exportClasses(
+              "AgEdge",
+              "AgNode",
+              "AgTextLabel",
+              "BezierCurve",
+              "boundingBox",
+              "pEdge",	# plot, related to buildEdgeList only
+              "pNode",	# plot, related to buildNodeList only
+              "Ragraph",
+              "xyPoint"
 	)
 
 exportMethods(	
@@ -71,15 +72,12 @@ exportMethods(
 		"graphDataDefaults<-", 
 		graphData,
 		"graphData<-", 
-
 		clusterData,
 		"clusterData<-", 
-
 		nodeDataDefaults, 
 		"nodeDataDefaults<-", 
 		nodeData,
 		"nodeData<-",
-
 		edgeDataDefaults, 
 		"edgeDataDefaults<-",
 		edgeData, 
@@ -138,6 +136,8 @@ exportMethods(
                 "to",			# plot only
                 "toDot",		# graph only
                 "txtLabel",
+                "border.color",
+                "border.lwd",
                 "upRight",
                 "renderGraph"
 	)
