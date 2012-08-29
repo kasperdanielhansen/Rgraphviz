@@ -11,7 +11,7 @@ MINGW_BIN_DIR=/c/MinGWALL/bin
 BIN_DIR=/bin
 
 ## This is the root of the Rgraphviz source tree
-RGRAPHVIZ_DIR=../../../Rgraphviz2
+RGRAPHVIZ_DIR=../../../Rgraphviz
 
 ## Setup check
 
