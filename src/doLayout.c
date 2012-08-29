@@ -115,13 +115,8 @@ SEXP getEdgeLocs(Agraph_t *g) {
             /* Get the label information */
             if (edge->u.label != NULL) {
                 PROTECT(curLab = NEW_OBJECT(labClass));
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
                 SET_SLOT(curLab, Rf_install("labelText"),
                          Rgraphviz_ScalarStringOrNull(ED_label(edge)->u.txt.para->str));
-#else
-                SET_SLOT(curLab, Rf_install("labelText"),
-                         Rgraphviz_ScalarStringOrNull(edge->u.label->u.txt.line->str));
-#endif
                 /* Get the X/Y location of the label */
                 PROTECT(curXY = NEW_OBJECT(xyClass));
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR > 20
@@ -134,23 +129,12 @@ SEXP getEdgeLocs(Agraph_t *g) {
                 SET_SLOT(curLab, Rf_install("labelLoc"), curXY);
                 UNPROTECT(1);
 
-
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
                 snprintf(tmpString, 2, "%c",ED_label(edge)->u.txt.para->just);
                 SET_SLOT(curLab, Rf_install("labelJust"),
                          Rgraphviz_ScalarStringOrNull(tmpString));
-#else
-                snprintf(tmpString, 2, "%c",edge->u.label->u.txt.line->just);
-                SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
-#endif
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
                 SET_SLOT(curLab, Rf_install("labelWidth"),
                          Rf_ScalarInteger(ED_label(edge)->u.txt.para->width));
-#else
-                SET_SLOT(curLab, Rf_install("labelWidth"),
-                         Rf_ScalarInteger(edge->u.label->u.txt.line->width));
-#endif
 
                 SET_SLOT(curLab, Rf_install("labelColor"),
                          Rgraphviz_ScalarStringOrNull(edge->u.label->fontcolor));
@@ -212,31 +196,17 @@ SEXP getNodeLayouts(Agraph_t *g) {
         SET_SLOT(curNL, Rf_install("border.lwd"), Rgraphviz_ScalarStringOrNull(agget(node, "border.lwd")));
         SET_SLOT(curNL, Rf_install("border.color"), Rgraphviz_ScalarStringOrNull(agget(node, "border.color")));
 
-
         PROTECT(curLab = NEW_OBJECT(labClass));
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
 	if (ND_label(node)  == NULL) {
 	} else if (ND_label(node)->u.txt.para != NULL) {
             SET_SLOT(curLab, Rf_install("labelText"),
                      Rgraphviz_ScalarStringOrNull(ND_label(node)->u.txt.para->str));
             snprintf(tmpString, 2, "%c",ND_label(node)->u.txt.para->just);
             SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
-#else
-        if (node->u.label->u.txt.line != NULL) {
-            SET_SLOT(curLab, Rf_install("labelText"), Rgraphviz_ScalarStringOrNull(node->u.label->u.txt.line->str));
-            snprintf(tmpString, 2, "%c",node->u.label->u.txt.line->just);
-            SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
-#endif
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR >= 10
             SET_SLOT(curLab, Rf_install("labelWidth"),
                      Rf_ScalarInteger(ND_label(node)->u.txt.para->width));
-#else
-            SET_SLOT(curLab, Rf_install("labelWidth"),
-                     Rf_ScalarInteger(node->u.label->u.txt.line->width));
-#endif
-
             /* Get the X/Y location of the label */
             PROTECT(curXY = NEW_OBJECT(xyClass));
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR > 20
@@ -266,17 +236,9 @@ SEXP getNodeLayouts(Agraph_t *g) {
     return(outLst);
 }
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 3
-enum {
-    DOTLAYOUT = 0,
-    NEATOLAYOUT,
-    TWOPILAYOUT,
-    CIRCOLAYOUT,
-    FDPLAYOUT
-};
-#else
+/*
 static char *layouts[] = { "dot", "neato", "twopi", "circo", "fdp"};
-#endif
+*/
 
 SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Will perform a Graphviz layout on a graph */
@@ -290,38 +252,15 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     g = R_ExternalPtrAddr(slotTmp);
 
     /* Call the appropriate Graphviz layout routine */
+    gvLayout(gvc, g, CHAR(STRING_ELT(layoutType, 0)));
+    
+    /*
     if (!isInteger(layoutType))
         error("layoutType must be an integer value");
     else {
-        /* Note that we're using the standard dotneato */
-        /* layout commands for layouts and not the ones */
-        /* provided below.  This is a test */
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 3
-        switch(INTEGER(layoutType)[0]) {
-        case DOTLAYOUT:
-            dot_layout(g);
-            break;
-        case NEATOLAYOUT:
-            neato_layout(g);
-            break;
-        case TWOPILAYOUT:
-            twopi_layout(g);
-            break;
-        case CIRCOLAYOUT:
-            circo_layout(g);
-            break;
-#ifndef Win32
-        case FDPLAYOUT:
-            fdp_layout(g);
-            break;
-#endif
-        default:
-            error("Invalid layout type\n");
-        }
-#else
         gvLayout(gvc, g, layouts[INTEGER(layoutType)[0]]);
-#endif
     }
+    */
 
     /* Here we want to extract information for the resultant S4
        object */
@@ -337,10 +276,8 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     SET_SLOT(graph,Rf_install("bg"), Rgraphviz_ScalarStringOrNull(agget(g, "bgcolor")));
     UNPROTECT(4);
 
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR > 4
     /* free gvc after rendering */
     gvFreeLayout(gvc, g);
-#endif
 
     return(graph);
 }

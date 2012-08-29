@@ -8,54 +8,19 @@
 #include <R_ext/Rdynload.h>
 #include <R_ext/RS.h>		/* CallocCharBuf */
 
+#include <math.h>
+
 #ifndef WIN32
 #include <unistd.h>
 #endif
 
-#include <math.h>
-
-#if GRAPHVIZ_MAJOR == 2 
-
-#if GRAPHVIZ_MINOR <= 3
-#include <render.h>
-#include <graph.h>
-#include <dotprocs.h>
-#include <neatoprocs.h>
-#include <adjust.h>
-#include <renderprocs.h>
-#include <circle.h>
-extern char *Info[];
-
-#else
-
 #include <gvc.h>
 #include <gvplugin.h>
-
-#if GRAPHVIZ_MINOR > 4
 #include <gvcext.h>
-#endif
-
-#if GRAPHVIZ_MINOR >= 10
 #include <gvcjob.h>
-#endif
-
-#if GRAPHVIZ_MINOR <= 12
-#include <gvcint.h>
-#include <globals.h>
-#endif
-
-#endif
-
-#endif
 
 /* from libgraph.h, due to overlap with graph.h, cannot #include it */
 extern Agdict_t *agdictof(void *);
-
-/* these are missing in .h */
-#if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR <= 4
-extern void circo_layout(Agraph_t * g);
-extern void fdp_layout(Agraph_t * g);
-#endif
 
 extern GVC_t *gvc;
 extern SEXP Rgraphviz_graph_type_tag;
