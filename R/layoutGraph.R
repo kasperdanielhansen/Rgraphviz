@@ -1,9 +1,3 @@
-## Wrapper around paste for simple yet flexible namespacing of the attribute
-## names. Is set to do nothing for now
-myAtt <- function(att) att
-
-
-
 ## need to redefine some of the getters for vectorization
 getLabelPos <- function(f, slot = "x")
 {
@@ -44,7 +38,6 @@ nodeRagraph2graph <- function(g, x)
 {
     ## get node locations from the Ragraph
     agn <- AgNode(g)
-    nnames <- sapply(agn, slot, "name")
     rw <- sapply(agn, getNodeRW)
     lw <- sapply(agn, getNodeLW)
     height <- sapply(agn, getNodeHeight)
@@ -59,7 +52,6 @@ nodeRagraph2graph <- function(g, x)
     labelY <- centerY
     labelJust <- sapply(agn, getLabelJust)
     labelWidth <- sapply(agn, getLabelWidth)
-    label <- sapply(agn, function(f) labelText(txtLabel(f)))
     shape <- sapply(agn,shape) 
     style <- sapply(agn, style)
     border.lwd <- sapply(agn, border.lwd)
@@ -71,15 +63,14 @@ nodeRagraph2graph <- function(g, x)
              height = height, 
              nodeX = centerX, 
              nodeY = centerY,
-             #label=label,
              labelX = labelX, 
              labelY = labelY,
              labelJust = labelJust, 
              labelWidth = labelWidth,
              shape = shape,
              style = style,
-border.color = border.color,
-border.lwd = border.lwd)
+             border.color = border.color,
+             border.lwd = border.lwd)
     for (i in names(ans)) names(ans[[i]]) <- nodes(x)
     ans
 }
@@ -107,7 +98,6 @@ edgeRagraph2graph <- function(g, x)
     splines <- lapply(age, splines)
 
     ## get edge label locations from the Ragraph
-    label <- sapply(age, function(f) labelText(txtLabel(f)))
     labelX <- sapply(age, getLabelPos, "x")
     labelY <- sapply(age, getLabelPos, "y")
     labelJust <- sapply(age, getLabelJust)
@@ -122,7 +112,6 @@ edgeRagraph2graph <- function(g, x)
         list(enamesFrom = enamesFrom,
              enamesTo = enamesTo,
              splines = splines,
-             #label=label,
              labelX = labelX,
              labelY = labelY,
              labelJust = labelJust,
@@ -265,46 +254,6 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
         eri$arrowtail[names(which(tsel))] <- edgeTailOrig[tsel]
     edgeRenderInfo(x) <- eri
     return(invisible(x))
-  }
-
-
-
-## export a graph in the dot language
-writeGraph <- function(g, outfile="graph.dot")
-{
-    header <- "digraph dtree {\n node [fontsize=10, shape=circle];"
-    nri <- nodeRenderInfo(g)
-    nAttrs <- cbind(graphviz=c("color", "fillcolor", "fixedsize",
-                     "fontsize", "fontcolor", "height",
-                     "width", "label", "shape"),
-                     R=c("col", "fill", "fixedsize",
-                     "fontsize", "textCol", "iheight",
-                     "iwidth", "label", "shape",'border.color','border.lwd'))
-     nAttrs <- cbind(graphviz=c("fixedsize", "label", "shape"),
-                     R=c("fixedsize", "label", "shape"))
-    nodes <- nodes(g)
-    nodeMarkup <- character(length(nodes))
-    for(n in seq_along(nodes)){
-        att <- sapply(nAttrs[,2], function(x)
-                      Rgraphviz:::getRenderPar(g, x, "nodes")[n])
-        #att$height <- att$height * 0.00925926
-        if(is.null(att$label)) att$label <- nodes[n]
-        nodeMarkup[n] <- paste(nodes[n], " [", paste(nAttrs[,1], "=",
-                                          att, "", sep="",
-                                          collapse=", "),
-                               "];", sep="")
-    }
-
-    edges <- edgeNames(g)
-    edgeMarkup <- paste(gsub("~", " -> ", edges, fixed=TRUE),
-                        "[arrowhead=none];")
-    con <- file(outfile, open="w")
-    on.exit(close(con))
-    writeLines(header, con)
-    writeLines(nodeMarkup,con)
-    writeLines(c(edgeMarkup, "}"),con)
-    cat("written to file", outfile, "\n")
-    return(invisible(NULL))
 }
 
 

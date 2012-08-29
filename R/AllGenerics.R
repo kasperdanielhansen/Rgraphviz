@@ -66,7 +66,7 @@ setGeneric("cPoints", function(object) standardGeneric("cPoints"))
 
 setGeneric("pointList", function(object) standardGeneric("pointList"))
 
-setGeneric("bezierPoints", function(object) standardGeneric("bezierPoints"))
+setGeneric("bezierPoints")
 
 setGeneric("bLines", function(x, ...) standardGeneric("bLines"))
 
