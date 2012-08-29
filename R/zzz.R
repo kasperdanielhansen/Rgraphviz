@@ -1,6 +1,6 @@
 .onLoad <- function(libname, pkgname) {
     tryCatch({
-        library.dynam('Rgraphviz2', pkgname, libname)
+        library.dynam('Rgraphviz', pkgname, libname)
     }, error=function(err) {
         msg <- sprintf("
             Check that (1) graphviz is installed on your system; (2)
@@ -17,12 +17,12 @@
 
             http://bioconductor.org/docs/mailList.html
 
-            ", as.character(Rgraphviz2:::.graphviz_build_version))
+            ", as.character(Rgraphviz:::.graphviz_build_version))
         stop(conditionMessage(err), "\n\n",
              paste(strwrap(msg, indent=2, exdent=2), collapse="\n"))
     })
     ## FIXME: might need to be uncommented for windows issue
-    .Call("Rgraphviz_init", PACKAGE = "Rgraphviz2")
+    .Call("Rgraphviz_init", PACKAGE = "Rgraphviz")
     ## versions <- graphvizVersion()
     ## if(versions$installed_version != versions$build_version) {
     ##     warning("Rgraphviz built with Graphviz version ",

@@ -73,7 +73,7 @@ setMethod("bezierPoints", "BezierCurve", function(x) {
     out <- vector("list", length=11)
     for (i in 0:10)
         out[[i+1]] <- .Call("Rgraphviz_bezier", z, length(z), i/10,
-                            PACKAGE="Rgraphviz2")
+                            PACKAGE="Rgraphviz")
     out <- matrix(unlist(out), ncol=2, byrow=TRUE,
                   dimnames=list(NULL,c("x","y")))
     out
@@ -81,7 +81,7 @@ setMethod("bezierPoints", "BezierCurve", function(x) {
 setMethod("bLines", "BezierCurve", 
 		function(x,...,col=par("col"), len=0.25, lty=par("lty"),
                          lwd=par("lwd"), arrowtail="none", arrowhead="none") {
-    .Deprecated("bLines", package="Rgraphviz2")
+    .Deprecated("bLines", package="Rgraphviz")
     z <- bezierPoints(x)
 
     numSegs <- nrow(z)

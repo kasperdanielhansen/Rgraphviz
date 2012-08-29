@@ -159,7 +159,7 @@ getDefAttrsGraph <- function(graph)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
 
-   ans <- .Call("Rgraphviz_getDefAttrsGraph", graph, PACKAGE="Rgraphviz2")
+   ans <- .Call("Rgraphviz_getDefAttrsGraph", graph, PACKAGE="Rgraphviz")
    
    if ( !is.null(ans) && nrow(ans) > 0 )
    {
@@ -179,7 +179,7 @@ setDefAttrsGraph <- function(graph, attrnames=c(), attrvals=c())
    for ( i in 1:nrow(x) )
    {
       .Call("Rgraphviz_setDefAttrsGraph", graph, x[i, 1], x[i, 2], 
-	    PACKAGE="Rgraphviz2")
+	    PACKAGE="Rgraphviz")
    }
 }
 
@@ -193,7 +193,7 @@ getAttrsGraph <- function(graph, attrname)
    names(ans) <- attrname
    for ( i in 1:length(attrname) )
    {
-      r <- .Call("Rgraphviz_getAttrsGraph", graph, attrname[i], PACKAGE="Rgraphviz2")
+      r <- .Call("Rgraphviz_getAttrsGraph", graph, attrname[i], PACKAGE="Rgraphviz")
       if ( !is.null(r) ) ans[i] <- r
    }
 
@@ -213,7 +213,7 @@ setAttrsGraph <- function(graph, attrname, attrval, defaultval="")
    for ( i in 1:nrow(x) )
    {
       .Call("Rgraphviz_setAttrsGraph", graph, x[i, 1], x[i, 2], x[i, 3],
-	    PACKAGE="Rgraphviz2")
+	    PACKAGE="Rgraphviz")
    }
 }
 
@@ -232,7 +232,7 @@ getAttrsCluster <- function(graph, cluster, attrname)
    for ( i in 1:nrow(x) )
    {
       r <- .Call("Rgraphviz_getAttrsCluster", 
-                 graph, as.integer(x[i, 1]), x[i, 2], PACKAGE="Rgraphviz2")
+                 graph, as.integer(x[i, 1]), x[i, 2], PACKAGE="Rgraphviz")
       if ( !is.null(r) ) ans[i] <- r
    }
 
@@ -255,7 +255,7 @@ setAttrsCluster <- function(graph, cluster, attrname, attrval, defaultval="")
    {
        .Call("Rgraphviz_setAttrsCluster", 
              graph, as.integer(x[i, 1]), x[i, 2], x[i, 3], x[i, 4],
-	     PACKAGE="Rgraphviz2")
+	     PACKAGE="Rgraphviz")
    }
 }
 
@@ -263,7 +263,7 @@ getDefAttrsNode <- function(graph)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
 
-   ans <- .Call("Rgraphviz_getDefAttrsNode", graph, PACKAGE="Rgraphviz2")
+   ans <- .Call("Rgraphviz_getDefAttrsNode", graph, PACKAGE="Rgraphviz")
 
    if ( !is.null(ans) && nrow(ans) > 0 )
    {
@@ -284,7 +284,7 @@ setDefAttrsNode <- function(graph, attrnames=c(), attrvals=c())
    for ( i in 1:nrow(x) )
    {
       .Call("Rgraphviz_setDefAttrsNode", graph, x[i, 1], x[i, 2],
-	    PACKAGE="Rgraphviz2")
+	    PACKAGE="Rgraphviz")
    }
 }
 
@@ -301,7 +301,7 @@ getAttrsNode <- function(graph, node, attrname)
    for ( i in 1:nrow(x) )
    {
       r <- .Call("Rgraphviz_getAttrsNode", graph, x[i, 1], x[i, 2], 
-                 PACKAGE="Rgraphviz2")
+                 PACKAGE="Rgraphviz")
       if ( !is.null(r) ) ans[i] <- r
    }
 
@@ -321,7 +321,7 @@ setAttrsNode <- function(graph, node, attrname, attrval, defaultval="")
    for ( i in 1:nrow(x) )
    {
       .Call("Rgraphviz_setAttrsNode", graph, x[i, 1], x[i, 2], x[i, 3], x[i, 4],
-	    PACKAGE="Rgraphviz2")
+	    PACKAGE="Rgraphviz")
    }
 }
 
@@ -329,7 +329,7 @@ getDefAttrsEdge <- function(graph)
 {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
 
-   ans <- .Call("Rgraphviz_getDefAttrsEdge", graph, PACKAGE="Rgraphviz2")
+   ans <- .Call("Rgraphviz_getDefAttrsEdge", graph, PACKAGE="Rgraphviz")
 
    if ( !is.null(ans) && nrow(ans) > 0 )
    {
@@ -350,7 +350,7 @@ setDefAttrsEdge <- function(graph, attrnames=c(), attrvals=c())
    for ( i in 1:nrow(x) )
    {
       .Call("Rgraphviz_setDefAttrsEdge", graph, x[i, 1], x[i, 2],
-	    PACKAGE="Rgraphviz2")
+	    PACKAGE="Rgraphviz")
    }
 }
 
@@ -367,7 +367,7 @@ getAttrsEdge <- function(graph, from, to, attrname)
    for ( i in 1:nrow(x) )
    {
       r <- .Call("Rgraphviz_getAttrsEdge", graph, x[i, 1], x[i, 2], x[i, 3], 
-                 PACKAGE="Rgraphviz2")
+                 PACKAGE="Rgraphviz")
       if ( !is.null(r) ) ans[i] <- r
    }
 
@@ -388,7 +388,7 @@ setAttrsEdge <- function(graph, from, to, attrname, attrval, defaultval="")
    {
        .Call("Rgraphviz_setAttrsEdge", graph, x[i, 1], x[i, 2], 
 	    x[i, 3], x[i, 4], x[i, 5], 
-	    PACKAGE="Rgraphviz2")
+	    PACKAGE="Rgraphviz")
    }
 }
 

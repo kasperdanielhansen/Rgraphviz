@@ -1,5 +1,5 @@
 graphvizVersion <- function() {
-    installed_version <- numeric_version(.Call("Rgraphviz_graphvizVersion", PACKAGE="Rgraphviz2"))
+    installed_version <- numeric_version(.Call("Rgraphviz_graphvizVersion", PACKAGE = "Rgraphviz"))
     build_version <- numeric_version(.graphviz_build_version$version)
     bundled <- as.logical(.graphviz_build_version$bundled)
     list(installed_version = installed_version, build_version = build_version, bundled_graphviz = bundled)
@@ -10,7 +10,7 @@ graphvizCapabilities <- function() {
         warning("'graphvizCapabilities' needs graphviz >= 2.28.0 to be precise")
         capabilities <- list(layoutTypes = c("dot", "neato", "twopi", "circo", "fdp"))
     } else {
-        capabilities <- .Call("Rgraphviz_capabilities", PACKAGE = "Rgraphviz2")
+        capabilities <- .Call("Rgraphviz_capabilities", PACKAGE = "Rgraphviz")
     }
     layoutTypes <- capabilities$layoutTypes
     if(graphvizVersion()$bundled_graphviz) {

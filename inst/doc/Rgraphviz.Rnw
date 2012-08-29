@@ -1,7 +1,7 @@
 %\VignetteIndexEntry{How To Plot A Graph Using Rgraphviz}
-%\VignetteDepends{Rgraphviz2, graph}
+%\VignetteDepends{Rgraphviz, graph}
 %\VignetteKeywords{tools, graphs}
-%\VignettePackage{Rgraphviz2}
+%\VignettePackage{Rgraphviz}
 
 \documentclass{article}
 \usepackage{hyperref}
@@ -30,7 +30,7 @@ various formats using the \Rpackage{Rgraphviz} package.  To do this,
 let us generate a graph using the \Rpackage{graph} package:
 %
 <<createGraph1>>=
-library("Rgraphviz2")
+library("Rgraphviz")
 set.seed(123)
 V <- letters[1:10]
 M <- 1:4
@@ -301,7 +301,7 @@ have a label.  However, both can have custom labels supplied via
 attributes.
 
 <<makeLabels1>>=
-z <- strsplit(packageDescription("Rgraphviz2")$Description, " ")[[1]]
+z <- strsplit(packageDescription("Rgraphviz")$Description, " ")[[1]]
 z <- z[1:numNodes(g1)]
 names(z) = nodes(g1)
 nAttrs$label <- z

@@ -47,7 +47,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     g <- .Call("Rgraphviz_agopen", as.character(name),
                as.integer(outK), as.list(nodes),
                as.list(edges), as.list(attrs),
-               as.list(subGList), PACKAGE="Rgraphviz2")
+               as.list(subGList), PACKAGE="Rgraphviz")
     g@layoutType <- layoutType
     g@edgemode <- edgeMode
 
@@ -124,7 +124,7 @@ agopenSimple <- function(graph, name,
 		as.integer(edgeMatrix(graph)["to",]), 
 		as.integer(nsubG), as.list(subGList),
 		as.integer(recipK), 
-                PACKAGE="Rgraphviz2")
+                PACKAGE="Rgraphviz")
     g@edgemode <- edgeMode
     g@layoutType = "dot"    # default layout type
 
@@ -139,7 +139,7 @@ agread <- function(filename, layoutType = graphvizCapabilities()$layoutTypes,
     if (!file.exists(filename))
         stop(paste("Request file",filename,"does not exist"))
 
-    g <- .Call("Rgraphviz_agread", as.character(filename), PACKAGE="Rgraphviz2")
+    g <- .Call("Rgraphviz_agread", as.character(filename), PACKAGE="Rgraphviz")
     g@layoutType <- layoutType
 
     ## FIXME:

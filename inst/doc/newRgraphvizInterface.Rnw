@@ -1,10 +1,7 @@
-% NOTE -- ONLY EDIT Rgraphviz.Rnw!!!
-% Rgraphviz.tex file will get overwritten.
-%
 %\VignetteIndexEntry{A New Interface to Plot Graphs Using Rgraphviz}
-%\VignetteDepends{Rgraphviz2, graph}
+%\VignetteDepends{Rgraphviz, graph}
 %\VignetteKeywords{tools, graphs}
-%\VignettePackage{Rgraphviz2}
+%\VignettePackage{Rgraphviz}
 
 \documentclass{article}
 \usepackage{hyperref}
@@ -93,7 +90,7 @@ using the \Rpackage{graph} package and lay it out using the default
 \textit{Graphviz} dot layout.
 %
 <<createGraph1, fig=TRUE>>=
-library("Rgraphviz2")
+library("Rgraphviz")
 set.seed(123)
 V <- letters[1:10]
 M <- 1:4

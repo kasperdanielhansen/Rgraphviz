@@ -9,7 +9,7 @@ graphLayout <- function(graph, layoutType=graph@layoutType)
     if ( graph@layoutType != layoutType || !graph@laidout ) {
         graph@layoutType <- layoutType
         z <- .Call("Rgraphviz_doLayout", graph, layoutType,
-                   PACKAGE="Rgraphviz2");
+                   PACKAGE="Rgraphviz");
     } else {
         z <- graph
     }
@@ -19,7 +19,7 @@ graphLayout <- function(graph, layoutType=graph@layoutType)
 buildNodeList <- function(graph, nodeAttrs=list(), subGList=list(),
                           defAttrs=list()) {
     .Call("Rgraphviz_buildNodeList", nodes(graph), nodeAttrs,
-                          subGList, defAttrs, PACKAGE="Rgraphviz2")
+                          subGList, defAttrs, PACKAGE="Rgraphviz")
 }
 
 buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
@@ -44,7 +44,7 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     ## Generate the list of pEdge objects
     .Call("Rgraphviz_buildEdgeList", aa, edgemode(graph),
           subGList, edgeNames, removed, edgeAttrs, defAttrs,
-          PACKAGE="Rgraphviz2")
+          PACKAGE="Rgraphviz")
 }
 
 getNodeNames <- function(object) {

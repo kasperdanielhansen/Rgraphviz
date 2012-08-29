@@ -16,7 +16,7 @@ toFile <- function(graph,
 		as.character(layoutType), 
 		as.character(filename), 
 		as.character(fileType), 
-		PACKAGE="Rgraphviz2")
+		PACKAGE="Rgraphviz")
 }
 
 setMethod("toDot", "graph", function(graph, filename, ...) {
@@ -27,7 +27,7 @@ setMethod("toDot", "graph", function(graph, filename, ...) {
 agwrite <- function(graph, filename)
 {
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename),
-               PACKAGE="Rgraphviz2")
+               PACKAGE="Rgraphviz")
     g
 }
 
