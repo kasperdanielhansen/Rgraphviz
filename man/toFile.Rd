@@ -32,13 +32,17 @@ with corresponding viewer.
 \author{Li Long <li.long@isb-sib.ch>}
 
 \examples{
-g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",package="graph"), open="rb")
-g1 <- fromGXL(g1_gz)
-ag <- agopen(g1, name="test")
+g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",
+                            package="graph"))
 
-toFile(ag, layoutType="dot", filename="g1_dot.svg", fileType="svg")
-toFile(ag, layoutType="neato", filename="g1_neato.ps", fileType="ps")
-toFile(ag, layoutType="twopi", filename="g1_twopi.svg", fileType="svg")
+if(require(XML)) {
+  g1 <- fromGXL(g1_gz)
+  ag <- agopen(g1, name="test")
+
+  toFile(ag, layoutType="dot", filename="g1_dot.svg", fileType="svg")
+  toFile(ag, layoutType="neato", filename="g1_neato.ps", fileType="ps")
+  toFile(ag, layoutType="twopi", filename="g1_twopi.svg", fileType="svg")
+}
 }
 \keyword{ models }
 
