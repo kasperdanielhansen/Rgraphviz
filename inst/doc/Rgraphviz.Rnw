@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{How To Plot A Graph Using Rgraphviz}
-%\VignetteDepends{Rgraphviz, graph}
+%\VignetteDepends{Rgraphviz, graph, XML}
 %\VignetteKeywords{tools, graphs}
 %\VignettePackage{Rgraphviz}
 
@@ -729,7 +729,8 @@ Just as in graphviz, \Rpackage{Rgraphviz} treats a cluster as a special subgraph
 its nodes are layed out and drawn together and within a bounding rectangel. 
 
 <<agopenSimpleDemo>>=
-library("graph")
+library(graph)
+library(XML)
 g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",package="graph"))
 g11_gz <- gzfile(system.file("GXL/graphExample-11.gxl.gz",package="graph"))
 g1 <- fromGXL(g1_gz)
