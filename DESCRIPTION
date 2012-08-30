@@ -11,7 +11,7 @@ Author: Jeff Gentry, Li Long, Robert Gentleman, Seth Falcon,
 Maintainer: Kasper Daniel Hansen <khansen@jhsph.edu>
 Depends: R (>= 2.6.0), methods, utils, graph, grid
 Imports: stats4, graph, graphics, grDevices, grid, methods, utils
-Suggests: RUnit, BiocGenerics
+Suggests: RUnit, BiocGenerics, XML
 SystemRequirements: Graphviz (>= 2.16)
 GraphvizDetails: Graphviz 2.28.0
 License: Artistic-2.0
