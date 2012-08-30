@@ -25,72 +25,58 @@ setMethod("plot", "Ragraph",
            main=NULL, cex.main=NULL, col.main="black",
            sub=NULL, cex.sub=NULL, col.sub="black",
            drawNode=drawAgNode, xlab, ylab) {
+
       ## layout graph
       if ( missing(y) ) y <- x@layoutType
       x <- graphLayout(x, y)
 
-      ## render graph
       plot.new()
-      opar <- par(no.readonly = TRUE)
-      on.exit(par(opar))
+
+      bg <- if ( x@bg != "" ) x@bg else par("bg")
+      fg <- if ( x@fg != "" ) x@fg else par("fg")
+      oldpars <- par(bg = bg, fg = fg)
+      on.exit(par(oldpars), add = TRUE)
       
-      ## eliminate all plot borders
-      par(mai=0.01+c(0.83*(!is.null(sub)), 0, 0.83*(!is.null(main)), 0))
+      mheight <- if(!is.null(main) && nchar(main) > 0)
+          strheight(main, "inches", cex.main) + 0.3 else 0.1
+      sheight <- if(!is.null(sub) && nchar(sub) > 0)
+          strheight(main, "inches", cex.sub) + 0.2 else 0.1
+      oldpars <- par(mai = c(sheight, 0, mheight, 0))
+      on.exit(par(oldpars), add = TRUE)
+      if(!is.null(sub)||!is.null(main))
+          title(main, sub, cex.main = cex.main, col.main = col.main, 
+                cex.sub = cex.sub, col.sub = col.sub)
       
-      ## Get the upper right/bottom left points of the bounding box for the graph
       ur <- upRight(boundBox(x))
       bl <- botLeft(boundBox(x))
-      
-      if ( x@bg != "" ) par(bg=x@bg)
-      if ( x@fg != "" ) par(fg=x@fg)
-      
-      ## Set up the plot region.  We need
-      ## to emulate what happens in 'plot.default' as
-      ## we called plot.new() above, and for the same
-      ## reasons as doing that, calling 'plot' now
-      ## will mung up the thing if people are using
-      ## 'layout' with this.
-      
-      ## !! Currently hardcoding log & asp,
-      ## !! probably want to change that over time.
-      plot.window(xlim=c(getX(bl),getX(ur)),
-                  ylim=c(getY(bl),getY(ur)),
-                  log="", asp=NA, ...)
-      xy <- xy.coords(NA, NA)
-      
-      ## !! Also still hardcoding 'type'
-      plot.xy(xy, type="n", ...)
+      plot.window(xlim = c(getX(bl), getX(ur)),
+                  ylim = c(getY(bl), getY(ur)),
+                  log = "", asp = NA, ...)
       
       if(!missing(xlab) && !missing(ylab))
           stop("Arguments 'xlab' and 'ylab' are not handled.")
       
-      if(!is.null(sub)||!is.null(main))
-          title(main, sub, cex.main=cex.main, col.main=col.main, 
-                cex.sub=cex.sub, col.sub=col.sub)
-      
-      ## -----------------------------------------------------------------------
       ## determine whether node labels fit into nodes and set "cex" accordingly
-      ## -----------------------------------------------------------------------
       agn <- AgNode(x)
-      nodeDims <- sapply(agn, function(n) 
-                     { c(getNodeRW(n)+getNodeLW(n), getNodeHeight(n)) })
+      nodeDims <- sapply(agn, function(n) {
+          c(getNodeRW(n)+getNodeLW(n), getNodeHeight(n))
+      })
       strDims  <- sapply(agn, function(n) {
           s  <- labelText(txtLabel(n))
           if(length(s)==0) {
               rv <- c(strwidth(" "), strheight(" "))
           } else {
-        			rv <- c(strwidth(s)*1.1, strheight(s)*1.4)
-                            }
+              rv <- c(strwidth(s)*1.1, strheight(s)*1.4)
+          }
           return(rv)
-    			} )
+      } )
       cex <- min(nodeDims / strDims)
       if(is.finite(cex) && cex > 0 ) {
-          par(cex=cex)
+          oldpars <- par(cex=cex)
+          on.exit(par(oldpars), add = TRUE)
       }
       
-      ## -----------
       ## draw
-      ## -----------
       if (length(drawNode) == 1) {
           lapply(agn, drawNode)
       } else {
@@ -101,8 +87,8 @@ setMethod("plot", "Ragraph",
           } else {
               stop(paste("Length of the drawNode parameter is ", length(drawNode),
                          ", it must be either length 1 or the number of nodes.", sep=""))
-          } ## else
-      } ## else
+          }
+      }
 
       ## Use the smallest node radius as a means to scale the size of
       ## the arrowheads -- in INCHES! see man page for "arrows", 
@@ -113,6 +99,7 @@ setMethod("plot", "Ragraph",
       
       invisible(x)
 })
+
 
 drawAgNode <- function(node) {
   nodeCenter <- getNodeCenter(node)
