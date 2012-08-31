@@ -5,17 +5,16 @@
 \description{Render a graph in a file with given format}
 
 \usage{
-toFile(graph,
-       layoutType = graphvizCapabilities()$layoutTypes,
-       filename,
-       fileType = graphvizCapabilities()$deviceTypes)
+toFile(graph, layoutType = "dot", filename, fileType = "dot")
 }
 
 \arguments{
   \item{graph}{an instance of the \code{Ragraph} class}
-  \item{layoutType}{which layout algorithm to use}
+  \item{layoutType}{Which layout algorithm to use.  Defaults to dot, and
+  see \code{graphvizCapabilities()$layoutTypes} for possible values.}
   \item{filename}{output file name}
-  \item{fileType}{output file type}
+  \item{fileType}{Output file type.  Defaults to \code{dot}, and
+  see \code{graphvizCapabilities()$deviceTypes} for possible values.}
 }
 \details{
 This function takes a given \code{Ragraph}, does the chosen layout, then 

@@ -29,3 +29,20 @@ graphvizCapabilities <- function() {
     capabilities
 }
 
+.checkLayoutType <- function(layoutType) {
+    if(layoutType %in% graphvizCapabilities()$layoutTypes)
+        return(layoutType)
+    else
+        stop(sprintf("The value of 'layoutType' ('%s') is not supported.  See 'graphvizCapabilities()$layoutTypes' for supported layouts",
+                     layoutType))
+}
+
+.checkFileType <- function(fileType) {
+    if(fileType %in% graphvizCapabilities()$deviceTypes)
+        return(fileType)
+    else
+        stop(sprintf("The value of 'fileType' ('%s') is not supported.  See 'graphvizCapabilities()$deviceTypes' for supported file types",
+                     fileType))
+}
+
+        

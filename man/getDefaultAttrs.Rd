@@ -8,13 +8,13 @@
   can be used to verify that such a list is valid for use.
 }
 \usage{
-getDefaultAttrs(curAttrs = list(),
-                layoutType = graphvizCapabilities()$layoutTypes)
+getDefaultAttrs(curAttrs = list(), layoutType = "dot")
 checkAttrs(attrs)
 }
 \arguments{
   \item{curAttrs}{Any attributes currently defined}
-  \item{layoutType}{The layout method being used}
+  \item{layoutType}{The layout method being used.  Defaults to dot, and
+  see \code{graphvizCapabilities()$layoutTypes} for possible values.}
   \item{attrs}{ An attribute list of graphviz attributes}
 }
 \details{

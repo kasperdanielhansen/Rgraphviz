@@ -8,7 +8,7 @@
 }
 \usage{
 agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
-       layoutType = graphvizCapabilities()$layoutTypes,
+       layoutType = "dot",
        attrs = list(), nodeAttrs = list(), edgeAttrs = list(),
        subGList = list(), edgeMode = edgemode(graph),
        recipEdges=c("combined", "distinct"))
@@ -20,7 +20,8 @@ agopen(graph, name, nodes, edges, kind = NULL, layout = TRUE,
   \item{name}{The name of the graph}
   \item{kind}{The type of graph}
   \item{layout}{Whether to layout the graph or not}
-  \item{layoutType}{Defines the layout engine.  Defaults to dot}
+  \item{layoutType}{Defines the layout engine.  Defaults to dot, and see
+  \code{graphvizCapabilities()$layoutTypes} for possible values.}
   \item{attrs}{A list of graphviz attributes}
   \item{nodeAttrs}{A list of specific node attributes}
   \item{edgeAttrs}{A list of specific edge attributes}

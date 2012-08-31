@@ -1,11 +1,8 @@
-toFile <- function(graph, 
-                   layoutType = graphvizCapabilities()$layoutTypes,
-                   filename, 
-                   fileType = graphvizCapabilities()$deviceTypes) {
+toFile <- function(graph, layoutType = "dot", filename, fileType = "dot") {
    if ( !is(graph,"Ragraph") ) stop("Given graph is not of class Ragraph")
    
-   layoutType <- match.arg(layoutType)
-   fileType <- match.arg(fileType)
+   layoutType <- .checkLayoutType(layoutType)
+   fileType <- .checkFileType(fileType)
    if(!is.null(graphvizCapabilities()) &&
       ! fileType %in% graphvizCapabilities()$deviceTypes) {
        warning("Graphviz does not support 'fileType'")
