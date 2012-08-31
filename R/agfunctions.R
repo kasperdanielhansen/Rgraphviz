@@ -1,5 +1,5 @@
 agopen <- function(graph,  name, nodes, edges, kind=NULL,
-                   layout=TRUE,	layoutType=graphvizCapabilities()$layoutTypes,
+                   layout=TRUE,	layoutType="dot", 
                    attrs=list(), nodeAttrs=list(), edgeAttrs=list(),
                    subGList=list(), edgeMode=edgemode(graph),
                    recipEdges=c("combined", "distinct")) {
@@ -17,6 +17,7 @@ agopen <- function(graph,  name, nodes, edges, kind=NULL,
     }
 
     recipEdges <- match.arg(recipEdges)
+    layoutType <- .checkLayoutType(layoutType)
     attrs <- getDefaultAttrs(attrs, layoutType)
     checkAttrs(attrs)
 
@@ -131,10 +132,10 @@ agopenSimple <- function(graph, name,
     g
 }
 
-agread <- function(filename, layoutType = graphvizCapabilities()$layoutTypes,
+agread <- function(filename, layoutType = "dot",
                    layout=TRUE	)
 {
-    layoutType <- match.arg(layoutType)
+    layoutType <- .checkLayoutType(layoutType)
     ## First check that the file exists
     if (!file.exists(filename))
         stop(paste("Request file",filename,"does not exist"))

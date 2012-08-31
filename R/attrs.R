@@ -7,8 +7,8 @@ replaceAttrs <- function(attributes, what, which, with)
 
 
 getDefaultAttrs <- function(curAttrs=list(),
-                            layoutType = graphvizCapabilities()$layoutTypes) {
-    layoutType <- match.arg(layoutType)
+                            layoutType = "dot") {
+    layoutType <- .checkLayoutType(layoutType)
     if (length(curAttrs) == 0)
         curAttrs <- list(graph=list(), cluster=list(),
                          node=list(), edge=list())
