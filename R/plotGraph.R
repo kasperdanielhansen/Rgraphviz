@@ -38,9 +38,9 @@ setMethod("plot", "Ragraph",
       on.exit(par(oldpars), add = TRUE)
       
       mheight <- if(!is.null(main) && nchar(main) > 0)
-          strheight(main, "inches", cex.main) + 0.3 else 0.1
+          sum(strheight(main, "inches", cex.main)) + 0.3 else 0.1
       sheight <- if(!is.null(sub) && nchar(sub) > 0)
-          strheight(main, "inches", cex.sub) + 0.2 else 0.1
+          sum(strheight(main, "inches", cex.sub)) + 0.2 else 0.1
       oldpars <- par(mai = c(sheight, 0, mheight, 0))
       on.exit(par(oldpars), add = TRUE)
       if(!is.null(sub)||!is.null(main))
