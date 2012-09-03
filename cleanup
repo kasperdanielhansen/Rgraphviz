@@ -26,7 +26,6 @@ rm -rf \
   src/libgvplugin_neato_layout.a \
   src/libgvplugin_neato_layout.la \
   src/libunix \
-  src/usr \
   src/Rgraphviz2.so \
   src/graphviz/config.log \
   src/graphviz/config.h \
