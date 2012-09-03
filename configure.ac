@@ -32,12 +32,11 @@ if test -z "${GRAPHVIZ_DIR}" ; then
     AC_PROG_CPP
     AC_PROG_CXX
     AC_MSG_NOTICE([Preparing to compile Graphviz.])
-    cd src
-    rm -rf usr
-    cd graphviz
+    cd src/graphviz
     touch configure 
     touch libltdl/configure
     BUILD_INSTALL_DIR="${BUILD_DIR}/src/libunix"
+    rm -rf ${BUILD_INSTALL_DIR}
     AC_MSG_NOTICE([Configuring bundled Graphviz.])
     ./configure\
         CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"\
