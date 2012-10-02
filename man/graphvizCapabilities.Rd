@@ -9,9 +9,6 @@
 \usage{
 graphvizCapabilities()
 }
-\details{
-  FIXME: better details
-}
 \value{
   A list of 5 character vectors.  Each character vector describes the
   relevant capabilitis of Graphviz.
