@@ -79,8 +79,6 @@ getDefaultAttrs <- function(curAttrs=list(),
     curAttrs <- replaceAttrs(curAttrs, "node", "fontsize", "14")
     curAttrs <- replaceAttrs(curAttrs, "node", "height", "0.5")
     curAttrs <- replaceAttrs(curAttrs, "node", "width", "0.75")
-    curAttrs <- replaceAttrs(curAttrs, "node", "border.lwd", 1)
-    curAttrs <- replaceAttrs(curAttrs, "node", "border.color", 'black')
     #curAttrs <- replaceAttrs(curAttrs, "node", "style", "solid")
     #curAttrs <- replaceAttrs(curAttrs, "node", "distortion", "0.0")
     #curAttrs <- replaceAttrs(curAttrs, "node", "layer", "solid")
@@ -133,10 +131,9 @@ checkAttrs <- function(attrs) {
 }
 
 
-makeNodeAttrs <- function(g, label = nodes(g), shape="ellipse", fillcolor = "#e0e0e0",
-                          border.lwd = 1, border.color = "black", ...) {
-    rv <- list(label = label, shape = shape, fillcolor = fillcolor,
-               border.lwd = border.lwd, border.color = border.color, ...)
+makeNodeAttrs <- function(g, label = nodes(g), shape="ellipse",
+                          fillcolor = "#e0e0e0", ...) {
+    rv <- list(label = label, shape = shape, fillcolor = fillcolor, ...)
     for(i in seq(along=rv)) {
         if(length(rv[[i]]) == 1) {
             rv[[i]] <- rep(rv[[i]], numNodes(g))

@@ -54,9 +54,7 @@ nodeRagraph2graph <- function(g, x)
     labelWidth <- sapply(agn, getLabelWidth)
     shape <- sapply(agn,shape) 
     style <- sapply(agn, style)
-    border.lwd <- sapply(agn, border.lwd)
-    border.color <- sapply(agn, border.color)
-
+    
     ans <- 
         list(rWidth = rw, 
              lWidth = lw, 
@@ -68,9 +66,7 @@ nodeRagraph2graph <- function(g, x)
              labelJust = labelJust, 
              labelWidth = labelWidth,
              shape = shape,
-             style = style,
-             border.color = border.color,
-             border.lwd = border.lwd)
+             style = style)
     for (i in names(ans)) names(ans[[i]]) <- nodes(x)
     ans
 }

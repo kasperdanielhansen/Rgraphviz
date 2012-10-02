@@ -25,8 +25,6 @@ setClass("AgNode", representation(center="xyPoint",
                                   color="character",
                                   fillcolor="character",
                                   shape="character",
-                                  border.lwd="numeric",
-				  border.color="character",
                                   style="character"))
 
 

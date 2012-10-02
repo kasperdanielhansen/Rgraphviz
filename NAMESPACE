@@ -136,8 +136,6 @@ exportMethods(
                 "to",			# plot only
                 "toDot",		# graph only
                 "txtLabel",
-                "border.color",
-                "border.lwd",
                 "upRight",
                 "renderGraph"
 	)

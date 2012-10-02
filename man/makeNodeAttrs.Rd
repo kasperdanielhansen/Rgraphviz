@@ -5,8 +5,8 @@
 \description{make a list of character vectors that can be used as a value for
   the nodeAttrs argument in agopen}
 \usage{
-makeNodeAttrs(g, label = nodes(g), shape = "ellipse", fillcolor = "#e0e0e0",
-              border.lwd = 1, border.color = "black", ...)
+makeNodeAttrs(g, label = nodes(g), shape = "ellipse",
+              fillcolor = "#e0e0e0", ...)
 }
 \arguments{
   \item{g}{graph}
@@ -15,10 +15,6 @@ makeNodeAttrs(g, label = nodes(g), shape = "ellipse", fillcolor = "#e0e0e0",
   \item{shape}{character of length either \code{1} or
     \code{numnodes(g)}}
   \item{fillcolor}{character of length either \code{1} or
-    \code{numnodes(g)}}
-  \item{border.lwd}{numeric of length either \code{1} or
-    \code{numnodes(g)}}
-  \item{border.color}{character of length either \code{1} or
     \code{numnodes(g)}}
   \item{...}{further named arguments that are character vectors of
 length either 1 or numNodes(g)}

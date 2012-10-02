@@ -23,6 +23,8 @@ setMethod("toDot", "graph", function(graph, filename, ...) {
 
 agwrite <- function(graph, filename)
 {
+    if(file.exists(filename))
+        unlink(filename)
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename),
                PACKAGE="Rgraphviz")
     g

@@ -2,6 +2,15 @@
 \title{Rgraphviz News}
 \encoding{UTF-8}
 
+\section{Version 2.3.x}{
+  \itemize{
+    \item Plotting now longer accepts border.lwd or border.col.  Instead
+    of border.col use color.  Instead of border.lwd, you need to use the
+    renderGraph/layoutGraph interface.  This fixes a long standing bug
+    where Rgraphviz writes illegal dot files.  unitTest has been added.
+  }
+}
+
 \section{Version 2.1.x}{
   \itemize{
     \item Rgraphviz now requires Graphviz >= 2.16.
