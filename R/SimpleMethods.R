@@ -23,8 +23,6 @@ setMethod("getNodeHeight", "AgNode", function(object) object@height)
 setMethod("getNodeRW", "AgNode", function(object) object@rWidth)
 setMethod("getNodeLW", "AgNode", function(object) object@lWidth)
 setMethod("name", "AgNode", function(object) object@name)
-setMethod("border.color", "AgNode", function(object) object@border.color)
-setMethod("border.lwd", "AgNode", function(object) object@border.lwd)
 setMethod("txtLabel", "AgNode", function(object) object@txtLabel)
 setMethod("getNodeXY", "AgNode", function(object) {
     cen <- getNodeCenter(object)

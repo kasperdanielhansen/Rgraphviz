@@ -377,7 +377,7 @@ nAttrs$fillcolor <- c(j="yellow")
 
 ## label color
 nAttrs$fontcolor <- c(e="green", f="red")
-eAttrs$fontcolor <- c("a~h"="green", "c~h"="brown")
+eAttrs$fontcolor <- c("a~h"="green", "a~b"="red")
 
 nAttrs
 eAttrs

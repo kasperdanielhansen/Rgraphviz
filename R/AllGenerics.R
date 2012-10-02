@@ -40,10 +40,6 @@ setGeneric("name", function(object) standardGeneric("name"))
 
 setGeneric("txtLabel", function(object) standardGeneric("txtLabel"))
 
-setGeneric("border.color", function(object) standardGeneric("border.color"))
-
-setGeneric("border.lwd", function(object) standardGeneric("border.lwd"))
-
 setGeneric("getNodeXY", function(object) standardGeneric("getNodeXY"))
 
 setGeneric("arrowsize", function(object) standardGeneric("arrowsize"))
