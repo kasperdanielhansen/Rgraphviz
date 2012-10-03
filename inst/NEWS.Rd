@@ -8,6 +8,11 @@
     of border.col use color.  Instead of border.lwd, you need to use the
     renderGraph/layoutGraph interface.  This fixes a long standing bug
     where Rgraphviz writes illegal dot files.  unitTest has been added.
+    \item bugfix to renderNodes (used in renderGraph) for nodes with
+    shape = "triangle".  It now works.
+    \item bugfix to renderNodes (used in renderGraph) for using
+    node-specific lwd and shapes either "triangle", "ellipse" or "circle".
+    It now works. 
   }
 }
 
