@@ -54,7 +54,9 @@ nodeRagraph2graph <- function(g, x)
     labelWidth <- sapply(agn, getLabelWidth)
     shape <- sapply(agn,shape) 
     style <- sapply(agn, style)
-    
+    col <- sapply(agn, color)
+    fill <- sapply(agn, fillcolor)
+
     ans <- 
         list(rWidth = rw, 
              lWidth = lw, 
@@ -66,7 +68,8 @@ nodeRagraph2graph <- function(g, x)
              labelJust = labelJust, 
              labelWidth = labelWidth,
              shape = shape,
-             style = style)
+             style = style,
+             col = col, fill = fill)
     for (i in names(ans)) names(ans[[i]]) <- nodes(x)
     ans
 }
@@ -103,7 +106,8 @@ edgeRagraph2graph <- function(g, x)
     arrowhead <- sapply(age, arrowhead)
     arrowtail <- sapply(age, arrowtail)
     dir <- sapply(age, slot, "dir")
-    
+
+    col <- sapply(age, color)
     ans <- 
         list(enamesFrom = enamesFrom,
              enamesTo = enamesTo,
@@ -114,7 +118,8 @@ edgeRagraph2graph <- function(g, x)
              labelWidth = labelWidth,
              arrowhead = arrowhead,
              arrowtail = arrowtail,
-             direction = dir)
+             direction = dir,
+             col = col)
     for (i in names(ans))
         names(ans[[i]]) <- paste(enamesFrom, enamesTo, sep="~")
     ans

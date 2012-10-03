@@ -33,8 +33,6 @@ getRenderPar <-
     ans
 }
 
-
-
 ## This function will plot individual nodes on the plotting device.
 ## Update: This is now in a vectorized form (user can still
 ## supply a function, but that has to deal with vectorized data for now)
@@ -91,10 +89,13 @@ renderNodes <- function(g)
     i <- shape == "circle"
     if (any(i, na.rm=TRUE))
     {
-        rad    <- pmin(height, (lw+rw))/2
-        symbols(nodeX[i], nodeY[i], circles = rad[i],
-                fg = col[i], bg = fill[i], lwd = lwd[i], lty = lty[i],
+        rad <- pmin(height, (lw+rw))/2
+        wh <- which(i)
+        sapply(wh, function(ww) {
+            symbols(nodeX[ww], nodeY[ww], circles = rad[ww],
+                fg = col[ww], bg = fill[ww], lwd = lwd[ww], lty = lty[ww],
                 inches = FALSE, add = TRUE)
+        }) ## we need to do this because symbols does not recycle lwd
     }
     ## shape == box, rect, etc
     i <- shape %in% c("box", "rectangle", "rect")
@@ -112,12 +113,16 @@ renderNodes <- function(g)
     i <- shape == "triangle"
     if (any(i, na.rm=TRUE))
     {
-        polygon(x=c(nodeX[i] - lw[i], nodeX[i], nodeX[i] + lw[i]),
-                y=c(nodeY[i] - (height[i] / 2), nodeY[i] + (height[i] / 2),
-                nodeY[i] - (height[i] / 2)),
-                col = fill[i], border = col[i], lty = lty[i], lwd = lwd[i])
+        wh <- which(i)
+        sapply(wh, function(ww) {
+            polygon(x = c(nodeX[ww] - lw[ww], nodeX[ww], nodeX[ww] + lw[ww]),
+                    y = c(nodeY[ww] - (height[ww] / 2),
+                    nodeY[ww] + (height[ww] / 2),
+                    nodeY[ww] - (height[ww] / 2)),
+                    col = fill[ww], border = col[ww], lty = lty[ww],
+                    lwd = lwd[ww])
+        })
     }
-    
     ## shape == ellipse
     i <- shape == "ellipse"
     if (any(i, na.rm=TRUE))
@@ -125,14 +130,13 @@ renderNodes <- function(g)
         rad <- (lw+rw)/2
         npoints <- 101
         tt <- c(seq(-pi, pi, length = npoints), NA)
-        xx <-
-            rep(nodeX[i], each = npoints + 1) +
-                sin(tt) * rep(rad[i], each = npoints + 1)
-        yy <-
-            rep(nodeY[i], each = npoints + 1) +
-                cos(tt) * rep(height[i] / 2, each = npoints + 1)
-        polygon(xx, yy, border = col[i], col = fill[i], lwd = lwd[i],
-                lty = lty[i])
+        wh <- which(i)
+        sapply(wh, function(ww) {
+            polygon(nodeX[ww] + sin(tt) * rad[ww],
+                    nodeY[ww] + cos(tt) * height[ww]/2,
+                    border = col[ww], col = fill[ww], lwd = lwd[ww],
+                    lty = lty[ww])
+        }) ## we need to do this because polygon does not recycle lwd
     }
 
     ## shape == diamond
