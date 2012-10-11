@@ -2,7 +2,14 @@
 \title{Rgraphviz News}
 \encoding{UTF-8}
 
+
 \section{Version 2.3.x}{
+  \itemize{
+    \item Placeholder
+  }
+}
+
+\section{Version 2.2.x}{
   \itemize{
     \item Plotting now longer accepts border.lwd or border.col.  Instead
     of border.col use color.  Instead of border.lwd, you need to use the
