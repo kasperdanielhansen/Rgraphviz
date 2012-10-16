@@ -3,8 +3,7 @@
 \alias{agread}
 \title{Read / write Ragraph objects}
 \description{
-  This function will take a \code{Ragraph} object and write it out in
-  DOT format to a file.
+  These functions will write an \code{Ragraph} object to or from a file.
 }
 \usage{
 agwrite(graph, filename)
@@ -19,7 +18,7 @@ agread(filename, layoutType="dot", layout=TRUE)
     is to be called on the result of file input.}
 }
 \details{
-  This function is a wrapper to the agwrite() call in Graphviz.
+  These function are wrappers to agwrite() and agread() calls in Graphviz.
 }
 \author{Jeff Gentry}
 \seealso{\code{\link{agopen}}, \code{\link{agread}}}
