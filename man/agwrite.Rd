@@ -8,10 +8,15 @@
 }
 \usage{
 agwrite(graph, filename)
+agread(filename, layoutType="dot", layout=TRUE)
 }
 \arguments{
   \item{graph}{An object of class \code{Ragraph}}
-  \item{filename}{ The output filename}
+  \item{filename}{The input or output filename}
+  \item{layoutType}{character(1) specifying the format of the input
+    file. must be one of \code{graphvizCapabilities()$layoutTypes}.}
+  \item{layout}{logical(1) indicating whether \code{\link{graphLayout}}
+    is to be called on the result of file input.}
 }
 \details{
   This function is a wrapper to the agwrite() call in Graphviz.
@@ -22,7 +27,15 @@ agwrite(graph, filename)
 V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
-z <- agopen(g1,"foo",layout=FALSE)
-agwrite(z,tempfile())
+z <- agopen(g1, "foo", layout=FALSE) ## default layoutType 'dot'
+file <- tempfile()
+agwrite(z, file)
+
+
+## supported input types
+graphvizCapabilities()$layoutTypes
+g2 <- agread(file, layout=TRUE)
+if (interactive())
+   plot(g2)
 }
 \keyword{graphs}
