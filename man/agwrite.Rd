@@ -1,7 +1,7 @@
 \name{agwrite}
 \alias{agwrite}
 \alias{agread}
-\title{A function to write a Ragraph object to a file}
+\title{Read / write Ragraph objects}
 \description{
   This function will take a \code{Ragraph} object and write it out in
   DOT format to a file.
