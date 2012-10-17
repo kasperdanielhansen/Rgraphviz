@@ -128,14 +128,14 @@ agopenSimple <- function(graph, name,
                 PACKAGE="Rgraphviz")
     g@edgemode <- edgeMode
     g@layoutType = "dot"    # default layout type
-
     g
 }
 
 agread <- function(filename, layoutType = "dot",
-                   layout=TRUE	)
+                   layout = TRUE)
 {
     layoutType <- .checkLayoutType(layoutType)
+    filename <- path.expand(filename)
     ## First check that the file exists
     if (!file.exists(filename))
         stop(paste("Request file",filename,"does not exist"))

@@ -8,6 +8,11 @@ setMethod("plot", "graph",
     if (!validGraph(x))
       stop("The graph to be plotted is not a valid graph structure")
 
+    if(numNodes(x) == 0) {
+        warning("graph has zero nodes; cannot layout\n")
+        return(invisible(x))
+    }
+    
     if (missing(y)) y <- "dot"
 
     recipEdges <- match.arg(recipEdges)

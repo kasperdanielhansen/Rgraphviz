@@ -165,6 +165,10 @@ layoutGraphviz <- function(x, layoutType="dot", name="graph",
                            recipEdges="combined", nodeAttrs=list(),
                            edgeAttrs=list(), attrs=list(), ...)
 {
+    if(numNodes(x) == 0) {
+        warning("graph has zero nodes; cannot layout\n")
+        return(x)
+    }
     ## defaults can be passed in via the attrs argument and we want to
     ## set those first
     if(!is.null(attrs$node))
