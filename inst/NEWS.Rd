@@ -5,7 +5,7 @@
 
 \section{Version 2.3.x}{
   \itemize{
-    \item Placeholder
+    \item Now using path.expand to fix tilde-expansion.
   }
 }
 

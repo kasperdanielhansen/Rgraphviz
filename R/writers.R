@@ -3,6 +3,7 @@ toFile <- function(graph, layoutType = "dot", filename, fileType = "dot") {
    
    layoutType <- .checkLayoutType(layoutType)
    fileType <- .checkFileType(fileType)
+   filename <- path.expand(filename)
    if(!is.null(graphvizCapabilities()) &&
       ! fileType %in% graphvizCapabilities()$deviceTypes) {
        warning("Graphviz does not support 'fileType'")
@@ -23,6 +24,7 @@ setMethod("toDot", "graph", function(graph, filename, ...) {
 
 agwrite <- function(graph, filename)
 {
+    filename <- path.expand(filename)
     if(file.exists(filename))
         unlink(filename)
     g <- .Call("Rgraphviz_agwrite", graph, as.character(filename),
