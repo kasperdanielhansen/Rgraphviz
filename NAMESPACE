@@ -27,7 +27,7 @@ importFrom(grDevices, xy.coords)
 importFrom(grid, bezierPoints, convertHeight, convertWidth, current.viewport,
            current.vpTree, popViewport, pushViewport, unit)
 
-importFrom(methods, "@<-", is, slot)
+importFrom(methods, is, slot)
 
 importFrom(utils, head, tail)
 
