@@ -344,8 +344,7 @@ ew <- as.character(unlist(edgeWeights(g1)))
 ew <- ew[setdiff(seq(along=ew), removedEdges(g1))]
 names(ew) <- edgeNames(g1)
 eAttrs$label <- ew
-## FIXME (wh 17.6.06): This does not work - see bug report:
-## attrs$edge$labelfontsize="27"
+attrs$edge$fontsize <- 27
 @ 
 <<edgeWeightLabels, fig=TRUE, include=FALSE, prefix=FALSE>>=
 plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs, attrs=attrs)
@@ -501,7 +500,7 @@ nA$color <- rep("green", nNodes)
 nA$fillcolor <- rep("orange", nNodes)
 nA$shape <- rep("circle", nNodes)
 nA$fontcolor <- rep("blue", nNodes)
-nA$fontsize <- rep(14, nNodes)
+nA$fontsize <- rep(10, nNodes)
 nA <- lapply(nA, function(x) { names(x) <- nodes(z); x})
 @ 
 

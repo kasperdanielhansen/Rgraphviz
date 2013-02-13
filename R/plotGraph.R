@@ -144,12 +144,11 @@ drawAgNode <- function(node) {
          stop("Unimplemented node shape: ", shape(node))
          ) ## switch
 
-  drawTxtLabel(txtLabel(node), xLoc=nodeX, yLoc=nodeY)
+  drawTxtLabel(txtLabel(node), xLoc=nodeX, yLoc=nodeY,
+               defaultFontsize=getDefaultAttrs()$node$fontsize)
 }
 
-drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
-  ## NOTE: labelFontsize not used
-
+drawTxtLabel <- function(txtLabel, xLoc, yLoc, defaultFontsize) {
   txt <- labelText(txtLabel)
 
   if(length(txt)>1) stop("'labelText(txtLabel)' must have length 1.")
@@ -169,6 +168,8 @@ drawTxtLabel <- function(txtLabel, xLoc, yLoc) {
     yLoc <-  getY(loc)
   }
 
-  text(xLoc, yLoc, txt, col=labelColor(txtLabel))
+  cex <- labelFontsize(txtLabel) / as.numeric(defaultFontsize)
+
+  text(xLoc, yLoc, txt, col=labelColor(txtLabel), cex=cex)
 }
 
