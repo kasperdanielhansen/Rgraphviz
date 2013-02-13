@@ -225,6 +225,6 @@ setMethod("lines", "AgEdge", function(x, ..., len, lty=par("lty"), lwd=par("lwd"
                col=edgeColor, length=len, lty=lty, lwd=lwd)
     }
     
-    drawTxtLabel(txtLabel(x))
+    drawTxtLabel(txtLabel(x), defaultFontsize=getDefaultAttrs()$edge$fontsize)
 })
 
