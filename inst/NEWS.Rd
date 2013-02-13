@@ -8,6 +8,8 @@
     \item Now using path.expand to fix tilde-expansion.
     \item We no longer include <R_ext/RConverters.h>; which seemingly
     was not needed (Thanks to Brian D. Ripley).
+    \item Fix handling of fontsize attrib for nodes and edges (seems it
+    has been broken at least since 2006).
   }
 }
 
