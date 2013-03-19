@@ -5,6 +5,8 @@
 
 \section{Version 2.3.x}{
   \itemize{
+    \item Fixing bug in Graphviz on OpenBSD regarding sincos (Thanks to
+    Rainer Hurling).
     \item Now using path.expand to fix tilde-expansion.
     \item We no longer include <R_ext/RConverters.h>; which seemingly
     was not needed (Thanks to Brian D. Ripley).

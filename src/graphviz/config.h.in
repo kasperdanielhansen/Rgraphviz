@@ -364,7 +364,7 @@
 /* Define if you have the shl_load function. */
 #undef HAVE_SHL_LOAD
 
-/* Define if libm provides a *working* sincos function */
+/* Define to 1 if you have the `sincos' function. */
 #undef HAVE_SINCOS
 
 /* Define to 1 if you have the `sqrt' function. */

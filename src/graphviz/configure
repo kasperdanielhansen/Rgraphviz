@@ -26868,50 +26868,18 @@ fi
 
 save_LIBS=$LIBS
 LIBS="$LIBS $MATH_LIBS"
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if have working sincos()" >&5
-$as_echo_n "checking if have working sincos()... " >&6; }
-if test "$cross_compiling" = yes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no - assumed because cross-compiling" >&5
-$as_echo "no - assumed because cross-compiling" >&6; }
-
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-	#include <stdio.h>
-	#include <assert.h>
-	#define PI 3.14159265358979323846
-	extern void sincos(double x, double *s, double *c);
-	int main () {
-		double sinx=0.0, cosx=1.0;
-                int i;
-                /* try to convince clever compilers not to optize this away! */
-                for (i=2; i<4; i++) {sincos(PI/(double)i,&sinx,&cosx);}
-		assert(sinx>0.8660253);
-		assert(sinx<0.8660255);
-		assert(cosx<0.5000001);
-		assert(cosx>0.4999999);
-		return 0;
-	}
-
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-
-cat >>confdefs.h <<_ACEOF
+for ac_func in sincos
+do :
+  ac_fn_c_check_func "$LINENO" "sincos" "ac_cv_func_sincos"
+if test "x$ac_cv_func_sincos" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
 #define HAVE_SINCOS 1
 _ACEOF
 
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
 fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
+done
+
+
 
 LIBS=$save_LIBS
 
