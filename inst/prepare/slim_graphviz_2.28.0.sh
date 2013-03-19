@@ -30,3 +30,10 @@ cd libltdl
 autoreconf
 rm -Rf autom4te.cache
 cd ..
+
+echo "Fixing configure bug on FreeBSD"
+echo "This step may have to be done by hand"
+cd graphviz-2.28.0
+patch -p1 < ../patches_2.28.0/graphviz-2.28.0-configure.patch
+autoreconf
+cd ..
