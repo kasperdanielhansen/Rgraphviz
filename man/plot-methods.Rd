@@ -9,36 +9,36 @@
 \description{
   A plot method for \code{graph} objects.
 }
-\section{Usage}{
-  \code{'graph': plot(x, y, ..., subGList=list(), attrs=list(),
-    nodeAttrs=list(), edgeAttrs=list(), xlab="", ylab="", main=NULL,
-    sub=sub, recipEdges=c("combined", "distinct"))}
-
-  \code{'Ragraph': plot(x, y, ..., xlab="", ylab="", main=NULL,
-    sub=sub, drawNode=drawAgNode, nodeAttrs=list(), edgeAttrs=list())}
+\usage{
+\S4method{plot}{graph,ANY}(x, y, ..., name = "", subGList = list(), 
+    attrs = list(), nodeAttrs = list(), edgeAttrs = list(), 
+    recipEdges = c("combined", "distinct"))
+\S4method{plot}{Ragraph,ANY}(x, y, edgeAttrs = list(), ..., main = NULL, 
+    cex.main = NULL, col.main = "black", sub = NULL, cex.sub = NULL, 
+    col.sub = "black", drawNode = drawAgNode, xlab, ylab, mai)
 }
-\section{arguments}{
- \describe{
+\arguments{
   \item{x}{The \code{graph} object to plot}
   \item{y}{The layout method to use: One of \code{\link{dot}},
     \code{\link{neato}}, \code{\link{twopi}}, \code{\link{circo}}, and
-    \code{\link{fdp}}.  The default is \code{\link{dot}}} 
+    \code{\link{fdp}}.  The default is \code{\link{dot}}}
+  \item{name}{The name of the graph, passed to \code{\link{agopen}}}
   \item{subGList}{A list of subgraphs taken from the primary
     \code{graph} object to be plotted.  If provided, these subgraphs
     will be clustered visually.  If not provided, no clusters will be used.}
   \item{attrs}{A list of Graphviz attributes to be sent to the layout engine}
   \item{nodeAttrs}{A list of attributes for specific nodes}
   \item{edgeAttrs}{A list of attributes for specific edges}
-  \item{xlab}{Label for the x axis of the plot}
-  \item{ylab}{Label for the y axis of the plot}
-  \item{main}{Main label for the plot}
-  \item{sub}{Subtitle for the plot}
-  \item{drawNode}{Function to draw the nodes.  The default is
-    \code{\link{drawAgNode}}}
   \item{recipEdges}{Determines how to draw reciprocating edges.  See
     \code{\link{agopen}}} 
+  \item{main, cex.main, col.main}{Main label and graphic parameters for the plot}
+  \item{sub, cex.sub, col.sub}{Subtitle and graphic parameters for the plot}
+  \item{drawNode}{Function to draw the nodes.  The default is
+    \code{\link{drawAgNode}}}
+  \item{xlab}{Label for the x axis of the plot}
+  \item{ylab}{Label for the y axis of the plot}
+  \item{mai}{Margins for plot}
   \item{...}{General commands to be sent to plot}
- }
 }
 \section{details}{
   The first plot method in the \code{usage} section corresponds to the

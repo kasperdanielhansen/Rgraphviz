@@ -2,6 +2,11 @@
 \title{Rgraphviz News}
 \encoding{UTF-8}
 
+\section{Version 2.5.x}{
+  \itemize{
+    \item Expose mai argument in plot,Ragraph-method.
+  }
+}
 
 \section{Version 2.3.x}{
   \itemize{
