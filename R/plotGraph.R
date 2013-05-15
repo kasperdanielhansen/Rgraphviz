@@ -29,7 +29,7 @@ setMethod("plot", "Ragraph",
   function(x, y, edgeAttrs=list(), ...,
            main=NULL, cex.main=NULL, col.main="black",
            sub=NULL, cex.sub=NULL, col.sub="black",
-           drawNode=drawAgNode, xlab, ylab) {
+           drawNode=drawAgNode, xlab, ylab, mai) {
 
       ## layout graph
       if ( missing(y) ) y <- x@layoutType
@@ -42,11 +42,14 @@ setMethod("plot", "Ragraph",
       oldpars <- par(bg = bg, fg = fg)
       on.exit(par(oldpars), add = TRUE)
       
-      mheight <- if(!is.null(main) && nchar(main) > 0)
-          sum(strheight(main, "inches", cex.main)) + 0.3 else 0.1
-      sheight <- if(!is.null(sub) && nchar(sub) > 0)
-          sum(strheight(main, "inches", cex.sub)) + 0.2 else 0.1
-      oldpars <- par(mai = c(sheight, 0, mheight, 0))
+      if (missing(mai)) {
+          mheight <- if(!is.null(main) && nchar(main) > 0)
+              sum(strheight(main, "inches", cex.main)) + 0.3 else 0.1
+          sheight <- if(!is.null(sub) && nchar(sub) > 0)
+              sum(strheight(main, "inches", cex.sub)) + 0.2 else 0.1
+          mai <- c(sheight, 0, mheight, 0)
+      }
+      oldpars <- par(mai = mai)
       on.exit(par(oldpars), add = TRUE)
       if(!is.null(sub)||!is.null(main))
           title(main, sub, cex.main = cex.main, col.main = col.main, 
