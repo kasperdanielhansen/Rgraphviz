@@ -5,6 +5,8 @@
 \section{Version 2.5.x}{
   \itemize{
     \item Expose mai argument in plot,Ragraph-method.
+    \item Changed the LICENSE to EPL.
+    \item Fixed some wrong text in the DESCRIPTION file.
   }
 }
 
