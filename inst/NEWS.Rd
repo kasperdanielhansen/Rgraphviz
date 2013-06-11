@@ -7,6 +7,9 @@
     \item Expose mai argument in plot,Ragraph-method.
     \item Changed the LICENSE to EPL.
     \item Fixed some wrong text in the DESCRIPTION file.
+    \item Fixed pieGylph to adress the issue of warning messages about
+    rep(NULL) (reported by Cristobal Fresno Rodríguez
+    <cristobalfresno@gmail.com>).
   }
 }
 
