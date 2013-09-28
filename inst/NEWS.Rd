@@ -9,7 +9,15 @@
     \item Fixed some wrong text in the DESCRIPTION file.
     \item Fixed pieGylph to adress the issue of warning messages about
     rep(NULL) (reported by Cristobal Fresno Rodríguez
-    <cristobalfresno@gmail.com>).
+    <Cristobalfresno@gmail.com>).
+   \item Updated Imports, Depends, NAMESPACE as per R CMD check
+   requirements.
+  }
+}
+
+\section{Version 2.4.x}{
+  \itemize{
+    \item Backported the pieGylph fix to the release branch.
   }
 }
 
