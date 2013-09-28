@@ -11,6 +11,12 @@ patch -p1 < ../patches_2.28.0/graphviz-2.28.0-slim.patch
 echo "Applying bugfixes"
 patch -p1 < ../patches_2.28.0/graphviz-2.28.0-bugs.patch
 
+echo "Fixing lt~obsolete"
+patch aclocal.m4 -i ../patches_2.28.0/aclocal.m4-patch
+patch libltdl/aclocal.m4 -i ../patches_2.28.0/libltdl-aclocal.m4-patch
+mv m4/lt~obsolete.m4 m4/lt-obsolete.m4 
+mv libltdl/m4/lt~obsolete.m4 libltdl/m4/lt-obsolete.m4 
+
 echo "Removing directories"
 rm -Rf debian doc contrib graphs macosx windows\
   cmd tclpkg rtest share plugin.demo

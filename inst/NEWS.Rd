@@ -10,8 +10,10 @@
     \item Fixed pieGylph to adress the issue of warning messages about
     rep(NULL) (reported by Cristobal Fresno Rodríguez
     <Cristobalfresno@gmail.com>).
-   \item Updated Imports, Depends, NAMESPACE as per R CMD check
-   requirements.
+    \item Updated Imports, Depends, NAMESPACE as per R CMD check
+    requirements.
+    \item Fixing issue with the lt~obsolete.m4 file(s) in Graphviz; R CMD
+    check was issueing a warning.
   }
 }
 
