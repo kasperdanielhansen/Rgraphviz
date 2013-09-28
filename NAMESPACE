@@ -1,9 +1,9 @@
 importClassesFrom(graph, graph)
 
-importClassesFrom(methods, character, externalptr, integer, list,
+importClassesFrom(methods, ANY, character, externalptr, integer, list,
                   logical, missing, numeric, vector)
 
-importMethodsFrom(graph, connComp, edgeData, "edgeData<-",
+importMethodsFrom(graph, edgeData, "edgeData<-",
                   edgeDataDefaults, "edgeDataDefaults<-", edgeL,
                   edgeMatrix, edgemode, edgeNames, nodeData,
                   "nodeData<-", nodeDataDefaults, "nodeDataDefaults<-",
@@ -11,7 +11,7 @@ importMethodsFrom(graph, connComp, edgeData, "edgeData<-",
 
 importMethodsFrom(methods, show)
 
-importFrom(stats4, plot)
+importMethodsFrom(stats4, plot)
 
 importFrom(graph, edgeRenderInfo, "edgeRenderInfo<-", graph.par,
            graph.par.get, graphRenderInfo, "graphRenderInfo<-",
@@ -19,13 +19,12 @@ importFrom(graph, edgeRenderInfo, "edgeRenderInfo<-", graph.par,
            validGraph)
 
 importFrom(graphics, arrows, lines, par, plot.new, plot.window,
-           plot.xy, polygon, rect, strheight, strwidth, symbols, text,
+           polygon, rect, strheight, strwidth, symbols, text,
            title)
 
-importFrom(grDevices, xy.coords)
-
-importFrom(grid, bezierPoints, convertHeight, convertWidth, current.viewport,
-           current.vpTree, popViewport, pushViewport, unit)
+importFrom(grid, bezierPoints, convertHeight, convertWidth,
+           current.viewport, current.vpTree, popViewport, pushViewport,
+           unit)
 
 importFrom(methods, is, slot)
 
