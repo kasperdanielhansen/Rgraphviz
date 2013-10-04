@@ -14,6 +14,7 @@
     requirements.
     \item Fixing issue with the lt~obsolete.m4 file(s) in Graphviz; R CMD
     check was issueing a warning.
+    \item Moved vignettes from inst/doc to vignettes directory.
   }
 }
 
