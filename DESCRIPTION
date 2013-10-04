@@ -7,7 +7,7 @@ Author: Jeff Gentry, Li Long, Robert Gentleman, Seth Falcon,
    Florian Hahne, Deepayan Sarkar, Kasper Daniel Hansen
 Maintainer: Kasper Daniel Hansen <khansen@jhsph.edu>
 Depends: R (>= 2.6.0), methods, utils, graph, grid
-Imports: stats4, graphics
+Imports: stats4, graphics, grDevices
 Suggests: RUnit, BiocGenerics, XML
 SystemRequirements: optionally Graphviz (>= 2.16)
 GraphvizDetails: Graphviz 2.28.0
