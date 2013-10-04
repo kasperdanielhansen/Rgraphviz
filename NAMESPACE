@@ -22,6 +22,8 @@ importFrom(graphics, arrows, lines, par, plot.new, plot.window,
            polygon, rect, strheight, strwidth, symbols, text,
            title)
 
+import(grDevices)
+
 importFrom(grid, bezierPoints, convertHeight, convertWidth,
            current.viewport, current.vpTree, popViewport, pushViewport,
            unit)
