@@ -1,0 +1,884 @@
+%\VignetteIndexEntry{How To Plot A Graph Using Rgraphviz}
+%\VignetteDepends{Rgraphviz, graph, XML}
+%\VignetteKeywords{tools, graphs}
+%\VignettePackage{Rgraphviz}
+
+\documentclass{article}
+\usepackage{hyperref}
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Robject}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+\newcommand{\inclfig}[3]{%
+ \begin{figure}[htbp] \begin{center}
+   \includegraphics[width=#2]{#1}
+   \caption{\label{#1}#3}
+ \end{center} \end{figure}
+}
+
+\author{Jeff Gentry, Robert Gentleman, Wolfgang Huber}
+\begin{document}
+\title{How To Plot A Graph Using Rgraphviz}
+\maketitle
+\tableofcontents
+
+\section{Overview}
+This vignette demonstrate how to easily render a graph from R into
+various formats using the \Rpackage{Rgraphviz} package.  To do this,
+let us generate a graph using the \Rpackage{graph} package:
+%
+<<createGraph1>>=
+library("Rgraphviz")
+set.seed(123)
+V <- letters[1:10]
+M <- 1:4
+g1 <- randomGraph(V, M, 0.2)
+@
+
+\section{Different layout methods}
+
+It is quite simple to generate a R plot window to display your graph.
+Once you have your graph object, simply use the \Rfunction{plot}
+method. 
+%
+<<plotDot, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(g1)
+@
+%
+\inclfig{plotDot}{0.4\textwidth}{\Robject{g1} laid out with \textit{dot}.}
+
+The result is shown in Figure~\ref{plotDot}.
+The \Rpackage{Rgraphviz} package allows you to specify varying layout
+engines, such as \textit{dot} (the default), \textit{neato} 
+and \textit{twopi}.  
+%
+<<plotNeato, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(g1, "neato")
+@ 
+<<plotTwopi, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(g1, "twopi")
+@
+\begin{figure}[htbp] \begin{center}
+  \includegraphics[width=0.4\textwidth]{plotNeato}
+  \hspace*{19mm}
+  \includegraphics[width=0.4\textwidth]{plotTwopi}
+  \caption{\label{plotNeatoTwopi}\Robject{g1} laid out with 
+  \textit{neato} (left) and \textit{twopi} (right).}
+\end{center} \end{figure}
+The result is shown in Figure~\ref{plotNeatoTwopi}.
+
+\subsection{Reciprocated edges}
+
+There is an option \Robject{recipEdges} that details how to
+deal with reciprocated edges in a graph.  The two options are
+\Robject{combined} (the default) and \Robject{distinct}.  This is
+mostly useful in directed graphs that have reciprocating edges - the
+\Robject{combined} option will display them as a single edge with an
+arrow on both ends while \Robject{distinct} shows them as two separate edges.
+%
+<<rEG>>=
+rEG <- new("graphNEL", nodes=c("A", "B"), edgemode="directed")
+rEG <- addEdge("A", "B", rEG, 1)
+rEG <- addEdge("B", "A", rEG, 1)
+@
+%
+\begin{figure}[htbp] \begin{center}
+  \includegraphics[width=0.4\textwidth]{recipEdgesComb}
+  \includegraphics[width=0.4\textwidth]{recipEdgesDistinct}
+  \caption{\label{recipEdges}\Robject{rEG} laid out with 
+  \Robject{recipEdges} set to \Robject{combined} (left) and 
+  \Robject{distinct} (right).}
+\end{center} \end{figure}
+%
+<<recipEdgesComb, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(rEG)
+@ 
+<<recipEdgesDistinct, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(rEG, recipEdges="distinct")
+@
+The result is shown in Figure~\ref{recipEdges}.
+
+The function \Rfunction{removedEdges} can be used to return a
+numerical vector detailing which edges (if any) would be removed by
+the combining of edges.
+%
+<<removedEdges>>=
+removedEdges(g1)
+@
+
+\section{Subgraphs}
+
+A user can request that a subset of the nodes in a graph be kept together.
+Graphviz then attempts to find a layout where the specified subgraphs are
+plotted with all nodes relatively close.  This is particularly useful
+when laying out graphs that represent some real physical entity 
+(one biological example is pathways).
+
+In the code below we construct three subgraphs that we will use to group
+the corresponding nodes when \Robject{g1} is rendered.
+<<getSubgraphs>>=
+sg1 <- subGraph(c("a","d","j","i"), g1)
+sg1
+sg2 <- subGraph(c("b","e","h"), g1)
+sg3 <- subGraph(c("c","f","g"), g1)
+@
+
+To plot using the subgraphs, one must use the \Rfunction{subGList}
+argument which is a list of lists, with each sublist having three
+elements:
+
+\begin{itemize}
+\item \Robject{graph} : The actual \Robject{graph} object for this
+subgraph.
+\item \Robject{cluster} : A logical value noting if this is a \texttt{cluster}
+or a \texttt{subgraph}.  A value of \Robject{TRUE} (the default, if
+this element is not used) indicates a \texttt{cluster}.  In Graphviz,
+\texttt{subgraphs} are used as an organizational mechanism but are not
+necessarily laid out in such a way that they are visually together.
+Clusters are laid out as a separate graph, and thus Graphviz will tend
+to keep nodes of a cluster together.  Typically for
+\Rpackage{Rgraphviz} users, a \texttt{cluster} is what one wants to
+use.
+\item \Robject{attrs} : A named vector of attributes, where the names are the
+attribute and the elements are the value.  For more information about
+attributes, see Section~\ref{sec:attributes} below.
+\end{itemize}
+
+Please note that only the \Robject{graph} element is required.  If the
+\Robject{cluster} element is not specified, the subgraph is assumed to
+be a \texttt{cluster} and if there are no attributes to specify for
+this subgraph then \Robject{attrs} is unnecessary.
+%
+<<subGplot, fig=TRUE, include=FALSE, prefix=FALSE>>=
+subGList <- vector(mode="list", length=3)
+subGList[[1]] <- list(graph=sg1)
+subGList[[2]] <- list(graph=sg2, cluster=FALSE)
+subGList[[3]] <- list(graph=sg3)
+plot(g1, subGList=subGList)
+@
+\begin{figure}[htbp] \begin{center}
+  \includegraphics[width=0.4\textwidth]{subGplot}
+  \hspace*{19mm}
+  \includegraphics[width=0.4\textwidth]{subGPlot2}
+  \caption{\label{subGplot}\Robject{g1} laid out with 
+  two different settings for the parameter \Robject{subGList}.}
+\end{center} \end{figure}
+%
+The result is shown in the left panel of Figure~\ref{subGplot}, 
+and for comparison, another example:
+%
+<<subGPlot2, fig=TRUE, include=FALSE, prefix=FALSE>>=
+sg1 <- subGraph(c("a","c","d","e","j"), g1)
+sg2 <- subGraph(c("f","h","i"), g1)
+plot(g1, subGList=list(list(graph=sg1), list(graph=sg2)))
+@
+
+\subsection{A note about edge names}
+
+While internal node naming is quite straight forward (it is simply
+taken from the \Robject{graph} object), \Rpackage{Rgraphviz} needs to
+be able to uniquely identify edges by name.  End users as well will
+need to be able to do this to correctly assign attributes.  
+The name of an edge between tail node \verb+x+
+and head node \verb+y+ is \verb+x~y+.  The method
+\Rfunction{edgeNames} can be used to obtain a vector of all edge
+names, and it takes the argument \Robject{recipEdges} so that the
+output correctly matches which edges will be used by
+\Rpackage{Rgraphviz}.
+
+<<edgeNames>>=
+edgeNames(g1)
+edgeNames(g1, recipEdges="distinct")
+@
+
+%--------------------------------------------------
+\section{Attributes}
+\label{sec:attributes}
+%--------------------------------------------------
+
+\subsection{Global attributes}
+
+There are many visualization options in Graphviz that can be set
+beyond those which are given explicit options using Rgraphviz - such
+as colors of nodes and edges, which node to center on for twopi plots,
+node labels, edge labels, edge weights, arrow heads and tails, etc.  A
+list of all available attributes is accessible online at:
+\url{http://www.graphviz.org/pub/scm/graphviz2/doc/info/attrs.html}.
+Note that there are some differences between default values and also
+some attributes will not have an effect in Rgraphviz.  Please see the
+man page for \Rfunction{graphvizAttributes} for more details.
+
+Attributes can be set both globally (for the entire graph, for all
+edges, all nodes, etc) as well as on a per-node and per-edge basis.
+Global attributes are set via a list and passed in as the
+\Robject{attrs} argument to \Rfunction{plot}.  A default set of global
+attributes are used for global values which are not specified (by
+using the \Rfunction{getDefaultAttrs} function).  The
+\Rfunction{getDefaultAttrs} function will take a partial global
+attribute list (see below for a description) and/or the layout type to
+be used (dot, neato, or twopi) and will generate an attribute list to
+be used with defaults for values that the user did not specify.  
+%
+% FIXME (wh 16.6.2006)
+% Both of the following are somewhat minor, but would be nice to have...
+% 
+% 1.) 'getDefaultAttrs' is an odd name for a function that sets user-defined
+% attributes. If the package maintainer or someone had the energy, they
+% could 
+% 1. deprecate this function and call it 'setAttributes'
+% 2. give it a somewhat nicer user interface
+%  e.g. the current syntax for making node boundaries red is:
+%      getDefaultAttrs(list(node=list(color="red")))
+%  nicer would be (imho)
+%      setAttributes(node=c(color="red"))
+%
+% 2.) Why is the value of 'getDefaultAttrs' a list of lists, and not a list of 
+% character vectors: anyway all elements of those inner lists seem to be 
+% characters. I find it confusing to allow sth to be a list if semantically
+% it is a vector. 
+% I don't know what the data types are that graphviz uses, do they have
+% the notion of numeric or other data types?
+% 
+
+The list has four elements: 'graph', 'cluster', 'edge' and 'node'.
+Within each element is another list, where the names correspond to
+attributes and the values correspond to the value to use globally on
+that attribute.  An example of this structure can be seen with the
+default list provided by \Rfunction{getDefaultAttrs}:
+
+<<defAttrs, print=TRUE>>=
+defAttrs <- getDefaultAttrs()
+@
+
+To manually set some attributes, but not others, pass in a list with
+the specific attributes that you desire.  In the following example
+(see Figure~\ref{defAttrs2}, we set two attributes
+(\Robject{label} and \Robject{fillcolor} for nodes, one for edges
+(\Robject{color}) and one for the graph itself (\Robject{rankdir}).
+We could also have called \Rfunction{getDefaultAttrs} with the same
+list that we are passing as the \Robject{attrs} argument, but there is
+no need here.
+%
+<<defAttrs2, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(g1, attrs=list(node=list(label="foo", fillcolor="lightgreen"),
+           edge=list(color="cyan"),
+           graph=list(rankdir="LR")))
+@ 
+%
+\inclfig{defAttrs2}{0.4\textwidth}{\Robject{g1} laid out with
+user-defined \Robject{attrs}.}
+
+
+\subsection{Per node attributes}
+
+Users can also set attributes per-node and per-edge.  In this case, if
+an attribute is defined for a particular node then that node uses the
+specified attribute and the rest of the nodes use the global default.
+Note that any attribute that is set on a per-node or per-edge basis
+\texttt{must} have a default set globally, due to the way that
+Graphviz sets attributes.  Both the per-node and per-edge attributes
+are set in the same basic manner - the attributes are set using a list
+where the names of the elements are the attributes, and each element
+contains a named vector.  The names of this vector correspond to
+either node names or edge names, and the values of the vector are the
+values to set the attribute to for that node or edge.  The following
+sections will demonstrate how to set per-node and per-edge attributes
+for commonly desired tasks.  For these we will use two lists
+\Robject{nAttrs} and \Robject{eAttrs}.
+
+<<baseLists>>=
+nAttrs <- list()
+eAttrs <- list()
+@
+
+
+\subsection{Node labels}
+
+By default, nodes use the node name as their label and edges do not
+have a label.  However, both can have custom labels supplied via
+attributes.
+
+<<makeLabels1>>=
+z <- strsplit(packageDescription("Rgraphviz")$Description, " ")[[1]]
+z <- z[1:numNodes(g1)]
+names(z) = nodes(g1)
+nAttrs$label <- z
+@ 
+<<makeLabels2>>=
+eAttrs$label <- c("a~h"="Label 1", "c~h"="Label 2")
+@ 
+<<makeLabels3>>=
+attrs <- list(node=list(shape="ellipse", fixedsize=FALSE))
+@ 
+<<figLabels, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs, attrs=attrs)
+@
+\inclfig{figLabels}{0.6\textwidth}{\Robject{g1} laid out with
+user-defined node and edge labels.}
+The result is shown in Figure~\ref{figLabels}.
+
+\subsection{Using edge weights for labels}
+
+A common desire for edge weights is to use the edge weights 
+for the edge labels.  This can be done with
+just a couple of extra steps.  First we will get the edge weights, and
+unlist them, to provide them in vector format.  Then, first we will
+determine which of those to remove (this step is only necessary if
+\Robject{recipEdges} is set to \Robject{TRUE}, which is default
+behavior for both undirected and directed graphs) and remove those
+positions from our vector.  Finally, we will get the set of edge names
+which will be used for plotting and bundle that into the appropriate
+structure for plotting.
+
+Please note to take care with edge names.  If \Robject{recipEdges} is
+set to \Robject{combined}, then only one of any pair of reciprocal
+edges will actually be used.  Users should utilize the
+\Rfunction{edgeNames} method to be sure that they are setting
+attributes for the right edge names.
+
+
+<<edgeWeights>>=
+ew <- as.character(unlist(edgeWeights(g1)))
+ew <- ew[setdiff(seq(along=ew), removedEdges(g1))]
+names(ew) <- edgeNames(g1)
+eAttrs$label <- ew
+attrs$edge$fontsize <- 27
+@ 
+<<edgeWeightLabels, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(g1, nodeAttrs=nAttrs, edgeAttrs=eAttrs, attrs=attrs)
+@
+\inclfig{edgeWeightLabels}{0.6\textwidth}{\Robject{g1} laid out with
+edge weights as edge labels.}
+The result is shown in Figure~\ref{edgeWeightLabels}.
+
+
+%--------------------------------------------------
+\subsection{Adding color}
+%--------------------------------------------------
+
+There are many areas where color can be specified to the plotted
+graph.  Edges can be drawn in a non-default color, as can nodes.
+Nodes can also have a specific \Robject{fillcolor} defined, detailing
+what color the interior of the node should be.  The color used for the
+labels can also be specified with the \Robject{fontcolor} attribute.
+
+<<colors>>=
+## Specify node drawing color
+nAttrs$color <- c(a="red", b="red", g="green", d="blue")
+
+## Specify edge drawing color
+eAttrs$color <- c("a~d"="blue", "c~h"="purple")
+
+## Specify node fill color
+nAttrs$fillcolor <- c(j="yellow")
+
+## label color
+nAttrs$fontcolor <- c(e="green", f="red")
+eAttrs$fontcolor <- c("a~h"="green", "a~b"="red")
+
+nAttrs
+eAttrs
+@ 
+<<figColors, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(g1, nodeAttrs=nAttrs, attrs=attrs)
+@
+\inclfig{figColors}{0.6\textwidth}{\Robject{g1} laid out with
+colors.}
+The result is shown in Figure~\ref{figColors}.
+
+%--------------------------------------------------
+\subsection{Node shapes}
+%--------------------------------------------------
+
+The \Rpackage{Rgraphviz} package allows you to specify different
+shapes for your nodes.  Currently, the supported shapes are
+\Robject{circle} (the default), \Robject{ellipse}, \Robject{plaintext}
+and \Robject{box}. \Robject{plaintext} is simply a
+\Robject{box} that is not displayed for purposes of layout.
+As with previous attributes, the shape can be set globally or for
+specific nodes.  
+Figure~\ref{figNodeShapes} shows the graph of the previous example,
+with the default shape as \Robject{ellipse} and with two nodes
+specified as being \Robject{box}, one as a \Robject{circle} and one as
+a \Robject{plaintext} node:
+%
+<<nodeShapes>>=
+attrs$node$shape <- "ellipse"
+nAttrs$shape <- c(g="box", f="circle", j="box", a="plaintext")
+@ 
+<<figNodeShapes, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(g1, attrs=attrs, nodeAttrs=nAttrs)
+@
+\inclfig{figNodeShapes}{0.6\textwidth}{\Robject{g1} laid out with
+user defined node shapes.}
+
+%--------------------------------------------------
+
+%--------------------------------------------------
+\section{Layout, rendering and the function \Rfunction{agopen}}
+%--------------------------------------------------
+The calls to the \Rfunction{plot} that we have made above amount to
+two different processing steps, \textit{layout} and
+\textit{rendering}.  In the layout step, Graphviz lays out the nodes
+and edges on a (virtual) 2D plotting surface. In the
+\textit{rendering} step, a plot consisting of lines, shapes, and
+letters with particular line styles, colors, fonts, font size etc.\ is
+created.
+
+By dissecting these steps and manually interfering, we can achieve
+finer control over the appearance of the rendered graph.
+
+The functions \Rfunction{buildNodeList} and \Rfunction{buildEdgeList}
+generate a list of \Robject{pNode} and \Robject{pEdge} objects
+respectively.  These are used to provide the information for the
+Graphviz layout, and by default they are generated automatically
+during the call to the \Robject{plot} function.  By generating these
+manually before the layout, one can edit these objects and perform the
+layout with these edited lists.  For example:
+%
+<<getLists1>>=
+nodes <- buildNodeList(g1)
+edges <- buildEdgeList(g1)
+@ 
+You can now see the contents of the first \Robject{pNode} and first
+\Robject{pEdge} objects in their respective lists.  
+<<getLists2>>=
+nodes[[1]]
+edges[[1]]
+@
+%
+The functions \Rfunction{buildNodeList} and \Rfunction{buildEdgeList}
+can also use the attribute lists constructed above.  
+%
+<<buildwithAttrs>>=
+nodes <- buildNodeList(g1, nodeAttrs=nAttrs, defAttrs=defAttrs$node)
+edges <- buildEdgeList(g1, edgeAttrs=eAttrs, defAttrs=defAttrs$edge)
+nodes[[1]]
+edges[[1]]
+@ 
+Note the difference between the objects in the second example as
+compared with the first.  
+
+We can add arrowheads to the a~e and a~h edges 
+<<arrowheads>>=
+for(j in c("a~e", "a~h"))
+  edges[[j]]@attrs$arrowhead <- "open"
+@
+%
+While visually indicating
+direction, these will have no bearing on the layout itself as Graphviz
+views these edges as undirected. 
+
+Now we can plot this graph (see Figure~\ref{plotbuild}):
+%
+<<plotbuild, fig=TRUE, include=FALSE, prefix=FALSE>>=
+vv <- agopen(name="foo", nodes=nodes, edges=edges, attrs=attrs, 
+  edgeMode="undirected")
+plot(vv)
+@
+\inclfig{plotbuild}{0.6\textwidth}{\Robject{g1} laid out via
+nodes and edge lists.}
+
+
+Next we use a different graph, one of the graphs in the 
+\Robject{graphExamples} dataset in the \Rpackage{graph}
+package and provide another demonstration of working with attributes
+to customize your plot.
+
+<<graph17>>=
+data(graphExamples)
+z <- graphExamples[[8]]
+nNodes <- length(nodes(z))
+
+nA <- list()
+nA$fixedSize<-rep(FALSE, nNodes)
+nA$height <- nA$width <- rep("1", nNodes)
+nA$label <- rep("z", nNodes)
+nA$color <- rep("green", nNodes)
+nA$fillcolor <- rep("orange", nNodes)
+nA$shape <- rep("circle", nNodes)
+nA$fontcolor <- rep("blue", nNodes)
+nA$fontsize <- rep(10, nNodes)
+nA <- lapply(nA, function(x) { names(x) <- nodes(z); x})
+@ 
+
+<<graph17, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(z, nodeAttrs=nA)
+@
+\inclfig{graph17}{0.6\textwidth}{Customized layout 
+of graph \Robject{z}.}
+
+%--------------------------------------------------
+\section{Customized node plots}
+%--------------------------------------------------
+
+The \Rpackage{Rgraphviz} package provides for customized drawing of
+nodes.  Customized nodes must have one of the standard node shapes,
+but are able to provide for richer information inside.
+
+To do this, lay out the graph using the shape desired, then, when
+plotting the laid out graph, use the \Robject{drawNode}
+argument to \Rfunction{plot} to define how the nodes are drawn.  This
+argument can be either of length one (in which case all nodes are
+drawn with that same function) or a list of length equal to the 
+number of nodes in the
+graph (in which case the first element of the list is used to draw the
+first node, etc).  To work correctly, the function will take four
+arguments:
+\begin{description}
+\item[\Robject{node}] is an object of class \Robject{AgNode}
+describing the node's location and other information
+\item[\Robject{ur}] is of class
+\Robject{XYPoint} and describes the upper right hand point of the
+bounding box (the lower left is 0,0)
+\item[\Robject{attrs}] is a node attribute list as discussed in
+Section~\ref{sec:attributes}. It can be used for post-layout attribute
+changes to override values that were used for the layout.
+\item[\Robject{radConv}] is used by \Rpackage{Rgraphviz}
+to convert Graphviz units to R plotting units.  This argument will
+probably not need to be used a custom drawing function, but
+does need to exist.   
+\end{description}
+A custom drawing function is free to ignore these arguments, but the
+argument must exist in the function signature.
+
+The default function for node drawing on all nodes is
+\Rfunction{drawAgNode}, and users who want to supply their own node
+drawing function are encouraged to inspect this function as a
+template.
+
+If one wants to use a custom function for some nodes but the standard
+function for others, the list passed in to \Robject{drawNode} can have
+the custom functions in the elements corresponding to those nodes
+desired to have special display and \Rfunction{drawAgNode} in the
+elements corresponding to the nodes where standard display is desired.
+
+One function included with the \Rpackage{Rgraphviz} package that can
+be used for such alternate node drawing is \Rfunction{pieGlyph}.  This
+allows users to put arbitrary pie charts in as circular nodes.  
+
+<<pieChartCalc>>=
+set.seed(123)
+counts = matrix(rexp(numNodes(g1)*4), ncol=4)
+
+g1layout <- agopen(g1, name="foo")
+
+makeNodeDrawFunction <- function(x) {
+  force(x)
+  function(node, ur, attrs, radConv) {
+    nc <- getNodeCenter(node)
+    pieGlyph(x, 
+             xpos=getX(nc),
+             ypos=getY(nc),
+             radius=getNodeRW(node),
+             col=rainbow(4))
+    text(getX(nc), getY(nc), paste(signif(sum(x), 2)), 
+      cex=0.5, col="white", font=2)
+  }
+}
+
+drawFuns <- apply(counts, 1, makeNodeDrawFunction)
+@ 
+
+<<pieChartGraph, fig=TRUE, include=FALSE, prefix=FALSE>>=
+plot(g1layout, drawNode=drawFuns, main="Example Pie Chart Plot")
+@
+\inclfig{pieChartGraph}{0.6\textwidth}{\Robject{g1} with pie charts as nodes.}
+The result is shown in Figure~\ref{pieChartGraph}.
+
+%------------------------------------------------------------
+\section{Special types of graphs}
+%------------------------------------------------------------
+
+Up to this point, we have only been working with objects of class
+\Robject{graphNEL}, but the other subclasses of the virtual class
+\Rclass{graph} (such as \Rclass{distGraph} and \Rclass{clusterGraph})
+will work as well, provided that they support the \Rfunction{nodes}
+and \Rfunction{edgeL} methods.
+
+In this section, we demonstrate a few examples.  Users should not
+notice a difference in the interface, but this will
+provide some visual examples as to how these types of graphs will
+appear.
+
+\subsection{Cluster graphs}
+For our first set of examples, we create an object of class
+\Rclass{clusterGraph} and then plot it using all three layout
+methods:
+
+<<clusterGraph1, print=TRUE>>=
+cG <- new("clusterGraph", clusters=list(a=c(1:10), b=c(11:13),
+                            c=c(14:20), d=c(21, 22)))
+@
+
+In Figure~\ref{fig:cGdot} we show \Robject{cG} laid
+out using three different algorithms.
+
+\begin{figure}[tp]
+\begin{center}
+<<cGdot, fig=TRUE, include=FALSE, echo=FALSE, results=hide, width=4>>=
+plot(cG, main="dot")
+@
+<<cGtwopi, fig=TRUE, include=FALSE, echo=FALSE, results=hide, width=4>>=
+par(bg="#e0e0e0")
+plot(cG, "twopi", main="twopi")
+@
+<<cGneato, fig=TRUE, include=FALSE, echo=FALSE, results=hide, width=4>>=
+plot(cG, "neato", main="neato")
+@
+\includegraphics[width=0.32\textwidth]{Rgraphviz-cGdot}
+\includegraphics[width=0.32\textwidth]{Rgraphviz-cGtwopi}
+\includegraphics[width=0.32\textwidth]{Rgraphviz-cGneato}
+\end{center}
+\caption{\label{fig:cGdot}%
+A cluster graph laid out using the three layout algorithms.}
+\end{figure}
+%
+
+%The same demonstration is now given with a \Robject{distGraph} object:
+%
+%<<distGraph1, fig=TRUE>>=
+%    x <- rnorm(26)
+%    names(x) <- letters
+%    d1 <- dist(x)
+%    dG <- new("distGraph", Dist=d1)
+%    dG
+%
+%    plot(dG)
+%@
+%
+%Again using "twopi":
+%
+%<<dgTwopi, fig=TRUE>>=
+%  plot(dG, "twopi")
+%%@
+%
+%And finally using "neato":
+%
+%<<dgNeato, fig=TRUE>>=
+%  plot(dG, "neato")
+%@
+%%
+
+%--------------------------------------------------
+\subsection{Bipartite graphs}
+%--------------------------------------------------
+We provide a simple example of laying out a bipartite graph. There are
+two types of nodes, and edges go only from one type to the other.  We
+first construct the bipartite graph.
+%
+<<bipartite1>>=
+set.seed(123)
+nodes1 <- paste(0:7)
+nodes2 <- letters[1:10]
+
+ft <- cbind(sample(nodes1, 24, replace=TRUE), 
+            sample(nodes2, 24, replace=TRUE))
+ft <- ft[!duplicated(apply(ft, 1, paste, collapse="")),]
+
+g <-  ftM2graphNEL(ft, edgemode='directed')
+g
+@
+%
+Next we set up the node attributes and create subgraphs so that we can
+better control the layout.
+We want to have color for the nodes, and we want to lay the graph out
+from left to right, rather than vertically.
+%
+<<bipartitelayout>>=
+twocolors <- c("#D9EF8B", "#E0F3F8")
+nodeType <- 1 + (nodes(g) %in% nodes1)
+nA = makeNodeAttrs(g, fillcolor=twocolors[nodeType])
+
+sg1 = subGraph(nodes1, g)
+sgL = list(list(graph=sg1, cluster = FALSE, attrs = c(rank="sink")))
+
+att = list(graph = list(rankdir = "LR", rank = ""))
+@
+%
+Finally, in Figure~\ref{figbipartite} we plot the bipartite graph.
+%
+<<figbipartite, fig=TRUE, include=FALSE, prefix=FALSE, width=4.5>>=
+plot(g, attrs = att, nodeAttrs=nA, subGList = sgL)
+@
+%
+\inclfig{figbipartite}{0.4\textwidth}{A bipartite graph.}
+
+%--------------------------------------------------
+\section{NEW Another workflow to plot a graph }
+
+Another workflow in doing layout, rendering is as following:
+(1) convert a graph in \Robject{graph} class to \Robject{Ragraph} class,
+(2) set its default attributes for graph, cluster(s), nodes and edges,
+(3) set attributes for individual cluster, node(s) and/or edge(s),
+(4) layout it with desired algorithm,
+(5) render it to desired media.
+
+Repeat steps (3), (4) and/or (5) as needed.
+
+\subsection{Convert a graph to \Robject{Ragraph} class}
+
+We prepare a graph with two subgraphs: graphExample-01.gxl.gz and 
+graphExample-11.gxl.gz from package \Rpackage{graph}.  We specify the 1st one
+is NOT a cluster, while the 2nd one is.
+
+Just as in graphviz, \Rpackage{Rgraphviz} treats a cluster as a special subgraph, 
+its nodes are layed out and drawn together and within a bounding rectangel. 
+
+<<agopenSimpleDemo>>=
+library(graph)
+library(XML)
+g1_gz <- gzfile(system.file("GXL/graphExample-01.gxl.gz",package="graph"))
+g11_gz <- gzfile(system.file("GXL/graphExample-11.gxl.gz",package="graph"))
+g1 <- fromGXL(g1_gz)
+g11 <- fromGXL(g11_gz)
+g1_11 <- join(g1, g11)
+sgl <- vector(mode="list", length=2)
+sgl[[1]] <- list(graph=g1, cluster=FALSE)
+sgl[[2]] <- list(graph=g11, cluster=TRUE)
+ng <- agopenSimple(g1_11, "tmpsg", subGList=sgl)
+close(g1_gz)
+close(g11_gz)
+@
+
+Note: this instance of \Robject{Ragraph} class from \Rfunction{agopenSimple} 
+contains less content than that
+you obtain from calling \Robject{agopen}: it maintains a pointer for access to
+graphviz; after setting various attributes and doing layout, other entries 
+are filled in for drawing only.   
+
+The following workflow works well for an instance of \Robject{Ragraph} class 
+obtained from \Rfunction{agopen} as well.
+
+\subsection{Get default attributes}
+
+There are default attributes associated with a graph, a cluster (a subgraph), 
+nodes and edges.  You can find out what they are as follows:
+
+After you explicitly set one or more default attributes, you'll see the
+default attributes.
+
+If you like the notation from package \Robject{graph} better, the following
+codes accomplish the same:
+
+<<DataDefaultsDemo1>>=
+graphDataDefaults(ng)
+nodeDataDefaults(ng)
+edgeDataDefaults(ng)
+@
+
+\subsection{Set default attributes}
+
+If you want to set default attributes yourself, you could call functions like
+following:
+
+<<DataDefaultsDemo2>>=
+graphDataDefaults(ng, c("size", "bgcolor")) <- c("1", "yellow")
+nodeDataDefaults(ng, c("fontcolor", "width")) <- c("blue", 0.5)
+edgeDataDefaults(ng, c("color", "style")) <- c("green", "dotted")
+@
+
+As shown in the examples, you can specify multiple attributes and their 
+corresponding values in one call.  R's circular rule applies.
+
+Currently, only the 1st call to set default attributes has effects.  Subsequent calls yield no effect.
+
+\subsection{Get attributes}
+
+You could set attributes for individual elements: graph, cluster(s), node(s) and
+edge(s).  As R's circular rule applies, you could get multiple
+attributes to multiple elements in one call.
+
+The package \Robject{graph} like notations are:
+
+<<DataDemo1>>=
+graphData(ng, "bgcolor")
+nodeData(ng, "a", c("fontcolor", "width"))
+edgeData(ng, "f", "h", c("color", "arrowhead"))
+
+@
+
+The return value, "default {graph, node, cluster, node} attr val 1", indicates 
+that the attribute is NOT defined. 
+
+The return value, "default {graph, node, cluster, node} attr val 2", indicates 
+that the attribute is NOT set for this object, the software will use default
+instead. 
+
+\subsection{Set attributes}
+
+Likewise, you can set attributes for each element: graph, cluster(s), node(s)
+and edge(s).  R's circular rule applies to element(s), attribute name(s) and
+attribute value(s).  
+
+A note on default value(s): default value could be set once and only once 
+at this time.  Only the first call has effect.
+
+<<DataDemo2>>=
+graphData(ng, "bgcolor") <- "orange"
+clusterData(ng, 2, "bgcolor") <- "red"
+nodeData(ng, "a", c("fontcolor", "width")) <- c("red", "0.8")
+edgeData(ng, "f", "h", c("color", "style")) <- c("blue", "solid")
+@
+
+You can set as many attributes as you like.  
+
+Not every rendering software honors all the attributes, even for those provided
+by graphviz.  Different attributes could have different impact in layout: some
+affect layout and drawing, such as node shapes, font size; others affect only
+drawing, such as fill color, font color.
+
+Some attribute seem only take effect for certain layout, for instance, 
+\Robject{bgcolor} for cluster shows the effect when layout is "dot", but not 
+for "circo".
+
+\subsection{Layout and render the graph in various formats}
+
+To do the layout and render the results, there are two main output channels:
+(1) interactive output, and
+(2) file output which you could use various viewers to view the results.
+
+To plot a graph interactively, simply do:
+
+<<layoutRenderDemo1>>=
+plot(ng, "neato")
+plot(ng, "circo")
+@
+
+Currently, interactive output only honors a small number of attributes, mainly
+those from \Robject{buildNodelist} and \Robject{buildEdgeList}.
+
+To do layout and then output to a file, you can do:
+
+<<layoutRenderDemo1>>=
+# toFile(ng, layoutType="dot", filename="test_dot.svg", fileType="svg")
+# toFile(ng, layoutType="circo", filename="test_circo.ps", fileType="ps")
+toFile(ng, layoutType="dot", filename="test_twopi.dot", fileType="dot")
+@
+
+These examples use various renderer provided by graphviz, which honor a lot 
+more attributes.  You can look into graphviz doc to find out more, for instance,
+node shapes, color schemes, line types/sizes, etc.
+
+You need corresponding viewers installed to be able to view the output files.
+
+
+%------------------------------------------------------------
+
+%------------------------------------------------------------
+\section{Tooltips and hyperlinks on graphs}
+%------------------------------------------------------------
+Users that want to create a clickable graph renderings with drill-down
+capability should see the \Rfunction{imageMap} function in the 
+\Rpackage{biocGraph} package.
+
+
+\section{Sessioninfo}
+
+<<echo=FALSE,results=tex>>=
+toLatex(sessionInfo())
+@ 
+
+\end{document}

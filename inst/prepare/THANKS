@@ -1,0 +1,29 @@
+This work could not have been completed without the generous help of numerous people.  In
+alphabetical order, hopefully including all who have helped:
+
+From the Graphviz developers email list
+  John Ellson	
+  Emden R. Gansner
+  Stephen North
+  Gordon Smith
+
+Help with the R package, extensive testing and building
+  Dan Tenenbaum
+
+Help with porting to 64 bit Windows, and for making 64 bit Windows binaries of Graphviz available.
+  Brian D Ripley
+
+Testing and bug reporting
+  Claus Bendtsen
+  Henrik Bengtsson
+  Thomas Cokelaer
+  Laurent Gautier
+  Anand Gavai
+  Klaus K. Holst
+  Mike Jiang
+  Mikko Korpela
+  David Meyer
+  Roger D Peng
+  Adi Tarca
+  Jitao David Zhang
+
