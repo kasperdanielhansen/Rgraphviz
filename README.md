@@ -1,6 +1,4 @@
-====================
-Installing Rgraphviz
-====================
+# Rgraphviz
 
 Rgraphviz now comes bundles with Graphviz.  This should greatly simplify
 installation on all platforms, compared with earlier versions.
@@ -29,17 +27,16 @@ In this case, Rgraphviz will search for Graphviz using the following methods
   (2) See if Graphviz is in its default location of /usr/local
 
 
-====
-Note
-====
+## Devel repository
+
+The devel repository for Rgraphviz is at
+
+https://github.com/kasperdanielhansen/Rgraphviz
+
+## Notes
 
 The release version of Graphviz 2.28 contains bugs that makes it not work with
 Rgraphviz for certain layout options.  The patches to the bundled Graphviz
 2.28.0 are included in package.
-
-
-% Local Variables:
-% fill-column: 80
-% End:
 
 
