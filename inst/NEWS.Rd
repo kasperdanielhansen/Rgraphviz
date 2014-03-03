@@ -2,6 +2,13 @@
 \title{Rgraphviz News}
 \encoding{UTF-8}
 
+\section{Version 2.7.x}{
+  \itemize{
+    \item Fixed include statements in Graphviz code.
+  }
+}
+
+
 \section{Version 2.5.x}{
   \itemize{
     \item Expose mai argument in plot,Ragraph-method.
