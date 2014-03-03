@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 
-#include <pathgeom.h>
+#include "pathgeom.h"
     void Ptriangulate(Ppoly_t * polygon,
 		      void (*fn) (void *closure, Ppoint_t tri[]),
 		      void *vc);

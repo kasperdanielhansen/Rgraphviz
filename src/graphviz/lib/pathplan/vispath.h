@@ -16,7 +16,7 @@
 #ifndef _VIS_INCLUDE
 #define _VIS_INCLUDE
 
-#include <pathgeom.h>
+#include "pathgeom.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -14,7 +14,7 @@
 #ifndef RAWGRAPH_H
 #define RAWGRAPH_H
 
-#include <cdt.h>
+#include "cdt.h"
 
 typedef struct {
   int color;

@@ -43,9 +43,9 @@
 #include <unistd.h>
 #endif
 #include <ctype.h>
-#include <dbg.h>
-#include <grid.h>
-#include <neato.h>
+#include "dbg.h"
+#include "grid.h"
+#include "neato.h"
 
 #ifndef HAVE_SRAND48
 #define srand48 srand

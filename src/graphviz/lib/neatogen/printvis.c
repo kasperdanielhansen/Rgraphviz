@@ -12,7 +12,7 @@
  *************************************************************************/
 
 #include <stdio.h>
-#include <vis.h>
+#include "vis.h"
 typedef Ppoint_t point;
 
 

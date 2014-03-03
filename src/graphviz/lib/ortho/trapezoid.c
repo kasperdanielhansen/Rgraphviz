@@ -21,10 +21,10 @@
 #include <stdio.h>
 #define __USE_ISOC99
 #include <math.h>
-#include <geom.h>
-#include <logic.h>
-#include <memory.h>
-#include <trap.h>
+#include "geom.h"
+#include "logic.h"
+#include "memory.h"
+#include "trap.h"
 
 #ifdef WIN32
 #define log2(x)  (log(x)/log(2))

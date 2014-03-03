@@ -22,16 +22,16 @@
 #include <values.h>
 #endif
 #endif
-#include <sfdp.h>
-#include <neato.h>
-#include <adjust.h>
-#include <pack.h>
+#include "sfdp.h"
+#include "neato.h"
+#include "adjust.h"
+#include "pack.h"
 #include <assert.h>
 #include <ctype.h>
-#include <spring_electrical.h>
-#include <overlap.h>
-#include <uniform_stress.h>
-#include <stress_model.h>
+#include "spring_electrical.h"
+#include "overlap.h"
+#include "uniform_stress.h"
+#include "stress_model.h"
 
 static void sfdp_init_edge(edge_t * e)
 {

@@ -15,9 +15,9 @@
 #include "config.h"
 #endif
 
-#include <partition.h>
-#include <trap.h>
-#include <memory.h>
+#include "partition.h"
+#include "trap.h"
+#include "memory.h"
 #include <math.h>
 #include <stdlib.h>
 

@@ -13,7 +13,7 @@
 
 #ifndef ORTHO_H
 #define ORTHO_H
-#include <render.h>
+#include "render.h"
 
 void orthoEdges (Agraph_t* g, int useLbls);
 #endif

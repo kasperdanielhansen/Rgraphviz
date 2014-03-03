@@ -12,9 +12,9 @@
  *************************************************************************/
 
 
-#include <deglist.h>
-#include <circular.h>
-#include <blockpath.h>
+#include "deglist.h"
+#include "circular.h"
+#include "blockpath.h"
 #include <assert.h>
 
 typedef struct {

@@ -14,7 +14,7 @@
 #ifndef PARTITION_H
 #define PARTITION_H
 
-#include <maze.h>
+#include "maze.h"
 
 extern boxf* partition (cell*, int, int*, boxf);
 

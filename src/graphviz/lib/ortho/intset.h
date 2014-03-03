@@ -14,7 +14,7 @@
 #ifndef INTSET_H
 #define INTSET_H
 
-#include <cdt.h>
+#include "cdt.h"
 
 typedef struct {
     int       id;

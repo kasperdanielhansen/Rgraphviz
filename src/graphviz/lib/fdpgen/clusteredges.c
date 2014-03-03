@@ -25,9 +25,9 @@
 #include <config.h>
 #endif
 
-#include <clusteredges.h>
-#include <fdp.h>
-#include <neatoprocs.h>
+#include "clusteredges.h"
+#include "fdp.h"
+#include "neatoprocs.h"
 #include "vispath.h"
 
 typedef struct {
