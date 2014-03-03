@@ -13,7 +13,7 @@
 #ifndef SPARSEMATRIX_H
 #define  SPARSEMATRIX_H
 
-#include <general.h>
+#include "general.h"
 #include <stdio.h>
 
 #define SYMMETRY_EPSILON 0.0000001

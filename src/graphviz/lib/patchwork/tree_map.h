@@ -14,7 +14,7 @@
 #ifndef TREE_MAP_H
 #define TREE_MAP_H
 
-#include <SparseMatrix.h>
+#include "SparseMatrix.h"
 
 typedef struct rectangle_struct {
   real x[2];/* center */

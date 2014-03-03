@@ -14,7 +14,7 @@
 #ifndef MAZE_H
 #define MAZE_H
 
-#include <sgraph.h>
+#include "sgraph.h"
 
 enum {M_RIGHT=0, M_TOP, M_LEFT, M_BOTTOM};
 

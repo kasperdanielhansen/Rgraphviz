@@ -14,8 +14,8 @@
 #ifndef MULTISPLINE_H
 #define MULTISPLINE_H
 
-#include <render.h>
-#include <pathutil.h>
+#include "render.h"
+#include "pathutil.h"
 
 typedef struct router_s router_t;
 

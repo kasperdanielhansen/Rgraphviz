@@ -14,8 +14,8 @@
 #ifndef _POINTSET_H
 #define _POINTSET_H 1
 
-#include <cdt.h>
-#include <geom.h>
+#include "cdt.h"
+#include "geom.h"
 
 #ifdef __cplusplus
 extern "C" {

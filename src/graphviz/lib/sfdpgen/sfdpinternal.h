@@ -14,7 +14,7 @@
 #ifndef SFDPINTERNAL_H
 #define SFDPINTERNAL_H
 
-#include <sfdp.h>
+#include "sfdp.h"
 
 #endif
  

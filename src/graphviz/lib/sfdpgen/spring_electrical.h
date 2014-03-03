@@ -14,7 +14,7 @@
 #ifndef SPRING_ELECTRICAL_H
 #define SPRING_ELECTRICAL_H
 
-#include <SparseMatrix.h>
+#include "SparseMatrix.h"
 
 enum {ERROR_NOT_SQUARE_MATRIX = -100};
 

@@ -17,10 +17,10 @@
 
 
 #include <iostream>
-#include <variable.h>
-#include <constraint.h>
-#include <generate-constraints.h>
-#include <solve_VPSC.h>
+#include "variable.h"
+#include "constraint.h"
+#include "generate-constraints.h"
+#include "solve_VPSC.h"
 #include <cstdlib>
 #include <cassert>
 #include "csolve_VPSC.h"

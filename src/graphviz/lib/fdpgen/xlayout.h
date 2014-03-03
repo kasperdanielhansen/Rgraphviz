@@ -18,7 +18,7 @@ extern "C" {
 #ifndef XLAYOUT_H
 #define XLAYOUT_H
 
-#include <fdp.h>
+#include "fdp.h"
 
     typedef struct {
 	int numIters;
