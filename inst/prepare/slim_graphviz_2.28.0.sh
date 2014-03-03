@@ -43,3 +43,9 @@ cd graphviz-2.28.0
 patch -p1 < ../patches_2.28.0/graphviz-2.28.0-configure.patch
 autoreconf
 cd ..
+
+echo 'Fixing #include < to be #include "'
+cp find_includes.sh ../../src/graphviz/lib
+cd ../../src/graphviz/lib
+./find_includes.sh
+

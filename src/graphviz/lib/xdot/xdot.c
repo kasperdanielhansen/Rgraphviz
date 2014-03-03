@@ -11,7 +11,7 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#include <xdot.h>
+#include "xdot.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>

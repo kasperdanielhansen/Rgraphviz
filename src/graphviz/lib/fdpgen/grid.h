@@ -22,8 +22,8 @@ extern "C" {
 #include <config.h>
 #endif
 
-#include <render.h>
-#include <cdt.h>
+#include "render.h"
+#include "cdt.h"
 
     typedef struct _grid Grid;
 

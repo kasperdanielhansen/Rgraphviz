@@ -11,7 +11,7 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#include <memory.h>
+#include "memory.h"
 #include <stdio.h>
 
 /* Priority queue:

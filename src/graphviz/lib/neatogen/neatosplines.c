@@ -26,7 +26,7 @@ extern double drand48(void);
 #endif
 
 #ifdef ORTHO
-#include <ortho.h>
+#include "ortho.h"
 #endif
 
 extern void printvis(vconfig_t * cp);

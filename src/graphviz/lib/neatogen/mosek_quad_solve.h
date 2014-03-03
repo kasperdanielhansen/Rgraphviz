@@ -23,7 +23,7 @@
 
 #include <mosek.h> /* Include the MOSEK definition file. */
 #include "types.h"
-#include <csolve_VPSC.h>
+#include "csolve_VPSC.h"
 
 typedef struct {
 	int r;

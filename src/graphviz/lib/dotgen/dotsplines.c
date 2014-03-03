@@ -19,7 +19,7 @@
 #include "dot.h"
 
 #ifdef ORTHO
-#include <ortho.h>
+#include "ortho.h"
 #endif
 
 #define	NSUB	9		/* number of subdivisions, re-aiming splines */

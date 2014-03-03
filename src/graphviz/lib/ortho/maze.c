@@ -19,10 +19,10 @@
 #define DEBUG
 
 #include <stddef.h>
-#include <maze.h>
-#include <partition.h>
-#include <memory.h>
-#include <arith.h>
+#include "maze.h"
+#include "partition.h"
+#include "memory.h"
+#include "arith.h"
 /* #include <values.h> */
 
 #define MARGIN 36;

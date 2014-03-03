@@ -13,7 +13,7 @@
 
 /* Priority Queue Code for shortest path in graph */
 
-#include <sgraph.h>
+#include "sgraph.h"
 /* typedef snode** PQ; */
 
 #define N_VAL(n) (n)->n_val

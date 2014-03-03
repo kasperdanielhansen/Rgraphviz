@@ -124,7 +124,7 @@ typedef struct {
 
 #define DEGREE(n) (ND_order(n))
 
-#include <circo.h>
+#include "circo.h"
 
 #ifdef __cplusplus
 extern "C" {

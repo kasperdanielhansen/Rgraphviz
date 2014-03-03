@@ -28,7 +28,7 @@
 
 #define DEBUG
 #include <stddef.h>
-#include <maze.h>
+#include "maze.h"
 #include "fPQ.h"
 #include "memory.h"
 #include "geomprocs.h"
@@ -512,7 +512,7 @@ addNodeEdges (sgraph* sg, cell* cp, snode* np)
 
 #ifdef DEBUG
 
-#include <intset.h>
+#include "intset.h"
 static char* bendToStr (bend b)
 {
   char* s;
@@ -1362,7 +1362,7 @@ orthoEdges (Agraph_t* g, int doLbls)
 }
 
 #ifdef DEBUG
-#include <arith.h>
+#include "arith.h"
 /* #include <values.h> */
 #define TRANS 10
 
