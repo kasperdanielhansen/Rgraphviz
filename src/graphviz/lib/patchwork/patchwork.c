@@ -13,8 +13,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <patchwork.h>
-#include <tree_map.h>
+#include "patchwork.h"
+#include "tree_map.h"
 #include "render.h"
 
 typedef struct treenode_t treenode_t;

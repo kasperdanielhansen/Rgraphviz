@@ -17,8 +17,8 @@
 #include "config.h"
 #endif
 
-#include <fPQ.h>
-#include <memory.h>
+#include "fPQ.h"
+#include "memory.h"
 #include <assert.h>
 
 static snode**  pq;

@@ -12,7 +12,7 @@
  *************************************************************************/
 
 
-#include <nodeset.h>
+#include "nodeset.h"
 
 
 static nsitem_t *mkItem(Dt_t * d, nsitem_t * obj, Dtdisc_t * disc)

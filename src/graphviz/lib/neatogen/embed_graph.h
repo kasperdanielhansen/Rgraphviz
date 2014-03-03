@@ -35,7 +35,7 @@ extern "C" {
 		      double **(&new_coords));
 
 #else
-#include <defs.h>
+#include "defs.h"
 
     extern void embed_graph(vtx_data * graph, int n, int dim, DistType ***,
 			    int);

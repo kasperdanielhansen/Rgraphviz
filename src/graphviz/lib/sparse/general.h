@@ -24,9 +24,9 @@
  * In particular, note that Verbose is declared but undefined.
  */
 #ifndef STANDALONE
-#include <logic.h>
-#include <arith.h>
-#include <memory.h>
+#include "logic.h"
+#include "arith.h"
+#include "memory.h"
 #endif
 
 #define real double

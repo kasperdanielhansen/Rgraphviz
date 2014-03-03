@@ -47,7 +47,7 @@
 #include "matrix_ops.h"
 #include "kkutils.h"
 #include "conjgrad.h"
-#include <csolve_VPSC.h>
+#include "csolve_VPSC.h"
 #include "quad_prog_vpsc.h"
 #include "quad_prog_solver.h"
 #include "matrix_ops.h"

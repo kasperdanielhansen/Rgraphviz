@@ -16,8 +16,8 @@
 #endif
 
 #include <stddef.h>
-#include <intset.h>
-#include <memory.h>
+#include "intset.h"
+#include "memory.h"
 
 static Void_t*
 mkIntItem(Dt_t* d,intitem* obj,Dtdisc_t* disc)

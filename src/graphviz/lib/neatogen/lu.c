@@ -46,7 +46,7 @@
  */
 
 #include <math.h>
-#include <neato.h>
+#include "neato.h"
 
 static double *scales;
 static double **lu;

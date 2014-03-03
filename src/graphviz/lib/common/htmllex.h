@@ -18,7 +18,7 @@ extern "C" {
 #ifndef HTMLLEX_H
 #define HTMLLEX_H
 
-#include <agxbuf.h>
+#include "agxbuf.h"
 
     extern int initHTMLlexer(char *, agxbuf *, int);
     extern int htmllex(void);

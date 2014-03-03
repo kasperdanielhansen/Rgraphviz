@@ -24,9 +24,9 @@
 /* uses PRIVATE interface for NOTUSED */
 #define FDP_PRIVATE 1
 
-#include <fdp.h>
-#include <grid.h>
-#include <macros.h>
+#include "fdp.h"
+#include "grid.h"
+#include "macros.h"
 
   /* structure for maintaining a free list of cells */
 typedef struct _block {
