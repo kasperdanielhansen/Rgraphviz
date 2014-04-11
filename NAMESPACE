@@ -1,0 +1,142 @@
+importClassesFrom(graph, graph)
+
+importClassesFrom(methods, ANY, character, externalptr, integer, list,
+                  logical, missing, numeric, vector)
+
+importMethodsFrom(graph, edgeData, "edgeData<-",
+                  edgeDataDefaults, "edgeDataDefaults<-", edgeL,
+                  edgeMatrix, edgemode, edgeNames, nodeData,
+                  "nodeData<-", nodeDataDefaults, "nodeDataDefaults<-",
+                  nodes, numNodes)
+
+importMethodsFrom(methods, show)
+
+importMethodsFrom(stats4, plot)
+
+importFrom(graph, edgeRenderInfo, "edgeRenderInfo<-", graph.par,
+           graph.par.get, graphRenderInfo, "graphRenderInfo<-",
+           nodeRenderInfo, "nodeRenderInfo<-", parRenderInfo,
+           validGraph)
+
+importFrom(graphics, arrows, lines, par, plot.new, plot.window,
+           polygon, rect, strheight, strwidth, symbols, text,
+           title)
+
+import(grDevices)
+
+importFrom(grid, bezierPoints, convertHeight, convertWidth,
+           current.viewport, current.vpTree, popViewport, pushViewport,
+           unit)
+
+importFrom(methods, is, slot)
+
+importFrom(utils, head, tail)
+
+                                                                                
+export(
+        agopen,
+        agopenSimple,
+        agread,
+        agwrite,
+        buildEdgeList,
+        buildNodeList,
+        checkAttrs,
+        drawAgNode,
+        drawTxtLabel,
+        getDefaultAttrs,
+        getNodeLabels,
+        getNodeNames,
+        graphvizVersion,
+        graphvizCapabilities,
+        graphLayout,
+        makeNodeAttrs,
+        pieGlyph,
+        removedEdges,
+        toFile,
+        layoutGraph
+	)
+
+exportClasses(
+              "AgEdge",
+              "AgNode",
+              "AgTextLabel",
+              "BezierCurve",
+              "boundingBox",
+              "pEdge",	# plot, related to buildEdgeList only
+              "pNode",	# plot, related to buildNodeList only
+              "Ragraph",
+              "xyPoint"
+	)
+
+exportMethods(	
+		graphDataDefaults,
+		"graphDataDefaults<-", 
+		graphData,
+		"graphData<-", 
+		clusterData,
+		"clusterData<-", 
+		nodeDataDefaults, 
+		"nodeDataDefaults<-", 
+		nodeData,
+		"nodeData<-",
+		edgeDataDefaults, 
+		"edgeDataDefaults<-",
+		edgeData, 
+		"edgeData<-", 
+
+		# Ragraph +
+                "AgEdge<-",
+                "AgEdge",
+                "AgNode<-",
+                "AgNode",
+                "agraph",
+                "arrowhead",
+                "arrowsize",
+                "arrowtail",
+                "bezierPoints",
+                "bLines",
+                "botLeft",
+                "boundBox",
+                "color",
+                "cPoints",
+                "edgemode",
+                "edgeNames",
+                "ep",
+                "fillcolor",
+                "from",			# plot only
+                "getNodeCenter",
+                "getNodeHeight",
+                "getNodeLW",
+                "getNodeRW",
+                "getNodeXY",
+                "getNodeXY",
+                "getPoints",
+                "getSpline",
+                "getX",
+                "getY",
+                "head",
+                "labelColor",
+                "labelFontsize",
+                "labelJust",
+                "labelLoc",
+                "labelText",
+                "labelWidth",
+                "laidout",
+                "layoutType",
+                "lines",
+                "name",			# plot
+                "numSplines",
+                "plot",			# graph only
+                "pointList",
+                "shape",
+                "show",
+                "sp",
+                "splines",
+                "style",
+                "tail",
+                "to",			# plot only
+                "toDot",		# graph only
+                "txtLabel",
+                "upRight",
+                "renderGraph"
+	)

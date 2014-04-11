@@ -1,0 +1,19 @@
+GRAPHVIZ_VERSION="2.28.0"
+
+PKG_CFLAGS += -Ilibwin$(R_ARCH)/include/graphviz
+PKG_CFLAGS += -DHAVE_STDBOOL_H=1 -DHAVE_BOOL=1 -DGRAPHVIZ_MAJOR=2 -DGRAPHVIZ_MINOR=28 -DGRAPHVIZ_STATIC
+PKG_LIBS += -WI,--enable-auto-import 
+PKG_LIBS += libwin$(R_ARCH)/lib/libxdot.a
+PKG_LIBS += libwin$(R_ARCH)/lib/libgvplugin_dot_layout.a
+PKG_LIBS += libwin$(R_ARCH)/lib/libgvplugin_neato_layout.a
+PKG_LIBS += libwin$(R_ARCH)/lib/libgvplugin_core.a
+PKG_LIBS += libwin$(R_ARCH)/lib/libgvc.a
+PKG_LIBS += libwin$(R_ARCH)/lib/libpathplan.a
+PKG_LIBS += libwin$(R_ARCH)/lib/libgraph.a
+PKG_LIBS += libwin$(R_ARCH)/lib/libcdt.a
+
+all: $(SHLIB) graphviz_version
+
+graphviz_version: ../R/graphviz_build_version.R.in
+	sed "s!@GRAPHVIZ_VERSION@!$(GRAPHVIZ_VERSION)!" ../R/graphviz_build_version.R.in |\
+	  sed "s!@GRAPHVIZ_BUNDLED@!TRUE!" > ../R/graphviz_build_version.R
