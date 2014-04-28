@@ -116,7 +116,7 @@ SEXP getEdgeLocs(Agraph_t *g) {
             if (edge->u.label != NULL) {
                 PROTECT(curLab = NEW_OBJECT(labClass));
                 SET_SLOT(curLab, Rf_install("labelText"),
-                         Rgraphviz_ScalarStringOrNull(ED_label(edge)->u.txt.para->str));
+                         Rgraphviz_ScalarStringOrNull(ED_label(edge)->text));
                 /* Get the X/Y location of the label */
                 PROTECT(curXY = NEW_OBJECT(xyClass));
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR > 20
@@ -196,10 +196,10 @@ SEXP getNodeLayouts(Agraph_t *g) {
 
         PROTECT(curLab = NEW_OBJECT(labClass));
 
-	if (ND_label(node)  == NULL) {
-	} else if (ND_label(node)->u.txt.para != NULL) {
+        if (ND_label(node)  == NULL) {
+        } else if (ND_label(node)->u.txt.para != NULL) {
             SET_SLOT(curLab, Rf_install("labelText"),
-                     Rgraphviz_ScalarStringOrNull(ND_label(node)->u.txt.para->str));
+                     Rgraphviz_ScalarStringOrNull(ND_label(node)->text));
             snprintf(tmpString, 2, "%c",ND_label(node)->u.txt.para->just);
             SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
 

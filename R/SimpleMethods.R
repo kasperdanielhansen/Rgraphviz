@@ -4,7 +4,12 @@ setMethod("getPoints", "xyPoint", function(object) c(object@x, object@y))
 setMethod("show", "xyPoint", function(object)
           cat(paste("x: ", object@x, ", y: ", object@y, "\n", sep="")))
 
-setMethod("labelText", "AgTextLabel", function(object) object@labelText)
+setMethod("labelText", "AgTextLabel", function(object) {
+    text <- object@labelText
+    text <- gsub('\\n', '\n', text, fixed=T)
+    text <- gsub('\\r', '\r', text, fixed=T) # only these two as per Graphviz lib/common/labels.c:make_simple_label
+    return(text)
+})
 setMethod("labelColor", "AgTextLabel", function(object) object@labelColor)
 setMethod("labelLoc", "AgTextLabel", function(object) object@labelLoc)
 setMethod("labelJust", "AgTextLabel", function(object) object@labelJust)
