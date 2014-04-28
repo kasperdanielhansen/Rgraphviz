@@ -12,7 +12,7 @@ setMethod("plot", "graph",
         warning("graph has zero nodes; cannot layout\n")
         return(invisible(x))
     }
-    
+
     if (missing(y)) y <- "dot"
 
     recipEdges <- match.arg(recipEdges)
@@ -31,17 +31,13 @@ setMethod("plot", "Ragraph",
            sub=NULL, cex.sub=NULL, col.sub="black",
            drawNode=drawAgNode, xlab, ylab, mai) {
 
-      ## layout graph
-      if ( missing(y) ) y <- x@layoutType
-      x <- graphLayout(x, y)
-
       plot.new()
 
       bg <- if ( x@bg != "" ) x@bg else par("bg")
       fg <- if ( x@fg != "" ) x@fg else par("fg")
       oldpars <- par(bg = bg, fg = fg)
       on.exit(par(oldpars), add = TRUE)
-      
+
       if (missing(mai)) {
           mheight <- if(!is.null(main) && nchar(main) > 0)
               sum(strheight(main, "inches", cex.main)) + 0.3 else 0.1
@@ -52,18 +48,22 @@ setMethod("plot", "Ragraph",
       oldpars <- par(mai = mai)
       on.exit(par(oldpars), add = TRUE)
       if(!is.null(sub)||!is.null(main))
-          title(main, sub, cex.main = cex.main, col.main = col.main, 
+          title(main, sub, cex.main = cex.main, col.main = col.main,
                 cex.sub = cex.sub, col.sub = col.sub)
-      
+
+      ## layout graph
+      if ( missing(y) ) y <- x@layoutType
+          x <- graphLayout(x, y, sprintf("%f,%f", par("pin")[1], par("pin")[2]))
+
       ur <- upRight(boundBox(x))
       bl <- botLeft(boundBox(x))
       plot.window(xlim = c(getX(bl), getX(ur)),
                   ylim = c(getY(bl), getY(ur)),
                   log = "", asp = NA, ...)
-      
+
       if(!missing(xlab) && !missing(ylab))
           stop("Arguments 'xlab' and 'ylab' are not handled.")
-      
+
       ## determine whether node labels fit into nodes and set "cex" accordingly
       agn <- AgNode(x)
       nodeDims <- sapply(agn, function(n) {
@@ -83,7 +83,7 @@ setMethod("plot", "Ragraph",
           oldpars <- par(cex=cex)
           on.exit(par(oldpars), add = TRUE)
       }
-      
+
       ## draw
       if (length(drawNode) == 1) {
           lapply(agn, drawNode)
@@ -99,12 +99,12 @@ setMethod("plot", "Ragraph",
       }
 
       ## Use the smallest node radius as a means to scale the size of
-      ## the arrowheads -- in INCHES! see man page for "arrows", 
+      ## the arrowheads -- in INCHES! see man page for "arrows",
       arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * min(nodeDims) / pi
-      
+
       ## Plot the edges
       lapply(AgEdge(x), lines, len=arrowLen, edgemode=edgemode, ...)
-      
+
       invisible(x)
 })
 
@@ -123,7 +123,7 @@ drawAgNode <- function(node) {
   shape <- shape(node)
 
   ## Normal Rgraphviz defaults to circle, but DOT defaults to ellipse
-  if (shape =="") shape <- "ellipse" 
+  if (shape =="") shape <- "ellipse"
 
   if (fg == "") fg <- "black"
   bg <- fillcolor(node)
@@ -137,8 +137,8 @@ drawAgNode <- function(node) {
          "ellipse"   = ellipse(x=nodeX, y=nodeY, height=height, width=rad*2, fg=fg, bg=bg),
          "box"=,
          "rect"=,
-         "rectangle" = rect(nodeX-lw, nodeY-(height/2), 
-			    nodeX+rw, nodeY+(height/2), 
+         "rectangle" = rect(nodeX-lw, nodeY-(height/2),
+			    nodeX+rw, nodeY+(height/2),
 			    col=bg, border=fg),
          "plaintext"= { if (style == "filled")
                           rect(nodeX-lw, nodeY-(height/2),
