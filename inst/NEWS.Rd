@@ -2,6 +2,17 @@
 \title{Rgraphviz News}
 \encoding{UTF-8}
 
+\section{Version 2.9.x}{
+  \itemize{
+    \item Fixed a bug in the C code of Graphviz which manifests itself
+    when the following options are given to GCC
+    "-Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2",
+    this is the case for Ubuntu 12.04.
+    Reported by Vladimir Zhurov <vzhurov2@uwo.ca>, Venkat Seshan
+    <veseshan@gmail.com> and Chong Tang <tangc3@unr.edu>.
+  }
+}
+
 \section{Version 2.7.x}{
   \itemize{
     \item Fixed include statements in Graphviz code.
