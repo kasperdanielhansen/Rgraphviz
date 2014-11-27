@@ -4,7 +4,7 @@ This is the developer version of Bioconductor package [Rgraphviz](http://biocond
 
 ```r
 source('http://bioconductor.org/biocLite.R')
-biocLite(Rgraphviz')
+biocLite('Rgraphviz')
 ```
 
 # Additional installation tips
