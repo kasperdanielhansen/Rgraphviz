@@ -127,7 +127,7 @@ drawAgNode <- function(node) {
 
   if (fg == "") fg <- "black"
   bg <- fillcolor(node)
-  if (bg == "") {
+  if (bg %in% c("", "none")) {
       if (style == "filled") bg <- "grey"
       else bg <- "transparent"
   }
