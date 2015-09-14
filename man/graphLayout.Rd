@@ -6,7 +6,7 @@
   perform a libgraph layout on the graph locations.
 }
 \usage{
-graphLayout(graph, layoutType=graph@layoutType)
+graphLayout(graph, layoutType=graph@layoutType, size=NULL)
 }
 \arguments{
   \item{graph}{An object of type \code{Ragraph}}
@@ -28,7 +28,7 @@ graphLayout(graph, layoutType=graph@layoutType)
 V <- letters[1:10]
 M <- 1:4
 g1 <- randomGraph(V, M, .2)
-z <- agopen(g1,"foo",layout=FALSE)
+z <- agopen(g1, "foo", layout=FALSE)
 x <- z
 a <- graphLayout(z)
 }

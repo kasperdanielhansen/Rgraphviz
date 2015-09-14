@@ -31,81 +31,82 @@ setMethod("plot", "Ragraph",
            sub=NULL, cex.sub=NULL, col.sub="black",
            drawNode=drawAgNode, xlab, ylab, mai) {
 
-      plot.new()
-
-      bg <- if ( x@bg != "" ) x@bg else par("bg")
-      fg <- if ( x@fg != "" ) x@fg else par("fg")
-      oldpars <- par(bg = bg, fg = fg)
-      on.exit(par(oldpars), add = TRUE)
-
-      if (missing(mai)) {
-          mheight <- if(!is.null(main) && nchar(main) > 0)
-              sum(strheight(main, "inches", cex.main)) + 0.3 else 0.1
-          sheight <- if(!is.null(sub) && nchar(sub) > 0)
-              sum(strheight(main, "inches", cex.sub)) + 0.2 else 0.1
-          mai <- c(sheight, 0, mheight, 0)
-      }
-      oldpars <- par(mai = mai)
-      on.exit(par(oldpars), add = TRUE)
-      if(!is.null(sub)||!is.null(main))
-          title(main, sub, cex.main = cex.main, col.main = col.main,
-                cex.sub = cex.sub, col.sub = col.sub)
-
-      ## layout graph
-      if ( missing(y) ) y <- x@layoutType
-          x <- graphLayout(x, y, sprintf("%f,%f", par("pin")[1], par("pin")[2]))
-
-      ur <- upRight(boundBox(x))
-      bl <- botLeft(boundBox(x))
-      plot.window(xlim = c(getX(bl), getX(ur)),
-                  ylim = c(getY(bl), getY(ur)),
-                  log = "", asp = NA, ...)
-
-      if(!missing(xlab) && !missing(ylab))
-          stop("Arguments 'xlab' and 'ylab' are not handled.")
-
-      ## determine whether node labels fit into nodes and set "cex" accordingly
-      agn <- AgNode(x)
-      nodeDims <- sapply(agn, function(n) {
-          c(getNodeRW(n)+getNodeLW(n), getNodeHeight(n))
-      })
-      strDims  <- sapply(agn, function(n) {
-          s  <- labelText(txtLabel(n))
-          if(length(s)==0) {
-              rv <- c(strwidth(" "), strheight(" "))
-          } else {
-              rv <- c(strwidth(s)*1.1, strheight(s)*1.4)
-          }
-          return(rv)
-      } )
-      cex <- min(nodeDims / strDims)
-      if(is.finite(cex) && cex > 0 ) {
-          oldpars <- par(cex=cex)
-          on.exit(par(oldpars), add = TRUE)
-      }
-
-      ## draw
-      if (length(drawNode) == 1) {
-          lapply(agn, drawNode)
-      } else {
-          if (length(drawNode) == length(AgNode(x))) {
-              for (i in seq(along=drawNode)) {
-                  drawNode[[i]](agn[[i]])
-              }
-          } else {
-              stop(paste("Length of the drawNode parameter is ", length(drawNode),
-                         ", it must be either length 1 or the number of nodes.", sep=""))
-          }
-      }
-
-      ## Use the smallest node radius as a means to scale the size of
-      ## the arrowheads -- in INCHES! see man page for "arrows",
-      arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * min(nodeDims) / pi
-
-      ## Plot the edges
-      lapply(AgEdge(x), lines, len=arrowLen, edgemode=edgemode, ...)
-
-      invisible(x)
+    if ( missing(y) ) y <- x@layoutType
+    x <- graphLayout(x, y, sprintf("%f,%f", par("pin")[1], par("pin")[2]))
+    
+    plot.new()
+    
+    bg <- if ( x@bg != "" ) x@bg else par("bg")
+    fg <- if ( x@fg != "" ) x@fg else par("fg")
+    oldpars <- par(bg = bg, fg = fg)
+    on.exit(par(oldpars), add = TRUE)
+    
+    if (missing(mai)) {
+        mheight <- if(!is.null(main) && nchar(main) > 0)
+            sum(strheight(main, "inches", cex.main)) + 0.3 else 0.1
+        sheight <- if(!is.null(sub) && nchar(sub) > 0)
+            sum(strheight(main, "inches", cex.sub)) + 0.2 else 0.1
+        mai <- c(sheight, 0, mheight, 0)
+    }
+    oldpars <- par(mai = mai)
+    on.exit(par(oldpars), add = TRUE)
+    if(!is.null(sub)||!is.null(main))
+        title(main, sub, cex.main = cex.main, col.main = col.main,
+              cex.sub = cex.sub, col.sub = col.sub)
+    
+    ## layout graph
+    
+    ur <- upRight(boundBox(x))
+    bl <- botLeft(boundBox(x))
+    plot.window(xlim = c(getX(bl), getX(ur)),
+                ylim = c(getY(bl), getY(ur)),
+                log = "", asp = NA, ...)
+    
+    if(!missing(xlab) && !missing(ylab))
+        stop("Arguments 'xlab' and 'ylab' are not handled.")
+    
+    ## determine whether node labels fit into nodes and set "cex" accordingly
+    agn <- AgNode(x)
+    nodeDims <- sapply(agn, function(n) {
+        c(getNodeRW(n)+getNodeLW(n), getNodeHeight(n))
+    })
+    strDims  <- sapply(agn, function(n) {
+        s  <- labelText(txtLabel(n))
+        if(length(s)==0) {
+            rv <- c(strwidth(" "), strheight(" "))
+        } else {
+            rv <- c(strwidth(s)*1.1, strheight(s)*1.4)
+        }
+        return(rv)
+    } )
+    cex <- min(nodeDims / strDims)
+    if(is.finite(cex) && cex > 0 ) {
+        oldpars <- par(cex=cex)
+        on.exit(par(oldpars), add = TRUE)
+    }
+    
+    ## draw
+    if (length(drawNode) == 1) {
+        lapply(agn, drawNode)
+    } else {
+        if (length(drawNode) == length(AgNode(x))) {
+            for (i in seq(along=drawNode)) {
+                drawNode[[i]](agn[[i]])
+            }
+        } else {
+            stop(paste("Length of the drawNode parameter is ", length(drawNode),
+                       ", it must be either length 1 or the number of nodes.", sep=""))
+        }
+    }
+    
+    ## Use the smallest node radius as a means to scale the size of
+    ## the arrowheads -- in INCHES! see man page for "arrows",
+    arrowLen <- par("pin")[1] / diff(par("usr")[1:2]) * min(nodeDims) / pi
+    
+    ## Plot the edges
+    lapply(AgEdge(x), lines, len=arrowLen, edgemode=edgemode, ...)
+    
+    invisible(x)
 })
 
 

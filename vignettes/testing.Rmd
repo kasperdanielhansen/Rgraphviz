@@ -37,6 +37,7 @@ nodes(g1) <- paste0(nodes(g1), "\nX")
 plot(g1)
 ```
 
+**Result:** The text in each node should be on two lines; the second line should be "X".
 
 # Session info
 
