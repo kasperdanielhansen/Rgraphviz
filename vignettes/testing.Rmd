@@ -1,0 +1,48 @@
+---
+title: "Test plots for Rgraphviz"
+author: "Kasper D. Hansen"
+date: "`r doc_date()`"
+package: "`r pkg_ver('BiocStyle')`"
+abstract: >
+  Test
+vignette: >
+  %\VignetteIndexEntry{Bioconductor style for HTML documents}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output: 
+  BiocStyle::html_document
+---
+
+# Introduction
+
+This vignette is intended for testing purposes for the `r Biocpkg("Rgraphviz")` package.  Unfortunately, we still do not have a great way to test graphics output.
+
+```{r library}
+library(Rgraphviz)
+```
+
+# Test cases
+
+## Example 1
+
+```{r graph1}
+set.seed(123)
+V <- letters[1:10]
+M <- 1:4
+g1 <- randomGraph(V, M, 0.2)
+```
+
+```{r plo1,plot=TRUE}
+nodes(g1) <- paste0(nodes(g1), "\nX")
+plot(g1)
+```
+
+
+# Session info
+
+Here is the output of `sessionInfo()` on the system on which this
+document was compiled:
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
