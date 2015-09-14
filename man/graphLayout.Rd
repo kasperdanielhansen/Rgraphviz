@@ -11,11 +11,13 @@ graphLayout(graph, layoutType=graph@layoutType)
 \arguments{
   \item{graph}{An object of type \code{Ragraph}}
   \item{layoutType}{layout algorithm to use}
+  \item{size}{Size in inches, given as string of the form "width,height". Can be NULL.}
 }
 \details{
-  If the graph has already been laid out, this function merely returns
-  its parameter.  Otherwise, it will perform a libgraph layout and
-  retrieve the appropriate location information.
+  If the graph has already been laid out and \code{size} is \code{NULL},
+  this function merely returns its parameter.  Otherwise, it will perform
+  a libgraph layout and retrieve the appropriate location information.
+  If \code{size} is not NULL, the layout will try to match the given size.
 }
 \value{
   A laid out object of type \code{Ragraph}.

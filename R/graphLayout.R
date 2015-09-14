@@ -1,4 +1,4 @@
-graphLayout <- function(graph, layoutType=graph@layoutType)
+graphLayout <- function(graph, layoutType=graph@layoutType, size=NULL)
 {
     if (is(graph,"graph"))
         stop("Please use function agopen() for graph objects")
@@ -6,9 +6,9 @@ graphLayout <- function(graph, layoutType=graph@layoutType)
     if (!is(graph,"Ragraph"))
         stop("Object is not of class Ragraph")
 
-    if ( graph@layoutType != layoutType || !graph@laidout ) {
+    if ( graph@layoutType != layoutType || !graph@laidout || !is.null(size)) {
         graph@layoutType <- layoutType
-        z <- .Call("Rgraphviz_doLayout", graph, layoutType,
+        z <- .Call("Rgraphviz_doLayout", graph, layoutType, size,
                    PACKAGE="Rgraphviz");
     } else {
         z <- graph
