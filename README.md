@@ -3,8 +3,9 @@
 This is the developer version of Bioconductor package [Rgraphviz](http://bioconductor.org/packages/devel/bioc/html/Rgraphviz.html).  Install in R as:
 
 ```r
-source('http://bioconductor.org/biocLite.R')
-biocLite('Rgraphviz')
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install('Rgraphviz')
 ```
 
 # Additional installation tips
