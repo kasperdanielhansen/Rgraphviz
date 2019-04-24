@@ -94,9 +94,9 @@ SEXP getEdgeLocs(Agraph_t *g) {
             SET_SLOT(curEP, Rf_install("head"), Rgraphviz_ScalarStringOrNull(head->name));
 
             /* TODO: clean up the use of attrs: dir, arrowhead, arrowtail.
-             * the following are for interactive plotting in R-env, not needed
+             * the following are for interactive plotting in R-env, not needed 
              * for output to files.  The existing codes set "dir"-attr, but use
-             * "arrowhead"/"arrowtail" instead.  Quite confusing.
+             * "arrowhead"/"arrowtail" instead.  Quite confusing.  
              */
             SET_SLOT(curEP, Rf_install("dir"), Rgraphviz_ScalarStringOrNull(agget(edge, "dir")));
             SET_SLOT(curEP, Rf_install("arrowhead"), Rgraphviz_ScalarStringOrNull(agget(edge, "arrowhead")));
@@ -116,7 +116,7 @@ SEXP getEdgeLocs(Agraph_t *g) {
             if (edge->u.label != NULL) {
                 PROTECT(curLab = NEW_OBJECT(labClass));
                 SET_SLOT(curLab, Rf_install("labelText"),
-                         Rgraphviz_ScalarStringOrNull(ED_label(edge)->text));
+                         Rgraphviz_ScalarStringOrNull(ED_label(edge)->u.txt.para->str));
                 /* Get the X/Y location of the label */
                 PROTECT(curXY = NEW_OBJECT(xyClass));
 #if GRAPHVIZ_MAJOR == 2 && GRAPHVIZ_MINOR > 20
@@ -196,10 +196,10 @@ SEXP getNodeLayouts(Agraph_t *g) {
 
         PROTECT(curLab = NEW_OBJECT(labClass));
 
-        if (ND_label(node)  == NULL) {
-        } else if (ND_label(node)->u.txt.para != NULL) {
+	if (ND_label(node)  == NULL) {
+	} else if (ND_label(node)->u.txt.para != NULL) {
             SET_SLOT(curLab, Rf_install("labelText"),
-                     Rgraphviz_ScalarStringOrNull(ND_label(node)->text));
+                     Rgraphviz_ScalarStringOrNull(ND_label(node)->u.txt.para->str));
             snprintf(tmpString, 2, "%c",ND_label(node)->u.txt.para->just);
             SET_SLOT(curLab, Rf_install("labelJust"), Rgraphviz_ScalarStringOrNull(tmpString));
 
@@ -238,7 +238,7 @@ SEXP getNodeLayouts(Agraph_t *g) {
 static char *layouts[] = { "dot", "neato", "twopi", "circo", "fdp"};
 */
 
-SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType, SEXP size) {
+SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Will perform a Graphviz layout on a graph */
 
     Agraph_t *g;
@@ -249,13 +249,12 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType, SEXP size) {
     CHECK_Rgraphviz_graph(slotTmp);
     g = R_ExternalPtrAddr(slotTmp);
 
-    if (size != R_NilValue) {
-        agsafeset(g, "size", CHAR(STRING_ELT(size, 0)), NULL);
-    }
-
     /* Call the appropriate Graphviz layout routine */
     gvLayout(gvc, g, CHAR(STRING_ELT(layoutType, 0)));
 
+    /* Call the appropriate Graphviz layout routine */
+    gvLayout(gvc, g, CHAR(STRING_ELT(layoutType, 0)));
+    
     /*
     if (!isInteger(layoutType))
         error("layoutType must be an integer value");

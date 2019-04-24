@@ -2,7 +2,7 @@ Package: Rgraphviz
 Title: Provides plotting capabilities for R graph objects
 Description: Interfaces R with the AT and T graphviz library for
         plotting R graph objects from the graph package.
-Version: 2.13.1
+Version: 2.27.0
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
                     email = "kasperdanielhansen@gmail.com"),
              person("Jeff", "Gentry", role = "aut"),
@@ -21,11 +21,7 @@ Imports: stats4,
 	 grDevices
 Suggests: RUnit,
 	  BiocGenerics,
-	  knitr,
-	  rmarkdown,
-	  BiocStyle,
 	  XML
-VignetteBuilder: knitr
 SystemRequirements: optionally Graphviz (>= 2.16)
 GraphvizDetails: Graphviz 2.28.0
 License: EPL
@@ -46,4 +42,3 @@ Collate: AllGenerics.R
 	 writers.R
 	 zzz.R
 biocViews: GraphAndNetwork, Visualization
-URL: https://github.com/kasperdanielhansen/Rgraphviz
