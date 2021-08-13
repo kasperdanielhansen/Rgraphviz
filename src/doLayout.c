@@ -252,9 +252,6 @@ SEXP Rgraphviz_doLayout(SEXP graph, SEXP layoutType) {
     /* Call the appropriate Graphviz layout routine */
     gvLayout(gvc, g, CHAR(STRING_ELT(layoutType, 0)));
 
-    /* Call the appropriate Graphviz layout routine */
-    gvLayout(gvc, g, CHAR(STRING_ELT(layoutType, 0)));
-    
     /*
     if (!isInteger(layoutType))
         error("layoutType must be an integer value");
