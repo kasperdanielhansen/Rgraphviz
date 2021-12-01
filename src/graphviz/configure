@@ -1100,7 +1100,6 @@ LIBTOOL
 LIBOBJS
 ALLOCA
 LIBGEN_LIBS
-MATH_LIBS
 EGREP
 CPP
 RC_IS_WINDRES_FALSE
@@ -8124,27 +8123,31 @@ rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
+# fix pow_finite not found error, Compile and link everything with math library, not just parts
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_m_main" >&5
 $as_echo "$ac_cv_lib_m_main" >&6; }
 if test "x$ac_cv_lib_m_main" = xyes; then :
-  MATH_LIBS="-lm"
+  LIBS+="-lm"
+else
+  $as_echo "$as_myself: error: cannot find mathlibs (-lm) and I need math!" >&2
+  exit 1
 fi
 
 
-
+# Everybody needs Math, use -lm for all compile/linking
 # Check for functions that might need -lm
-LIBS="$LIBS $MATH_LIBS"
-for ac_func in feenableexcept fesetenv
-do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-done
+#LIBS="$LIBS $MATH_LIBS"
+#for ac_func in feenableexcept fesetenv
+#do :
+#  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+#ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+#if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+#  cat >>confdefs.h <<_ACEOF
+##define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+#_ACEOF
+#
+#fi
+#done
 
 
 LIBS=$save_LIBS
@@ -26420,7 +26423,7 @@ if ${ac_cv_lib_png_main+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpng $Z_LIBS $MATH_LIBS $LIBS"
+LIBS="-lpng $Z_LIBS $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -26866,20 +26869,20 @@ fi
 # -----------------------------------
 # Special checks
 
-save_LIBS=$LIBS
-LIBS="$LIBS $MATH_LIBS"
-for ac_func in sincos
-do :
-  ac_fn_c_check_func "$LINENO" "sincos" "ac_cv_func_sincos"
-if test "x$ac_cv_func_sincos" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SINCOS 1
-_ACEOF
+#save_LIBS=$LIBS
+#LIBS="$LIBS $MATH_LIBS"
+#for ac_func in sincos
+#do :
+#  ac_fn_c_check_func "$LINENO" "sincos" "ac_cv_func_sincos"
+#if test "x$ac_cv_func_sincos" = xyes; then :
+#  cat >>confdefs.h <<_ACEOF
+##define HAVE_SINCOS 1
+#_ACEOF
 
-fi
-done
+#fi
+#done
 
-LIBS=$save_LIBS
+#LIBS=$save_LIBS
 
 # -----------------------------------
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if FILE struct contains _cnt" >&5
