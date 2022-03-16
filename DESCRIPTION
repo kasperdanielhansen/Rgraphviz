@@ -2,7 +2,7 @@ Package: Rgraphviz
 Title: Provides plotting capabilities for R graph objects
 Description: Interfaces R with the AT and T graphviz library for
         plotting R graph objects from the graph package.
-Version: 2.39.0
+Version: 2.39.1
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
                     email = "kasperdanielhansen@gmail.com"),
              person("Jeff", "Gentry", role = "aut"),

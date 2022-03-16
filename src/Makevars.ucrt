@@ -1,0 +1,13 @@
+
+PKG_CFLAGS += -Ilibwinucrt/include/graphviz -fcommon
+PKG_CFLAGS += -DHAVE_STDBOOL_H=1 -DHAVE_BOOL=1 -DGRAPHVIZ_MAJOR=2 -DGRAPHVIZ_MINOR=28 -DGRAPHVIZ_STATIC
+PKG_LIBS += libwinucrt/lib/libxdot.a
+PKG_LIBS += libwinucrt/lib/libgvplugin_dot_layout.a
+PKG_LIBS += libwinucrt/lib/libgvplugin_neato_layout.a
+PKG_LIBS += libwinucrt/lib/libgvplugin_core.a
+PKG_LIBS += libwinucrt/lib/libgvc.a
+PKG_LIBS += libwinucrt/lib/libpathplan.a
+PKG_LIBS += libwinucrt/lib/libgraph.a
+PKG_LIBS += libwinucrt/lib/libcdt.a
+PKG_LIBS += -lz
+
