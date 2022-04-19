@@ -1,9 +1,10 @@
 #include "common.h"
 #include "util.h"
 
-SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
-                             SEXP edgeNames, SEXP removedEdges,
-                             SEXP edgeAttrs, SEXP defAttrs) {
+SEXP Rgraphviz_buildEdgeList(SEXP nodes, SEXP edgeL, SEXP edgeMode,
+                             SEXP subGList, SEXP edgeNames,
+                             SEXP removedEdges, SEXP edgeAttrs,
+                             SEXP defAttrs) {
     int x, y, curEle = 0;
     SEXP from;
     SEXP peList;
@@ -11,7 +12,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
     SEXP curAttrs, curFrom, curTo, curWeights = R_NilValue;
     SEXP attrNames;
     SEXP tmpToSTR, tmpWtSTR, tmpW;
-    SEXP curSubG, subGEdgeL, subGEdges, elt;
+    SEXP curSubG, subGEdgeL, subGEdges, subGNodes, elt;
     SEXP recipAttrs, newRecipAttrs, recipAttrNames, newRecipAttrNames;
     SEXP goodEdgeNames;
     SEXP toName;
@@ -158,13 +159,16 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
             for (i = 0; i < nSubG; i++) {
                 curSubG = getListElement(VECTOR_ELT(subGList, i), "graph");
                 subGEdgeL = GET_SLOT(curSubG, Rf_install("edgeL"));
+                subGNodes = GET_SLOT(curSubG, Rf_install("nodes"));
                 elt = getListElement(subGEdgeL, STR(curFrom));
                 if (elt == R_NilValue)
                     continue;
                 /* Extract out the edges */
                 subGEdges = VECTOR_ELT(elt, 0);
                 for (j = 0; j < length(subGEdges); j++) {
-                    if (INTEGER(subGEdges)[j] == INTEGER(curTo)[y])
+                    int subGIdx = INTEGER(subGEdges)[j]-1;
+                    int graphIdx  = INTEGER(curTo)[y]-1;
+                    if(strcmp(CHAR(STRING_ELT(subGNodes, subGIdx)),CHAR(STRING_ELT(nodes, graphIdx))) == 0)
                         break;
                 }
                 if (j == length(subGEdges))

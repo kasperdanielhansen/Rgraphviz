@@ -9,7 +9,7 @@ static const R_CallMethodDef R_CallDef[] = {
              {"Rgraphviz_graphvizVersion", (DL_FUNC)&Rgraphviz_graphvizVersion, 0},
              {"Rgraphviz_bezier", (DL_FUNC)&Rgraphviz_bezier, 3},
              {"Rgraphviz_buildNodeList", (DL_FUNC)&Rgraphviz_buildNodeList, 4},
-             {"Rgraphviz_buildEdgeList", (DL_FUNC)&Rgraphviz_buildEdgeList, 7},
+             {"Rgraphviz_buildEdgeList", (DL_FUNC)&Rgraphviz_buildEdgeList, 8},
 
              {"Rgraphviz_toFile", (DL_FUNC)&Rgraphviz_toFile, 4},
 
