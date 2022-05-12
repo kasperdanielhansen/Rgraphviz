@@ -16,6 +16,7 @@
 #endif
 
 #include <stdlib.h>
+#include <unistd.h>  # for read() declaration
 #include <sys/types.h>
 #include <sys/stat.h>
 #if HAVE_SYS_MMAN_H
