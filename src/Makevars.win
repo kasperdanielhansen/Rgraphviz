@@ -10,6 +10,7 @@ PKG_LIBS += libwin$(R_ARCH)/lib/libgvc.a
 PKG_LIBS += libwin$(R_ARCH)/lib/libpathplan.a
 PKG_LIBS += libwin$(R_ARCH)/lib/libgraph.a
 PKG_LIBS += libwin$(R_ARCH)/lib/libcdt.a
+PKG_LIBS += -lm
 
 all: $(SHLIB) graphviz_version
 

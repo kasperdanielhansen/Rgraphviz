@@ -10,4 +10,6 @@ PKG_LIBS += libwinucrt/lib/libpathplan.a
 PKG_LIBS += libwinucrt/lib/libgraph.a
 PKG_LIBS += libwinucrt/lib/libcdt.a
 PKG_LIBS += -lz
+PKG_LIBS += -lm
+
 

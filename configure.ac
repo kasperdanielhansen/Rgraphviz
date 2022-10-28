@@ -1,6 +1,6 @@
-AC_PREREQ(2.13)
+AC_PREREQ([2.71])
 
-AC_INIT([Rgraphviz], 1.x, [biocore@stat.math.ethz.ch], [Rgraphviz])
+AC_INIT([Rgraphviz],[1.x],[biocore@stat.math.ethz.ch],[Rgraphviz])
 
 dnl We want the following logic
 dnl Per default, use the included graphviz and set GRAPHVIZ_DIR, GRAPHVIZ_VERSTR and do compilation of graphviz
@@ -78,6 +78,7 @@ if test -z "${GRAPHVIZ_DIR}" ; then
     PKG_LIBS="libxdot.a libgvplugin_dot_layout.a libgvplugin_neato_layout.a libgvplugin_core.a libgvc.a libpathplan.a libgraph.a libcdt.a"
     AC_CHECK_HEADER(zlib.h,
                     [AC_CHECK_LIB(z,deflateBound,[PKG_LIBS="${PKG_LIBS} -lz"],,)],)
+    AC_SEARCH_LIBS([pow], [m], [PKG_LIBS="${PKG_LIBS} -lm"],,) 
     PKG_CFLAGS="${PKG_CFLAGS} -I${BUILD_INCLUDE_DIR}"
     GVIZ_DEFS="-DGRAPHVIZ_MAJOR=2 -DGRAPHVIZ_MINOR=28 -DGRAPHVIZ_STATIC"
 else
@@ -149,13 +150,13 @@ fi
 
 AC_HEADER_STDBOOL
 AC_MSG_CHECKING([for whether compiler has bool])
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
    #ifdef HAVE_STDBOOL_H
    #include <stdbool.h>
    #endif
-   ],[
+   ]], [[
    bool foo = true, bar = false;
-   ],[
+   ]])],[
    AC_MSG_RESULT(yes)
    GVIZ_DEFS="${GVIZ_DEFS} -DHAVE_STDBOOL_H=1 -DHAVE_BOOL=1"
    ],[
