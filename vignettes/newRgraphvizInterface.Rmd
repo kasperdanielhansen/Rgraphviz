@@ -90,7 +90,6 @@ hierarchy are
    edges in a graph object can be set using the
    `nodeRenderInfo` and `edgeRenderInfo` functions.
   
-
 Note that all parameters set in `renderGraph’s` `graph.pars` argument are
 transient, whereas setting session-wide parameters will affect all subsequent
 rendering operations. Setting parameters via the `nodeRenderInfo` and
@@ -122,7 +121,6 @@ contain the list items `nodes`, `edges` and `graph`. Each of these list items
 can again be a list of available plotting parameters. In our example, the
 parameters are `fill` and `textCol`. All currently available node parameters
 are:
-
 
 * col: the color of the line drawn as node border. Defaults to
 `black`.
@@ -286,7 +284,7 @@ would be named `a~b`. For a directed graph `a~b` is the edge fom `a` to `b`, and
 changes the line type of the edges between nodes `b` and `f` and nodes `b` and
 `h` to `solid` and their line color to `orange`.
 
-```{r edgePars, fig=TRUE}
+```{r edgePars}
 edgeRenderInfo(g1) <- list(lty=c("b f"="solid", "b h"="solid"),
 col=c("b f"="orange", "b h"="orange"))
 renderGraph(g1)
@@ -309,7 +307,7 @@ edges or nodes of the graph at once. The syntax is simple: instead of a named
 vector one can pass a scalar for a given parameter. This value will then be
 assigned to all available nodes or edges.
 
-```{r setallatonce, fig=TRUE}
+```{r setallatonce}
 nodeRenderInfo(g1) <- list(lty=1)
 edgeRenderInfo(g1) <- list(lty=1, lwd=2, col="gray")
 renderGraph(g1)
@@ -319,7 +317,7 @@ The easiest way to set an attribute back to its default (the session default if
 it has been set) is to pass in a `NULL` list item via the respective setter
 function.
 
-```{r reset, fig=TRUE}
+```{r reset}
 nodeRenderInfo(g1) <- list(fill=list(b=NULL, d=NULL))
 renderGraph(g1)
 ```
@@ -398,7 +396,6 @@ nodeRenderInfo(g1) <- list(shape=list(d=myNode, f=myNode),
 g1 <- layoutGraph(g1)
 renderGraph(g1)
 ```
-
 
 ## Edge arrowheads and arrowtails
 
