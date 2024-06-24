@@ -33,7 +33,7 @@ SEXP Rgraphviz_agread(SEXP);
 SEXP Rgraphviz_agwrite(SEXP, SEXP);
 SEXP Rgraphviz_bezier(SEXP, SEXP, SEXP);
 SEXP Rgraphviz_buildNodeList(SEXP, SEXP, SEXP, SEXP);
-SEXP Rgraphviz_buildEdgeList(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+SEXP Rgraphviz_buildEdgeList(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 SEXP Rgraphviz_doLayout(SEXP, SEXP);
 SEXP Rgraphviz_graphvizVersion(void);
 SEXP Rgraphviz_init(void);

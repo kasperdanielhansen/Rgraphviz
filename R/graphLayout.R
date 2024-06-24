@@ -42,7 +42,7 @@ buildEdgeList <- function(graph, recipEdges=c("combined", "distinct"),
     })
     
     ## Generate the list of pEdge objects
-    .Call("Rgraphviz_buildEdgeList", aa, edgemode(graph),
+    .Call("Rgraphviz_buildEdgeList", nodes(graph), aa, edgemode(graph),
           subGList, edgeNames, removed, edgeAttrs, defAttrs,
           PACKAGE="Rgraphviz")
 }
