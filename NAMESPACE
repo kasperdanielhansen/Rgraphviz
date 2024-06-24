@@ -52,7 +52,6 @@ export(
         makeNodeAttrs,
         pieGlyph,
         removedEdges,
-        toFile,
         layoutGraph
 	)
 
@@ -69,7 +68,8 @@ exportClasses(
 	)
 
 exportMethods(	
-		graphDataDefaults,
+                toFile,
+                graphDataDefaults,
 		"graphDataDefaults<-", 
 		graphData,
 		"graphData<-", 
