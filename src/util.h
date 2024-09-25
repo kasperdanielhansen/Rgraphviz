@@ -9,7 +9,7 @@
          error("bad graph reference"); \
 } while (0)
 
-// char * x from STRSXP; need to Free(x)
+// char * x from STRSXP; need to R_Free(x)
 #define ALLOC_CHAR(SE, ELT) CallocCharBufFrom(STRING_ELT(SE, ELT))
 char *CallocCharBufFrom(SEXP);
 
