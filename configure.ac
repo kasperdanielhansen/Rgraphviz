@@ -21,11 +21,11 @@ if test -z "${GRAPHVIZ_DIR}" ; then
       echo "could not determine R_HOME"
       exit 1
     fi
-    CC=`"${R_HOME}/bin/R" CMD config CC`
-    CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
+    CC=`"${R_HOME}/bin/R" CMD config CC17`
+    CFLAGS=`"${R_HOME}/bin/R" CMD config C17FLAGS`
     CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
-    CXX=`"${R_HOME}/bin/R" CMD config CXX`
-    CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+    CXX=`"${R_HOME}/bin/R" CMD config CXX17`
+    CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXX17FLAGS`
     LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
     MAKE=`"${R_HOME}/bin/R" CMD config MAKE`
     AC_PROG_CC
