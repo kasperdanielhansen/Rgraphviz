@@ -100,9 +100,9 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
             subGName = (char *)malloc(100 * sizeof(char));
             if ((curSubGEle == R_NilValue)||
                     (LOGICAL(curSubGEle)[0] == TRUE))
-                sprintf(subGName, "%s%d", "cluster_", i);
+                snprintf(subGName, sizeof(subGName), "%s%d", "cluster_", i);
             else
-                sprintf(subGName, "%d", i);
+                snprintf(subGName, sizeof(subGName), "%d", i);
 
             sgs[i] = agsubg(g, subGName);
 

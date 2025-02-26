@@ -19,7 +19,7 @@ static Agraph_t* getClusterPtr(SEXP graph, SEXP cluster)
 
     int i = INTEGER(cluster)[0];
     char subGName[256];
-    sprintf(subGName, "%s_%d", CLUSTERFLAG, i);
+    snprintf(subGName, sizeof(subGName), "%s_%d", CLUSTERFLAG, i);
 
     Agraph_t *sg = agfindsubg(g, subGName);
 
@@ -469,9 +469,9 @@ SEXP Rgraphviz_agopenSimple(SEXP name, SEXP kind,
         // First see if this is a cluster or not
         curSubGEle = getListElement(curSubG, CLUSTERFLAG);
         if ( curSubGEle == R_NilValue || LOGICAL(curSubGEle)[0] )
-            sprintf(subGName, "%s_%d", CLUSTERFLAG, i+1);
+            snprintf(subGName, sizeof(subGName), "%s_%d", CLUSTERFLAG, i+1);
         else
-            sprintf(subGName, "%d", i+1);
+            snprintf(subGName, sizeof(subGName), "%d", i+1);
 
         sgs[i] = agsubg(g, subGName);
     }

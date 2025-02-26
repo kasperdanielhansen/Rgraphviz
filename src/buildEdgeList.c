@@ -68,7 +68,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
             edgeName = (char *)malloc((strlen(STR(curFrom))+
                                        strlen(CHAR(toName)) + 2) *
                                       sizeof(char));
-            sprintf(edgeName, "%s~%s", STR(curFrom), CHAR(toName));
+            snprintf(edgeName, sizeof(edgeName), "%s~%s", STR(curFrom), CHAR(toName));
 
             /* See if this edge is a removed edge */
             for (i = 0; i < length(removedEdges); i++) {
@@ -86,7 +86,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
                     recipName = (char *)malloc((strlen(STR(curFrom))+
                                                 strlen(CHAR(toName)) + 2) *
                                                sizeof(char));
-                    sprintf(recipName, "%s~%s", CHAR(toName), STR(curFrom));
+                    snprintf(recipName, sizeof(recipName), "%s~%s", CHAR(toName), STR(curFrom));
 
                     for (k = 0; k < curEle; k++) {
                         if (strcmp(CHAR(STRING_ELT(goodEdgeNames, k)),
