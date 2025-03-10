@@ -23,6 +23,10 @@
 #include	<unistd.h>
 #endif
 
+#ifndef HAVE_DRAND48
+extern double drand48(void);
+#endif
+
 static double Epsilon2;
 
 
