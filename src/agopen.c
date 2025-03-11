@@ -97,7 +97,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
 
             /* First see if this is a cluster or not */
             curSubGEle = getListElement(curSubG, "cluster");
-            subGName = (char *)malloc(100 * sizeof(char));
+            subGName = (char *)malloc(1000 * sizeof(char));
             if ((curSubGEle == R_NilValue)||
                     (LOGICAL(curSubGEle)[0] == TRUE))
                 ret = snprintf(subGName, sizeof(subGName), "%s%d", "cluster_", i);
