@@ -59,7 +59,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
     char *cname, *celmt;
     int ag_k = 0;
     int i,j;
-    int whichSubG;
+    int whichSubG, ret;
     SEXP pNode, curPN, pEdge, curPE;
     SEXP attrNames, curAttrs, curSubG, curSubGEle;
 
@@ -100,9 +100,11 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
             subGName = (char *)malloc(100 * sizeof(char));
             if ((curSubGEle == R_NilValue)||
                     (LOGICAL(curSubGEle)[0] == TRUE))
-                snprintf(subGName, sizeof(subGName), "%s%d", "cluster_", i);
+                ret = snprintf(subGName, sizeof(subGName), "%s%d", "cluster_", i);
             else
-                snprintf(subGName, sizeof(subGName), "%d", i);
+                ret = snprintf(subGName, sizeof(subGName), "%d", i);
+	    if(ret != 0)
+		error("Internal error in subgraph name buffer size");
 
             sgs[i] = agsubg(g, subGName);
 
