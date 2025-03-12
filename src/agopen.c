@@ -103,7 +103,7 @@ SEXP Rgraphviz_agopen(SEXP name, SEXP kind, SEXP nodes,
                 ret = snprintf(subGName, 100, "%s%d", "cluster_", i);
             else
                 ret = snprintf(subGName, 100, "%d", i);
-	    if(ret != 0)
+	    if(ret < 0 || ret > 1000)
 		error("Internal error in subgraph name buffer size");
 
             sgs[i] = agsubg(g, subGName);
