@@ -698,13 +698,16 @@ sgL = list(list(graph=sg1, cluster = FALSE, attrs = c(rank="sink")))
 att = list(graph = list(rankdir = "LR", rank = ""))
 @
 %
-Finally, in Figure~\ref{figbipartite} we plot the bipartite graph.
-%
-<<figbipartite, fig=TRUE, include=FALSE, prefix=FALSE, width=4.5>>=
+Finally, in Figure~\ref{figbipartite} we plot the bipartite graph, but blocked for Bioc 3.21 release.
+% triggers ==57148==ERROR: AddressSanitizer: heap-use-after-free on address 0x51200052d080 at pc 0x7ffff2764317 
+%bp 0x7ffffffc21a0 sp 0x7ffffffc2198
+%READ of size 8 at 0x51200052d080 thread T0
+%    #0 0x7ffff2764316 in cleanup1 /tmp/RtmpRFNn5A/R.INSTALLab7116d71997/Rgraphviz/src/graphviz/lib/dotgen/rank.c:62:21
+<<figbipartite, fig=TRUE, include=FALSE, prefix=FALSE, width=4.5, eval=FALSE>>=
 plot(g, attrs = att, nodeAttrs=nA, subGList = sgL)
 @
 %
-\inclfig{figbipartite}{0.4\textwidth}{A bipartite graph.}
+%\inclfig{figbipartite}{0.4\textwidth}{A bipartite graph.}
 
 %--------------------------------------------------
 \section{NEW Another workflow to plot a graph }
