@@ -65,10 +65,9 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
 
         for (y = 0; y < length(curTo); y++) {
             PROTECT(toName = STRING_ELT(from, INTEGER(curTo)[y]-1));
-            edgeName = (char *)malloc((strlen(STR(curFrom))+
-                                       strlen(CHAR(toName)) + 2) *
-                                      sizeof(char));
-            snprintf(edgeName, sizeof(edgeName), "%s~%s", STR(curFrom), CHAR(toName));
+            size_t nbytes = snprintf(NULL, 0, "%s~%s", STR(curFrom), CHAR(toName)) + 1; /* get buffer size, +1 for the '\0' */
+            edgeName = (char *)malloc(nbytes);                                    
+            snprintf(edgeName, nbytes, "%s~%s", STR(curFrom), CHAR(toName));
 
             /* See if this edge is a removed edge */
             for (i = 0; i < length(removedEdges); i++) {
@@ -83,10 +82,9 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
                 if (strcmp(STR(edgeMode), "directed") == 0) {
                     /* Find the recip and add 'open' to tail */
 
-                    recipName = (char *)malloc((strlen(STR(curFrom))+
-                                                strlen(CHAR(toName)) + 2) *
-                                               sizeof(char));
-                    snprintf(recipName, sizeof(recipName), "%s~%s", CHAR(toName), STR(curFrom));
+                    size_t nbytes = snprintf(NULL, 0, "%s~%s", CHAR(toName), STR(curFrom)) + 1;
+                    recipName = (char *)malloc(nbytes);
+                    snprintf(recipName, nbytes, "%s~%s", CHAR(toName), STR(curFrom));
 
                     for (k = 0; k < curEle; k++) {
                         if (strcmp(CHAR(STRING_ELT(goodEdgeNames, k)),
