@@ -59,20 +59,19 @@ cleanup1(graph_t * g)
 	     * handle it a second time. For example, parallel multiedges 
 	     * share a virtual edge.
 	     */
-	    if (f && (e == ED_to_orig(f))) {
-		edge_t *e1, *f1;
-		for (e1 = agfstout(g, n); e1; e1 = agnxtout(g, e1)) {
-		    if (e != e1) {
-			f1 = ED_to_virt(e1);
-			if (f1 && (f == f1)) {
-			    ED_to_virt(e1) = NULL;
-			}
-		    }
-		}
-		free(f);
-	    }
-	    ED_to_virt(e) = NULL;
-	}
+	    if (f && (e != ED_to_orig(f))) {
+                ED_to_virt(e) = NULL;
+            }
+        }
+    }
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+        for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+            f = ED_to_virt(e);
+            if (f && ED_to_orig(f) == e) {
+                free(f);
+                ED_to_virt(e) = NULL;
+            }
+        }
     }
     free(GD_comp(g).list);
     GD_comp(g).list = NULL;
