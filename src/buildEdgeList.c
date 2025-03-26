@@ -126,6 +126,7 @@ SEXP Rgraphviz_buildEdgeList(SEXP edgeL, SEXP edgeMode, SEXP subGList,
                     UNPROTECT(3);
 
                 }
+                free(edgeName);
                 UNPROTECT(1);
                 continue;
             }
