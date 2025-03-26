@@ -464,8 +464,10 @@ char **gvPluginList(GVC_t * gvc, char* kind, int* sz, const char *str)
 	if (!typestr_last || strcasecmp(typestr_last, q) != 0) {
 	    list = RALLOC(cnt+1,list,char*);
 	    list[cnt++] = q;
-	}
-	typestr_last = q;
+            typestr_last = q;
+	} else {
+            free(q);
+        }
     }
 
     *sz = cnt;

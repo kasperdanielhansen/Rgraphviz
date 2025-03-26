@@ -23,3 +23,8 @@
     })
     .Call("Rgraphviz_init", PACKAGE = "Rgraphviz")
 }
+
+.onUnload <- function(libpath) {
+    message(".onUnload()")
+    .Call("Rgraphviz_unload", PACKAGE = "Rgraphviz");
+}

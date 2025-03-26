@@ -32,3 +32,8 @@ SEXP Rgraphviz_init(void) {
 #endif
     return(R_NilValue);
 }
+
+SEXP Rgraphviz_unload(void) {
+    if ( gvc ) { gvFreeContext(gvc); gvc = NULL; }
+    return(R_NilValue);
+}
