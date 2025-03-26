@@ -82,7 +82,7 @@ int getVectorPos(SEXP vector, const char *str) {
     return(i);
 }
 
-SEXP Rgraphviz_fin(SEXP s) {
+void Rgraphviz_fin(SEXP s) {
     /* Finalizer for the external reference */
     Agraph_t *g;
 
@@ -90,7 +90,6 @@ SEXP Rgraphviz_fin(SEXP s) {
     g = R_ExternalPtrAddr(s);
     agclose(g);
     R_ClearExternalPtr(s);
-    return(R_NilValue);
 }
 
 SEXP assignAttrs(SEXP attrList, SEXP objList,
