@@ -12976,7 +12976,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       hardcode_libdir_flag_spec=' '
       allow_undefined_flag=unsupported
       # Tell ltmain to make .lib files, not .a files.
-      libext=lib
+      libext=a
       # Tell ltmain to make .dll files, not .so files.
       shrext_cmds=".dll"
       # FIXME: Setting linknames here is a bad hack.
@@ -12984,7 +12984,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       # The linker will automatically build a .lib file if we build a DLL.
       old_archive_from_new_cmds='true'
       # FIXME: Should let the user specify the lib program.
-      old_archive_cmds='lib -OUT:$oldlib$oldobjs$old_deplibs'
+      old_archive_cmds='$AR $AR_FLAGS $oldlib$oldobjs~$RANLIB $oldlib'
       fix_srcfile_path='`cygpath -w "$srcfile"`'
       enable_shared_with_static_runtimes=yes
       ;;
@@ -18866,7 +18866,6 @@ fi
 
 
 
-    subdirs="$subdirs libltdl"
 
 
 
