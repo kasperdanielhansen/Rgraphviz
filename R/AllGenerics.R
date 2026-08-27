@@ -88,6 +88,8 @@ setGeneric("to", function(object) standardGeneric("to"))
 
 setGeneric("toDot", function(graph, filename, ...) standardGeneric("toDot"))
 
+setGeneric("toFile", function(graph, layoutType="dot", filename, fileType="dot") standardGeneric("toFile"))
+
 ###################################################################
 # graph attributes
 ###################################################################

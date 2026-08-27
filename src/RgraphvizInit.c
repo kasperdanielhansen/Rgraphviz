@@ -12,6 +12,7 @@ static const R_CallMethodDef R_CallDef[] = {
              {"Rgraphviz_buildEdgeList", (DL_FUNC)&Rgraphviz_buildEdgeList, 7},
 
              {"Rgraphviz_toFile", (DL_FUNC)&Rgraphviz_toFile, 4},
+             {"Rgraphviz_dotToFile", (DL_FUNC)&Rgraphviz_dotToFile, 4},
 
              {"Rgraphviz_getDefAttrsGraph", (DL_FUNC)&Rgraphviz_getDefAttrsGraph, 1},
              {"Rgraphviz_setDefAttrsGraph", (DL_FUNC)&Rgraphviz_setDefAttrsGraph, 3},
