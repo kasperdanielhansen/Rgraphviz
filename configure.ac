@@ -33,8 +33,16 @@ if test -z "${GRAPHVIZ_DIR}" ; then
     AC_PROG_CXX
     AC_MSG_NOTICE([Preparing to compile Graphviz.])
     cd src/graphviz
-    touch configure 
-    touch libltdl/configure
+    dnl In a git checkout (as opposed to a source tarball) the files have
+    dnl quasi-random sub-second mtimes, so the autotools inputs (configure.ac,
+    dnl Makefile.am, m4/*.m4) can appear newer than the generated files they
+    dnl are shipped with. This triggers the automake/autoconf rebuild rules
+    dnl during make, which fail with the modern autotools on the host system
+    dnl (https://github.com/kasperdanielhansen/Rgraphviz/issues/28).
+    dnl Touch all generated files, oldest-first, so make treats them as
+    dnl up to date.
+    find . -name aclocal.m4 -exec touch {} \;
+    find . \( -name configure -o -name config.h.in -o -name config-h.in -o -name Makefile.in \) -exec touch {} \;
     BUILD_INSTALL_DIR="${BUILD_DIR}/src/libunix"
     rm -rf ${BUILD_INSTALL_DIR}
     AC_MSG_NOTICE([Configuring bundled Graphviz.])
