@@ -4187,8 +4187,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Preparing to compile Graphviz." >&5
 printf "%s\n" "$as_me: Preparing to compile Graphviz." >&6;}
     cd src/graphviz
-    touch configure
-    touch libltdl/configure
+    find . -name aclocal.m4 -exec touch {} \;
+    find . \( -name configure -o -name config.h.in -o -name config-h.in -o -name Makefile.in \) -exec touch {} \;
     BUILD_INSTALL_DIR="${BUILD_DIR}/src/libunix"
     rm -rf ${BUILD_INSTALL_DIR}
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Configuring bundled Graphviz." >&5
