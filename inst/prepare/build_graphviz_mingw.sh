@@ -83,7 +83,7 @@ build_graphviz () {
 
     echo "Patching graphviz dir for --arch=${THIS_ARCH}"
     patch graphviz/lib/common/colxlate.c < patches/colxlate.c-patch
-    
+
     echo "Preparing for configure"
     BUILD_DIR=`pwd`
     cd graphviz
@@ -140,6 +140,6 @@ echo "You can add the new libraries to Rgraphviz by copying it into Rgraphviz/sr
 echo "Depending on where the script is run relative to the source tree, the following might work:"
 echo "  cp -R libwin ../../src"
 echo "If everything is under subversion, please do a 'svn stat' and confirm that"
-echo "eveything has been updated and nothing needs to be removed."
+echo "everything has been updated and nothing needs to be removed."
 
 exit 0

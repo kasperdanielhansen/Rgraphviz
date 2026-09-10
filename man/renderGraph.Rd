@@ -5,11 +5,11 @@
 \title{Render a laid out graph object}
 
 \description{
-  
+
   This method uses the \code{renderInfo} slot of a graph object to
   render it on a plotting device. The graph must have been laid out
-  using the \code{\link{layoutGraph}} function before. 
-  
+  using the \code{\link{layoutGraph}} function before.
+
 }
 
 \usage{
@@ -19,9 +19,9 @@
 }
 
 \arguments{
-  
+
   \item{x}{An object derived from class \code{graph}}
-  
+
   \item{drawNodes}{A function that is used for the node rendering. The
     details of its API are still undecided, so far the input to the
     function is the (laid out) graph object. Defaults to
@@ -37,7 +37,7 @@
     \code{textCol}, \code{style}, \code{label} and \code{fontsize},
     which are all defined by the layout algorithm or are graphical
     \code{nodeRenderInfo} parameters. }
-      
+
   \item{drawEdges}{A function that is used for the edge
     rendering. Defaults to \code{renderEdges}. Currently, this function
     can draw different types of arrowheads: \code{open}, \code{normal},
@@ -48,34 +48,34 @@
     arguments: A list of xy coordinates for the center of the arrowhead,
     and the graphical parameters \code{col}, \code{lwd} and
     \code{lty}. }
-  
+
   \item{graph.pars}{A list of rendering parameters to use as
-    defaults. Parameters that have been explicitely set using
+    defaults. Parameters that have been explicitly set using
     \code{\link[graph:renderInfo-class]{nodeRenderInfo}},
     \code{\link[graph:renderInfo-class]{edgeRenderInfo}} or
     \code{\link[graph:renderInfo-class]{graphRenderInfo}} take
-    precendence. If not explicitely supplied, the value of a call to
+    precedence. If not explicitly supplied, the value of a call to
     \code{\link[graph:settings]{graph.par}} is used. This design allows
     to set session-wide defaults. }
-  
+
   \item{\dots}{further arguments}
-  
+
 }
 
 \details{
-  
+
   This method can render graph objects that have previously been laid
   out using the function \code{\link{layoutGraph}}. The details for user
   defined node drawing remain to be decided.
-  
+
 }
 
 \value{
-  
+
   An object derived from class \code{graph} with information about the
   coordinates of the nodes in the coordinate system of the plotting
   device added to the \code{renderInfo} slot.
-  
+
 }
 
 \author{Florian Hahne}
@@ -83,10 +83,10 @@
 \seealso{
 
   \code{\link{layoutGraph}},
-   \code{link[graph:renderInfo-class]{nodeRenderInfo}}, 
+   \code{link[graph:renderInfo-class]{nodeRenderInfo}},
    \code{link[graph:renderInfo-class]{edgeRenderInfo}},
    \code{link[graph:renderInfo-class]{graphRenderInfo}},
-  
+
 }
 
 \examples{

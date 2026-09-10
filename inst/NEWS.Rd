@@ -25,13 +25,13 @@
     \item Expose mai argument in plot,Ragraph-method.
     \item Changed the LICENSE to EPL.
     \item Fixed some wrong text in the DESCRIPTION file.
-    \item Fixed pieGylph to adress the issue of warning messages about
+    \item Fixed pieGylph to address the issue of warning messages about
     rep(NULL) (reported by Cristobal Fresno Rodríguez
     <Cristobalfresno@gmail.com>).
     \item Updated Imports, Depends, NAMESPACE as per R CMD check
     requirements.
     \item Fixing issue with the lt~obsolete.m4 file(s) in Graphviz; R CMD
-    check was issueing a warning.
+    check was issuing a warning.
     \item Moved vignettes from inst/doc to vignettes directory.
   }
 }
@@ -64,7 +64,7 @@
     shape = "triangle".  It now works.
     \item bugfix to renderNodes (used in renderGraph) for using
     node-specific lwd and shapes either "triangle", "ellipse" or "circle".
-    It now works. 
+    It now works.
   }
 }
 
@@ -76,6 +76,6 @@
     Rgraphviz installation does not support it.
     \item Rgraphviz now comes bundled with Graphviz 2.28, greatly
     simplifying installation.
-    \item Numerous bugfixes for bugs introduced in the 2.x.x versions. 
+    \item Numerous bugfixes for bugs introduced in the 2.x.x versions.
   }
 }

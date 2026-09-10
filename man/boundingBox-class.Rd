@@ -9,7 +9,7 @@
 \title{Class "boundingBox": A class to describe the bounding box of a
   Ragraph}
 \description{The \code{boundingBox} class is used to describe the
-  dimensons of the bounding box for a laid out Ragraph}
+  dimensions of the bounding box for a laid out Ragraph}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("boundingBox", ...)}.
 }

@@ -10,11 +10,11 @@
   A plot method for \code{graph} objects.
 }
 \usage{
-\S4method{plot}{graph,ANY}(x, y, ..., name = "", subGList = list(), 
-    attrs = list(), nodeAttrs = list(), edgeAttrs = list(), 
+\S4method{plot}{graph,ANY}(x, y, ..., name = "", subGList = list(),
+    attrs = list(), nodeAttrs = list(), edgeAttrs = list(),
     recipEdges = c("combined", "distinct"))
-\S4method{plot}{Ragraph,ANY}(x, y, edgeAttrs = list(), ..., main = NULL, 
-    cex.main = NULL, col.main = "black", sub = NULL, cex.sub = NULL, 
+\S4method{plot}{Ragraph,ANY}(x, y, edgeAttrs = list(), ..., main = NULL,
+    cex.main = NULL, col.main = "black", sub = NULL, cex.sub = NULL,
     col.sub = "black", drawNode = drawAgNode, xlab, ylab, mai)
 }
 \arguments{
@@ -30,7 +30,7 @@
   \item{nodeAttrs}{A list of attributes for specific nodes}
   \item{edgeAttrs}{A list of attributes for specific edges}
   \item{recipEdges}{Determines how to draw reciprocating edges.  See
-    \code{\link{agopen}}} 
+    \code{\link{agopen}}}
   \item{main, cex.main, col.main}{Main label and graphic parameters for the plot}
   \item{sub, cex.sub, col.sub}{Subtitle and graphic parameters for the plot}
   \item{drawNode}{Function to draw the nodes.  The default is
@@ -55,14 +55,14 @@
 
   Users can specify arbitrary drawing functions for the nodes of the
   \code{Ragraph} with the \code{drawNode} argument, although caution is
-  urged.  The default drawing function for 
+  urged.  The default drawing function for
   all nodes is \code{\link{drawAgNode}}, which will draw a basic circle,
   ellipse or rectangle according to the layout specifications for each
   node. If supplying a custom function, users are encouraged to look at
   the code of this function for a more clear picture of the information
   required to properly draw a node.   Users can specify either one
   custom function to be used for all nodes or a list (where length is
-  equal to the nubmer of nodes) of functions where the Nth element in
+  equal to the number of nodes) of functions where the Nth element in
   the list provides the drawing function for the Nth node, and every
   function will take four parameters - the first is an object of class
   \code{AgNode} representing the node itself and the second is an object
@@ -76,7 +76,7 @@
   argument, the rest of these (particularly \code{radConv} which
   generally shouldn't be specifically set) do not need to be set by the
   user, but any drawing function must have them as parameters.
-  
+
   The \code{attrs} list requires a particular format.  It must be of
   length 3 with names \code{graph}, \code{node}, and \code{edge}.  Each
   of these elements themselves are lists - such that an element of
@@ -97,7 +97,7 @@
   However, the name of the edges is in a particular format where an edge
   between x and y is named \code{x~y}.  Note that even in an undirected
   graph that \code{x~y} is not the same as \code{y~x} - the name must be
-  in the same order that the edge was defined as having.  
+  in the same order that the edge was defined as having.
 }
 \section{value}{
   The \code{Ragraph} object used for plotting
