@@ -29,7 +29,7 @@ Objects can be created by calls of the form \code{new("BezierCurve", ...)}.
   \describe{
     \item{\code{cPoints}:}{Returns the \code{cPoints} slot}
     \item{\code{pointList}:}{Returns a list of all points having been
-      processed with teh \code{getPoints} method of \code{xyPoint}}
+      processed with the \code{getPoints} method of \code{xyPoint}}
     \item{\code{bezierPoints}:}{Returns a matrix giving x & y points (by
       column) for the complete Bezier curve}
     \item{\code{lines}:}{Draws the Bezier curve}

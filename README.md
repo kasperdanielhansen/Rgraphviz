@@ -30,13 +30,13 @@ $DIR/include/graphviz
 $DIR/lib/graphviz
 ```
 as is the default when Graphviz is installed.  It is not possible to directly
-specifify these two directories, only `$DIR`
+specify these two directories, only `$DIR`
 
 It is also possible to get Rgraphviz to search for Graphviz, by leaving the
 `--with-graphviz` option empty, as
 
 ```{bash}
-R CMD INSTALL --configure-args='--with-graphviz' Rgraphviz_*.tar.gz 
+R CMD INSTALL --configure-args='--with-graphviz' Rgraphviz_*.tar.gz
 ```
 
 In this case, Rgraphviz will search for Graphviz using the following methods
@@ -51,5 +51,3 @@ Rgraphviz for certain layout options.  The patches to the bundled Graphviz
 
 ## R CMD check results
 Bioconductor: [Multiple platform build/check report](http://master.bioconductor.org/checkResults/devel/bioc-LATEST/Rgraphviz/)
-
-
